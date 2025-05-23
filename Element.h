@@ -5,6 +5,7 @@
 #ifndef PROJECT_PHAZE_ONE_ELEMENT_H
 #define PROJECT_PHAZE_ONE_ELEMENT_H
 
+#include <iostream>
 #include "string"
 #include "Node.h"
 
@@ -19,12 +20,16 @@ protected:
     Element_Type type;
     Node* node1;
     Node* node2;
+    double value;
 public:
     Element(string _name, Element_Type _type, Node* n1, Node* n2);
     string get_name() const;
     Element_Type get_element_type();
     pair<Node*, Node*> get_nodes();
     double get_voltage();
+    virtual double get_current() = 0;
+    double get_value() {return value;}
+    virtual void display_info() = 0;
 };
 
 
