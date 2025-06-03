@@ -16,3 +16,11 @@ void Capacitor::display_info()
     cout << "C = " << value << endl;
     cout << "From Node " << node1->get_name() << " to Node " << node2->get_name() << endl;
 }
+void Capacitor::change_value(double new_value)
+{
+    value = new_value;
+}
+void Capacitor::change_name(std::string new_name)
+{
+    name = new_name;
+}

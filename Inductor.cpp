@@ -16,3 +16,11 @@ void Inductor::display_info()
     cout << "L = " << value << endl;
     cout << "From Node " << node1->get_name() << " to Node " << node2->get_name() << endl;
 }
+void Inductor::change_value(double new_value)
+{
+    value = new_value;
+}
+void Inductor::change_name(std::string new_name)
+{
+    name = new_name;
+}

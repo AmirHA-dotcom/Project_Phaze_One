@@ -28,8 +28,10 @@ public:
     pair<Node*, Node*> get_nodes();
     double get_voltage();
     virtual double get_current() = 0;
-    double get_value() {return value;}
+    double get_value() const {return value;}
     virtual void display_info() = 0;
+    virtual void change_value(double new_value) = 0;
+    virtual void change_name(string new_name) = 0;
 };
 
 
