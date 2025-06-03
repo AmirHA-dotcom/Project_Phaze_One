@@ -5,8 +5,7 @@
 #ifndef PROJECT_PHAZE_ONE_ELEMENT_H
 #define PROJECT_PHAZE_ONE_ELEMENT_H
 
-#include <iostream>
-#include "string"
+#include "Libraries.h"
 #include "Node.h"
 
 using namespace std;
