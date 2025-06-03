@@ -7,8 +7,6 @@
 
 #include "Libraries.h"
 
-using namespace std;
-
 class Node
 {
 private:

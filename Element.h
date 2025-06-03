@@ -8,8 +8,6 @@
 #include "Libraries.h"
 #include "Node.h"
 
-using namespace std;
-
 enum class Element_Type{Resistor, Capacitor, Inductor, Diode, Voltage_Source, Current_Source, Ground};
 
 class Element

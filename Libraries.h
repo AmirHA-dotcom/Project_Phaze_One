@@ -16,4 +16,6 @@
 #include <map>
 #include <unordered_map>
 
+using namespace std;
+
 #endif //PROJECT_PHAZE_ONE_LIBRARIES_H
