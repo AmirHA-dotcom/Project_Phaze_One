@@ -19,7 +19,7 @@ protected:
     Node* node2;
     double value;
 public:
-    Element(string _name, Element_Type _type, Node* n1, Node* n2);
+    Element(string _name, Element_Type _type, Node* n1, Node* n2, double _value);
     string get_name() const;
     Element_Type get_element_type();
     pair<Node*, Node*> get_nodes();

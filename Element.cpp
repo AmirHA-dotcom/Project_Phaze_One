@@ -4,12 +4,13 @@
 
 #include "Element.h"
 
-Element::Element(string _name, Element_Type _type, Node *n1, Node *n2)
+Element::Element(string _name, Element_Type _type, Node *n1, Node *n2, double _value)
 {
     name = _name;
     type = _type;
     node1 = n1;
     node2 = n2;
+    value = _value;
 }
 
 string Element::get_name() const
