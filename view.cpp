@@ -18,7 +18,7 @@ static vector<string> splitString(const string& input) {
     }
     return words;
 }
-double parseSpiceNumber(const std::string& inputRaw) {
+double toValue(const std::string& inputRaw) {
     std::string input;
     for (char c : inputRaw) {
         if (c == ',') input += '.';
