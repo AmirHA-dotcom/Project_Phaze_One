@@ -11,8 +11,8 @@ class Algorithems
 {
 public:
     // solving determinants
-    float determinant(vector<vector<float>> matrix);
-    vector<float> solve_cramer(vector<vector<float>> G, vector<float> I);
+    float determinant(vector<vector<double>> matrix);
+    vector<double> solve_cramer(vector<vector<double>> G, vector<double> I);
 };
 
 

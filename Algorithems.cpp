@@ -4,10 +4,10 @@
 
 #include "Algorithems.h"
 
-float Algorithems::determinant(vector<vector<float>> matrix)
+float Algorithems::determinant(vector<vector<double>> matrix)
 {
     int n = matrix.size();
-    float det = 1;
+    double det = 1;
     for (int i = 0; i < n; i++)
     {
         int max_row = i;
@@ -25,7 +25,7 @@ float Algorithems::determinant(vector<vector<float>> matrix)
         }
         for (int j = i + 1; j < n; j++)
         {
-            float factor = matrix[j][i] / matrix[i][i];
+            double factor = matrix[j][i] / matrix[i][i];
             for (int k = i; k < n; k++)
             {
                 matrix[j][k] -= factor * matrix[i][k];
@@ -36,11 +36,11 @@ float Algorithems::determinant(vector<vector<float>> matrix)
     return det;
 }
 
-vector<float> Algorithems::solve_cramer(vector<vector<float>> G, vector<float> I)
+vector<double> Algorithems::solve_cramer(vector<vector<double>> G, vector<double> I)
 {
     int n = G.size();
-    vector<float> solution(n);
-    float det_G = determinant(G);
+    vector<double> solution(n);
+    double det_G = determinant(G);
 
     for (int i = 0; i < n; i++) {
         auto G_temp = G;
