@@ -29,3 +29,13 @@ bool Node::is_the_node_ground()
 {
     return is_ground;
 }
+
+void Node::set_index(int i)
+{
+    index = i;
+}
+
+int Node::get_index()
+{
+    return index;
+}

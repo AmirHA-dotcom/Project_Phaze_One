@@ -13,12 +13,15 @@ private:
     string name;
     double voltage;
     bool is_ground;
+    int index;
 public:
     Node(string _name);
     string get_name() const;
     double get_voltage();
     void make_ground();
     bool is_the_node_ground();
+    void set_index(int i);
+    int get_index();
 };
 
 
