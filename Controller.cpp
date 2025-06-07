@@ -4,6 +4,6 @@
 #include "Element.h"
 #include "Controller.h"
 
-static Resistor* findResistor (string name){
+static Element* findElement (string name){
 
 }

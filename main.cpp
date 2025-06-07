@@ -4,13 +4,15 @@
 
 #include "Libraries.h"
 #include "view.h"
+#include "Controller.h"
 int main() {
-    View v;
+    View* V = new View;
+    Controller* C = new Controller;
     string line;
     bool cond = true;
     while (cond) {
         try {
-            cond = v.inputHandler();
+            cond = V->inputHandler(C);
         } catch (const exception& e) {
             cout << e.what() << endl;
         }

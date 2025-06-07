@@ -9,11 +9,19 @@
 
 class Controller {
 public:
-    static Resistor* findResistor (string name);
-    static Capacitor* findCapacitor (string name);
-    static Inductor* findInductor (string name);
-    static Diode* findDiode (string name);
+    Element* findElement (string name);
+    Element* findNode (string name);
+    void addR (string name, string Node1, string Node2, double value);
+    void addC (string name, string Node1, string Node2, double value);
+    void addI (string name, string Node1, string Node2, double value);
+    void addD (string name, string Node1, string Node2, string model);
+    void addGND (string name);
+    void addVS (string name, string Node1, string Node2, double value);
+    void addCS (string name, string Node1, string Node2, double value);
+    void addSin (string name, string Node1, string Node2, double offset, double amplitude, double frequency);
 
+
+    void delElement (Element* element);
 };
 
 
