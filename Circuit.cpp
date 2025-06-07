@@ -93,6 +93,8 @@ void Circuit::analyse_data()
     {
         if (auto* L = dynamic_cast<Inductor*>(e))
             L->set_aux_index(aux_index++);
+        else if (auto* V = dynamic_cast<Voltage_Source*>(e))
+            V->set_aux_index(aux_index++);
     }
     int total_unknowns = aux_index;
     // saving data
