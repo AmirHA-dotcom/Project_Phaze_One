@@ -203,6 +203,18 @@ bool delDCheck (const vector<string> i) {
     }
     return true;
 }
+bool addGCheck (vector<string> i) {
+    if (i.size() != 3 || i[0] != "add" || i[1] != "GND"){
+        return false;
+    }
+    return true;
+}
+bool delGCheck (const vector<string> i) {
+    if (i.size() != 3 || i[0] != "delete" || i[1] == "GND"){
+        return false;
+    }
+    return true;
+}
 bool addVSCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || !i[1].find("VoltageSource")){
         return false;
@@ -241,86 +253,188 @@ bool addSinusoiⅾaⅼCheck (vector<string> i) {
     }
     return true;
 }
-
-
-bool inputHandler (string line) {
-        vector<string> i = splitString(line);
-        if (line == "end") {
-            cout << "program ended!" << endl;
-            return false;
-        }
-        if (addRCheck(i)) {
-            if (Controller::findResistor(i[4])) {
-                cout << "Error: Resistor " << i[4] << " already exists in the circuit" << endl;
-
-            }
-
-        }
-        if (delRCheck(i)) {
-            auto* r = Controller::findResistor(i[1]);
-            if (!r) {
-                cout << "Error: Cannot delete resistor; component not found" << endl;
-
-            }
-
-        }
-        if (addCCheck(i)) {
-            if (Controller::findCapacitor(i[4])) {
-                cout << "Error: Capacitor " << i[4] << " already exists in the circuit" << endl;
-
-            }
-
-        }
-        if (delCCheck(i)) {
-            auto* r = Controller::findCapacitor(i[1]);
-            if (!r) {
-                cout << "Error: Cannot delete capacitor; component not found" << endl;
-
-            }
-
-        }
-        if (addICheck(i)) {
-            if (Controller::findInductor(i[4])) {
-                cout << "Error: Inductor " << i[4] << " already exists in the circuit" << endl;
-
-            }
-
-        }
-        if (delICheck(i)) {
-            auto* r = Controller::findInductor(i[1]);
-            if (!r) {
-                cout << "Error: Cannot delete inductor; component not found" << endl;
-
-            }
-
-        }
-        if (addDCheck(i)) {
-            if (Controller::findDiode(i[4])) {
-                cout << "Error: Diode " << i[4] << " already exists in the circuit" << endl;
-
-            }
-
-        }
-        if (delDCheck(i)) {
-            auto* r = Controller::findDiode(i[1]);
-            if (!r) {
-                cout << "Error: Cannot delete diode; component not found" << endl;
-
-            }
-
-        }
-        if (addVSCheck(i)) {
-
-        }
-        if (addCSCheck(i)) {
-
-        }
-        if (addSinusoiⅾaⅼCheck(i)) {
-
-        }
-
-
-        else
-            throw invalidSyntax();
+bool componentListCheck (vector<string> i) {
+    if (i.size() != 2 || i[0] != ".list"){
+        return false;
+    }
+    if (i[1] != "Resistor" && i[1] != "Inⅾuⅽtor" && i[1] != "Capacitor" && i[1] != "Diode") {
+        throw invalidSyntax();
+    }
     return true;
 }
+bool renameNode (vector<string> i) {
+    if (i.size() != 4 || i[0] != ".rename" || i[1] == "node"){
+        return false;
+    }
+    return true;
+}
+bool tranAnalysis (vector<string> i) {
+    if (i.size() != 7 || i[0] != ".print" || i[1] == "TRAN"){
+        return false;
+    }
+    return true;
+}
+bool dcAnalysis (vector<string> i) {
+    if (i.size() != 7 || i[0] != ".print" || i[1] == "DC"){
+        return false;
+    }
+    return true;
+}
+
+
+bool View::handleMainMenu () {
+    cout << " 1 -> circuitMenu" << endl;
+    cout << " 2 -> fileMenu" << endl;
+    cout << " 3 -> analysisMenu" << endl;
+    string s;
+    getline(cin,s);
+    if (s == "1")
+        circuitMenu = true;
+    if (s == "2")
+        fileMenu = true;
+    if (s == "3")
+        analysisMenu = true;
+    else
+        throw invalidSyntax();
+}
+bool handleCircuitMenu () {
+    string line;
+    getline(cin,line);
+    vector<string> i = splitString(line);
+    if (line == "end") {
+        cout << "program ended!" << endl;
+        return false;
+    }
+    if (addRCheck(i)) {
+        if (Controller::findResistor(i[4])) {
+            cout << "Error: Resistor " << i[4] << " already exists in the circuit" << endl;
+
+        }
+
+    }
+    if (delRCheck(i)) {
+        auto* r = Controller::findResistor(i[1]);
+        if (!r) {
+            cout << "Error: Cannot delete resistor; component not found" << endl;
+
+        }
+
+    }
+    if (addCCheck(i)) {
+        if (Controller::findCapacitor(i[4])) {
+            cout << "Error: Capacitor " << i[4] << " already exists in the circuit" << endl;
+
+        }
+
+    }
+    if (delCCheck(i)) {
+        auto* r = Controller::findCapacitor(i[1]);
+        if (!r) {
+            cout << "Error: Cannot delete capacitor; component not found" << endl;
+
+        }
+
+    }
+    if (addICheck(i)) {
+        if (Controller::findInductor(i[4])) {
+            cout << "Error: Inductor " << i[4] << " already exists in the circuit" << endl;
+
+        }
+
+    }
+    if (delICheck(i)) {
+        auto* r = Controller::findInductor(i[1]);
+        if (!r) {
+            cout << "Error: Cannot delete inductor; component not found" << endl;
+
+        }
+
+    }
+    if (addDCheck(i)) {
+        if (Controller::findDiode(i[4])) {
+            cout << "Error: Diode " << i[4] << " already exists in the circuit" << endl;
+
+        }
+
+    }
+    if (delDCheck(i)) {
+        auto* r = Controller::findDiode(i[1]);
+        if (!r) {
+            cout << "Error: Cannot delete diode; component not found" << endl;
+
+        }
+
+    }
+    if (addGCheck(i)) {
+        if (Controller::findDiode(i[4])) {
+            cout << "Error: Diode " << i[4] << " already exists in the circuit" << endl;
+
+        }
+
+    }
+    if (delGCheck(i)) {
+        auto* r = Controller::findDiode(i[1]);
+        if (!r) {
+            cout << "Error: Cannot delete diode; component not found" << endl;
+
+        }
+
+    }
+    if (addVSCheck(i)) {
+
+    }
+    if (addCSCheck(i)) {
+
+    }
+    if (addSinusoiⅾaⅼCheck(i)) {
+
+    }
+    if (line == ".nodes"){
+
+    }
+    if (line == ".list"){
+
+    }
+    if (componentListCheck(i)){
+
+    }
+    if (renameNode(i)){
+
+    }
+    if (componentListCheck(i)){
+
+    }
+    if (componentListCheck(i)){
+
+    }
+    if (componentListCheck(i)){
+
+    }
+    if (componentListCheck(i)){
+
+    }
+
+
+    else
+        throw invalidSyntax();
+    return true;
+}
+bool handleFileMenu (){
+
+}
+bool handleAnalysisMenu (){
+
+}
+
+bool View::inputHandler () {
+    if (mainMenu)
+        return handleMainMenu();
+    if (circuitMenu)
+        return handleCircuitMenu();
+    if (fileMenu)
+        return handleFileMenu();
+    if (analysisMenu)
+        return handleAnalysisMenu();
+
+}
+

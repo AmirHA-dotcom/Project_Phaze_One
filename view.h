@@ -9,14 +9,17 @@
 #include "Errors.h"
 
 class View {
-
+    bool mainMenu = true;
+    bool circuitMenu = false;
+    bool fileMenu = false;
+    bool analysisMenu = false;
 
     static vector<string> splitString(const string& input);
 
 
 public:
-
-    bool inputHandler (string line);
+    bool handleMainMenu ();
+    bool inputHandler ();
 
 };
 

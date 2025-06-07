@@ -3,6 +3,8 @@ project(Project_Phaze_One)
 
 set(CMAKE_CXX_STANDARD 20)
 
+add_executable(Project_Phaze_One
+        main.cpp
         Node.cpp
         Node.h
         Element.cpp
@@ -18,3 +20,8 @@ set(CMAKE_CXX_STANDARD 20)
         Circuit.cpp
         Circuit.h
         Libraries.h
+        Algorithems.cpp
+        Algorithems.h
+        View.cpp
+        View.h
+)
