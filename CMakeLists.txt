@@ -24,4 +24,6 @@ add_executable(Project_Phaze_One
         Algorithems.h
         View.cpp
         View.h
+        Current_Source.cpp
+        Current_Source.h
 )
