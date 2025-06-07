@@ -5,10 +5,18 @@
 #ifndef PROJECT_PHAZE_ONE_VIEW_H
 #define PROJECT_PHAZE_ONE_VIEW_H
 
+#include "Libraries.h"
+#include "Errors.h"
 
-class view {
+class View {
+
+
     static vector<string> splitString(const string& input);
-    void handleInput ();
+
+
+public:
+
+    bool inputHandler (string line);
 
 };
 
