@@ -11,12 +11,13 @@ class Node
 {
 private:
     string name;
-    double voltage;
+    vector<pair<double, double>> voltage;   // voltage, time
     bool is_ground;
     int index;
 public:
     Node(string _name);
     string get_name() const;
+    void set_voltage(double volt, double time);
     double get_voltage();
     void make_ground();
     bool is_the_node_ground();
