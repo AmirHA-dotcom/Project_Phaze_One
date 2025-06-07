@@ -394,7 +394,6 @@ bool View::handleCircuitMenu (Controller* C) {
         C->addGND(i[2]);
         return true;
     }
-
     if (addVSCheck(i)) {
         if (C->findElement(i[4])) {
             throw elementExists(i[4]);
@@ -413,9 +412,44 @@ bool View::handleCircuitMenu (Controller* C) {
         if (C->findElement(i[4])) {
             throw elementExists(i[4]);
         }
-        C->addSin(i[1],i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),toValue(i[5]),toValue(i[5]));
+        C->addSin(i[1],i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),
+                  toValue(i[5]),toValue(i[6].substr(0,i[6].size()-1)));
         return true;
-
+    }
+    if (addPulseCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addVcvsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addCcvsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addVccsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addCccsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
     }
     if (line == ".nodes"){
 
