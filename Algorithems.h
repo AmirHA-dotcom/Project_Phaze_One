@@ -13,7 +13,7 @@ public:
     // solving determinants
     float determinant(vector<vector<float>> matrix);
     vector<float> solve_cramer(vector<vector<float>> G, vector<float> I);
-}
+};
 
 
 #endif //PROJECT_PHAZE_ONE_ALGORITHEMS_H
