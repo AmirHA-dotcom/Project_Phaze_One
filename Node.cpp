@@ -7,6 +7,7 @@
 Node::Node(std::string _name)
 {
     name = _name;
+    is_ground = false;
 }
 
 string Node::get_name() const
@@ -17,4 +18,14 @@ string Node::get_name() const
 double Node::get_voltage()
 {
     return voltage;
+}
+
+void Node::make_ground()
+{
+    is_ground = true;
+}
+
+bool Node::is_the_node_ground()
+{
+    return is_ground;
 }

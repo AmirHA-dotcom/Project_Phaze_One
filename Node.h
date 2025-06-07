@@ -12,10 +12,13 @@ class Node
 private:
     string name;
     double voltage;
+    bool is_ground;
 public:
     Node(string _name);
     string get_name() const;
     double get_voltage();
+    void make_ground();
+    bool is_the_node_ground();
 };
 
 
