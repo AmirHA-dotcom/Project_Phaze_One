@@ -239,7 +239,7 @@ bool addCSCheck (vector<string> i) {
     }
     return true;
 }
-bool addSinusoiⅾaⅼCheck (vector<string> i) {
+bool addSinusoidalCheck (vector<string> i) {
     if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
         return false;
     }
@@ -262,20 +262,32 @@ bool componentListCheck (vector<string> i) {
     }
     return true;
 }
-bool renameNode (vector<string> i) {
+bool renameNodeCheck (vector<string> i) {
     if (i.size() != 4 || i[0] != ".rename" || i[1] == "node"){
         return false;
     }
     return true;
 }
-bool tranAnalysis (vector<string> i) {
-    if (i.size() != 7 || i[0] != ".print" || i[1] == "TRAN"){
+bool tranAnalysisCheck (vector<string> i) {
+    if (i.size() != 5 || i[0] != ".TRAN"){
         return false;
     }
     return true;
 }
-bool dcAnalysis (vector<string> i) {
-    if (i.size() != 7 || i[0] != ".print" || i[1] == "DC"){
+bool dcAnalysisCheck (vector<string> i) {
+    if (i.size() != 5 || i[0] != ".DC"){
+        return false;
+    }
+    return true;
+}
+bool printTranCheck (vector<string> i) {
+    if (i.size() < 7 || i[0] != ".print" || i[1] == "TRAN"){
+        return false;
+    }
+    return true;
+}
+bool printDcCheck (vector<string> i) {
+    if (i.size() < 7 || i[0] != ".print" || i[1] == "DC"){
         return false;
     }
     return true;
@@ -288,16 +300,20 @@ bool View::handleMainMenu () {
     cout << " 3 -> analysisMenu" << endl;
     string s;
     getline(cin,s);
+    mainMenu = false;
     if (s == "1")
         circuitMenu = true;
     if (s == "2")
         fileMenu = true;
     if (s == "3")
         analysisMenu = true;
-    else
+    else {
         throw invalidSyntax();
+        mainMenu = true;
+    }
+    return true;
 }
-bool handleCircuitMenu () {
+bool View::handleCircuitMenu () {
     string line;
     getline(cin,line);
     vector<string> i = splitString(line);
@@ -386,7 +402,7 @@ bool handleCircuitMenu () {
     if (addCSCheck(i)) {
 
     }
-    if (addSinusoiⅾaⅼCheck(i)) {
+    if (addSinusoidalCheck(i)) {
 
     }
     if (line == ".nodes"){
@@ -398,32 +414,52 @@ bool handleCircuitMenu () {
     if (componentListCheck(i)){
 
     }
-    if (renameNode(i)){
+    if (renameNodeCheck(i)){
 
     }
-    if (componentListCheck(i)){
 
-    }
-    if (componentListCheck(i)){
-
-    }
-    if (componentListCheck(i)){
-
-    }
-    if (componentListCheck(i)){
-
-    }
 
 
     else
         throw invalidSyntax();
     return true;
 }
-bool handleFileMenu (){
+bool View::handleFileMenu () {
 
 }
-bool handleAnalysisMenu (){
+bool View::handleAnalysisMenu () {
+    string line;
+    getline(cin,line);
+    vector<string> i = splitString(line);
+    if (line == "end") {
+        cout << "program ended!" << endl;
+        return false;
+    }
+    if (line == "return") {
+        cout << "program ended!" << endl;
+        analysisMenu = false;
+        mainMenu = true;
+        return true;
+    }
+    if (tranAnalysisCheck(i)) {
 
+
+    }
+    if (dcAnalysisCheck(i)) {
+
+
+    }
+    if (printTranCheck(i)) {
+
+
+    }
+    if (printDcCheck(i)) {
+
+
+    }
+    else
+        throw invalidSyntax();
+    return true;
 }
 
 bool View::inputHandler () {
@@ -435,6 +471,8 @@ bool View::inputHandler () {
         return handleFileMenu();
     if (analysisMenu)
         return handleAnalysisMenu();
+    else
+        cout << "all menus are off !!!" << endl;
 
 }
 
