@@ -37,13 +37,14 @@ int Inductor::get_aux_index()
 
 void Inductor::stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> x_previous)
 {
-    int i, j;
-    double g = value/time_step;
+    int i, j, a;
+    i = node1->get_index();
+    j = node2->get_index();
+    a = aux_index;
+    double g = time_step/value;
     G_triplets.emplace_back(i, j, g);
     G_triplets.emplace_back(i, j, -g);
     G_triplets.emplace_back(j, i, -g);
     G_triplets.emplace_back(j, j, g);
-    double I;
-    b[i] +=  I;
-    b[j] += -I;
+    b[a] -= g * x_previous[a];
 }
