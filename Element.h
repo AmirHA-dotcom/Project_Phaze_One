@@ -8,7 +8,7 @@
 #include "Libraries.h"
 #include "Node.h"
 
-enum class Element_Type{Resistor, Capacitor, Inductor, Diode, Voltage_Source, Current_Source, Ground};
+enum class Element_Type{Resistor, Capacitor, Inductor, Diode, Voltage_Source, Current_Source};
 
 class Element
 {
