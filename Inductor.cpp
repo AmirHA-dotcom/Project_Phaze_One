@@ -4,7 +4,7 @@
 
 #include "Inductor.h"
 
-double Inductor::get_current()
+double Inductor::get_current(double time1, double time2)
 {
     cout << "Still Not Coded!!!" << endl;
     return 0;
