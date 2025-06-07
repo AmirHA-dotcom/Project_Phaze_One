@@ -20,4 +20,7 @@ add_executable(Project_Phaze_One main.cpp
         Circuit.h
         Libraries.h
         Algorithems.cpp
-        Algorithems.h)
+        Algorithems.h
+
+
+)

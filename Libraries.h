@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <vector>
+#include <sstream>
 #include <string>
 #include <regex>
 #include <stdexcept>
