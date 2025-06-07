@@ -11,7 +11,7 @@ class Capacitor : public Element
 {
 public:
     Capacitor(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Capacitor, _node1, _node2, _value) {}
-    double get_current() override;
+    double get_current();
     void display_info() override;
     void change_value(double new_value) override;
     void change_name(string new_name) override;

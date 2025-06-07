@@ -24,7 +24,6 @@ public:
     Element_Type get_element_type();
     pair<Node*, Node*> get_nodes();
     double get_voltage();
-    virtual double get_current() = 0;
     double get_value() const {return value;}
     virtual void display_info() = 0;
     virtual void change_value(double new_value) = 0;
