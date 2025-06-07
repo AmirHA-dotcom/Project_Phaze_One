@@ -14,6 +14,11 @@ int Circuit::node_index_finder_by_name(const string& name)
     return -1;
 }
 
+vector<Element *> Circuit::get_Elements()
+{
+    return Elements;
+}
+
 void Circuit::create_new_resistor(string name, string node1_name, string node2_name, double resistance)
 {
     int node1_index = node_index_finder_by_name(node1_name);

@@ -27,6 +27,7 @@ public:
     void create_new_voltage_sourse(string name, string node1_name, string node2_name, double voltage);
     void create_new_node();
     void analyse_data();
+    vector<Element*> get_Elements();
 private:
     int node_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
 };
