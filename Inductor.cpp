@@ -24,3 +24,13 @@ void Inductor::change_name(std::string new_name)
 {
     name = new_name;
 }
+
+void Inductor::set_aux_index(int i)
+{
+    aux_index = i;
+}
+
+int Inductor::get_aux_index()
+{
+    return aux_index;
+}
