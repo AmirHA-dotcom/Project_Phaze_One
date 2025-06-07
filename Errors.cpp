@@ -13,16 +13,29 @@ const char  *invalidSyntax::what() const noexcept {
 const char  *invalidResistance::what() const noexcept {
     cout << "Error: Resistance cannot be zero or negative" << endl;
 }
-const char  *invalidInⅾuⅽtance::what() const noexcept {
+const char  *invalidInductance::what() const noexcept {
     cout << "Error: Inⅾuⅽtance cannot be zero or negative" << endl;
-}const char  *invalidⅭapaⅽity::what() const noexcept {
+}
+const char  *invalidCapacity::what() const noexcept {
     cout << "Error: Capacity cannot be zero or negative" << endl;
-}const char  *invalidResistance::what() const noexcept {
+}
+const char  *invalidDiodeModel::what() const noexcept {
     cout << "Error: Resistance cannot be zero or negative" << endl;
 }
-const char  *nammme::what() const noexcept {
-    cout << "Error:  in library" << endl;
+elementExists::elementExists(const std::string& name) {
+    message = "Error: Element \"" + name + "\" already exists in the circuit.";
 }
+const char* elementExists::what() const noexcept {
+    return message.c_str();
+}
+elementFind::elementFind(const std::string& name) {
+    message = "Error: Cannot delete \"" + name + "\"; component not found";
+    ///                  cout << "Error: Cannot delete capacitor; component not found" << endl;
+}
+const char* elementFind::what() const noexcept {
+    return message.c_str();
+}
+
 const char  *nameee::what() const noexcept {
     cout << "Error: Syntax error" << endl;
 }

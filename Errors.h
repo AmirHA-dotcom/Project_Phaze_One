@@ -21,20 +21,34 @@ public:
     const char *what() const noexcept override;
 };
 
-class invalidInⅾuⅽtance : public exception {
+class invalidInductance : public exception {
 public:
     const char *what() const noexcept;
 };
 
-class invalidⅭapaⅽity : public exception {
+class invalidCapacity : public exception {
 public:
     const char *what() const noexcept override;
+};
+class invalidDiodeModel : public exception {
+public:
+    const char *what() const noexcept override;
+};
+class elementExists : public std::exception {
+private:
+    std::string message;
+public:
+    explicit elementExists(const std::string& name);
+    const char* what() const noexcept override;
+};
+class elementFind : public std::exception {
+private:
+    std::string message;
+public:
+    explicit elementFind(const std::string& name);
+    const char* what() const noexcept override;
 };
 
-class namme : public exception {
-public:
-    const char *what() const noexcept override;
-};
 
 class nname : public exception {
 public:

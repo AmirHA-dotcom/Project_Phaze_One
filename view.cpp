@@ -18,7 +18,7 @@ static vector<string> splitString(const string& input) {
     }
     return words;
 }
-double parseSpiceNumber(const std::string& inputRaw) {
+double toValue(const std::string& inputRaw) {
     std::string input;
     for (char c : inputRaw) {
         if (c == ',') input += '.';
@@ -177,7 +177,7 @@ bool addICheck (vector<string> i) {
 
     }
     if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
-        throw invalidInⅾuⅽtance();
+        throw invalidInductance();
     }
     return true;
 }
@@ -294,7 +294,7 @@ bool printDcCheck (vector<string> i) {
 }
 
 
-bool View::handleMainMenu () {
+bool View::handleMainMenu (Controller* C) {
     cout << " 1 -> circuitMenu" << endl;
     cout << " 2 -> fileMenu" << endl;
     cout << " 3 -> analysisMenu" << endl;
@@ -308,12 +308,12 @@ bool View::handleMainMenu () {
     if (s == "3")
         analysisMenu = true;
     else {
-        throw invalidSyntax();
         mainMenu = true;
+        throw invalidSyntax();
     }
     return true;
 }
-bool View::handleCircuitMenu () {
+bool View::handleCircuitMenu (Controller* C) {
     string line;
     getline(cin,line);
     vector<string> i = splitString(line);
@@ -321,88 +321,100 @@ bool View::handleCircuitMenu () {
         cout << "program ended!" << endl;
         return false;
     }
+    if (line == "return") {
+        cout << "program ended!" << endl;
+        analysisMenu = false;
+        mainMenu = true;
+        return true;
+    }
     if (addRCheck(i)) {
-        if (Controller::findResistor(i[4])) {
-            cout << "Error: Resistor " << i[4] << " already exists in the circuit" << endl;
-
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
         }
-
+        C->addR(i[1],i[2],i[3],toValue(i[4]));
+        return true;
     }
     if (delRCheck(i)) {
-        auto* r = Controller::findResistor(i[1]);
+        auto* r = C->findElement(i[1]);
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
-
         }
-
+        C->delElement(r);
+        return true;
     }
     if (addCCheck(i)) {
-        if (Controller::findCapacitor(i[4])) {
-            cout << "Error: Capacitor " << i[4] << " already exists in the circuit" << endl;
-
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
         }
-
+        C->addC(i[1],i[2],i[3],toValue(i[4]));
+        return true;
     }
     if (delCCheck(i)) {
-        auto* r = Controller::findCapacitor(i[1]);
+        auto* r = C->findElement(i[1]);
         if (!r) {
-            cout << "Error: Cannot delete capacitor; component not found" << endl;
-
+            throw elementFind(i[1]);
         }
-
+        C->delElement(r);
+        return true;
     }
     if (addICheck(i)) {
-        if (Controller::findInductor(i[4])) {
-            cout << "Error: Inductor " << i[4] << " already exists in the circuit" << endl;
-
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
         }
-
+        C->addI(i[1],i[2],i[3],toValue(i[4]));
+        return true;
     }
     if (delICheck(i)) {
-        auto* r = Controller::findInductor(i[1]);
+        auto* r = C->findElement(i[1]);
         if (!r) {
-            cout << "Error: Cannot delete inductor; component not found" << endl;
-
+            throw elementFind(i[1]);
         }
-
+        C->delElement(r);
+        return true;
     }
     if (addDCheck(i)) {
-        if (Controller::findDiode(i[4])) {
-            cout << "Error: Diode " << i[4] << " already exists in the circuit" << endl;
-
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
         }
-
+        C->addD(i[1],i[2],i[3],i[4]);
+        return true;
     }
     if (delDCheck(i)) {
-        auto* r = Controller::findDiode(i[1]);
+        auto* r = C->findElement(i[1]);
         if (!r) {
-            cout << "Error: Cannot delete diode; component not found" << endl;
-
+            throw elementFind(i[1]);
         }
-
+        C->delElement(r);
+        return true;
     }
     if (addGCheck(i)) {
-        if (Controller::findDiode(i[4])) {
-            cout << "Error: Diode " << i[4] << " already exists in the circuit" << endl;
-
+        if (C->findNode(i[4])) {
+            throw elementExists("GND " + i[4]);
         }
-
+        C->addGND(i[2]);
+        return true;
     }
-    if (delGCheck(i)) {
-        auto* r = Controller::findDiode(i[1]);
-        if (!r) {
-            cout << "Error: Cannot delete diode; component not found" << endl;
 
-        }
-
-    }
     if (addVSCheck(i)) {
-
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
     }
     if (addCSCheck(i)) {
-
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addCS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
     }
     if (addSinusoidalCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addSin(i[1],i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),toValue(i[5]),toValue(i[5]));
+        return true;
 
     }
     if (line == ".nodes"){
@@ -424,10 +436,10 @@ bool View::handleCircuitMenu () {
         throw invalidSyntax();
     return true;
 }
-bool View::handleFileMenu () {
+bool View::handleFileMenu (Controller* C) {
 
 }
-bool View::handleAnalysisMenu () {
+bool View::handleAnalysisMenu (Controller* C) {
     string line;
     getline(cin,line);
     vector<string> i = splitString(line);
@@ -462,17 +474,17 @@ bool View::handleAnalysisMenu () {
     return true;
 }
 
-bool View::inputHandler () {
+bool View::inputHandler (Controller* C) {
     if (mainMenu)
-        return handleMainMenu();
+        return handleMainMenu(C);
     if (circuitMenu)
-        return handleCircuitMenu();
+        return handleCircuitMenu(C);
     if (fileMenu)
-        return handleFileMenu();
+        return handleFileMenu(C);
     if (analysisMenu)
-        return handleAnalysisMenu();
+        return handleAnalysisMenu(C);
     else
         cout << "all menus are off !!!" << endl;
-
+    return false;
 }
 

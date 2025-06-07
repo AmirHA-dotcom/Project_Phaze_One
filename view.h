@@ -7,7 +7,7 @@
 
 #include "Libraries.h"
 #include "Errors.h"
-
+#include "Controller.h"
 class View {
     bool mainMenu = true;
     bool circuitMenu = false;
@@ -19,11 +19,11 @@ class View {
 
 public:
 
-    bool inputHandler ();
-    bool handleMainMenu ();
-    bool handleAnalysisMenu ();
-    bool handleFileMenu ();
-    bool handleCircuitMenu ();
+    bool inputHandler (Controller* C);
+    bool handleMainMenu (Controller* C);
+    bool handleAnalysisMenu (Controller* C);
+    bool handleFileMenu (Controller* C);
+    bool handleCircuitMenu (Controller* C);
 
 };
 
