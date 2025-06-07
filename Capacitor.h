@@ -15,6 +15,7 @@ public:
     void display_info() override;
     void change_value(double new_value) override;
     void change_name(string new_name) override;
+    void stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> x_previous) override;
 };
 
 #endif //PROJECT_PHAZE_ONE_CAPACITOR_H
