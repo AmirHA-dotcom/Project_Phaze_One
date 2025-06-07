@@ -54,3 +54,28 @@ void Circuit::create_new_node()
     string name = "DooDooL"; // should be change and add a counting logic
     Nodes.push_back(new Node(name));
 }
+
+void Circuit::analyse_data()
+{
+    // getting non_ground nodes
+    vector<Node*> Active_Nodes;
+    for (int i = 0; i < Nodes.size(); i++)
+    {
+        if (!Nodes[i]->is_the_node_ground())
+            Active_Nodes.push_back(Nodes[i]);
+    }
+    // indexing nodes
+    for (int i = 0; i < Active_Nodes.size(); i++)
+        Active_Nodes[i]->set_index(i);
+    // indexing aux
+    int aux_index = Active_Nodes.size();
+    for (auto* e : Elements)
+    {
+        if (auto* L = dynamic_cast<Inductor*>(e))
+            L->set_aux_index(aux_index++);
+    }
+    int total_unknowns = aux_index;
+    // saving data
+    this-> Active_Nodes = Active_Nodes;
+    this-> total_unknowns = total_unknowns;
+}
