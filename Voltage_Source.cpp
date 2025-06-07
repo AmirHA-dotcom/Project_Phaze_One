@@ -4,6 +4,11 @@
 
 #include "Voltage_Source.h"
 
+void Voltage_Source::set_aux_index(int i)
+{
+    aux_index = i;
+}
+
 void Voltage_Source::stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> x_previous)
 {
     int i, j, a;
