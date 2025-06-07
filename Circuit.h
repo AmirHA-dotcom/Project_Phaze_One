@@ -13,6 +13,10 @@
 #include "Inductor.h"
 #include "Voltage_Source.h"
 #include "Algorithems.h"
+#include "VCCS.h"
+#include "VCVS.h"
+#include "CCCS.h"
+#include "CCVS.h"
 
 class Circuit
 {
