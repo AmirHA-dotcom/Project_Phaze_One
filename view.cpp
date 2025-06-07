@@ -62,6 +62,14 @@ double parseSpiceNumber(const std::string& inputRaw) {
 
     return number;
 }
+bool isDigit(const std::string& s) {
+    if (s.empty()) return false;
+    for (char c : s) {
+        if ((c < '0' || c > '9') && c != ')') return false;
+    }
+    return true;
+}
+
 bool isValidSpiceNumber(const std::string& input) {
     static const std::unordered_set<std::string> validSuffixes = {
             "f", "p", "n", "u", "m", "k", "meg", "g", "t"
@@ -126,8 +134,9 @@ bool addRCheck (vector<string> i) {
     }
     if (i[0] != "add" && i[1][0] != 'R'){
         Error::notFindElement(i[4]);
+        return false;
     }
-    if (stod(i[4]) <= 0 || isValidSpiceNumber(i[4]) ) {
+    if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
         throw invalidResistance();
 
     }
@@ -145,8 +154,9 @@ bool addCCheck (vector<string> i) {
     }
     if (i[0] != "add" && i[1][0] != 'C'){
         Error::notFindElement(i[4]);
+        return false;
     }
-    if (stod(i[4]) <= 0 || isValidSpiceNumber(i[4]) ) {
+    if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
         throw invalidⅭapaⅽity();
     }
     return true;
@@ -163,8 +173,10 @@ bool addICheck (vector<string> i) {
     }
     if (i[0] != "add" && i[1][0] != 'L'){
         Error::notFindElement(i[4]);
+        return false;
+
     }
-    if (stod(i[4]) <= 0 || isValidSpiceNumber(i[4]) ) {
+    if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
         throw invalidInⅾuⅽtance();
     }
     return true;
@@ -179,8 +191,9 @@ bool addDCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || i[1][0] != 'D'){
         return false;
     }
-    if (stod(i[4]) <= 0 || isValidDiodeName(i[4]) ) {
+    if (stod(i[4]) <= 0 || !isValidDiodeName(i[4]) ) {
         Error::notFindElement(i[4]);
+        return false;
     }
     return true;
 }
@@ -197,8 +210,34 @@ bool addVSCheck (vector<string> i) {
 //    if (i[0] != "add" && i[1][0] != 'C'){
 //        Error::notFindElement(i[4]);
 //    }
-    if (stod(i[4]) <= 0 || isValidDiodeName(i[4]) ) {
-        throw invalidResistance();
+    if (!isDigit(i[4])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addCSCheck (vector<string> i) {
+    if (i.size() != 5 || i[0] != "add" || !i[1].find("CurrentSource")){
+        return false;
+    }
+//    if (i[0] != "add" && i[1][0] != 'C'){
+//        Error::notFindElement(i[4]);
+//    }
+    if (!isDigit(i[4])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addSinusoiⅾaⅼCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
+        return false;
+    }
+    if (i.size() != 7 && i[0] != "add" && i[1][0] != 'V' && !i[4].find("SIN")){
+        Error::notFindElement(i[4]);
+        return false;
+
+    }
+    if (!isDigit(i[5]) || !isDigit(i[6])) {
+        throw invalidSyntax();
     }
     return true;
 }
@@ -270,10 +309,13 @@ bool inputHandler (string line) {
             }
 
         }
-        if ( ) {
+        if (addVSCheck(i)) {
 
         }
-        if ( ) {
+        if (addCSCheck(i)) {
+
+        }
+        if (addSinusoiⅾaⅼCheck(i)) {
 
         }
 
