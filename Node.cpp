@@ -39,3 +39,8 @@ int Node::get_index()
 {
     return index;
 }
+
+void Node::set_voltage(double volt, double time)
+{
+    voltage.emplace_back(volt, time);
+}
