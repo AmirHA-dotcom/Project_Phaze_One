@@ -12,6 +12,7 @@
 #include "Capacitor.h"
 #include "Inductor.h"
 #include "Voltage_Source.h"
+#include "Algorithems.h"
 
 class Circuit
 {
@@ -23,6 +24,7 @@ int total_unknowns;
 double time_step;
 double t_start;
 double t_end;
+Algorithems algorithems;
 public:
     void set_time_step(double ts);
     void set_time_start(double ts);

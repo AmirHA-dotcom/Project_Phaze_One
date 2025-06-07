@@ -114,11 +114,16 @@ void Circuit::transient()
             e->stamp(time_step, triplets, b, x_previous);
         // building the matrix
         vector<vector<double>> G(total_unknowns, vector<double> (total_unknowns, 0.0));
-        for (auto t : triplets)
-            G[t.Row][t.Column] = t.Value;
+        for (auto tr : triplets)
+            G[tr.Row][tr.Column] = tr.Value;
         // solve
         vector<double> x(total_unknowns, 0.0);
-
+        x = algorithems.solve_cramer(G, b);
+        // saving previous
+        x_previous = x;
+        // saving data
+        for (auto* n : Active_Nodes)
+            n->set_voltage(x_previous[n->get_index()], t);
     }
 }
 
