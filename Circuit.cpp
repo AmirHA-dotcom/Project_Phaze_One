@@ -19,6 +19,21 @@ vector<Element *> Circuit::get_Elements()
     return Elements;
 }
 
+void Circuit::set_time_step(double ts)
+{
+    time_step = ts;
+}
+
+void Circuit::set_time_start(double ts)
+{
+    t_start = ts;
+}
+
+void Circuit::set_time_end(double ts)
+{
+    t_end = ts;
+}
+
 void Circuit::create_new_resistor(string name, string node1_name, string node2_name, double resistance)
 {
     int node1_index = node_index_finder_by_name(node1_name);
@@ -84,3 +99,26 @@ void Circuit::analyse_data()
     this-> Active_Nodes = Active_Nodes;
     this-> total_unknowns = total_unknowns;
 }
+
+void Circuit::transient()
+{
+    // initials
+    vector<double> x_previous(total_unknowns, 0.0);
+    // the transient loop
+    for (double t = t_start; t < t_end; t += time_step)
+    {
+        vector<Triplet> triplets;
+        vector<double>  b(total_unknowns, 0.0);
+        // stamping elementss
+        for (auto* e : Elements)
+            e->stamp(time_step, triplets, b, x_previous);
+        // building the matrix
+        vector<vector<double>> G(total_unknowns, vector<double> (total_unknowns, 0.0));
+        for (auto t : triplets)
+            G[t.Row][t.Column] = t.Value;
+        // solve
+        vector<double> x(total_unknowns, 0.0);
+
+    }
+}
+
