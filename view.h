@@ -18,8 +18,12 @@ class View {
 
 
 public:
-    bool handleMainMenu ();
+
     bool inputHandler ();
+    bool handleMainMenu ();
+    bool handleAnalysisMenu ();
+    bool handleFileMenu ();
+    bool handleCircuitMenu ();
 
 };
 
