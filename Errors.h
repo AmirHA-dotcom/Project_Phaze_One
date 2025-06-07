@@ -6,23 +6,27 @@
 #ifndef PROJECT_PHAZE_ONE_ERRORS_H
 #define PROJECT_PHAZE_ONE_ERRORS_H
 
+class Error {
+public:
+    static void notFindElement (string name);
+};
 
 class invalidSyntax : public exception {
 public:
     const char *what() const noexcept override;
 };
 
-class name : public exception {
+class invalidResistance : public exception {
 public:
     const char *what() const noexcept override;
 };
 
-class namee : public exception {
+class invalidInⅾuⅽtance : public exception {
 public:
-    const char *what() const noexcept override;
+    const char *what() const noexcept;
 };
 
-class nameee : public exception {
+class invalidⅭapaⅽity : public exception {
 public:
     const char *what() const noexcept override;
 };
