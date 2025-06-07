@@ -28,6 +28,8 @@ void Capacitor::change_name(std::string new_name)
 void Capacitor::stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> x_previous)
 {
     int i, j;
+    i = node1->get_index();
+    j = node2->get_index();
     double g = value/time_step;
     G_triplets.emplace_back(i, j, g);
     G_triplets.emplace_back(i, j, -g);
