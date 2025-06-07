@@ -19,4 +19,11 @@
 
 using namespace std;
 
+struct Triplet
+{
+    int Row;
+    int Column;
+    int Value;
+};
+
 #endif //PROJECT_PHAZE_ONE_LIBRARIES_H
