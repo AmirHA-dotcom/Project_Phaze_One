@@ -371,7 +371,6 @@ bool View::handleMainMenu (Controller* C) {
     mainMenu = false;
     if (s == "1") {
         circuitMenu = true;
-        cout << "dodo";
     }
     else if (s == "2")
         fileMenu = true;
@@ -399,7 +398,37 @@ bool View::handleCircuitMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
-    if (line == "")
+    if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
+        if (C->findCircuit(i[2])) {
+            throw circuitExists();
+        }
+        C->addCircuit(i[2]);
+        C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (i.size() == 3 && i[0] == "switch" && i[1] == "to") {
+        if (!C->findCircuit(i[2])) {
+            throw circuitNotFind(i[2]);
+        }
+        C->addCircuit(i[2]);
+        C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (i.size() == 2 && i[0] == "delete") {
+        if (!C->findCircuit(i[2])) {
+            throw circuitNotFind(i[2]);
+        }
+        C->deleteCircuit(i[2]);
+        C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (i.size() == 2 && i[0] == "rename") {
+        if (!C->findCircuit(i[2])) {
+            throw circuitNotFind(i[2]);
+        }
+        C->renameCircuit(i[2]);
+        return true;
+    }
     if (addRCheck(i)) {
         if (C->findElement(i[1])) {
             throw elementExists(i[1]);
@@ -667,7 +696,8 @@ bool View::inputHandler (Controller* C) {
     if (mainMenu)
         return handleMainMenu(C);
     if (circuitMenu) {
-        cout << "dodo" << endl;
+        if (C->circuit == nullptr)
+            cout << "No circuit selected. Please add or switch to a circuit first." << endl;
         return handleCircuitMenu(C);
     }
     if (fileMenu)
