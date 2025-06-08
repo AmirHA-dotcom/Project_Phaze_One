@@ -363,7 +363,7 @@ bool printDcCheck (vector<string> i) {
 
 
 bool View::handleMainMenu (Controller* C) {
-    cout << " 1 -> circuitMenu" << endl;
+    cout << " 1 -> circuitMenuu" << endl;
     cout << " 2 -> fileMenu" << endl;
     cout << " 3 -> analysisMenu" << endl;
     string s;
