@@ -199,7 +199,8 @@ void Controller::showInductors(){
         {
             cout << e->get_name() << ", ";
         }
-    }}
+    }
+}
 
 void Controller::showCapacitors(){
     vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Capacitor);
@@ -227,6 +228,7 @@ void Controller::showDiodes(){
         cout << "No elements have been added yet" << endl;
         return;
     }
+    cout << "Diodes List:" << endl;
     for (const auto& e : elements)
     {
         if (e == elements[elements.size() - 1])
@@ -304,11 +306,14 @@ void Controller::delElement (Element* element){
 }
 
 void Controller::showSchematics(){
-    // Implementation
+    vector<string> file_names = file_handler.get_file_names();
+    for (int i = 0; i < file_names.size(); i++)
+        cout << i + 1 << "-" << file_names[i] << endl;
 }
 
 void Controller::showFile(int num){
-    // Implementation
+    file_handler.set_file_index(num - 1);
+    file_handler.show_current_file();
 }
 
 bool Controller::validSchematicChoice(string s){
@@ -316,5 +321,5 @@ bool Controller::validSchematicChoice(string s){
 }
 
 void Controller::handleNewFile(string path){
-    // Implementation
+    file_handler.add_file(path);
 }
