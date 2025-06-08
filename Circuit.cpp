@@ -14,6 +14,16 @@ int Circuit::node_index_finder_by_name(const string& name)
     return -1;
 }
 
+int Circuit::element_index_finder_by_name(const string& name)
+{
+    for (int i = 0; i < Elements.size(); i++)
+    {
+        if (Elements[i]->get_name() == name)
+            return i;
+    }
+    return -1;
+}
+
 vector<Element *> Circuit::get_Elements()
 {
     return Elements;
@@ -34,16 +44,67 @@ void Circuit::set_time_end(double ts)
     t_end = ts;
 }
 
+void Circuit::change_value_of_element(string name, double value)
+{
+    int element_index = element_index_finder_by_name(name);
+    if (element_index == -1)
+    {
+        cerr << "ELEMENT doesnt exist" << endl;
+        return;
+    }
+    Elements[element_index]->change_value(value);
+}
+
+void Circuit::change_name_of_element(string old_name, string new_name)
+{
+    int element_index = element_index_finder_by_name(old_name);
+    if (element_index == -1)
+    {
+        cerr << "ELEMENT doesnt exist" << endl;
+        return;
+    }
+    Elements[element_index]->change_name(new_name);
+}
+
+void Circuit::make_node_ground(string name)
+{
+    int node_index = node_index_finder_by_name(name);
+    if (node_index == -1)
+    {
+        cerr << "node NOt found" << endl;
+        return;
+    }
+    Nodes[node_index]->make_ground();
+}
+
+void Circuit::make_node_NOT_ground(string name)
+{
+    int node_index = node_index_finder_by_name(name);
+    if (node_index == -1)
+    {
+        cerr << "node NOt found" << endl;
+        return;
+    }
+    Nodes[node_index]->return_to_normal();
+}
+
 void Circuit::create_new_resistor(string name, string node1_name, string node2_name, double resistance)
 {
+    // finding if we need to make a new node
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
+    // if we need new nodes
     if (node1_index == -1)
         Nodes.push_back(new Node(node1_name));
     if (node2_index == -1)
         Nodes.push_back(new Node(node2_name));
+    // again getting the indexes
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    // connection logic
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    // actual creation
     Elements.push_back(new Resistor(name, Nodes[node1_index], Nodes[node2_index], resistance));
 }
 
@@ -57,6 +118,8 @@ void Circuit::create_new_capacitor(string name, string node1_name, string node2_
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Capacitor(name, Nodes[node1_index], Nodes[node2_index], capacitance));
 }
 void Circuit::create_new_inductor(string name, string node1_name, string node2_name, double inductance)
@@ -69,6 +132,8 @@ void Circuit::create_new_inductor(string name, string node1_name, string node2_n
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], inductance));
 }
 
@@ -82,6 +147,8 @@ void Circuit::create_new_voltage_source(string name, string node1_name, string n
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], voltage));
 }
 
@@ -95,6 +162,8 @@ void Circuit::create_new_current_source(string name, string node1_name, string n
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], current));
 }
 
@@ -108,6 +177,8 @@ void Circuit::create_new_VCCS(string name, string node1_name, string node2_name,
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
 }
 
@@ -121,6 +192,8 @@ void Circuit::create_new_CCCS(string name, string node1_name, string node2_name,
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
 }
 
@@ -134,6 +207,8 @@ void Circuit::create_new_VCVS(string name, string node1_name, string node2_name,
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
 }
 
@@ -147,11 +222,12 @@ void Circuit::create_new_CCVS(string name, string node1_name, string node2_name,
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
 }
 
-void
-Circuit::create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number)
+void Circuit::create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -161,11 +237,12 @@ Circuit::create_new_real_diode(string name, string node1_name, string node2_name
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
 }
 
-void
-Circuit::create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number)
+void Circuit::create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -175,7 +252,56 @@ Circuit::create_new_zener_diode(string name, string node1_name, string node2_nam
         Nodes.push_back(new Node(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+}
+
+void Circuit::delete_element(string name)
+{
+    int element_index = -1;
+    for (int i = 0; i < Elements.size(); i++)
+    {
+        if (name == Elements[i]->get_name())
+        {
+            element_index = i;
+            break;
+        }
+    }
+    if (element_index == -1)
+    {
+        cerr << "Element '" << name << "' NOT found!" << endl;
+        return;
+    }
+    auto delete_node_if_unused = [this](Node* node){
+        if (node->connected_elements_count() == 0)
+        {
+            auto it = find(Nodes.begin(), Nodes.end(), node);
+            if (it != Nodes.end())
+            {
+                delete *it;
+                Nodes.erase(it);
+            }
+        }
+    };
+    Element* element_to_delete = Elements[element_index];
+    pair<Node*, Node*> nodes_pair = element_to_delete->get_nodes();
+    Node* node1 = nodes_pair.first;
+    Node* node2 = nodes_pair.second;
+
+    node1->disconnect_element();
+    node2->disconnect_element();
+
+    delete_node_if_unused(node1);
+
+    // dont delete twice.
+    if (node1 != node2)
+    {
+        delete_node_if_unused(node2);
+    }
+
+    delete element_to_delete;
+    Elements.erase(Elements.begin() + element_index);
 }
 
 void Circuit::analyse_data()

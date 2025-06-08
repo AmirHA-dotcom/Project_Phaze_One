@@ -35,6 +35,11 @@ void Node::make_ground()
     is_ground = true;
 }
 
+void Node::return_to_normal()
+{
+    is_ground = false;
+}
+
 bool Node::is_the_node_ground()
 {
     return is_ground;
@@ -63,4 +68,9 @@ void Node::connect_element()
 void Node::disconnect_element()
 {
     elements_connected_count--;
+}
+
+int Node::connected_elements_count() const
+{
+    return elements_connected_count;
 }

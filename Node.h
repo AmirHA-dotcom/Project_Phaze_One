@@ -21,11 +21,13 @@ public:
     void set_voltage(double volt, double time);
     double get_voltage_in_time(double time);
     void make_ground();
+    void return_to_normal();
     bool is_the_node_ground();
     void set_index(int i);
     int get_index();
     void connect_element();
     void disconnect_element();
+    int connected_elements_count() const;
 };
 
 
