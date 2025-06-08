@@ -82,13 +82,13 @@ void Controller::addCcCs (string name, string Node1, string Node2,string CtrlNod
 void Controller::showNodes(){
     // Implementation
 }
-void delGND(string name){
+void Controller::delGND(string name){
 
 }
 void Controller::showAllElements(){
     // Implementation
 }
-void showCircuits(){
+void Controller::showCircuits(){
 
 }
 void Controller::showResistors(){
