@@ -84,11 +84,27 @@ public:
     const char *what() const noexcept override;
 };
 
-class InappropriateiInput : public exception {
+class InvalidSyntaxForRenameNode : public exception {
 public:
     const char *what() const noexcept override;
 };
 
+class InappropriateiiInput : public exception {
+public:
+    const char *what() const noexcept override;
+};
+class InappropriateiiInput : public exception {
+public:
+    const char *what() const noexcept override;
+};
+class InappropriateiiInput : public exception {
+public:
+    const char *what() const noexcept override;
+};
+class InappropriateiiInput : public exception {
+public:
+    const char *what() const noexcept override;
+};
 class InappropriateiiInput : public exception {
 public:
     const char *what() const noexcept override;

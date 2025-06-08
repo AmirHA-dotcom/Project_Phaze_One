@@ -19,6 +19,22 @@ public:
     void addVS (string name, string Node1, string Node2, double value);
     void addCS (string name, string Node1, string Node2, double value);
     void addSin (string name, string Node1, string Node2, double offset, double amplitude, double frequency);
+    void addPulse1(string name, string Node1, string Node2, double time, double value); // Pulse with one edge پله
+    void addPulse2(string name, string Node1, string Node2, double period, double value); // square Pulse
+    void addPulse3(string name, string Node1, string Node2, double period, double value); // triangle Pulse
+    void addVcVs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain);
+    void addVcCs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain);
+    void addCcVs (string name, string Node1, string Node2,string CtrlNode, double gain);
+    void addCcCs (string name, string Node1, string Node2,string CtrlNode, double gain);
+    void showNodes();
+    void showAllElements();
+    void showResistors();
+    void showInductors();
+    void showCapacitors();
+    void showDiodes();
+    void renameNode(string oldName, string newName);;
+    tranCheck
+    DcCheck
 
 
     void delElement (Element* element);

@@ -63,8 +63,21 @@ const char  *InappropriateInput::what() const noexcept {
 const char  *invalidSchematicChoice::what() const noexcept {
     cout << "Error : invalid Schematic choice input" << endl;
 }
-const char  *InappropriateiInput::what() const noexcept {
-    cout << "Error : Inappropriate input" << endl;
+const char  *InvalidSyntaxForRenameNode::what() const noexcept {
+    cout << "ERROR: Invalid syntax - correct format:\n"
+            ".rename node <old_name> <new_name>" << endl;
+}
+const char  *InappropriateiiInput::what() const noexcept {
+    cout << "Error: Syntax error" << endl;
+}
+const char  *InappropriateiiInput::what() const noexcept {
+    cout << "Error: Syntax error" << endl;
+}
+const char  *InappropriateiiInput::what() const noexcept {
+    cout << "Error: Syntax error" << endl;
+}
+const char  *InappropriateiiInput::what() const noexcept {
+    cout << "Error: Syntax error" << endl;
 }
 const char  *InappropriateiiInput::what() const noexcept {
     cout << "Error: Syntax error" << endl;

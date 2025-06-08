@@ -242,11 +242,31 @@ bool addSinusoidalCheck (vector<string> i) {
     }
     return true;
 }
-bool addPulseCheck (vector<string> i) {
-    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
+bool addPulse1eCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || !i[4].find("PULSE1")){
+        return false;
+    }
+    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addPulse2Check (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || !i[4].find("PULSE2")){
         return false;
     }
     if (i[4] != "PULSE")
+        throw notFindInLibrary(i[1]);
+    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addPulse3Check (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
+        return false;
+    }
+    if (i[4] != "PULSE3")
         throw notFindInLibrary(i[1]);
     if (!isDigit(i[6].substr(1,i[6].size()-2))) {
         throw invalidSyntax();
@@ -307,6 +327,9 @@ bool componentListCheck (vector<string> i) {
     return true;
 }
 bool renameNodeCheck (vector<string> i) {
+    if (i.size() != 4 && i[0] == ".rename" && i[1] == "node"){
+        return false;
+    }
     if (i.size() != 4 || i[0] != ".rename" || i[1] == "node"){
         return false;
     }
@@ -316,6 +339,7 @@ bool tranAnalysisCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != ".TRAN"){
         return false;
     }
+
     return true;
 }
 bool dcAnalysisCheck (vector<string> i) {
@@ -372,8 +396,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addRCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
         C->addR(i[1],i[2],i[3],toValue(i[4]));
         return true;
@@ -387,8 +411,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
         C->addC(i[1],i[2],i[3],toValue(i[4]));
         return true;
@@ -402,8 +426,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addICheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
         C->addI(i[1],i[2],i[3],toValue(i[4]));
         return true;
@@ -417,8 +441,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addDCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
         C->addD(i[1],i[2],i[3],i[4]);
         return true;
@@ -432,87 +456,113 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addGCheck(i)) {
-        if (C->findNode(i[4])) {
-            throw elementExists("GND " + i[4]);
+        if (C->findNode(i[2])) {
+            throw elementExists("GND " + i[2]);
         }
         C->addGND(i[2]);
         return true;
     }
     if (addVSCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
         C->addVS(i[1],i[2],i[3],toValue(i[4]));
         return true;
     }
     if (addCSCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
         C->addCS(i[1],i[2],i[3],toValue(i[4]));
         return true;
     }
     if (addSinusoidalCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
         C->addSin(i[1],i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),
                   toValue(i[5]),toValue(i[6].substr(0,i[6].size()-1)));
         return true;
     }
-    if (addPulseCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+    if (addPulse1eCheck(i)) {
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
-        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        C->addPulse1(i[1],i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
+        return true;
+    }
+    if (addPulse2Check(i)) {
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
+        }
+        C->addPulse2(i[1],i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
+        return true;
+    }
+    if (addPulse3Check(i)) {
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
+        }
+        C->addPulse3(i[1],i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
         return true;
     }
     if (addVcVsCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
-        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        C->addVcVs(i[1],i[2],i[3],i[4],i[5],toValue(i[6]));
         return true;
     }
     if (addCcVsCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
-        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        C->addVcVs(i[1],i[2],i[3],i[4],i[5],toValue(i[6]));
         return true;
     }
     if (addVcCsCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
-        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        C->addCcVs(i[1],i[2],i[3],i[4],toValue(i[5]));
         return true;
     }
     if (addCcCsCheck(i)) {
-        if (C->findElement(i[4])) {
-            throw elementExists(i[4]);
+        if (C->findElement(i[1])) {
+            throw elementExists(i[1]);
         }
-        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        C->addCcCs(i[1],i[2],i[3],i[4],toValue(i[5]));
         return true;
     }
     if (line == ".nodes"){
-
+        C->showNodes();
+          return true;
     }
     if (line == ".list"){
-
+        C->showAllElements();
+         return true;
     }
-    if (componentListCheck(i)){
-
+    if (componentListCheck(i)) {
+        if(i[1] == "Resistor") {
+            C->showResistors();
+        } else if (i[1] == "Inⅾuⅽtor") {
+            C->showInductors();
+        } else if (i[1] == "Capacitor") {
+            C->showCapacitors();
+        } else if (i[1] == "Diode") {
+            C->showDiodes();
+        }
+        else
+            cout << "ERROR: Invalid component type" << endl;
+        return true;
     }
-    if (renameNodeCheck(i)){
-
+    if (renameNodeCheck(i)) {
+        if (!C->findNode(i[3])) {
+            throw elementNotFind(i[3]);
+        }
+        C->renameNode(i[2],i[3]);
+        return true;
     }
-
-
-
-    else
         throw invalidSyntax();
-    return true;
 }
 
 
@@ -559,7 +609,11 @@ bool View::handleAnalysisMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
+
     if (tranAnalysisCheck(i)) {
+        if (C->tranCheck(i[1], i[2], i[3].substr(1,i[3].size()-1), i[4].substr(1,i[4].size()-1))) {
+            throw invalidSyntax();
+        }
 
 
     }
@@ -575,9 +629,7 @@ bool View::handleAnalysisMenu (Controller* C) {
 
 
     }
-    else
         throw invalidSyntax();
-    return true;
 }
 
 bool View::inputHandler (Controller* C) {

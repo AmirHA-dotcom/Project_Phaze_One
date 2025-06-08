@@ -18,6 +18,8 @@
 #include "CCCS.h"
 #include "CCVS.h"
 
+class Circuit;
+vector<Circuit*> circuits; // Global vector to store all circuits
 class Circuit
 {
 private:
