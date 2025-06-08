@@ -621,16 +621,16 @@ bool View::handleFileMenu (Controller* C) {
     }
     if (C->validSchematicChoice(line)) {
         C->showFile(stoi(line));
+        return true;
     }
     if (i.size() == 1 && isDigit(line) && !C->validSchematicChoice(line)) {
         throw invalidSchematicChoice();
     }
     if (i.size() == 2 && i[0] == "NewFile") {
         C->handleNewFile(i[1]);
+        return true;
     }
-    else
         throw InappropriateInput();
-    return true;
 }
 bool View::handleAnalysisMenu (Controller* C) {
     string line;
