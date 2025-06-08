@@ -371,9 +371,9 @@ bool View::handleMainMenu (Controller* C) {
     mainMenu = false;
     if (s == "1")
         circuitMenu = true;
-    if (s == "2")
+    else if (s == "2")
         fileMenu = true;
-    if (s == "3") {
+    else if (s == "3") {
         analysisMenu = true;
         cout << "Enter the name of the circuit to load: ";
     }
@@ -463,6 +463,13 @@ bool View::handleCircuitMenu (Controller* C) {
             throw elementExists("GND " + i[2]);
         }
         C->addGND(i[2]);
+        return true;
+    }
+    if (delGCheck(i)) {
+        if (C->findNode(i[2])) {
+            throw elementExists("GND " + i[2]);
+        }
+        C->delGND(i[2]);
         return true;
     }
     if (addVSCheck(i)) {
@@ -567,11 +574,6 @@ bool View::handleCircuitMenu (Controller* C) {
     }
         throw invalidSyntax();
 }
-
-
-
-
-
 bool View::handleFileMenu (Controller* C) {
     C->showSchematics();
     string line;
@@ -612,7 +614,26 @@ bool View::handleAnalysisMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
-
+    if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
+        // add circuit <Name>
+        if (C->findCircuit(i[2])) {
+            throw circuitExists();
+        }
+        C->addCircuit(i[2]);
+        C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (i.size() == 3 && i[0] == "switch" && i[1] == "to") {
+        // add circuit <Name>
+        if (!C->findCircuit(i[2])) {
+            throw circuitNotFind(i[2]);
+        }
+        C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (line == "show circuits") {
+        C->showCircuits();
+    }
     if (tranAnalysisCheck(i)) {
         C->tranAnalysis(toValue(i[1]), toValue(i[2]),toValue(i[3].substr(1,i[3].size()-2))
                         , toValue(i[4].substr(1,i[4].size()-2)));

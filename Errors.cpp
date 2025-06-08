@@ -67,11 +67,15 @@ const char  *InvalidSyntaxForRenameNode::what() const noexcept {
     cout << "ERROR: Invalid syntax - correct format:\n"
             ".rename node <old_name> <new_name>" << endl;
 }
-const char  *rifhiurbirbjrvrj::what() const noexcept {
-    cout << "Error: Syntax error" << endl;
+const char  *circuitExists::what() const noexcept {
+    cout << "Error: circuitExists" << endl;
 }
-const char  *InapppropriateiiInput::what() const noexcept {
-    cout << "Error: Syntax error" << endl;
+circuitNotFind::circuitNotFind(const std::string& name) {
+    message = "Error: Cannot delete \"" + name + "\"; component not found";
+    ///                  cout << "Error: Cannot delete capacitor; component not found" << endl;
+}
+const char* circuitNotFind::what() const noexcept {
+    return message.c_str();
 }
 const char  *InapproppriateiiInpput::what() const noexcept {
     cout << "Error: Syntax error" << endl;
