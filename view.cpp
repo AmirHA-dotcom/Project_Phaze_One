@@ -414,7 +414,21 @@ bool View::handleCircuitMenu (Controller* C) {
         C->circuit = C->findCircuit(i[2]);
         return true;
     }
-
+    if (i.size() == 2 && i[0] == "delete") {
+        if (!C->findCircuit(i[2])) {
+            throw circuitNotFind(i[2]);
+        }
+        C->deleteCircuit(i[2]);
+        C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (i.size() == 2 && i[0] == "rename") {
+        if (!C->findCircuit(i[2])) {
+            throw circuitNotFind(i[2]);
+        }
+        C->renameCircuit(i[2]);
+        return true;
+    }
     if (addRCheck(i)) {
         if (C->findElement(i[1])) {
             throw elementExists(i[1]);

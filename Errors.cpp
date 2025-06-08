@@ -71,7 +71,7 @@ const char  *circuitExists::what() const noexcept {
     cout << "Error: circuit is Exists!" << endl;
 }
 circuitNotFind::circuitNotFind(const std::string& name) {
-    message = "Error: Cannot Switch to \"" + name + "\"; Circuit not found";
+    message = "Error: Cannot Switch to \"" + name + "\"; circuit not found";
 }
 const char* circuitNotFind::what() const noexcept {
     return message.c_str();
