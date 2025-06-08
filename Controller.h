@@ -18,7 +18,7 @@ public:
 
     Element *findElement(string name);
 
-    Element *findNode(string name);
+    Node *findNode(string name);
     void addCircuit(string name);
     void addR(string name, string Node1, string Node2, double value);
 
