@@ -16,8 +16,11 @@ const char  *invalidInductance::what() const noexcept {
 const char  *invalidCapacity::what() const noexcept {
     cout << "Error: Capacity cannot be zero or negative" << endl;
 }
-const char  *invalidDiodeModel::what() const noexcept {
-    cout << "Error: Wrong Diode model" << endl;
+invalidDiodeModel::invalidDiodeModel(const std::string& name) {
+    message = "Error: Model \"" + name + "\" not found in library";
+}
+const char* invalidDiodeModel::what() const noexcept {
+    return message.c_str();
 }
 elementExists::elementExists(const std::string& name) {
     message = "Error: Element \"" + name + "\" already exists in the circuit.";
