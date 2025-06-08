@@ -69,11 +69,12 @@ void Circuit::create_new_inductor(string name, string node1_name, string node2_n
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], inductance));
 }
 
-void Circuit::create_new_node()
+void
+Circuit::create_new_current_source(std::string name, std::string node1_name, std::string node2_name, double current)
 {
-    string name = "DooDooL"; // should be change and add a counting logic
-    Nodes.push_back(new Node(name));
+
 }
+
 
 void Circuit::analyse_data()
 {
@@ -106,33 +107,6 @@ void Circuit::analyse_data()
     this-> Active_Nodes = Active_Nodes;
     this-> total_unknowns = total_unknowns;
 }
-
-//void Circuit::transient()
-//{
-//    // initials
-//    vector<double> x_previous(total_unknowns, 0.0);
-//    // the transient loop
-//    for (double t = t_start; t < t_end; t += time_step)
-//    {
-//        vector<Triplet> triplets;
-//        vector<double>  b(total_unknowns, 0.0);
-//        // stamping elementss
-//        for (auto* e : Elements)
-//            e->stamp(time_step, triplets, b, x_previous);
-//        // building the matrix
-//        vector<vector<double>> G(total_unknowns, vector<double> (total_unknowns, 0.0));
-//        for (auto tr : triplets)
-//            G[tr.Row][tr.Column] = tr.Value;
-//        // solve
-//        vector<double> x(total_unknowns, 0.0);
-//        x = algorithems.solve_LU(G, b);
-//        // saving previous
-//        x_previous = x;
-//        // saving data
-//        for (auto* n : Active_Nodes)
-//            n->set_voltage(x_previous[n->get_index()], t);
-//    }
-//}
 
 //  checks the convergencr of NR
 bool check_convergence(const vector<double>& b, double tolerance = 1e-9)

@@ -18,8 +18,6 @@
 #include "CCCS.h"
 #include "CCVS.h"
 
-class Circuit;
-vector<Circuit*> circuits; // Global vector to store all circuits
 class Circuit
 {
 private:
@@ -39,6 +37,16 @@ public:
     void create_new_capacitor(string name, string node1_name, string node2_name, double capacitance);
     void create_new_inductor(string name, string node1_name, string node2_name, double inductor);
     void create_new_voltage_sourse(string name, string node1_name, string node2_name, double voltage);
+
+    int x = 0;
+    void create_new_current_source(string name, string node1_name, string node2_name, double current);
+    void create_new_VCVS(string name, string node1_name, string node2_name, double gain);
+    void create_new_CCVS(string name, string node1_name, string node2_name, double gain);
+    void create_new_VCCS(string name, string node1_name, string node2_name, double gain);
+    void create_new_CCCS(string name, string node1_name, string node2_name, double gain);
+    void create_new_real_diode(string name, string node1_name, string node2_name, double x);
+    void create_new_zener_diode(string name, string node1_name, string node2_name, double x);
+
     void create_new_node();
     void analyse_data();
     vector<Element*> get_Elements();

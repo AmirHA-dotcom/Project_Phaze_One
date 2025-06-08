@@ -6,9 +6,10 @@
 #define PROJECT_PHAZE_ONE_CONTROLLER_H
 
 #include "Element.h"
-
+#include "Circuit.h"
 class Controller {
 public:
+    Circuit* circuit;
     Element* findElement (string name);
     Element* findNode (string name);
     void addR (string name, string Node1, string Node2, double value);
