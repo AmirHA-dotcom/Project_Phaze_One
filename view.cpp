@@ -714,7 +714,7 @@ bool View::handleAnalysisMenu (Controller* C) {
 }
 
 bool View::inputHandler (Controller* C) {
-    cout << (mainMenu || circuitMenu || fileMenu || analysisMenu) << endl;
+    //cout << (mainMenu || circuitMenu || fileMenu || analysisMenu) << endl;
     if (mainMenu)
         return handleMainMenu(C);
     if (circuitMenu) {
@@ -726,7 +726,7 @@ bool View::inputHandler (Controller* C) {
         return handleFileMenu(C);
     if (analysisMenu)
         return handleAnalysisMenu(C);
-        cout << "all menus are off !!!" << endl;
+    cout << "all menus are off !!!" << endl;
     return false;
 }
 
