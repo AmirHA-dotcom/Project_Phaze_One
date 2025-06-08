@@ -41,7 +41,7 @@ void Controller::addD (string name, string Node1, string Node2, string model){
 }
 
 void Controller::addGND (string name){
-    circuit->make_node_ground(name)
+    circuit->make_node_ground(name);
 }
 
 void Controller::addVS (string name, string Node1, string Node2, double value){
