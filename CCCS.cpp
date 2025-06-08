@@ -4,7 +4,7 @@
 
 #include "CCCS.h"
 
-void CCCS::stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
+void CCCS::stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
 {
 
 }

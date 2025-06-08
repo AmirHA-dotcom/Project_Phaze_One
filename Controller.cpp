@@ -8,12 +8,6 @@
 void Controller::addCircuit(string name){
 
 }
-void Controller::renameCircuit(string name){
-
-}
-void Controller::deleteCircuit(string name){
-
-}
 Circuit* Controller::findCircuit(string name){
 
 }
@@ -101,39 +95,141 @@ void Controller::addCcCs (string name, string Node1, string Node2,string CtrlNod
 }
 
 void Controller::showNodes(){
-    // Implementation
+    vector<Node*> nodes = circuit->get_Nodes();
+    if (nodes.empty())
+    {
+        cout << "No available nodes" << endl;
+        return;
+    }
+    cout << "Available nodes:" << endl;
+    for (const auto& n : nodes)
+    {
+        if (n == nodes[nodes.size() - 1])
+        {
+            cout << n->get_name() << endl;
+        }
+        else
+        {
+            cout << n->get_name() << ", ";
+        }
+    }
 }
 void Controller::delGND(string name){
-
+    circuit->make_node_NOT_ground(name);
 }
 void Controller::showAllElements(){
-    // Implementation
+    vector<Element*> elements = circuit->get_Elements();
+    if (elements.empty())
+    {
+        cout << "No elements have been added yet" << endl;
+        return;
+    }
+    for (const auto& e : elements)
+    {
+        if (e == elements[elements.size() - 1])
+        {
+            cout << e->get_name() << endl;
+        }
+        else
+        {
+            cout << e->get_name() << ", ";
+        }
+    }
 }
 void Controller::showCircuits(){
-
+    if (circuits.empty())
+    {
+        cout << "No circuits have been added yet !!!" << endl;
+        return;
+    }
+    cout << "List Of Circuits:" << endl;
+    for (const auto& c : circuits)
+        cout << "- " << c->get_name() << endl;
 }
 void Controller::showResistors(){
-    // Implementation
+    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Resistor);
+    if (elements.empty())
+    {
+        cout << "No elements have been added yet" << endl;
+        return;
+    }
+    for (const auto& e : elements)
+    {
+        if (e == elements[elements.size() - 1])
+        {
+            cout << e->get_name() << endl;
+        }
+        else
+        {
+            cout << e->get_name() << ", ";
+        }
+    }
 }
 
 void Controller::showInductors(){
-    // Implementation
-}
+    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Inductor);
+    if (elements.empty())
+    {
+        cout << "No elements have been added yet" << endl;
+        return;
+    }
+    for (const auto& e : elements)
+    {
+        if (e == elements[elements.size() - 1])
+        {
+            cout << e->get_name() << endl;
+        }
+        else
+        {
+            cout << e->get_name() << ", ";
+        }
+    }}
 
 void Controller::showCapacitors(){
-    // Implementation
-}
+    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Capacitor);
+    if (elements.empty())
+    {
+        cout << "No elements have been added yet" << endl;
+        return;
+    }
+    for (const auto& e : elements)
+    {
+        if (e == elements[elements.size() - 1])
+        {
+            cout << e->get_name() << endl;
+        }
+        else
+        {
+            cout << e->get_name() << ", ";
+        }
+    }}
 
 void Controller::showDiodes(){
-    // Implementation
-}
+    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Real_Diode);
+    if (elements.empty())
+    {
+        cout << "No elements have been added yet" << endl;
+        return;
+    }
+    for (const auto& e : elements)
+    {
+        if (e == elements[elements.size() - 1])
+        {
+            cout << e->get_name() << endl;
+        }
+        else
+        {
+            cout << e->get_name() << ", ";
+        }
+    }}
 
 void Controller::renameNode(string oldName, string newName){
-    // Implementation
+
 }
 
 void Controller::tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep){
-    // Implementation
+    circuit->analyse_data();
+    circuit->transient();
 }
 
 void Controller::DcAnalysis(double sourceName, double startValue, double endValue, double increment){
@@ -149,7 +245,7 @@ void Controller::DcAnalysisOrders(vector<string> orders){
 }
 
 void Controller::delElement (Element* element){
-    // Implementation
+    circuit->delete_element(element->get_name());
 }
 
 void Controller::showSchematics(){

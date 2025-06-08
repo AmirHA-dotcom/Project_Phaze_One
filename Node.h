@@ -18,6 +18,7 @@ private:
 public:
     Node(string _name);
     string get_name() const;
+    void change_name(string new_name);
     void set_voltage(double volt, double time);
     double get_voltage_in_time(double time);
     void make_ground();

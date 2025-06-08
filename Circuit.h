@@ -36,6 +36,7 @@ public:
     string get_name() const;
     void change_value_of_element(string name ,double value);
     void change_name_of_element(string old_name ,string new_name);
+    void change_name_of_node(string old_name, string new_name);
     void set_time_step(double ts);
     void set_time_start(double ts);
     void set_time_end(double ts);

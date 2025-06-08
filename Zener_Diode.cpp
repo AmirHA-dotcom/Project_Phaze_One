@@ -1,7 +1,7 @@
 #include "Zener_Diode.h"
 
 
-void Zener_Diode::stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> &x_k, const vector<double> &x_previous)
+void Zener_Diode::stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> &x_k, const vector<double> &x_previous)
 {
     const double Is = 1e-14;
     const double Vt = 0.026;

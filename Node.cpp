@@ -16,6 +16,11 @@ string Node::get_name() const
     return name;
 }
 
+void Node::change_name(string new_name)
+{
+    name = new_name;
+}
+
 double Node::get_voltage_in_time(double time)
 {
     for (int i = 0; i < voltage.size() - 1; i++)
