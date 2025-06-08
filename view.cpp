@@ -414,6 +414,10 @@ bool View::handleCircuitMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
+    if (C->circuit == nullptr) {
+        cout << "No circuit selected. Please add or switch to a circuit first." << endl;
+        return true;
+    }
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
 
@@ -433,19 +437,19 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (i.size() == 2 && i[0] == "delete") {
-        if (!C->findCircuit(i[2])) {
-            throw circuitNotFind(i[2]);
+        if (!C->findCircuit(i[1])) {
+            throw circuitNotFind(i[1]);
         }
-        C->deleteCircuit(C->findCircuit(i[2]));
-        C->circuit = C->findCircuit(i[2]);
+        C->deleteCircuit(C->findCircuit(i[1]));
+        C->circuit = nullptr;
         return true;
     }
     if (i.size() == 3 && i[0] == "rename") {
-        auto c = C->findCircuit(i[2]);
-        if (!C->findCircuit(i[2])) {
-            throw circuitNotFind(i[2]);
+        auto c = C->findCircuit(i[1]);
+        if (!C->findCircuit(i[1])) {
+            throw circuitNotFind(i[1]);
         }
-        C->renameCircuit(c,i[3]);
+        C->renameCircuit(c,i[2]);
         return true;
     }
     if (line == "show circuits") {
@@ -717,8 +721,6 @@ bool View::inputHandler (Controller* C) {
     if (mainMenu)
         return handleMainMenu(C);
     if (circuitMenu) {
-        if (C->circuit == nullptr)
-            cout << "No circuit selected. Please add or switch to a circuit first." << endl;
         return handleCircuitMenu(C);
     }
     if (fileMenu)
