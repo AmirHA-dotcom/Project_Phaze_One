@@ -80,7 +80,7 @@ void Controller::addSin (string name, string Node1, string Node2, double offset,
     // Implementation
 }
 
-void Controller::addPulse1(string name, string Node1, string Node2, double time, double value){
+void Controller::addPulse1(string name, string Node1, string Node2, double periode, double value){
     // Implementation
 }
 
