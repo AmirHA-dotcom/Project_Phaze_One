@@ -385,12 +385,17 @@ bool View::handleMainMenu (Controller* C) {
     }
     if (s == "1") {
         circuitMenu = true;
+        cout << "dodo" << endl;
+        return true;
     }
-    else if (s == "2")
+    else if (s == "2") {
         fileMenu = true;
+        return true;
+    }
     else if (s == "3") {
         analysisMenu = true;
         cout << "Enter the name of the circuit to load: ";
+        return true;
     }
     else {
         mainMenu = true;
