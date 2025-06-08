@@ -24,7 +24,7 @@ add_executable(Project_Phaze_One
         View.cpp
         View.h
         Errors.cpp
-        Error.h
+        Errors.h
         Controller.cpp
         Controller.h
         Current_Source.cpp

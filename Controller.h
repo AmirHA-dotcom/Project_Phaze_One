@@ -22,6 +22,11 @@ public:
 
 
     void delElement (Element* element);
+
+    void showSchematics();
+    void showFile(int num);
+    bool validSchematicChoice(string s);
+    void handleNewFile(string path);
 };
 
 

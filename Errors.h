@@ -64,16 +64,32 @@ public:
     explicit elementFind(const std::string& name);
     const char* what() const noexcept override;
 };
-class elementFind : public std::exception {
+
+class Error5 : public std::exception {
 private:
     std::string message;
 public:
-    explicit elementFind(const std::string& name);
+    explicit Error5(const std::string& name);
     const char* what() const noexcept override;
 };
 
 
-class nname : public exception {
+class InappropriateInput : public exception {
+public:
+    const char *what() const noexcept override;
+};
+
+class invalidSchematicChoice : public exception {
+public:
+    const char *what() const noexcept override;
+};
+
+class InappropriateiInput : public exception {
+public:
+    const char *what() const noexcept override;
+};
+
+class InappropriateiiInput : public exception {
 public:
     const char *what() const noexcept override;
 };

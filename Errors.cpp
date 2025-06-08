@@ -49,17 +49,23 @@ elementFind::elementFind(const std::string& name) {
 const char* elementFind::what() const noexcept {
     return message.c_str();
 }
-elementFind::elementFind(const std::string& name) {
+Error5::Error5(const std::string& name) {
     message = "Error: Cannot delete \"" + name + "\"; component not found";
     ///                  cout << "Error: Cannot delete capacitor; component not found" << endl;
 }
-const char* elementFind::what() const noexcept {
+const char* Error5::what() const noexcept {
     return message.c_str();
 }
 
-const char  *nameee::what() const noexcept {
-    cout << "Error: Syntax error" << endl;
+const char  *InappropriateInput::what() const noexcept {
+    cout << "Error : Inappropriate input" << endl;
 }
-const char  *nname::what() const noexcept {
+const char  *invalidSchematicChoice::what() const noexcept {
+    cout << "Error : invalid Schematic choice input" << endl;
+}
+const char  *InappropriateiInput::what() const noexcept {
+    cout << "Error : Inappropriate input" << endl;
+}
+const char  *InappropriateiiInput::what() const noexcept {
     cout << "Error: Syntax error" << endl;
 }

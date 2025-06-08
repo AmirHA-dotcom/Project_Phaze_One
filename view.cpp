@@ -514,8 +514,37 @@ bool View::handleCircuitMenu (Controller* C) {
         throw invalidSyntax();
     return true;
 }
-bool View::handleFileMenu (Controller* C) {
 
+
+
+
+
+bool View::handleFileMenu (Controller* C) {
+    C->showSchematics();
+    string line;
+    getline(cin,line);
+    vector<string> i = splitString(line);
+    if (line == "end") {
+        cout << "program ended!" << endl;
+        return false;
+    }
+    if (line == "return") {
+        fileMenu = false;
+        mainMenu = true;
+        return true;
+    }
+    if (C->validSchematicChoice(line)) {
+        C->showFile(stoi(line));
+    }
+    if (i.size() == 1 && isDigit(line) && !C->validSchematicChoice(line)) {
+        throw invalidSchematicChoice();
+    }
+    if (i.size() == 2 && i[0] == "NewFile") {
+        C->handleNewFile(i[1]);
+    }
+    else
+        throw InappropriateInput();
+    return true;
 }
 bool View::handleAnalysisMenu (Controller* C) {
     string line;
@@ -526,7 +555,6 @@ bool View::handleAnalysisMenu (Controller* C) {
         return false;
     }
     if (line == "return") {
-        cout << "program ended!" << endl;
         analysisMenu = false;
         mainMenu = true;
         return true;
