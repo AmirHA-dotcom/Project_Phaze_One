@@ -15,10 +15,19 @@ string Node::get_name() const
     return name;
 }
 
-//double Node::get_voltage()
-//{
-//    return voltage;
-//}
+double Node::get_voltage_in_time(double time)
+{
+    for (int i = 0; i < voltage.size() - 1; i++)
+    {
+        if (time < voltage[i + 1].second && time >= voltage[i].second)
+        {
+            if (abs(voltage[i + 1].second) - time > abs(voltage[i].second - time))
+                return voltage[i].first;
+            return voltage[i + 1].first;
+        }
+    }
+}
+
 
 void Node::make_ground()
 {
