@@ -8,8 +8,11 @@
 #include "Element.h"
 #include "Circuit.h"
 #include "Libraries.h"
+#include "File_Handler.h"
 
 class Controller {
+private:
+    File_Handler file_handler;
 public:
     vector<Circuit *> circuits;
     Circuit *circuit;

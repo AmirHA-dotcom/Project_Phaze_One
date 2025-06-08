@@ -246,7 +246,7 @@ void Controller::showDiodes(){
     }}
 
 void Controller::renameNode(string oldName, string newName){
-
+    circuit->change_name_of_node(oldName, newName);
 }
 
 void Controller::tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep){
@@ -305,11 +305,14 @@ void Controller::delElement (Element* element){
 }
 
 void Controller::showSchematics(){
-    // Implementation
+    vector<string> file_names = file_handler.get_file_names();
+    for (int i = 0; i < file_names.size(); i++)
+        cout << i + 1 << "-" << file_names[i] << endl;
 }
 
 void Controller::showFile(int num){
-    // Implementation
+    file_handler.set_file_index(num - 1);
+    file_handler.show_current_file();
 }
 
 bool Controller::validSchematicChoice(string s){
@@ -317,5 +320,5 @@ bool Controller::validSchematicChoice(string s){
 }
 
 void Controller::handleNewFile(string path){
-    // Implementation
+    file_handler.add_file(path);
 }
