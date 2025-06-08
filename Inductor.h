@@ -18,7 +18,7 @@ public:
     void change_name(string new_name) override;
     void set_aux_index(int i);
     int get_aux_index();
-    void stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> x_previous) override;
+    void stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
 };
 
 
