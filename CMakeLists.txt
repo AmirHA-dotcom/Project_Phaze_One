@@ -3,10 +3,6 @@ project(Project_Phaze_One)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# Collect all .cpp files in the project root
-file(GLOB PROJECT_SOURCES
-        "${CMAKE_SOURCE_DIR}/*.cpp"
-)
 add_executable(Project_Phaze_One
         Node.cpp
         Node.h
