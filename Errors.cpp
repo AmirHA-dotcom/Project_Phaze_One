@@ -67,18 +67,18 @@ const char  *InvalidSyntaxForRenameNode::what() const noexcept {
     cout << "ERROR: Invalid syntax - correct format:\n"
             ".rename node <old_name> <new_name>" << endl;
 }
-const char  *InappropriateiiInput::what() const noexcept {
+const char  *rifhiurbirbjrvrj::what() const noexcept {
     cout << "Error: Syntax error" << endl;
 }
-const char  *InappropriateiiInput::what() const noexcept {
+const char  *InapppropriateiiInput::what() const noexcept {
     cout << "Error: Syntax error" << endl;
 }
-const char  *InappropriateiiInput::what() const noexcept {
+const char  *InapproppriateiiInpput::what() const noexcept {
     cout << "Error: Syntax error" << endl;
 }
-const char  *InappropriateiiInput::what() const noexcept {
+const char  *InappropriateiiInpuut::what() const noexcept {
     cout << "Error: Syntax error" << endl;
 }
-const char  *InappropriateiiInput::what() const noexcept {
+const char  *InappropriateiiInputt::what() const noexcept {
     cout << "Error: Syntax error" << endl;
 }
