@@ -28,7 +28,7 @@ pair<Node *, Node *> Element::get_nodes()
     return {node1, node2};
 }
 
-double Element::get_voltage()
+double Element::get_voltage_at_time(double time)
 {
-    return node1->get_voltage() - node2->get_voltage();
+    return node1->get_voltage_in_time(time) - node2->get_voltage_in_time(time);
 }
