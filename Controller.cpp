@@ -81,12 +81,12 @@ void Controller::addSin (string name, string Node1, string Node2, double offset,
     circuit->create_new_Sin_voltage_source(name, Node1, Node2, offset, amplitude, frequency);
 }
 
-void Controller::addPulse1(string name, string Node1, string Node2, double period, double value){
+void Controller::addPulse1(string name, string Node1, string Node2, double period, double value) {
     circuit->create_new_Pulse_voltage_source(name, Node1, Node2, period, value);
+}
 void Controller::addPulse1(string name, string Node1, string Node2, double time, double value){
     // Implementation
 }
-
 void Controller::addPulse2(string name, string Node1, string Node2, double period, double value){
     circuit->create_new_Square_voltage_source(name, Node1, Node2, period, value);
 }
