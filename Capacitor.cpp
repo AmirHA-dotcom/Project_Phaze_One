@@ -6,8 +6,11 @@
 
 double Capacitor::get_current(double time1, double time2)
 {
-    cout << "Still Not Coded!!!" << endl;
-    return 0;
+    // i = C dv/dt
+    double dV1 = node1->get_voltage_in_time(time1) - node2->get_voltage_in_time(time1);
+    double dV2 = node1->get_voltage_in_time(time2) - node2->get_voltage_in_time(time2);
+    double dT = time2 - time1;
+    return value * (dV2 - dV1)/dT;
 }
 
 void Capacitor::display_info()

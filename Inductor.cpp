@@ -6,8 +6,11 @@
 
 double Inductor::get_current(double time1, double time2)
 {
-    cout << "Still Not Coded!!!" << endl;
-    return 0;
+    double dV1 = node1->get_voltage_in_time(time1) - node2->get_voltage_in_time(time1);
+    double dV2 = node1->get_voltage_in_time(time2) - node2->get_voltage_in_time(time2);
+    double dT = time2 - time1;
+    // I = 1/L * integral(Vdt) = 1/2L * dT * (dV2 + dV1)
+    return (dV2 + dV1) * dT/(2 * value);
 }
 
 void Inductor::display_info()
