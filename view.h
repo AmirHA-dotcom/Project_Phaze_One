@@ -14,7 +14,7 @@ class View {
     bool fileMenu = false;
     bool analysisMenu = false;
 
-    static vector<string> splitString(const string& input);
+    vector<string> splitString(const string& input);
 
 
 public:

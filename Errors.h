@@ -89,23 +89,23 @@ public:
     const char *what() const noexcept override;
 };
 
-class InappropriateiiInput : public exception {
+class rifhiurbirbjrvrj : public exception {
 public:
     const char *what() const noexcept override;
 };
-class InappropriateiiInput : public exception {
+class InapppropriateiiInput : public exception {
 public:
     const char *what() const noexcept override;
 };
-class InappropriateiiInput : public exception {
+class InapproppriateiiInpput : public exception {
 public:
     const char *what() const noexcept override;
 };
-class InappropriateiiInput : public exception {
+class InappropriateiiInpuut : public exception {
 public:
     const char *what() const noexcept override;
 };
-class InappropriateiiInput : public exception {
+class InappropriateiiInputt : public exception {
 public:
     const char *what() const noexcept override;
 };
