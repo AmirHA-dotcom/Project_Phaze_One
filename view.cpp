@@ -273,6 +273,17 @@ bool addPulse3Check (vector<string> i) {
     }
     return true;
 }
+bool addPulse4Check (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
+        return false;
+    }
+    if (i[4] != "PULSE4")
+        throw notFindInLibrary(i[1]);
+    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+        throw invalidSyntax();
+    }
+    return true;
+}
 bool addVcVsCheck (vector<string> i) {
     if (i.size() != 7 || i[0] != "add" || i[1][0] != 'E'){
         return false;
@@ -399,6 +410,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
+        // add circuit <Name>
+
         if (C->findCircuit(i[2])) {
             throw circuitExists();
         }
@@ -428,6 +441,9 @@ bool View::handleCircuitMenu (Controller* C) {
         }
         C->renameCircuit(i[2]);
         return true;
+    }
+    if (line == "show circuits") {
+        C->showCircuits();
     }
     if (addRCheck(i)) {
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
@@ -546,6 +562,13 @@ bool View::handleCircuitMenu (Controller* C) {
         C->addPulse3(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
         return true;
     }
+    if (addPulse4Check(i)) {
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
+        }
+        C->addPulse4(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
+        return true;
+    }
     if (addVcVsCheck(i)) {
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
@@ -643,15 +666,6 @@ bool View::handleAnalysisMenu (Controller* C) {
     if (line == "return") {
         analysisMenu = false;
         mainMenu = true;
-        return true;
-    }
-    if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
-        // add circuit <Name>
-        if (C->findCircuit(i[2])) {
-            throw circuitExists();
-        }
-        C->addCircuit(i[2]);
-        C->circuit = C->findCircuit(i[2]);
         return true;
     }
     if (i.size() == 3 && i[0] == "switch" && i[1] == "to") {
