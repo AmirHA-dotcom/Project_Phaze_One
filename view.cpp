@@ -453,6 +453,7 @@ bool View::handleCircuitMenu (Controller* C) {
     }
     if (line == "show circuits") {
         C->showCircuits();
+        return true;
     }
     if (addRCheck(i)) {
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
