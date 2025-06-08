@@ -25,7 +25,7 @@ void Capacitor::change_name(std::string new_name)
     name = new_name;
 }
 
-void Capacitor::stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> x_previous)
+void Capacitor::stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
 {
     int i, j;
     i = node1->get_index();

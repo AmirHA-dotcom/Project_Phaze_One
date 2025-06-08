@@ -13,7 +13,7 @@ private:
     int aux_index;
 public:
     Voltage_Source(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Voltage_Source, _node1, _node2, _value) {}
-    void stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double> x_previous);
+    void stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
     void set_aux_index(int i);
 };
 
