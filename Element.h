@@ -8,9 +8,6 @@
 #include "Libraries.h"
 #include "Node.h"
 
-enum class Element_Type{Resistor, Capacitor, Inductor, Voltage_Source, Real_Diode, Zener_Diode,
-        Current_Source, VC_Voltage_Source, VC_Current_Source, CC_Voltage_Source, CC_Current_source};
-
 class Element
 {
 protected:
