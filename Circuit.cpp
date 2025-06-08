@@ -125,7 +125,7 @@ void Circuit::transient()
             G[tr.Row][tr.Column] = tr.Value;
         // solve
         vector<double> x(total_unknowns, 0.0);
-        x = algorithems.solve_cramer(G, b);
+        x = algorithems.solve_LU(G, b);
         // saving previous
         x_previous = x;
         // saving data
