@@ -69,7 +69,7 @@ void Controller::addGND (string name){
 }
 
 void Controller::addVS (string name, string Node1, string Node2, double value){
-//    circuit->create_new_voltage_source(name, Node1, Node2, value);
+    circuit->create_new_DC_voltage_source(name, Node1, Node2, value);
 }
 
 void Controller::addCS (string name, string Node1, string Node2, double value){
@@ -77,22 +77,22 @@ void Controller::addCS (string name, string Node1, string Node2, double value){
 }
 
 void Controller::addSin (string name, string Node1, string Node2, double offset, double amplitude, double frequency){
-    // Implementation
+    circuit->create_new_Sin_voltage_source(name, Node1, Node2, offset, amplitude, frequency);
 }
 
-void Controller::addPulse1(string name, string Node1, string Node2, double periode, double value){
-    // Implementation
+void Controller::addPulse1(string name, string Node1, string Node2, double period, double value){
+    circuit->create_new_Pulse_voltage_source(name, Node1, Node2, period, value);
 }
 
 void Controller::addPulse2(string name, string Node1, string Node2, double period, double value){
-    // Implementation
+    circuit->create_new_Square_voltage_source(name, Node1, Node2, period, value);
 }
 
 void Controller::addPulse3(string name, string Node1, string Node2, double period, double value){
-    // Implementation
+    circuit->create_new_Triangle_voltage_source(name, Node1, Node2, period, value);
 }
 void Controller::addPulse4(string name, string Node1, string Node2, double time) {
-
+    circuit->create_new_Delta_voltage_source(name, Node1, Node2, time);
 }
 void Controller::addVcVs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
     circuit->create_new_VCVS(name, Node1, Node2, gain);
