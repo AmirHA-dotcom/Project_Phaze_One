@@ -78,33 +78,28 @@ public:
 class Square_Source : Voltage_Source
 {
 private:
-    double v_initial;
-    double v_up;
     double v_down;
+    double v_up;
     double time_delay;
-    double time_rise;
-    double time_fall;
     double square_width;
     double period;
 public:
-    Square_Source(string _name, Node* _node1, Node* _node2, double v1, double v2, double v3, double td, double tr, double tf, double pw, double per)
-    : Voltage_Source(_name, _node1, _node2, 0.0), v_initial(v1), v_up(v2), v_down(v3), time_delay(td),
-    time_rise(tr), time_fall(tf), square_width(pw), period(per) {}
+    Square_Source(string _name, Node* _node1, Node* _node2, double v1, double v2, double td, double pw, double per)
+    : Voltage_Source(_name, _node1, _node2, 0.0), v_down(v1), v_up(v2), time_delay(td),
+     square_width(pw), period(per) {}
     double get_value_at(double time, double time_step) const override;
 };
 
-class Triangular_Source : public Voltage_Source {
+class Triangular_Source : public Voltage_Source
+{
 private:
     double v_initial;
     double v_peak;
     double time_delay;
     double period;
-
 public:
-//    Triangular_Source(string _name, Node* _node1, Node* _node2, double v1, double v2, double td, double per)
-//            : Voltage_Source(_name, _node1, _node2), v_initial(v1), v_peak(v2), time_delay(td), period(per) {}
-
-    // Override the virtual function to provide the triangle wave logic
+    Triangular_Source(string _name, Node* _node1, Node* _node2, double v1, double v2, double td, double per)
+            : Voltage_Source(_name, _node1, _node2, 0.0), v_initial(v1), v_peak(v2), time_delay(td), period(per) {}
     double get_value_at(double time, double time_step) const override;
 };
 

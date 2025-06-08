@@ -46,7 +46,8 @@ double Pulse_Source::get_value_at(double time, double time_step) const
     double t = fmod(time - time_delay, period);
 
     // rise
-    if (t <= time_rise) {
+    if (t <= time_rise)
+    {
         return v_initial + (v_pulsed - v_initial) * (t / time_rise);
     }
     // pulse
@@ -74,29 +75,47 @@ double Delta_Dirac::get_value_at(double time, double time_step) const
 
 double Square_Source::get_value_at(double time, double time_step) const
 {
+    // before delay
+    if (time <= time_delay)
+    {
+        return 0.0;
+    }
+
+    // find the time within the current period
+    double time_in_period = fmod(time - time_delay, period);
+
+    // upper part
+    if (time_in_period <= square_width)
+    {
+        return v_up;
+    }
+    // lower part
+    else
+    {
+        return v_down;
+    }
+}
+
+double Triangular_Source::get_value_at(double time, double time_step) const
+{
+    // before delay
     if (time <= time_delay)
     {
         return v_initial;
     }
 
-    // find the time within the current period
-    double t = fmod(time - time_delay, period);
+    // finding the period
+    double time_in_period = fmod(time - time_delay, period);
+    double half_period = period / 2.0;
 
-    // rise
-    if (t <= time_rise)
+    // rising half (+m)
+    if (time_in_period <= half_period)
     {
-        return v_initial + (v_up - v_initial) * (t / time_rise);
+        return v_initial + (v_peak - v_initial) * (time_in_period / half_period);
     }
-    // up
-    if (t <= time_rise + square_width)
+    // falling half (-m)
+    else
     {
-        return v_up;
+        return v_peak + (v_initial - v_peak) * ((time_in_period - half_period) / half_period);
     }
-    // fall
-    if (t <= time_rise + square_width + time_fall)
-    {
-        return v_up + (v_initial - v_up) * ((t - (time_rise + square_width)) / time_fall);
-    }
-    // not up
-    return v_down;
 }
