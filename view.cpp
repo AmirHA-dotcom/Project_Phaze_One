@@ -566,7 +566,7 @@ bool View::handleCircuitMenu (Controller* C) {
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addPulse4(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
+        C->addPulse4(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[5]));
         return true;
     }
     if (addVcVsCheck(i)) {

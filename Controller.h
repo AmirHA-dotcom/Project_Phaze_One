@@ -40,6 +40,7 @@ public:
     void addPulse1(string name, string Node1, string Node2, double time, double value); // Pulse with one edge پله
     void addPulse2(string name, string Node1, string Node2, double period, double value); // square Pulse
     void addPulse3(string name, string Node1, string Node2, double period, double value); // triangle Pulse
+    void addPulse4(string name, string Node1, string Node2, double time); // delta Dirac Pulse
     void addVcVs(string name, string Node1, string Node2, string CtrlNode1, string CtrlNode2, double gain);
 
     void addVcCs(string name, string Node1, string Node2, string CtrlNode1, string CtrlNode2, double gain);
