@@ -137,7 +137,14 @@ void Controller::showAllElements(){
     }
 }
 void Controller::showCircuits(){
-
+    if (circuits.empty())
+    {
+        cout << "No circuits have been added yet !!!" << endl;
+        return;
+    }
+    cout << "List Of Circuits:" << endl;
+    for (const auto& c : circuits)
+        cout << "- " << c->get_name() << endl;
 }
 void Controller::showResistors(){
     vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Resistor);
