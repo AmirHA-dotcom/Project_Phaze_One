@@ -8,6 +8,7 @@ Node::Node(std::string _name)
 {
     name = _name;
     is_ground = false;
+    elements_connected_count = 0;
 }
 
 string Node::get_name() const
@@ -52,4 +53,14 @@ int Node::get_index()
 void Node::set_voltage(double volt, double time)
 {
     voltage.emplace_back(volt, time);
+}
+
+void Node::connect_element()
+{
+    elements_connected_count++;
+}
+
+void Node::disconnect_element()
+{
+    elements_connected_count--;
 }
