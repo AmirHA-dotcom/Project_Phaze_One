@@ -430,14 +430,14 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addRCheck(i)) {
-        if (C->findElement(i[1].substr(0,i[1].size()-1))) {
-            throw elementExists(i[2].substr(0,i[2].size()-1));
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addR(i[2].substr(0,i[2].size()-1),i[2],i[3],toValue(i[4]));
+        C->addR(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[4]));
         return true;
     }
     if (delRCheck(i)) {
-        auto* r = C->findElement(i[2].substr(0,i[2].size()-1));
+        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
         }
@@ -445,46 +445,46 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCCheck(i)) {
-        if (C->findElement(i[2].substr(1,i[2].size()-1))) {
-            throw elementExists(i[2].substr(1,i[2].size()-1));
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addC(i[2].substr(1,i[2].size()-1),i[2],i[3],toValue(i[4]));
+        C->addC(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[4]));
         return true;
     }
     if (delCCheck(i)) {
-        auto* r = C->findElement(i[2].substr(1,i[2].size()-1));
+        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
-            throw elementFind(i[2].substr(1,i[2].size()-1));
+            throw elementFind(i[1].substr(1,i[1].size()-1));
         }
         C->delElement(r);
         return true;
     }
     if (addICheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addI(i[1],i[2],i[3],toValue(i[4]));
+        C->addI(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[4]));
         return true;
     }
     if (delICheck(i)) {
-        auto* r = C->findElement(i[1]);
+        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
-            throw elementFind(i[1]);
+            throw elementFind(i[1].substr(1,i[1].size()-1));
         }
         C->delElement(r);
         return true;
     }
     if (addDCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addD(i[1],i[2],i[3],i[4]);
+        C->addD(i[1].substr(1,i[1].size()-1),i[2],i[3],i[4]);
         return true;
     }
     if (delDCheck(i)) {
-        auto* r = C->findElement(i[1]);
+        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
-            throw elementFind(i[1]);
+            throw elementFind(i[1].substr(1,i[1].size()-1));
         }
         C->delElement(r);
         return true;
@@ -504,74 +504,74 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(13,i[1].size()-13))) {
+            throw elementExists(i[1].substr(13,i[1].size()-13));
         }
-        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        C->addVS(i[1].substr(13,i[1].size()-13),i[2],i[3],toValue(i[4]));
         return true;
     }
     if (addCSCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(13,i[1].size()-13))) {
+            throw elementExists(i[1].substr(13,i[1].size()-13));
         }
-        C->addCS(i[1],i[2],i[3],toValue(i[4]));
+        C->addCS(i[1].substr(13,i[1].size()-13),i[2],i[3],toValue(i[4]));
         return true;
     }
     if (addSinusoidalCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addSin(i[1],i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),
+        C->addSin(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),
                   toValue(i[5]),toValue(i[6].substr(0,i[6].size()-1)));
         return true;
     }
     if (addPulse1eCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addPulse1(i[1],i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
+        C->addPulse1(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
         return true;
     }
     if (addPulse2Check(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addPulse2(i[1],i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
+        C->addPulse2(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
         return true;
     }
     if (addPulse3Check(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addPulse3(i[1],i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
+        C->addPulse3(i[1].substr(1,i[1].size()-1),i[2],i[3],toValue(i[5]),toValue(i[6].substr(1,i[6].size()-2)));
         return true;
     }
     if (addVcVsCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addVcVs(i[1],i[2],i[3],i[4],i[5],toValue(i[6]));
+        C->addVcVs(i[1].substr(1,i[1].size()-1),i[2],i[3],i[4],i[5],toValue(i[6]));
         return true;
     }
     if (addCcVsCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addVcVs(i[1],i[2],i[3],i[4],i[5],toValue(i[6]));
+        C->addVcVs(i[1].substr(1,i[1].size()-1),i[2],i[3],i[4],i[5],toValue(i[6]));
         return true;
     }
     if (addVcCsCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addCcVs(i[1],i[2],i[3],i[4],toValue(i[5]));
+        C->addCcVs(i[1].substr(1,i[1].size()-1),i[2],i[3],i[4],toValue(i[5]));
         return true;
     }
     if (addCcCsCheck(i)) {
-        if (C->findElement(i[1])) {
-            throw elementExists(i[1]);
+        if (C->findElement(i[1].substr(1,i[1].size()-1))) {
+            throw elementExists(i[1].substr(1,i[1].size()-1));
         }
-        C->addCcCs(i[1],i[2],i[3],i[4],toValue(i[5]));
+        C->addCcCs(i[1].substr(1,i[1].size()-1),i[2],i[3],i[4],toValue(i[5]));
         return true;
     }
     if (line == ".nodes"){
@@ -597,8 +597,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (renameNodeCheck(i)) {
-        if (!C->findNode(i[3])) {
-            throw elementNotFind(i[3]);
+        if (!C->findNode(i[2])) {
+            throw elementNotFind(i[2]);
         }
         C->renameNode(i[2],i[3]);
         return true;
