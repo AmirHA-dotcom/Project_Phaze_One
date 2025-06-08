@@ -404,7 +404,7 @@ void Circuit::transient()
 
             for (auto* e : Elements)
             {
-                e->stamp(time_step, triplets, b, x_k, x_previous);
+                e->stamp(t, time_step, triplets, b, x_k, x_previous);
             }
 
             // making G
