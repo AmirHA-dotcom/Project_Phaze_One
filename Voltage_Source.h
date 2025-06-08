@@ -93,4 +93,19 @@ public:
     double get_value_at(double time, double time_step) const override;
 };
 
+class Triangular_Source : public Voltage_Source {
+private:
+    double v_initial;
+    double v_peak;
+    double time_delay;
+    double period;
+
+public:
+    Triangular_Source(string _name, Node* _node1, Node* _node2, double v1, double v2, double td, double per)
+            : Voltage_Source(_name, _node1, _node2), v_initial(v1), v_peak(v2), time_delay(td), period(per) {}
+
+    // Override the virtual function to provide the triangle wave logic
+    double get_value_at(double time, double time_step) const override;
+};
+
 #endif //PROJECT_PHAZE_ONE_VOLTAGE_SOURCE_H
