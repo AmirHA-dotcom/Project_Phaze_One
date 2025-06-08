@@ -404,7 +404,6 @@ bool View::handleMainMenu (Controller* C) {
 bool View::handleCircuitMenu (Controller* C) {
     if (C->circuit == nullptr) {
         cout << "No circuit selected. Please add or switch to a circuit first." << endl;
-        return true;
     }
     string line;
     getline(cin,line);
