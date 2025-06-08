@@ -30,9 +30,13 @@ double t_start;
 double t_end;
 Algorithems algorithems;
 public:
+    void change_value_of_element(string name ,double value);
+    void change_name_of_element(string old_name ,string new_name);
     void set_time_step(double ts);
     void set_time_start(double ts);
     void set_time_end(double ts);
+    void make_node_ground(string name);
+    void make_node_NOT_ground(string name);
     void create_new_resistor(string name, string node1_name, string node2_name, double resistance);
     void create_new_capacitor(string name, string node1_name, string node2_name, double capacitance);
     void create_new_inductor(string name, string node1_name, string node2_name, double inductor);
@@ -47,8 +51,10 @@ public:
     void analyse_data();
     vector<Element*> get_Elements();
     void transient();
+    void delete_element(string name);
 private:
     int node_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
+    int element_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
 };
 
 #endif //PROJECT_PHAZE_ONE_CIRCUIT_H
