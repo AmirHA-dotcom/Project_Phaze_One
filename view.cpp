@@ -413,7 +413,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return false;
     }
     if (line == "return") {
-        analysisMenu = false;
+        circuitMenu = false;
         mainMenu = true;
         return true;
     }
