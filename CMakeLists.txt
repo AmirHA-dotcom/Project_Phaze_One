@@ -30,4 +30,5 @@ add_executable(Project_Phaze_One
         Current_Source.cpp
         Current_Source.h
         main.cpp
+        ../../Desktop/OOP/Project_Phaze_One/Errors.h
 )

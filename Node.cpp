@@ -15,10 +15,10 @@ string Node::get_name() const
     return name;
 }
 
-double Node::get_voltage()
-{
-    return voltage;
-}
+//double Node::get_voltage()
+//{
+//    return voltage;
+//}
 
 void Node::make_ground()
 {
