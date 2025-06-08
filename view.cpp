@@ -385,7 +385,6 @@ bool View::handleMainMenu (Controller* C) {
     }
     if (s == "1") {
         circuitMenu = true;
-        cout << "dodo" << endl;
         return true;
     }
     else if (s == "2") {
@@ -441,7 +440,7 @@ bool View::handleCircuitMenu (Controller* C) {
         C->circuit = C->findCircuit(i[2]);
         return true;
     }
-    if (i.size() == 2 && i[0] == "rename") {
+    if (i.size() == 3 && i[0] == "rename") {
         auto c = C->findCircuit(i[2]);
         if (!C->findCircuit(i[2])) {
             throw circuitNotFind(i[2]);
