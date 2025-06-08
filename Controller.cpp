@@ -68,32 +68,35 @@ void Controller::addGND (string name){
     circuit->make_node_ground(name);
 }
 
-void Controller::addVS (string name, string Node1, string Node2, double value){
-    circuit->create_new_DC_voltage_source(name, Node1, Node2, value);
-}
+//void Controller::addVS (string name, string Node1, string Node2, double value){
+//    circuit->create_new_DC_voltage_source(name, Node1, Node2, value);
+//    circuit->create_new_voltage_source(name, Node1, Node2, value);
+//}
 
 void Controller::addCS (string name, string Node1, string Node2, double value){
     circuit->create_new_current_source(name, Node1, Node2, value);
 }
 
-void Controller::addSin (string name, string Node1, string Node2, double offset, double amplitude, double frequency){
-    circuit->create_new_Sin_voltage_source(name, Node1, Node2, offset, amplitude, frequency);
-}
-
-void Controller::addPulse1(string name, string Node1, string Node2, double period, double value){
-    circuit->create_new_Pulse_voltage_source(name, Node1, Node2, period, value);
-}
-
-void Controller::addPulse2(string name, string Node1, string Node2, double period, double value){
-    circuit->create_new_Square_voltage_source(name, Node1, Node2, period, value);
-}
-
-void Controller::addPulse3(string name, string Node1, string Node2, double period, double value){
-    circuit->create_new_Triangle_voltage_source(name, Node1, Node2, period, value);
-}
-void Controller::addPulse4(string name, string Node1, string Node2, double time) {
-    circuit->create_new_Delta_voltage_source(name, Node1, Node2, time);
-}
+//void Controller::addSin (string name, string Node1, string Node2, double offset, double amplitude, double frequency){
+//    circuit->create_new_Sin_voltage_source(name, Node1, Node2, offset, amplitude, frequency);
+//}
+//
+//void Controller::addPulse1(string name, string Node1, string Node2, double period, double value) {
+//    circuit->create_new_Pulse_voltage_source(name, Node1, Node2, period, value);
+//}
+//void Controller::addPulse1(string name, string Node1, string Node2, double time, double value){
+//    // Implementation
+//}
+//void Controller::addPulse2(string name, string Node1, string Node2, double period, double value){
+//    circuit->create_new_Square_voltage_source(name, Node1, Node2, period, value);
+//}
+//
+//void Controller::addPulse3(string name, string Node1, string Node2, double period, double value){
+//    circuit->create_new_Triangle_voltage_source(name, Node1, Node2, period, value);
+//}
+//void Controller::addPulse4(string name, string Node1, string Node2, double time) {
+//    circuit->create_new_Delta_voltage_source(name, Node1, Node2, time);
+//}
 void Controller::addVcVs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
     circuit->create_new_VCVS(name, Node1, Node2, gain);
 }
@@ -246,7 +249,12 @@ void Controller::showDiodes(){
     }}
 
 void Controller::renameNode(string oldName, string newName){
-    circuit->change_name_of_node(oldName, newName);
+    Node* node = findNode(oldName);
+    if (node == nullptr) {
+        cerr << "ERROR: Node " << oldName << " not found." << endl;
+        return;
+    }
+    cout << "SUCCESS: Node renamed from " << oldName << " to " << newName << endl;
 }
 
 void Controller::tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep){

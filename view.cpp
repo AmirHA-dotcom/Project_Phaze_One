@@ -419,6 +419,7 @@ bool View::handleCircuitMenu (Controller* C) {
     }
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
+        cout << "dodo" << endl;
 
         if (C->findCircuit(i[2])) {
             throw circuitExists();
@@ -431,7 +432,6 @@ bool View::handleCircuitMenu (Controller* C) {
         if (!C->findCircuit(i[2])) {
             throw circuitNotFind(i[2]);
         }
-        C->addCircuit(i[2]);
         C->circuit = C->findCircuit(i[2]);
         return true;
     }
@@ -456,6 +456,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addRCheck(i)) {
+
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -530,6 +531,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
+        cout << "dodo" << endl;
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
@@ -618,7 +620,7 @@ bool View::handleCircuitMenu (Controller* C) {
     if (componentListCheck(i)) {
         if(i[1] == "Resistor") {
             C->showResistors();
-        } else if (i[1] == "Inⅾuⅽtor") {
+        } else if (i[1] == "Induⅽtor") {
             C->showInductors();
         } else if (i[1] == "Capacitor") {
             C->showCapacitors();
