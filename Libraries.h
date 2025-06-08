@@ -24,7 +24,14 @@ struct Triplet
 {
     int Row;
     int Column;
-    int Value;
+    double Value;
+    Triplet() : Row(0), Column(0), Value(0.0) {}
+    Triplet(int r, int c, double v)
+    {
+        Row = r;
+        Column = c;
+        Value = v;
+    }
 };
 
 enum class Element_Type{Resistor, Capacitor, Inductor, Voltage_Source, Real_Diode, Zener_Diode,

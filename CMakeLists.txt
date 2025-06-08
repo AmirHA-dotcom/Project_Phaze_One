@@ -1,49 +1,32 @@
-cmake_minimum_required(VERSION 3.29)
+# Set the minimum required version of CMake
+cmake_minimum_required(VERSION 3.20)
+
+# Name the project
 project(Project_Phaze_One)
 
+# Set the C++ standard to C++17 for better compatibility
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Collect all .cpp files in the project root
-file(GLOB PROJECT_SOURCES
-        "${CMAKE_SOURCE_DIR}/*.cpp"
-)
+# Add the executable and list ONLY the .cpp source files
 add_executable(Project_Phaze_One
         Node.cpp
-        Node.h
         Element.cpp
-        Element.h
         Resistor.cpp
-        Resistor.h
         Capacitor.cpp
-        Capacitor.h
         Inductor.cpp
-        Inductor.h
         Voltage_Source.cpp
-        Voltage_Source.h
         Current_Source.cpp
-        Current_Source.h
         CCCS.cpp
-        CCCS.h
         CCVS.cpp
-        CCVS.h
         VCCS.cpp
-        VCCS.h
         VCVS.cpp
-        VCVS.h
         Circuit.cpp
-        Circuit.h
-        Libraries.h
         Algorithems.cpp
-        Algorithems.h
         View.cpp
-        View.h
         Errors.cpp
-        Errors.h
         Controller.cpp
-        Controller.h
         main.cpp
-        Real_Diode.h
         Real_Diode.cpp
-        Zener_Diode.h
         Zener_Diode.cpp
 )
