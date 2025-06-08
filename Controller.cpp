@@ -22,7 +22,7 @@ Element* Controller::findElement (string name){
     return nullptr;
 }
 
-Element* Controller::findNode (string name){
+Node* Controller::findNode (string name){
     return nullptr;
 }
 

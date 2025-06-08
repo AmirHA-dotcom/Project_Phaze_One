@@ -696,10 +696,8 @@ bool View::inputHandler (Controller* C) {
     if (mainMenu)
         return handleMainMenu(C);
     if (circuitMenu) {
-        if (C->circuit == nullptr) {
+        if (C->circuit == nullptr)
             cout << "No circuit selected. Please add or switch to a circuit first." << endl;
-            return true;
-        }
         return handleCircuitMenu(C);
     }
     if (fileMenu)
