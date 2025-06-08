@@ -432,7 +432,6 @@ bool View::handleCircuitMenu (Controller* C) {
         if (!C->findCircuit(i[2])) {
             throw circuitNotFind(i[2]);
         }
-        C->addCircuit(i[2]);
         C->circuit = C->findCircuit(i[2]);
         return true;
     }
@@ -457,6 +456,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addRCheck(i)) {
+
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
