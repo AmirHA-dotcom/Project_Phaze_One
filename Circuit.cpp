@@ -39,6 +39,17 @@ const vector<Element *> Circuit::get_Elements()
     return Elements;
 }
 
+void Circuit::change_name_of_node(string old_name, string new_name)
+{
+    int node_index = node_index_finder_by_name(old_name);
+    if(node_index == -1)
+    {
+        cout << "Node not found" << endl;
+        return;
+    }
+
+}
+
 const vector<Node *> Circuit::get_Nodes()
 {
     return Nodes;
