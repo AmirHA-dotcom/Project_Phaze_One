@@ -20,31 +20,36 @@ Element* Controller::findNode (string name){
 }
 
 void Controller::addR (string name, string Node1, string Node2, double value){
-    // Implementation
+    circuit->create_new_resistor(name, Node1, Node2, value);
 }
 
 void Controller::addC (string name, string Node1, string Node2, double value){
-    // Implementation
+    circuit->create_new_capacitor(name, Node1, Node2, value);
 }
 
 void Controller::addI (string name, string Node1, string Node2, double value){
-    // Implementation
+    circuit->create_new_inductor(name, Node1, Node2, value);
 }
 
 void Controller::addD (string name, string Node1, string Node2, string model){
-    // Implementation
+    if (model == "D")
+        circuit->create_new_real_diode(name, Node1, Node2, 0.0);
+    else if (model == "Z")
+        circuit->create_new_zener_diode(name, Node1, Node2, 0.0);
+    else
+        cerr << "Undefined Diode model" << endl;
 }
 
 void Controller::addGND (string name){
-    // Implementation
+    circuit->make_node_ground(name)
 }
 
 void Controller::addVS (string name, string Node1, string Node2, double value){
-    // Implementation
+    circuit->create_new_voltage_source(name, Node1, Node2, value);
 }
 
 void Controller::addCS (string name, string Node1, string Node2, double value){
-    // Implementation
+    circuit->create_new_current_source(name, Node1, Node2, value);
 }
 
 void Controller::addSin (string name, string Node1, string Node2, double offset, double amplitude, double frequency){
@@ -64,19 +69,19 @@ void Controller::addPulse3(string name, string Node1, string Node2, double perio
 }
 
 void Controller::addVcVs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
-    // Implementation
+    circuit->create_new_VCVS(name, Node1, Node2, gain);
 }
 
 void Controller::addVcCs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
-    // Implementation
+    circuit->create_new_VCCS(name, Node1, Node2, gain);
 }
 
 void Controller::addCcVs (string name, string Node1, string Node2,string CtrlNode, double gain){
-    // Implementation
+    circuit->create_new_CCVS(name, Node1, Node2, gain);
 }
 
 void Controller::addCcCs (string name, string Node1, string Node2,string CtrlNode, double gain){
-    // Implementation
+    circuit->create_new_CCCS(name, Node1, Node2, gain);
 }
 
 void Controller::showNodes(){
