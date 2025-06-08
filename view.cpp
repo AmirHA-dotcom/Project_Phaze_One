@@ -380,6 +380,9 @@ bool View::handleMainMenu (Controller* C) {
     string s;
     getline(cin,s);
     mainMenu = false;
+    if (s == "end") {
+        return false;
+    }
     if (s == "1") {
         circuitMenu = true;
     }
@@ -393,7 +396,6 @@ bool View::handleMainMenu (Controller* C) {
         mainMenu = true;
         throw invalidSyntax();
     }
-    return true;
 }
 bool View::handleCircuitMenu (Controller* C) {
     string line;
@@ -404,7 +406,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return false;
     }
     if (line == "return") {
-        cout << "program ended!" << endl;
         analysisMenu = false;
         mainMenu = true;
         return true;
@@ -431,15 +432,16 @@ bool View::handleCircuitMenu (Controller* C) {
         if (!C->findCircuit(i[2])) {
             throw circuitNotFind(i[2]);
         }
-        C->deleteCircuit(i[2]);
+        C->deleteCircuit(C->findCircuit(i[2]));
         C->circuit = C->findCircuit(i[2]);
         return true;
     }
     if (i.size() == 2 && i[0] == "rename") {
+        auto c = C->findCircuit(i[2]);
         if (!C->findCircuit(i[2])) {
             throw circuitNotFind(i[2]);
         }
-        C->renameCircuit(i[2]);
+        C->renameCircuit(c,i[3]);
         return true;
     }
     if (line == "show circuits") {

@@ -6,17 +6,24 @@
 #include "Libraries.h"
 
 void Controller::addCircuit(string name){
-
+    auto* c = new Circuit(name);
+    circuits.push_back(c);
 }
 Circuit* Controller::findCircuit(string name){
-
+    for (auto i : circuits) {
+        if(i->get_name() == name)
+            return i;
+    }
+    return nullptr;
 }
-
-void Controller::renameCircuit(string name){
-
+void Controller::renameCircuit(Circuit* circuit,string name){
+    circuit->change_name(name);
 }
-void Controller::deleteCircuit(string name){
-
+void Controller::deleteCircuit(Circuit* circuit){
+    circuits.erase(
+            std::remove(circuits.begin(), circuits.end(), circuit),
+            circuits.end()
+    );
 }
 Element* Controller::findElement (string name){
     for (auto& e : circuit->get_Elements())

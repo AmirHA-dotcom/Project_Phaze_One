@@ -15,8 +15,8 @@ public:
     Circuit *circuit;
 
     Circuit *findCircuit(string name);
-    void renameCircuit(string name);
-    void deleteCircuit(string name);
+    void renameCircuit(Circuit* circuit,string name);
+    void deleteCircuit(Circuit* circuit);
     Element *findElement(string name);
 
     Node *findNode(string name);
