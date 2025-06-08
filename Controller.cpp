@@ -69,7 +69,7 @@ void Controller::addGND (string name){
 }
 
 void Controller::addVS (string name, string Node1, string Node2, double value){
-    circuit->create_new_voltage_source(name, Node1, Node2, value);
+//    circuit->create_new_voltage_source(name, Node1, Node2, value);
 }
 
 void Controller::addCS (string name, string Node1, string Node2, double value){
