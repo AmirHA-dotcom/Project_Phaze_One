@@ -8,6 +8,12 @@
 void Controller::addCircuit(string name){
 
 }
+void Controller::renameCircuit(string name){
+
+}
+void Controller::deleteCircuit(string name){
+
+}
 Circuit* Controller::findCircuit(string name){
 
 }
