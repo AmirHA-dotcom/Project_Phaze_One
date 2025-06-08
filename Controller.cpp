@@ -77,7 +77,9 @@ void Controller::addPulse2(string name, string Node1, string Node2, double perio
 void Controller::addPulse3(string name, string Node1, string Node2, double period, double value){
     // Implementation
 }
+void addPulse4(string name, string Node1, string Node2, double time) {
 
+}
 void Controller::addVcVs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
     circuit->create_new_VCVS(name, Node1, Node2, gain);
 }
