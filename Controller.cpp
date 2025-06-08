@@ -5,10 +5,10 @@
 #include "Controller.h"
 #include "Libraries.h"
 
-void addCircuit(string name){
+void Controller::addCircuit(string name){
 
 }
-Circuit* findCircuit(string name){
+Circuit* Controller::findCircuit(string name){
 
 }
 Element* Controller::findElement (string name){
