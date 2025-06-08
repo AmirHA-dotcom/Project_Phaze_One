@@ -13,6 +13,7 @@ private:
     string name;
     vector<pair<double, double>> voltage;   // voltage, time
     bool is_ground;
+    int elements_connected_count;
     int index;
 public:
     Node(string _name);
@@ -23,6 +24,8 @@ public:
     bool is_the_node_ground();
     void set_index(int i);
     int get_index();
+    void connect_element();
+    void disconnect_element();
 };
 
 
