@@ -55,6 +55,7 @@ public:
     void analyse_data();
     const vector<Element*> get_Elements();
     const vector<Node*> get_Nodes();
+    const vector<Element*> get_Elements_of_type(Element_Type type);
     void transient();
     void delete_element(string name);
 private:
