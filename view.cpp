@@ -157,7 +157,7 @@ bool addCCheck (vector<string> i) {
         return false;
     }
     if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
-        throw invalidⅭapaⅽity();
+        throw invalidCapacity();
     }
     return true;
 }
@@ -240,19 +240,64 @@ bool addCSCheck (vector<string> i) {
     return true;
 }
 bool addSinusoidalCheck (vector<string> i) {
-    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || !i[4].find("SIN") ){
         return false;
     }
-    if (i.size() != 7 && i[0] != "add" && i[1][0] != 'V' && !i[4].find("SIN")){
-        Error::notFindElement(i[4]);
-        return false;
-
-    }
-    if (!isDigit(i[5]) || !isDigit(i[6])) {
+//    if (!i[4].find("SIN") ){
+//        throw notFindInLibrary(i[4]);
+//    }
+    if (!isDigit(i[5])) {
         throw invalidSyntax();
     }
     return true;
 }
+bool addPulseCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || i[4] != "PULSE"){
+        return false;
+    }
+    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addVcvsCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'E'){
+        return false;
+    }
+    if (!isDigit(i[6])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addCcvsCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'G'){
+        return false;
+    }
+    if (!isDigit(i[6])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addVccsCheck (vector<string> i) {
+    if (i.size() != 6 || i[0] != "add" || i[1][0] != 'H'){
+        return false;
+    }
+    if (!isDigit(i[5])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addCcCsCheck (vector<string> i) {
+    if (i.size() != 6 || i[0] != "add" || i[1][0] != 'F'){
+        return false;
+    }
+    if (!isDigit(i[5])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+
+
 bool componentListCheck (vector<string> i) {
     if (i.size() != 2 || i[0] != ".list"){
         return false;
@@ -444,7 +489,7 @@ bool View::handleCircuitMenu (Controller* C) {
         C->addVS(i[1],i[2],i[3],toValue(i[4]));
         return true;
     }
-    if (addCccsCheck(i)) {
+    if (addCcCsCheck(i)) {
         if (C->findElement(i[4])) {
             throw elementExists(i[4]);
         }

@@ -8,7 +8,7 @@
 
 class Error {
 public:
-    static void notFindElement (string name);
+
 };
 
 class invalidSyntax : public exception {
@@ -39,6 +39,27 @@ private:
     std::string message;
 public:
     explicit elementExists(const std::string& name);
+    const char* what() const noexcept override;
+};
+class elementNotFind : public std::exception {
+private:
+    std::string message;
+public:
+    explicit elementNotFind(const std::string& name);
+    const char* what() const noexcept override;
+};
+class notFindInLibrary : public std::exception {
+private:
+    std::string message;
+public:
+    explicit notFindInLibrary(const std::string& name);
+    const char* what() const noexcept override;
+};
+class elementFind : public std::exception {
+private:
+    std::string message;
+public:
+    explicit elementFind(const std::string& name);
     const char* what() const noexcept override;
 };
 class elementFind : public std::exception {
