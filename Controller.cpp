@@ -140,6 +140,7 @@ void Controller::showAllElements(){
         cout << "No elements have been added yet" << endl;
         return;
     }
+    cout << "Elements List:" << endl;
     for (const auto& e : elements)
     {
         if (e == elements[elements.size() - 1])
@@ -169,6 +170,7 @@ void Controller::showResistors(){
         cout << "No elements have been added yet" << endl;
         return;
     }
+    cout << "Resistors List:" << endl;
     for (const auto& e : elements)
     {
         if (e == elements[elements.size() - 1])
@@ -189,6 +191,7 @@ void Controller::showInductors(){
         cout << "No elements have been added yet" << endl;
         return;
     }
+    cout << "Inductors List:" << endl;
     for (const auto& e : elements)
     {
         if (e == elements[elements.size() - 1])
@@ -199,7 +202,8 @@ void Controller::showInductors(){
         {
             cout << e->get_name() << ", ";
         }
-    }}
+    }
+}
 
 void Controller::showCapacitors(){
     vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Capacitor);
@@ -208,6 +212,7 @@ void Controller::showCapacitors(){
         cout << "No elements have been added yet" << endl;
         return;
     }
+    cout << "Capacitors List:" << endl;
     for (const auto& e : elements)
     {
         if (e == elements[elements.size() - 1])
@@ -227,6 +232,7 @@ void Controller::showDiodes(){
         cout << "No elements have been added yet" << endl;
         return;
     }
+    cout << "Diodes List:" << endl;
     for (const auto& e : elements)
     {
         if (e == elements[elements.size() - 1])
