@@ -21,15 +21,19 @@
 class Circuit
 {
 private:
-vector<Element*> Elements;
-vector<Node*> Nodes;
-vector<Node*> Active_Nodes;
-int total_unknowns;
-double time_step;
-double t_start;
-double t_end;
-Algorithems algorithems;
+    vector<Element*> Elements;
+    vector<Node*> Nodes;
+    vector<Node*> Active_Nodes;
+    int total_unknowns;
+    double time_step;
+    double t_start;
+    double t_end;
+    Algorithems algorithems;
+    string name;
 public:
+    Circuit(string _name) : name(_name) {total_unknowns = 0;}
+    void change_name(string new_name);
+    string get_name() const;
     void change_value_of_element(string name ,double value);
     void change_name_of_element(string old_name ,string new_name);
     void set_time_step(double ts);
