@@ -21,5 +21,5 @@ void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet
     G_triplets.emplace_back(a, i, 1.0);
     G_triplets.emplace_back(a, j, -1.0);
     // stamping in b
-    b[a] = value;
+    b[a] = get_value_at(current_time);
 }
