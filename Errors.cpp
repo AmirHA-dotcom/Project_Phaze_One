@@ -88,9 +88,22 @@ const char* invalidSchematicChoice::what() const noexcept {
     return "";
 }
 
+InvalidSyntaxForRenameNode::InvalidSyntaxForRenameNode(const std::string& oldName, const std::string& newName) {
+    message = "ERROR: Invalid syntax for renaming node '" + oldName + "' to '" + newName + "'.\n"
+               "Correct format:\n.rename node <old_name> <new_name>";
+}
+
 const char* InvalidSyntaxForRenameNode::what() const noexcept {
-    cout << "ERROR: Invalid syntax - correct format:\n"
-            ".rename node <old_name> <new_name>" << endl;
+    cout << message << endl;
+    return "";
+}
+
+
+circuitNotFind::circuitNotFind(const std::string& name) {
+    message = "Error: Cannot find \"" + name + "\" ;try a correct circuit name";
+}
+const char* circuitNotFind::what() const noexcept {
+    cout << message << endl;
     return "";
 }
 
@@ -99,10 +112,10 @@ const char* circuitExists::what() const noexcept {
     return "";
 }
 
-circuitNotFind::circuitNotFind(const std::string& name) {
-    message = "Error: Cannot Switch to \"" + name + "\"; circuit not found";
+circuitNottFind::circuitNottFind(const std::string& name) {
+    message = "Error: Cannot find \"" + name + "\" ;try a correct circuit name";
 }
-const char* circuitNotFind::what() const noexcept {
+const char* circuitNottFind::what() const noexcept {
     cout << message << endl;
     return "";
 }

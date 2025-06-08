@@ -93,10 +93,12 @@ public:
 };
 
 class InvalidSyntaxForRenameNode : public std::exception {
+private:
+    mutable std::string message;
 public:
-    const char *what() const noexcept override;
+    explicit InvalidSyntaxForRenameNode(const std::string& oldName, const std::string& newName);
+    const char* what() const noexcept override;
 };
-
 class circuitExists : public std::exception {
 public:
     const char *what() const noexcept override;
@@ -107,6 +109,14 @@ private:
     mutable std::string message;
 public:
     explicit circuitNotFind(const std::string& name);
+    const char* what() const noexcept override;
+};
+
+class circuitNottFind : public std::exception {
+private:
+    mutable std::string message;
+public:
+    explicit circuitNottFind(const std::string& name);
     const char* what() const noexcept override;
 };
 

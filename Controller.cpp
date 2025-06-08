@@ -240,6 +240,11 @@ void Controller::showDiodes(){
     }}
 
 void Controller::renameNode(string oldName, string newName){
+    Node* node = findNode(oldName);
+    if (node == nullptr) {
+        cerr << "ERROR: Node " << oldName << " not found." << endl;
+        return;
+    }
     cout << "SUCCESS: Node renamed from " << oldName << " to " << newName << endl;
 }
 

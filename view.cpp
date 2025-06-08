@@ -419,6 +419,7 @@ bool View::handleCircuitMenu (Controller* C) {
     }
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
+        cout << "dodo" << endl;
 
         if (C->findCircuit(i[2])) {
             throw circuitExists();
