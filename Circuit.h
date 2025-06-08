@@ -45,7 +45,6 @@ public:
     void create_new_resistor(string name, string node1_name, string node2_name, double resistance);
     void create_new_capacitor(string name, string node1_name, string node2_name, double capacitance);
     void create_new_inductor(string name, string node1_name, string node2_name, double inductor);
-    void create_new_voltage_source(string name, string node1_name, string node2_name, double voltage);
     void create_new_current_source(string name, string node1_name, string node2_name, double current);
     void create_new_VCVS(string name, string node1_name, string node2_name, double gain);
     void create_new_CCVS(string name, string node1_name, string node2_name, double gain);
@@ -53,6 +52,13 @@ public:
     void create_new_CCCS(string name, string node1_name, string node2_name, double gain);
     void create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number);
     void create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number);
+    void create_new_DC_voltage_source(string name, string node1_name, string node2_name, double voltage);
+    void create_new_Sin_voltage_source(string name, string node1_name, string node2_name, double offset, double amplitude, double frequency);
+    void create_new_Pulse_voltage_source(string name, string node1_name, string node2_name, double period, double value);
+    void create_new_Square_voltage_source(string name, string node1_name, string node2_name, double period, double value);
+    void create_new_Triangle_voltage_source(string name, string node1_name, string node2_name, double period, double value);
+    void create_new_Delta_voltage_source(string name, string node1_name, string node2_name, double time);
+
     void analyse_data();
     const vector<Element*> get_Elements();
     const vector<Node*> get_Nodes();
