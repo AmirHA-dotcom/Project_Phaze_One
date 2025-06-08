@@ -72,8 +72,6 @@ public:
     explicit Error55(const std::string& name);
     const char* what() const noexcept override;
 };
-
-
 class InappropriateInput : public exception {
 public:
     const char *what() const noexcept override;
@@ -89,13 +87,16 @@ public:
     const char *what() const noexcept override;
 };
 
-class rifhiurbirbjrvrj : public exception {
+class circuitExists : public exception {
 public:
     const char *what() const noexcept override;
 };
-class InapppropriateiiInput : public exception {
+class circuitNotFind : public std::exception {
+private:
+    std::string message;
 public:
-    const char *what() const noexcept override;
+    explicit circuitNotFind(const std::string& name);
+    const char* what() const noexcept override;
 };
 class InapproppriateiiInpput : public exception {
 public:
