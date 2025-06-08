@@ -34,6 +34,11 @@ double Node::get_voltage_in_time(double time)
     }
 }
 
+vector<pair<double, double>> Node::get_all_voltages()
+{
+    return voltage;
+}
+
 
 void Node::make_ground()
 {

@@ -20,6 +20,7 @@ public:
     string get_name() const;
     void change_name(string new_name);
     void set_voltage(double volt, double time);
+    vector<pair<double, double>> get_all_voltages();
     double get_voltage_in_time(double time);
     void make_ground();
     void return_to_normal();
