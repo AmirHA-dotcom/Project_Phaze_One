@@ -8,7 +8,7 @@
 
 class Error {
 public:
-    static void notFindElement (string name);
+
 };
 
 class invalidSyntax : public exception {
@@ -25,20 +25,43 @@ class invalidInductance : public exception {
 public:
     const char *what() const noexcept;
 };
-
 class invalidCapacity : public exception {
 public:
     const char *what() const noexcept override;
 };
-class invalidDiodeModel : public exception {
+class invalidDiodeModel : public std::exception {
+private:
+    std::string message;
 public:
-    const char *what() const noexcept override;
+    explicit invalidDiodeModel(const std::string& name);
+    const char* what() const noexcept override;
 };
 class elementExists : public std::exception {
 private:
     std::string message;
 public:
     explicit elementExists(const std::string& name);
+    const char* what() const noexcept override;
+};
+class elementNotFind : public std::exception {
+private:
+    std::string message;
+public:
+    explicit elementNotFind(const std::string& name);
+    const char* what() const noexcept override;
+};
+class notFindInLibrary : public std::exception {
+private:
+    std::string message;
+public:
+    explicit notFindInLibrary(const std::string& name);
+    const char* what() const noexcept override;
+};
+class elementFind : public std::exception {
+private:
+    std::string message;
+public:
+    explicit elementFind(const std::string& name);
     const char* what() const noexcept override;
 };
 class elementFind : public std::exception {

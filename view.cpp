@@ -69,7 +69,6 @@ bool isDigit(const std::string& s) {
     }
     return true;
 }
-
 bool isValidSpiceNumber(const std::string& input) {
     static const std::unordered_set<std::string> validSuffixes = {
             "f", "p", "n", "u", "m", "k", "meg", "g", "t"
@@ -132,10 +131,6 @@ bool addRCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || i[1][0] != 'R'){
         return false;
     }
-    if (i[0] != "add" && i[1][0] != 'R'){
-        Error::notFindElement(i[4]);
-        return false;
-    }
     if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
         throw invalidResistance();
 
@@ -152,12 +147,8 @@ bool addCCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || i[1][0] != 'C'){
         return false;
     }
-    if (i[0] != "add" && i[1][0] != 'C'){
-        Error::notFindElement(i[4]);
-        return false;
-    }
     if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
-        throw invalidⅭapaⅽity();
+        throw invalidCapacity();
     }
     return true;
 }
@@ -171,11 +162,6 @@ bool addICheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || i[1][0] != 'L'){
         return false;
     }
-    if (i[0] != "add" && i[1][0] != 'L'){
-        Error::notFindElement(i[4]);
-        return false;
-
-    }
     if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
         throw invalidInductance();
     }
@@ -188,12 +174,17 @@ bool delICheck (const vector<string> i) {
     return true;
 }
 bool addDCheck (vector<string> i) {
-    if (i.size() != 5 || i[0] != "add" || i[1][0] != 'D'){
+    if (i.size() != 5 || i[0] != "add"){
+        return false;
+    }
+    if (i[1][0] != 'D' && i[1][0] != 'R' && i[1][0] != 'L' && i[1][0] != 'C'){
+        throw notFindInLibrary(i[1]);
+    }
+    if (i[1][0] != 'D'){
         return false;
     }
     if (stod(i[4]) <= 0 || !isValidDiodeName(i[4]) ) {
-        Error::notFindElement(i[4]);
-        return false;
+        throw invalidDiodeModel(i[4]);
     }
     return true;
 }
@@ -240,19 +231,72 @@ bool addCSCheck (vector<string> i) {
     return true;
 }
 bool addSinusoidalCheck (vector<string> i) {
-    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || !i[4].find("SIN") ){
         return false;
     }
-    if (i.size() != 7 && i[0] != "add" && i[1][0] != 'V' && !i[4].find("SIN")){
-        Error::notFindElement(i[4]);
-        return false;
-
-    }
-    if (!isDigit(i[5]) || !isDigit(i[6])) {
+//    if (!i[4].find("SIN") ){
+//        throw notFindInLibrary(i[4]);
+//    }
+    if (!isDigit(i[5])) {
         throw invalidSyntax();
     }
     return true;
 }
+bool addPulseCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V'){
+        return false;
+    }
+    if (i[4] != "PULSE")
+        throw notFindInLibrary(i[1]);
+    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addVcVsCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'E'){
+        return false;
+    }
+    if (!isDigit(i[6])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addCcVsCheck (vector<string> i) {
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'G'){
+        return false;
+    }
+    if (!isDigit(i[6])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addVcCsCheck (vector<string> i) {
+    if (i.size() != 6 || i[0] != "add" || i[1][0] != 'H'){
+        return false;
+    }
+    if (!isDigit(i[5])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+bool addCcCsCheck (vector<string> i) {
+    if (i.size() != 6 || i[0] != "add"){
+        return false;
+    }
+    if (i[1][0] != 'F' && i[1][0] != 'G' && i[1][0] != 'E' && i[1][0] != 'H'){
+        throw notFindInLibrary(i[1]);
+    }
+    if (i[1][0] != 'F'){
+        return false;
+    }
+    if (!isDigit(i[5])) {
+        throw invalidSyntax();
+    }
+    return true;
+}
+
+
 bool componentListCheck (vector<string> i) {
     if (i.size() != 2 || i[0] != ".list"){
         return false;
@@ -394,7 +438,6 @@ bool View::handleCircuitMenu (Controller* C) {
         C->addGND(i[2]);
         return true;
     }
-
     if (addVSCheck(i)) {
         if (C->findElement(i[4])) {
             throw elementExists(i[4]);
@@ -413,9 +456,44 @@ bool View::handleCircuitMenu (Controller* C) {
         if (C->findElement(i[4])) {
             throw elementExists(i[4]);
         }
-        C->addSin(i[1],i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),toValue(i[5]),toValue(i[5]));
+        C->addSin(i[1],i[2],i[3],toValue(i[4].substr(4,i[4].size()-4)),
+                  toValue(i[5]),toValue(i[6].substr(0,i[6].size()-1)));
         return true;
-
+    }
+    if (addPulseCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addVcVsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addCcVsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addVcCsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
+    }
+    if (addCcCsCheck(i)) {
+        if (C->findElement(i[4])) {
+            throw elementExists(i[4]);
+        }
+        C->addVS(i[1],i[2],i[3],toValue(i[4]));
+        return true;
     }
     if (line == ".nodes"){
 
