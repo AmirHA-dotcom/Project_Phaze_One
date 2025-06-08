@@ -53,7 +53,8 @@ public:
     void create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number);
     void create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number);
     void analyse_data();
-    vector<Element*> get_Elements();
+    const vector<Element*> get_Elements();
+    const vector<Node*> get_Nodes();
     void transient();
     void delete_element(string name);
 private:

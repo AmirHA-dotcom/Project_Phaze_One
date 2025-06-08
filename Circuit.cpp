@@ -34,9 +34,14 @@ string Circuit::get_name() const
     return name;
 }
 
-vector<Element *> Circuit::get_Elements()
+const vector<Element *> Circuit::get_Elements()
 {
     return Elements;
+}
+
+const vector<Node *> Circuit::get_Nodes()
+{
+    return Nodes;
 }
 
 void Circuit::set_time_step(double ts)
