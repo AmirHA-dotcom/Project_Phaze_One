@@ -349,13 +349,13 @@ bool dcAnalysisCheck (vector<string> i) {
     return true;
 }
 bool printTranCheck (vector<string> i) {
-    if (i.size() < 7 || i[0] != ".print" || i[1] == "TRAN"){
+    if (i.size() < 3 || i[0] != ".print" || i[1] == "TRAN"){
         return false;
     }
     return true;
 }
 bool printDcCheck (vector<string> i) {
-    if (i.size() < 7 || i[0] != ".print" || i[1] == "DC"){
+    if (i.size() < 3 || i[0] != ".print" || i[1] == "DC"){
         return false;
     }
     return true;
@@ -611,23 +611,28 @@ bool View::handleAnalysisMenu (Controller* C) {
     }
 
     if (tranAnalysisCheck(i)) {
-        if (C->tranCheck(i[1], i[2], i[3].substr(1,i[3].size()-1), i[4].substr(1,i[4].size()-1))) {
-            throw invalidSyntax();
-        }
-
-
+        C->tranAnalysis(toValue(i[1]), toValue(i[2]),toValue(i[3].substr(1,i[3].size()-2))
+                        , toValue(i[4].substr(1,i[4].size()-2)));
+        return true;
     }
     if (dcAnalysisCheck(i)) {
-
-
+        C->DcAnalysis(toValue(i[1]), toValue(i[2]), toValue(i[3].substr(1,i[3].size()-2))
+                      , toValue(i[3].substr(1,i[3].size()-2)));
+        return true;
     }
-    if (printTranCheck(i)) {
-
-
+    if (printTranCheck(i)) {    //  .print TRAN V(in) V(out) I(R1) I(D1)
+        vector<string> orders;
+        for (size_t j = 2; j < i.size(); ++j) {
+            orders.push_back(i[j]);
+        }
+        C->tranAnalysisOrders(orders);
     }
-    if (printDcCheck(i)) {
-
-
+    if (printDcCheck(i)) {        //  .print DC V(in) V(out) I(R1) I(D1)
+        vector<string> orders;
+        for (size_t j = 2; j < i.size(); ++j) {
+            orders.push_back(i[j]);
+        }
+        C->DcAnalysisOrders(orders);
     }
         throw invalidSyntax();
 }

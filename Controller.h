@@ -33,8 +33,11 @@ public:
     void showCapacitors();
     void showDiodes();
     void renameNode(string oldName, string newName);;
-    tranCheck
-    DcCheck
+    void tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep);
+    void DcAnalysis(double sourceName, double startValue, double endValue, double increment);
+    void tranAnalysisOrders(vector<string> orders);
+    void DcAnalysisOrders(vector<string> orders);
+
 
 
     void delElement (Element* element);
