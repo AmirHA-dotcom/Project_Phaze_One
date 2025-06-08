@@ -172,21 +172,6 @@ void Circuit::create_new_inductor(string name, string node1_name, string node2_n
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], inductance));
 }
 
-void Circuit::create_new_voltage_source(string name, string node1_name, string node2_name, double voltage)
-{
-    int node1_index = node_index_finder_by_name(node1_name);
-    int node2_index = node_index_finder_by_name(node2_name);
-    if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
-    if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
-    node1_index = node_index_finder_by_name(node1_name);
-    node2_index = node_index_finder_by_name(node2_name);
-    Nodes[node1_index]->connect_element();
-    Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], voltage));
-}
-
 void Circuit::create_new_current_source(string name, string node1_name, string node2_name, double current)
 {
     int node1_index = node_index_finder_by_name(node1_name);
@@ -290,6 +275,21 @@ void Circuit::create_new_zener_diode(string name, string node1_name, string node
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+}
+
+void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_name, std::string node2_name, double voltage)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));
 }
 
 void Circuit::delete_element(string name)

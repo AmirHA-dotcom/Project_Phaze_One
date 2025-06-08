@@ -63,7 +63,7 @@ public:
     double get_value_at(double time, double time_step) const override;
 };
 
-class Delta_Dirac : Voltage_Source
+class Delta_Dirac : public Voltage_Source
 {
 private:
     double delta_value;
@@ -75,7 +75,7 @@ public:
     double get_value_at(double time, double time_step) const override;
 };
 
-class Square_Source : Voltage_Source
+class Square_Source : public Voltage_Source
 {
 private:
     double v_down;
