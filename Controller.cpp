@@ -11,6 +11,13 @@ void Controller::addCircuit(string name){
 Circuit* Controller::findCircuit(string name){
 
 }
+
+void Controller::renameCircuit(string name){
+
+}
+void Controller::deleteCircuit(string name){
+
+}
 Element* Controller::findElement (string name){
     for (auto& e : circuit->get_Elements())
     {
@@ -77,7 +84,7 @@ void Controller::addPulse2(string name, string Node1, string Node2, double perio
 void Controller::addPulse3(string name, string Node1, string Node2, double period, double value){
     // Implementation
 }
-void addPulse4(string name, string Node1, string Node2, double time) {
+void Controller::addPulse4(string name, string Node1, string Node2, double time) {
 
 }
 void Controller::addVcVs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
