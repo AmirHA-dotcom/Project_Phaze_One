@@ -70,10 +70,16 @@ const char  *InvalidSyntaxForRenameNode::what() const noexcept {
 const char  *circuitExists::what() const noexcept {
     cout << "Error: circuit is Exists!" << endl;
 }
-circuitNotFind::circuitNotFind(const std::string& name) {
+circuitNotFind::circuitNotFindforSwitch(const std::string& name) {
     message = "Error: Cannot Switch to \"" + name + "\"; circuit not found";
 }
-const char* circuitNotFind::what() const noexcept {
+const char* circuitNotFindforSwitch::what() const noexcept {
+    return message.c_str();
+}
+circuitNotFind::circuitNotFindforDelete(const std::string& name) {
+    message = "Error: Cannot delete to \"" + name + "\"; circuit not found";
+}
+const char* circuitNotFindforDelete::what() const noexcept {
     return message.c_str();
 }
 const char  *InapproppriateiiInpput::what() const noexcept {

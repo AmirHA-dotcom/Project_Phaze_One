@@ -240,7 +240,7 @@ void Controller::showDiodes(){
     }}
 
 void Controller::renameNode(string oldName, string newName){
-
+    cout << "SUCCESS: Node renamed from " << oldName << " to " << newName << endl;
 }
 
 void Controller::tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep){

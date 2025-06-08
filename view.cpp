@@ -530,6 +530,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
+        cout << "dodo" << endl;
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
@@ -618,7 +619,7 @@ bool View::handleCircuitMenu (Controller* C) {
     if (componentListCheck(i)) {
         if(i[1] == "Resistor") {
             C->showResistors();
-        } else if (i[1] == "Inⅾuⅽtor") {
+        } else if (i[1] == "Induⅽtor") {
             C->showInductors();
         } else if (i[1] == "Capacitor") {
             C->showCapacitors();
