@@ -65,11 +65,11 @@ public:
     const char* what() const noexcept override;
 };
 
-class Error5 : public std::exception {
+class Error55 : public std::exception {
 private:
     std::string message;
 public:
-    explicit Error5(const std::string& name);
+    explicit Error55(const std::string& name);
     const char* what() const noexcept override;
 };
 

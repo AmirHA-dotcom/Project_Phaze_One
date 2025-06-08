@@ -49,11 +49,11 @@ elementFind::elementFind(const std::string& name) {
 const char* elementFind::what() const noexcept {
     return message.c_str();
 }
-Error5::Error5(const std::string& name) {
+Error55::Error5(const std::string& name) {
     message = "Error: Cannot delete \"" + name + "\"; component not found";
     ///                  cout << "Error: Cannot delete capacitor; component not found" << endl;
 }
-const char* Error5::what() const noexcept {
+const char* Error55::what() const noexcept {
     return message.c_str();
 }
 
