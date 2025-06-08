@@ -246,7 +246,41 @@ void Controller::DcAnalysis(double sourceName, double startValue, double endValu
 }
 
 void Controller::tranAnalysisOrders(vector<string> orders){
-    // Implementation
+    vector<string> nodeVoltages;
+    vector<string> elementCurrents;
+    for (const auto& order : orders) {
+        if (order.substr(0, 2) == "V(") {
+            nodeVoltages.push_back(order.substr(2, order.size() - 3));
+        } else if (order.substr(0, 2) == "I(") {
+            elementCurrents.push_back(order.substr(2, order.size() - 3));
+        } else {
+            cerr << "Invalid order: " << order << endl;
+        }
+    }
+    if (nodeVoltages.empty() && elementCurrents.empty()) {
+        cerr << "No valid orders provided for transient analysis." << endl;
+        return;
+    }
+    for (auto i : nodeVoltages) {
+        Node* node = findNode(i);
+        if (node == nullptr) {
+            cerr << "Node " << i << " not found." << endl;
+            return;
+        }
+        else
+            for(auto jj : node->get_voltage)
+            cout << "Voltage at node " << i << "at time" << jj.second << ": " << jj.first << endl;
+    }
+//    for (auto i : elementCurrents) {
+//        Element* element = findElement(i);
+//        if (element == nullptr) {
+//            cerr << "Element " << i << " not found." << endl;
+//            return;
+//        }
+//        else
+//            for(auto jj : element->get_current)
+//            cout << "Current through element " << i << " at time" << jj.second << ": " << jj.first << endl;
+//    }
 }
 
 void Controller::DcAnalysisOrders(vector<string> orders){
