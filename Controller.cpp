@@ -268,7 +268,7 @@ void Controller::tranAnalysisOrders(vector<string> orders){
             return;
         }
         else
-            for(auto jj : node->get_voltage)
+            for(auto jj : node->get_all_voltages())
             cout << "Voltage at node " << i << "at time" << jj.second << ": " << jj.first << endl;
     }
 //    for (auto i : elementCurrents) {
