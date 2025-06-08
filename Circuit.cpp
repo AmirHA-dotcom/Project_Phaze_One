@@ -38,11 +38,12 @@ void Circuit::create_new_resistor(string name, string node1_name, string node2_n
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
-    if (node1_index == -1 || node2_index == -1)
-    {
-        cout << "One or both of the nodes can`t be found !!!" << endl;  // later add exception
-        return;
-    }
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
     Elements.push_back(new Resistor(name, Nodes[node1_index], Nodes[node2_index], resistance));
 }
 
@@ -50,31 +51,132 @@ void Circuit::create_new_capacitor(string name, string node1_name, string node2_
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
-    if (node1_index == -1 || node2_index == -1)
-    {
-        cout << "One or both of the nodes can`t be found !!!" << endl;  // later add exception
-        return;
-    }
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
     Elements.push_back(new Capacitor(name, Nodes[node1_index], Nodes[node2_index], capacitance));
 }
 void Circuit::create_new_inductor(string name, string node1_name, string node2_name, double inductance)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
-    if (node1_index == -1 || node2_index == -1)
-    {
-        cout << "One or both of the nodes can`t be found !!!" << endl;  // later add exception
-        return;
-    }
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], inductance));
 }
 
-void
-Circuit::create_new_current_source(std::string name, std::string node1_name, std::string node2_name, double current)
+void Circuit::create_new_voltage_source(string name, string node1_name, string node2_name, double voltage)
 {
-
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], voltage));
 }
 
+void Circuit::create_new_current_source(string name, string node1_name, string node2_name, double current)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], current));
+}
+
+void Circuit::create_new_VCCS(string name, string node1_name, string node2_name, double gain)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+}
+
+void Circuit::create_new_CCCS(string name, string node1_name, string node2_name, double gain)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+}
+
+void Circuit::create_new_VCVS(string name, string node1_name, string node2_name, double gain)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+}
+
+void Circuit::create_new_CCVS(string name, string node1_name, string node2_name, double gain)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+}
+
+void
+Circuit::create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+}
+
+void
+Circuit::create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+}
 
 void Circuit::analyse_data()
 {
@@ -175,7 +277,8 @@ void Circuit::transient()
             }
         }
         // if it didnt converge in time the circuit is not solvable(not my problem :)!)
-        if (!converged) {
+        if (!converged)
+        {
             cout << "Error: Newton-Raphson failed to converge at time t = " << t << endl;
             return;
         }
