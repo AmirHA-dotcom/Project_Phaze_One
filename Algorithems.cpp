@@ -4,51 +4,71 @@
 
 #include "Algorithems.h"
 
-float Algorithems::determinant(vector<vector<double>> matrix)
+vector<double> Algorithems::solve_LU(vector<vector<double>> G, vector<double> I)
 {
-    int n = matrix.size();
-    double det = 1;
+    int n = G.size();
+
     for (int i = 0; i < n; i++)
     {
+        // the row with the largest element in the current column
         int max_row = i;
         for (int k = i + 1; k < n; k++)
         {
-            if (abs(matrix[k][i]) > abs(matrix[max_row][i]))
+            if (abs(G[k][i]) > abs(G[max_row][i]))
             {
                 max_row = k;
             }
         }
+
+        // swaping the pivot row with the current row in both G and I
         if (max_row != i)
         {
-            swap(matrix[i], matrix[max_row]);
-            det *= -1;
+            swap(G[i], G[max_row]);
+            swap(I[i], I[max_row]);
         }
+
+        // singular matrix
+        if (abs(G[i][i]) < 1e-12)
+        {
+            cerr << "Error: Matrix is singular. Cannot solve." << endl;
+            return {};
+        }
+
+        // performing the elimination for the rows below the pivot
         for (int j = i + 1; j < n; j++)
         {
-            double factor = matrix[j][i] / matrix[i][i];
-            for (int k = i; k < n; k++)
+            double factor = G[j][i] / G[i][i];
+            G[j][i] = factor;
+            for (int k = i + 1; k < n; k++)
             {
-                matrix[j][k] -= factor * matrix[i][k];
+                G[j][k] -= factor * G[i][k];
             }
         }
-        det *= matrix[i][i];
     }
-    return det;
-}
 
-vector<double> Algorithems::solve_cramer(vector<vector<double>> G, vector<double> I)
-{
-    int n = G.size();
-    vector<double> solution(n);
-    double det_G = determinant(G);
-
-    for (int i = 0; i < n; i++) {
-        auto G_temp = G;
-        for (int j = 0; j < n; j++) {
-            G_temp[j][i] = I[j];
+    // solve for an intermediate solution y and store it back into I.
+    vector<double> y(n);
+    for (int i = 0; i < n; i++)
+    {
+        double sum = 0.0;
+        for (int j = 0; j < i; j++)
+        {
+            sum += G[i][j] * y[j];
         }
-        float det_temp = determinant(G_temp);
-        solution[i] = det_temp / det_G;
+        y[i] = I[i] - sum;
     }
-    return solution;
+
+    // solve for the final solution x using the upper-triangular matrix U.
+    vector<double> x(n);
+    for (int i = n - 1; i >= 0; i--)
+    {
+        double sum = 0.0;
+        for (int j = i + 1; j < n; j++)
+        {
+            sum += G[i][j] * x[j];
+        }
+        x[i] = (y[i] - sum) / G[i][i];
+    }
+
+    return x;
 }
