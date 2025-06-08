@@ -363,14 +363,16 @@ bool printDcCheck (vector<string> i) {
 
 
 bool View::handleMainMenu (Controller* C) {
-    cout << " 1 -> circuitMenuu" << endl;
+    cout << " 1 -> circuitMenu" << endl;
     cout << " 2 -> fileMenu" << endl;
     cout << " 3 -> analysisMenu" << endl;
     string s;
     getline(cin,s);
     mainMenu = false;
-    if (s == "1")
+    if (s == "1") {
         circuitMenu = true;
+        cout << "dodo";
+    }
     else if (s == "2")
         fileMenu = true;
     else if (s == "3") {
@@ -665,6 +667,7 @@ bool View::inputHandler (Controller* C) {
     if (mainMenu)
         return handleMainMenu(C);
     if (circuitMenu) {
+        cout << "dodo" << endl;
         return handleCircuitMenu(C);
     }
     if (fileMenu)
