@@ -9,7 +9,7 @@
 #include "Circuit.h"
 #include "Controller.h"
 // we have  NULL function here !!!
-static vector<string> View::splitString(const string& input) {
+vector<string> View::splitString(const string& input) {
     vector<string> words;
     istringstream iss(input);
     string word;
