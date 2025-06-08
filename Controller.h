@@ -7,8 +7,11 @@
 
 #include "Element.h"
 #include "Circuit.h"
+#include "Libraries.h"
+
 class Controller {
 public:
+    vector<Circuit*> circuits;
     Circuit* circuit;
     Element* findElement (string name);
     Element* findNode (string name);
@@ -33,20 +36,18 @@ public:
     void showInductors();
     void showCapacitors();
     void showDiodes();
-    void renameNode(string oldName, string newName);;
+    void renameNode(string oldName, string newName);
     void tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep);
     void DcAnalysis(double sourceName, double startValue, double endValue, double increment);
     void tranAnalysisOrders(vector<string> orders);
     void DcAnalysisOrders(vector<string> orders);
-
-
-
     void delElement (Element* element);
 
     void showSchematics();
     void showFile(int num);
     bool validSchematicChoice(string s);
     void handleNewFile(string path);
+
 };
 
 

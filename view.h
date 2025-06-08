@@ -14,11 +14,7 @@ class View {
     bool fileMenu = false;
     bool analysisMenu = false;
 
-    vector<string> splitString(const string& input);
-
-
 public:
-
     bool inputHandler (Controller* C);
     bool handleMainMenu (Controller* C);
     bool handleAnalysisMenu (Controller* C);

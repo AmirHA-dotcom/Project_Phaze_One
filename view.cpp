@@ -9,7 +9,7 @@
 #include "Circuit.h"
 #include "Controller.h"
 // we have  NULL function here !!!
-vector<string> View::splitString(const string& input) {
+vector<string> splitString(const string& input) {
     vector<string> words;
     istringstream iss(input);
     string word;
@@ -373,8 +373,10 @@ bool View::handleMainMenu (Controller* C) {
         circuitMenu = true;
     if (s == "2")
         fileMenu = true;
-    if (s == "3")
+    if (s == "3") {
         analysisMenu = true;
+        cout << "Enter the name of the circuit to load: ";
+    }
     else {
         mainMenu = true;
         throw invalidSyntax();
@@ -395,6 +397,7 @@ bool View::handleCircuitMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
+    if (line == "")
     if (addRCheck(i)) {
         if (C->findElement(i[1])) {
             throw elementExists(i[1]);
@@ -640,8 +643,9 @@ bool View::handleAnalysisMenu (Controller* C) {
 bool View::inputHandler (Controller* C) {
     if (mainMenu)
         return handleMainMenu(C);
-    if (circuitMenu)
+    if (circuitMenu) {
         return handleCircuitMenu(C);
+    }
     if (fileMenu)
         return handleFileMenu(C);
     if (analysisMenu)
