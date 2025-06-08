@@ -21,15 +21,19 @@
 class Circuit
 {
 private:
-vector<Element*> Elements;
-vector<Node*> Nodes;
-vector<Node*> Active_Nodes;
-int total_unknowns;
-double time_step;
-double t_start;
-double t_end;
-Algorithems algorithems;
+    vector<Element*> Elements;
+    vector<Node*> Nodes;
+    vector<Node*> Active_Nodes;
+    int total_unknowns;
+    double time_step;
+    double t_start;
+    double t_end;
+    Algorithems algorithems;
+    string name;
 public:
+    Circuit(string _name) : name(_name) {total_unknowns = 0;}
+    void change_name(string new_name);
+    string get_name() const;
     void change_value_of_element(string name ,double value);
     void change_name_of_element(string old_name ,string new_name);
     void set_time_step(double ts);
@@ -49,7 +53,8 @@ public:
     void create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number);
     void create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number);
     void analyse_data();
-    vector<Element*> get_Elements();
+    const vector<Element*> get_Elements();
+    const vector<Node*> get_Nodes();
     void transient();
     void delete_element(string name);
 private:

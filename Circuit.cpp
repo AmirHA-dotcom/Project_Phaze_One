@@ -24,9 +24,24 @@ int Circuit::element_index_finder_by_name(const string& name)
     return -1;
 }
 
-vector<Element *> Circuit::get_Elements()
+void Circuit::change_name(string new_name)
+{
+    name = new_name;
+}
+
+string Circuit::get_name() const
+{
+    return name;
+}
+
+const vector<Element *> Circuit::get_Elements()
 {
     return Elements;
+}
+
+const vector<Node *> Circuit::get_Nodes()
+{
+    return Nodes;
 }
 
 void Circuit::set_time_step(double ts)
