@@ -5,6 +5,7 @@
 #include "Libraries.h"
 #include "view.h"
 #include "Controller.h"
+
 int main() {
     View* V = new View;
     Controller* C = new Controller;
