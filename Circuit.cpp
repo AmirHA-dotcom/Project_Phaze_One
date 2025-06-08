@@ -44,6 +44,15 @@ const vector<Node *> Circuit::get_Nodes()
     return Nodes;
 }
 
+const vector<Element *> Circuit::get_Elements_of_type(Element_Type type)
+{
+    vector<Element*> elements;
+    for (auto* e : Elements)
+        if (e->get_type() == type)
+            elements.push_back(e);
+    return elements;
+}
+
 void Circuit::set_time_step(double ts)
 {
     time_step = ts;
