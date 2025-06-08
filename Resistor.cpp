@@ -4,9 +4,9 @@
 
 #include "Resistor.h"
 
-double Resistor::get_current()
+double Resistor::get_current(double time)
 {
-    return (node1->get_voltage() - node2->get_voltage())/value;
+    return (node1->get_voltage_in_time(time) - node2->get_voltage_in_time(time))/value;
 }
 
 void Resistor::display_info()
