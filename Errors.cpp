@@ -68,11 +68,10 @@ const char  *InvalidSyntaxForRenameNode::what() const noexcept {
             ".rename node <old_name> <new_name>" << endl;
 }
 const char  *circuitExists::what() const noexcept {
-    cout << "Error: circuitExists" << endl;
+    cout << "Error: circuit is Exists!" << endl;
 }
 circuitNotFind::circuitNotFind(const std::string& name) {
-    message = "Error: Cannot delete \"" + name + "\"; component not found";
-    ///                  cout << "Error: Cannot delete capacitor; component not found" << endl;
+    message = "Error: Cannot Switch to \"" + name + "\"; Circuit not found";
 }
 const char* circuitNotFind::what() const noexcept {
     return message.c_str();
