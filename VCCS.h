@@ -16,7 +16,7 @@ private:
 public:
     VCCS(string _name, Element_Type _type, Node* _node1, Node* _node2, double _value, Node* ctrl1, Node* ctrl2) :
     Element(_name, Element_Type::VC_Current_Source, _node1, _node2, _value) {ctrl_node1 = ctrl1; ctrl_node2 = ctrl2;}
-    void stamp(double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
+    void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
 };
 
 
