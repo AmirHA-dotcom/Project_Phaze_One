@@ -42,4 +42,8 @@ add_executable(Project_Phaze_One
         Controller.cpp
         Controller.h
         main.cpp
+        Real_Diode.h
+        Real_Diode.cpp
+        Zener_Diode.h
+        Zener_Diode.cpp
 )
