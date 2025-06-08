@@ -18,7 +18,7 @@ public:
     Node(string _name);
     string get_name() const;
     void set_voltage(double volt, double time);
-    double get_voltage();
+    //double get_voltage();
     void make_ground();
     bool is_the_node_ground();
     void set_index(int i);

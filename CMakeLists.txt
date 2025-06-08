@@ -3,6 +3,10 @@ project(Project_Phaze_One)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Collect all .cpp files in the project root
+file(GLOB PROJECT_SOURCES
+        "${CMAKE_SOURCE_DIR}/*.cpp"
+)
 add_executable(Project_Phaze_One
         Node.cpp
         Node.h
@@ -16,6 +20,16 @@ add_executable(Project_Phaze_One
         Inductor.h
         Voltage_Source.cpp
         Voltage_Source.h
+        Current_Source.cpp
+        Current_Source.h
+        CCCS.cpp
+        CCCS.h
+        CCVS.cpp
+        CCVS.h
+        VCCS.cpp
+        VCCS.h
+        VCVS.cpp
+        VCVS.h
         Circuit.cpp
         Circuit.h
         Libraries.h
@@ -27,8 +41,5 @@ add_executable(Project_Phaze_One
         Errors.h
         Controller.cpp
         Controller.h
-        Current_Source.cpp
-        Current_Source.h
         main.cpp
-        ../../Desktop/OOP/Project_Phaze_One/Errors.h
 )
