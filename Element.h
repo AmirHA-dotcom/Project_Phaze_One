@@ -23,6 +23,7 @@ public:
     pair<Node*, Node*> get_nodes();
     double get_voltage_at_time(double time);
     double get_value() const {return value;}
+    Element_Type get_type() const {return type;}
     virtual void display_info() = 0;
     virtual void change_value(double new_value) = 0;
     virtual void change_name(string new_name) = 0;
