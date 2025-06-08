@@ -47,7 +47,7 @@ void Circuit::change_name_of_node(string old_name, string new_name)
         cout << "Node not found" << endl;
         return;
     }
-
+    Nodes[node_index]->change_name(new_name);
 }
 
 const vector<Node *> Circuit::get_Nodes()
