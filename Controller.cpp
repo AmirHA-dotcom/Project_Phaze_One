@@ -8,21 +8,24 @@
 void Controller::addCircuit(string name){
 
 }
-void Controller::deleteCircuit(string name){
-
-}
-void Controller::renameCircuit(string name){
-
-}
-
 Circuit* Controller::findCircuit(string name){
 
 }
 Element* Controller::findElement (string name){
+    for (auto& e : circuit->get_Elements())
+    {
+        if (e->get_name() == name)
+            return e;
+    }
     return nullptr;
 }
 
-Element* Controller::findNode (string name){
+Node* Controller::findNode (string name){
+    for (auto& n : circuit->get_Nodes())
+    {
+        if (n->get_name() == name)
+            return n;
+    }
     return nullptr;
 }
 
