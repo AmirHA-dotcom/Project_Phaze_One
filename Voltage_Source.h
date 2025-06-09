@@ -13,9 +13,10 @@ protected:
     int aux_index;
 public:
     Voltage_Source(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Voltage_Source, _node1, _node2, 0.0) {}
-    void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
+    virtual void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
     void set_aux_index(int i);
     virtual double get_value_at(double time, double time_step) const = 0;
+
 };
 
 class DC_Source : public Voltage_Source
@@ -25,7 +26,7 @@ private:
 public:
     DC_Source(string _name, Node* _node1, Node* _node2, double _value)
             : Voltage_Source(_name, _node1, _node2, 0.0), dc_value(_value) {}
-
+    void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
     double get_value_at(double time, double time_step) const override;
 };
 

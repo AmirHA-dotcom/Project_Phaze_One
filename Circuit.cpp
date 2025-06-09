@@ -289,7 +289,8 @@ void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_n
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));
+    //auto dc = new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage);
+    Elements.push_back(dc);
 }
 
 void Circuit::delete_element(string name)
