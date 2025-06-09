@@ -3,6 +3,28 @@
 //
 
 #include "Circuit.h"
+#include <string>
+
+void Circuit::create_new_Sin_voltage_source(std::string name, std::string n1, std::string n2, double amp, double freq, double phase) {
+    // implementation
+}
+
+void Circuit::create_new_Delta_voltage_source(std::string name, std::string n1, std::string n2, double value) {
+    // implementation
+}
+
+void Circuit::create_new_Pulse_voltage_source(std::string name, std::string n1, std::string n2, double v1, double v2) {
+    // implementation
+}
+
+void Circuit::create_new_Square_voltage_source(std::string name, std::string n1, std::string n2, double v1, double v2) {
+    // implementation
+}
+
+void Circuit::create_new_Triangle_voltage_source(std::string name, std::string n1, std::string n2, double v1, double v2) {
+    // implementation
+}
+
 
 int Circuit::node_index_finder_by_name(const string& name)
 {
