@@ -675,9 +675,9 @@ bool View::handleFileMenu (Controller* C) {
 }
 bool View::handleAnalysisMenu (Controller* C) {
     string line;
-    getline(cin,line);
     if (C->circuit == nullptr)
         cout << "Enter the name of the circuit in form <circuit> <name> to load: " << endl;
+    getline(cin,line);
     vector<string> i = splitString(line);
     if (line == "end") {
         cout << "program ended!" << endl;
@@ -698,6 +698,14 @@ bool View::handleAnalysisMenu (Controller* C) {
             throw circuitNotFind(i[2]);
         }
         C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (i.size() == 3 && i[0] == "rename") {
+        auto c = C->findCircuit(i[1]);
+        if (!C->findCircuit(i[1])) {
+            throw circuitNotFind(i[1]);
+        }
+        C->renameCircuit(c,i[2]);
         return true;
     }
     if (line == "show circuits") {

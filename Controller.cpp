@@ -289,16 +289,16 @@ void Controller::tranAnalysisOrders(vector<string> orders){
             for(auto jj : node->get_all_voltages())
             cout << "Voltage at node " << i << "at time" << jj.second << ": " << jj.first << endl;
     }
-//    for (auto i : elementCurrents) {
-//        Element* element = findElement(i);
-//        if (element == nullptr) {
-//            cerr << "Element " << i << " not found." << endl;
-//            return;
-//        }
-//        else
-//            for(auto jj : element->get_current)
-//            cout << "Current through element " << i << " at time" << jj.second << ": " << jj.first << endl;
-//    }
+    for (auto i : elementCurrents) {
+        Element* element = findElement(i);
+        if (element == nullptr) {
+            cerr << "Element " << i << " not found." << endl;
+            return;
+        }
+        else
+            for(auto jj : element.)
+            cout << "Current through element " << i << " at time" << jj.second << ": " << jj.first << endl;
+    }
 }
 
 void Controller::DcAnalysisOrders(vector<string> orders){
