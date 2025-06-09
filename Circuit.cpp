@@ -440,6 +440,8 @@ void Circuit::analyse_data()
     {
         if (!Nodes[i]->is_the_node_ground())
             Active_Nodes.push_back(Nodes[i]);
+        else
+            Nodes[i]->set_index(-1);
     }
     // indexing nodes
     for (int i = 0; i < Active_Nodes.size(); i++)
@@ -584,5 +586,5 @@ void Circuit::transient()
             }
         }
     }
-    cout << "transient worked! DEBUG" << endl;
+    cout << "transient worked!" << endl;
 }
