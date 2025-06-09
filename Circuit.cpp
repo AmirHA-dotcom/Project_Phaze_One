@@ -475,6 +475,33 @@ bool check_convergence(const vector<double>& b, double tolerance = 1e-9)
     return norm < tolerance;
 }
 
+// --- Helper function for matrix-vector multiplication (needed for the fix) ---
+vector<double> multiply_matrix_vector(const vector<vector<double>>& A, const vector<double>& x)
+{
+    int n = A.size();
+    vector<double> result(n, 0.0);
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < n; ++j)
+        {
+            result[i] += A[i][j] * x[j];
+        }
+    }
+    return result;
+}
+
+// --- Helper function for vector subtraction ---
+vector<double> subtract_vectors(const vector<double>& a, const vector<double>& b)
+{
+    int n = a.size();
+    vector<double> result(n, 0.0);
+    for (int i = 0; i < n; ++i)
+    {
+        result[i] = a[i] - b[i];
+    }
+    return result;
+}
+
 void Circuit::transient()
 {
     const int max_NR_its = 100;
@@ -484,63 +511,62 @@ void Circuit::transient()
     // outer loop that goes in time
     for (double t = t_start; t < t_end; t += time_step)
     {
-        // the best first guess for the current time step's solution is the previous one
         vector<double> x_k = x_previous;
         bool converged = false;
 
-        // this inner loop solves the circuits int a single time (NR)
         for (int k = 0; k < max_NR_its; ++k)
         {
-            // making the linearized system using the stamps
+            // 1. Build the Jacobian Matrix G and the RHS vector b_rhs from stamps.
+            // Your stamp functions are written to produce the RHS of a linear system, which is perfect.
             vector<Triplet> triplets;
-            vector<double>  b(total_unknowns, 0.0);
-
-            for (auto* e : Elements)
-            {
-                e->stamp(t, time_step, triplets, b, x_k, x_previous);
+            vector<double>  b_rhs(total_unknowns, 0.0);
+            for (auto* e : Elements) {
+                e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
             }
-
-            // making G
             vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
-            for (const auto& tr : triplets)
-            {
+            for (const auto& tr : triplets) {
                 G[tr.Row][tr.Column] += tr.Value;
             }
 
-            // checking for convergence _ if the sum of all current errors is close to zero thats the answer
-            if (check_convergence(b))
+            // 2. Calculate the residual error: F(x_k) = (G * x_k) - b_rhs
+            // This is the crucial step that makes the NR loop correct.
+            vector<double> G_times_xk = multiply_matrix_vector(G, x_k);
+            vector<double> residual = subtract_vectors(G_times_xk, b_rhs);
+
+            // checking convergence based on the residual error
+            if (check_convergence(residual))
             {
                 converged = true;
                 break;
             }
 
-            // we solve for delta_x so it will possibly converge
-            for(double& val : b) { val = -val; }
-
-            vector<double> delta_x = algorithems.solve_LU(G, b);
+            // solving and updating
+            for(double& val : residual)
+            {
+                val = -val;
+            }
+            vector<double> delta_x = algorithems.solve_LU(G, residual);
 
             if (delta_x.empty())
             {
-                break;
+                break; // Solver failed
             }
 
-            // guess of the solution
+            // 5. Update the solution guess
             for(int i = 0; i < x_k.size(); ++i)
             {
                 x_k[i] += delta_x[i];
             }
         }
-        // if it didnt converge in time the circuit is not solvable(not my problem :)!)
-        if (!converged)
-        {
+
+        if (!converged) {
             cout << "Error: Newton-Raphson failed to converge at time t = " << t << endl;
             return;
         }
 
-        // updating history
         x_previous = x_k;
 
-        // saving data in the time
+        // Save results...
         for (auto* n : Active_Nodes)
         {
             n->set_voltage(x_previous[n->get_index()], t);
@@ -550,26 +576,20 @@ void Circuit::transient()
             if (auto* v_source = dynamic_cast<Voltage_Source*>(e))
             {
                 int current_index = v_source->get_aux_index();
-                // getting the current from matrix
                 double current = x_previous[current_index];
-                // saving
                 v_source->set_current(current, t);
             }
-            // saving current for VCVS
             else if (auto* vcvs = dynamic_cast<VCVS*>(e))
             {
                 int current_index = vcvs->get_aux_index();
                 double current = x_previous[current_index];
                 vcvs->set_current(current, t);
             }
-            // real diode
             else if (auto* diode = dynamic_cast<Real_Diode*>(e))
             {
-                // calculating the current
                 double current = diode->calculate_current(x_previous);
                 diode->set_current(current, t);
             }
-            // zener diode
             else if (auto* zener = dynamic_cast<Zener_Diode*>(e))
             {
                 double current = zener->calculate_current(x_previous);
