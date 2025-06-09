@@ -132,9 +132,8 @@ bool addRCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || i[1][0] != 'R'){
         return false;
     }
-    if (!isDigit(i[4]) || stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
+    if ( !isValidSpiceNumber(i[4]) ) {
         throw invalidResistance();
-
     }
     return true;
 }
@@ -472,6 +471,7 @@ bool View::handleCircuitMenu (Controller* C) {
         auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
+            return true;
         }
         C->delElement(r);
         return true;
