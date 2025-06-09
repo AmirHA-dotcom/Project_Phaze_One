@@ -210,6 +210,7 @@ bool addVSCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || !i[1].find("VoltageSource")){
         return false;
     }
+    cout << "error" << endl;
 //    if (i[0] != "add" && i[1][0] != 'C'){
 //        Error::notFindElement(i[4]);
 //    }
