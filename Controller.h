@@ -14,6 +14,8 @@ class Controller {
 private:
     File_Handler file_handler;
     double time_step = 0;
+    double start_time = 0;
+    double end_time = 0;
 public:
     vector<Circuit *> circuits;
     Circuit *circuit;

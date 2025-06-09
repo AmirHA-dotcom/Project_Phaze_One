@@ -256,6 +256,8 @@ void Controller::renameNode(string oldName, string newName){
 
 void Controller::tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep){
     time_step = stepTime;
+    start_time = startTime;
+    end_time = stopTime;
     circuit->analyse_data();
     circuit->transient();
 }
@@ -288,7 +290,8 @@ void Controller::tranAnalysisOrders(vector<string> orders){
         }
         else
             for(auto jj : node->get_all_voltages())
-            cout << "Voltage at node " << i << "at time" << jj.second << ": " << jj.first << endl;
+            cout << " " << jj.first;
+            cout << endl;
     }
     for (auto i : elementCurrents) {
         Element* element = findElement(i);
@@ -297,8 +300,8 @@ void Controller::tranAnalysisOrders(vector<string> orders){
             return;
         }
         else
-            for(auto jj )
-            cout << "Current through element " << i << " at time" << jj.second << ": " << jj.first << endl;
+            for(double t = start_time; t < end_time; t += time_step)
+            cout << "Current through element " << i << " at time" << t << ": " << element->get_current(t, time_step) << endl;
     }
 }
 
