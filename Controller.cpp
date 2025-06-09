@@ -95,19 +95,19 @@ void Controller::addPulse4(string name, string Node1, string Node2, double time)
     circuit->create_new_Delta_voltage_source(name, Node1, Node2, time);
 }
 void Controller::addVcVs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
-    circuit->create_new_VCVS(name, Node1, Node2, gain);
+    circuit->create_new_VCVS(name, Node1, Node2, CtrlNode1, CtrlNode2, gain);
 }
 
 void Controller::addVcCs (string name, string Node1, string Node2,string CtrlNode1, string CtrlNode2, double gain){
-    circuit->create_new_VCCS(name, Node1, Node2, gain);
+    circuit->create_new_VCCS(name, Node1, Node2, CtrlNode1, CtrlNode2, gain);
 }
 
 void Controller::addCcVs (string name, string Node1, string Node2,string CtrlNode, double gain){
-    circuit->create_new_CCVS(name, Node1, Node2, gain);
+    //circuit->create_new_CCVS(name, Node1, Node2, CtrlNode1, CtrlNode2, gain);
 }
 
 void Controller::addCcCs (string name, string Node1, string Node2,string CtrlNode, double gain){
-    circuit->create_new_CCCS(name, Node1, Node2, gain);
+    //circuit->create_new_CCCS(name, Node1, Node2, CtrlNode1, CtrlNode2, gain);
 }
 
 void Controller::showNodes(){
