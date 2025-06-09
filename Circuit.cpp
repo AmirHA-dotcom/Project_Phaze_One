@@ -198,7 +198,7 @@ void Circuit::create_new_current_source(string name, string node1_name, string n
     Elements.push_back(new Current_Source(name, Nodes[node1_index], Nodes[node2_index], current));
 }
 
-void Circuit::create_new_VCCS(string name, string node1_name, string node2_name, double gain)
+void Circuit::create_new_VCCS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -210,10 +210,10 @@ void Circuit::create_new_VCCS(string name, string node1_name, string node2_name,
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+    Elements.push_back(new VCCS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
-void Circuit::create_new_CCCS(string name, string node1_name, string node2_name, double gain)
+void Circuit::create_new_CCCS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -225,10 +225,10 @@ void Circuit::create_new_CCCS(string name, string node1_name, string node2_name,
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+    Elements.push_back(new CCCS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
-void Circuit::create_new_VCVS(string name, string node1_name, string node2_name, double gain)
+void Circuit::create_new_VCVS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -240,10 +240,10 @@ void Circuit::create_new_VCVS(string name, string node1_name, string node2_name,
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+    Elements.push_back(new VCVS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
-void Circuit::create_new_CCVS(string name, string node1_name, string node2_name, double gain)
+void Circuit::create_new_CCVS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -255,7 +255,7 @@ void Circuit::create_new_CCVS(string name, string node1_name, string node2_name,
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], gain));
+    Elements.push_back(new CCVS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
 void Circuit::create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number)
@@ -285,7 +285,7 @@ void Circuit::create_new_zener_diode(string name, string node1_name, string node
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+    Elements.push_back(new Zener_Diode(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
 }
 
 void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_name, std::string node2_name, double voltage)

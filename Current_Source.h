@@ -7,7 +7,7 @@
 
 #include "Element.h"
 
-class Current_Source : Element
+class Current_Source : public Element
 {
 public:
     Current_Source(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Current_Source, _node1, _node2, _value) {}

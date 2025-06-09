@@ -49,10 +49,10 @@ public:
     void create_new_capacitor(string name, string node1_name, string node2_name, double capacitance);
     void create_new_inductor(string name, string node1_name, string node2_name, double inductor);
     void create_new_current_source(string name, string node1_name, string node2_name, double current);
-    void create_new_VCVS(string name, string node1_name, string node2_name, double gain);
-    void create_new_CCVS(string name, string node1_name, string node2_name, double gain);
-    void create_new_VCCS(string name, string node1_name, string node2_name, double gain);
-    void create_new_CCCS(string name, string node1_name, string node2_name, double gain);
+    void create_new_VCVS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain);
+    void create_new_CCVS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain);
+    void create_new_VCCS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain);
+    void create_new_CCCS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain);
     void create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number);
     void create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number);
     void create_new_DC_voltage_source(string name, string node1_name, string node2_name, double voltage);
