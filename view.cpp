@@ -468,6 +468,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delRCheck(i)) {
+        cout << "dood" << endl;
         auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
