@@ -739,7 +739,9 @@ bool View::handleAnalysisMenu (Controller* C) {
         for (size_t j = 2; j < i.size(); ++j) {
             orders.push_back(i[j]);
         }
+        cout << "jojo" < endl;
         C->tranAnalysisOrders(orders);
+        return true;
     }
     if (printDcCheck(i)) {        //  .print DC V(in) V(out) I(R1) I(D1)
         vector<string> orders;
@@ -747,6 +749,8 @@ bool View::handleAnalysisMenu (Controller* C) {
             orders.push_back(i[j]);
         }
         C->DcAnalysisOrders(orders);
+        return true;
+
     }
     cout << "dodo" << endl;
         throw invalidSyntax();
