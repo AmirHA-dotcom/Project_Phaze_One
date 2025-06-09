@@ -177,7 +177,8 @@ bool addDCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add"){
         return false;
     }
-    if (i[1][0] != 'D' && i[1][0] != 'R' && i[1][0] != 'L' && i[1][0] != 'C'){
+    if (i[1][0] != 'D' && i[1][0] != 'R' && i[1][0] != 'L' && i[1][0] != 'C' && i[1][0] != 'G' && i[1][0] != 'E' &&
+        i[1][0] != 'F' && i[1][0] != 'V' && i[1][0] != 'H' && i[1][0] != 'C'){
         throw notFindInLibrary(i[1]);
     }
     if (i[1][0] != 'D'){
