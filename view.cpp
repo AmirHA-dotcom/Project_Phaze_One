@@ -736,7 +736,7 @@ bool View::handleAnalysisMenu (Controller* C) {
         for (size_t j = 2; j < i.size(); ++j) {
             orders.push_back(i[j]);
         }
-        cout << orders.size() << endl;
+        //cout << orders.size() << endl;
         C->tranAnalysisOrders(orders);
         return true;
     }

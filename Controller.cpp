@@ -274,6 +274,7 @@ void Controller::DcAnalysis(double sourceName, double startValue, double endValu
 }
 
 void Controller::tranAnalysisOrders(vector<string> orders){
+    cout << "dodo" <<orders[0] << endl;
     vector<string> nodeVoltages;
     vector<string> elementCurrents;
     for (const auto& order : orders) {
