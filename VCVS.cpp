@@ -26,3 +26,18 @@ void VCVS::stamp(double current_time, double time_step, vector<Triplet> &G_tripl
     G_triplets.emplace_back(a, ictrl, -value);
     G_triplets.emplace_back(a, jctrl, value);
 }
+
+void VCVS::change_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void VCVS::change_value(double new_value)
+{
+    value = new_value;
+}
+
+void VCVS::display_info()
+{
+    cout << "No Info" << endl;
+}

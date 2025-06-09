@@ -17,6 +17,9 @@
 #include "VCVS.h"
 #include "CCCS.h"
 #include "CCVS.h"
+#include "Real_Diode.h"
+#include "Zener_Diode.h"
+#include "Current_Source.h"
 
 class Circuit
 {

@@ -29,3 +29,18 @@ void Real_Diode::stamp(double current_time, double time_step, vector<Triplet> &G
     b[i] -= I_eq;
     b[j] += I_eq;
 }
+
+void Real_Diode::change_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void Real_Diode::change_value(double new_value)
+{
+    value = new_value;
+}
+
+void Real_Diode::display_info()
+{
+    cout << "No Info" << endl;
+}

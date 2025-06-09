@@ -57,7 +57,7 @@ const vector<Node *> Circuit::get_Nodes()
 
 const vector<Element *> Circuit::get_Elements_of_type(Element_Type type)
 {
-    if (type == Element_Type::Real_Diode || type == Element_Type::Zener_Diode)
+    if (type == Element_Type::Real_Diode)
     {
         vector<Element*> elements;
         for (auto* e : Elements)
@@ -195,7 +195,7 @@ void Circuit::create_new_current_source(string name, string node1_name, string n
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], current));
+    Elements.push_back(new Current_Source(name, Nodes[node1_index], Nodes[node2_index], current));
 }
 
 void Circuit::create_new_VCCS(string name, string node1_name, string node2_name, double gain)
@@ -270,7 +270,7 @@ void Circuit::create_new_real_diode(string name, string node1_name, string node2
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+    Elements.push_back(new Real_Diode(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
 }
 
 void Circuit::create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number)

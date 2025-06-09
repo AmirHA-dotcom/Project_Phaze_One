@@ -42,3 +42,18 @@ void Zener_Diode::stamp(double current_time, double time_step, vector<Triplet> &
     b[i] -= I_eq;
     b[j] += I_eq;
 }
+
+void Zener_Diode::change_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void Zener_Diode::change_value(double new_value)
+{
+    value = new_value;
+}
+
+void Zener_Diode::display_info()
+{
+    cout << "No Info" << endl;
+}

@@ -17,3 +17,18 @@ void CCCS::stamp(double current_time, double time_step, vector<Triplet> &G_tripl
 //    G_triplets.emplace_back(i, a_ctrl, +beta);
 //    // G[n-][a_ctrl] += -β
 //    G_triplets.emplace_back(j, a_ctrl, -beta);
+
+void CCCS::change_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void CCCS::change_value(double new_value)
+{
+    value = new_value;
+}
+
+void CCCS::display_info()
+{
+    cout << "No Info" << endl;
+}

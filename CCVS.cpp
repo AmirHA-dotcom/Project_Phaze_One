@@ -33,3 +33,18 @@ void CCVS::stamp(double current_time, double time_step, vector<Triplet> &G_tripl
 //    G_triplets.emplace_back(a_out, i,     +1.0);
 //    G_triplets.emplace_back(a_out, j,     -1.0);
 //    G_triplets.emplace_back(a_out, a_ctrl, -r0);
+
+void CCVS::change_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void CCVS::change_value(double new_value)
+{
+    value = new_value;
+}
+
+void CCVS::display_info()
+{
+    cout << "No Info" << endl;
+}

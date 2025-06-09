@@ -17,3 +17,18 @@ void VCCS::stamp(double current_time, double time_step, vector<Triplet> &G_tripl
     G_triplets.emplace_back(j, ictrl, -value);
     G_triplets.emplace_back(j, jctrl, value);
 }
+
+void VCCS::change_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void VCCS::change_value(double new_value)
+{
+    value = new_value;
+}
+
+void VCCS::display_info()
+{
+    cout << "No Info" << endl;
+}

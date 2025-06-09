@@ -13,3 +13,18 @@ void Current_Source::stamp(double current_time, double time_step, vector<Triplet
     b[i] += value;
     b[j] -= value;
 }
+
+void Current_Source::change_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void Current_Source::change_value(double new_value)
+{
+    value = new_value;
+}
+
+void Current_Source::display_info()
+{
+    cout << "No Info" << endl;
+}
