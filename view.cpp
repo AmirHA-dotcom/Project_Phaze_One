@@ -438,7 +438,7 @@ bool View::handleCircuitMenu (Controller* C) {
         C->circuit = C->findCircuit(i[2]);
         return true;
     }
-    if (i.size() == 2 && i[0] == "delete") {
+    if (i.size() == 3 && i[0] == "delete" && i[1] == "circuit") {
         if (!C->findCircuit(i[1])) {
             throw circuitNotFind(i[1]);
         }
@@ -468,7 +468,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delRCheck(i)) {
-
         auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
