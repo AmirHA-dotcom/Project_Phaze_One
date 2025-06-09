@@ -27,6 +27,8 @@ void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet
     if (j != -1) {
         G_triplets.emplace_back(a, j, -1.0);
     }
+    double value_to_add = get_value_at(current_time, time_step);
+    cout << "[DEBUG] Stamping " << get_name() << " with value: " << value_to_add << endl;
     b[a] += get_value_at(current_time, time_step);
 }
 

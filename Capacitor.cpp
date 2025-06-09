@@ -35,10 +35,14 @@ void Capacitor::stamp(double current_time, double time_step, vector<Triplet> &G_
     i = node1->get_index();
     j = node2->get_index();
     double g = value/time_step;
-    G_triplets.emplace_back(i, j, g);
-    G_triplets.emplace_back(i, j, -g);
-    G_triplets.emplace_back(j, i, -g);
-    G_triplets.emplace_back(j, j, g);
+    if (i != -1)
+        G_triplets.emplace_back(i, i, g);
+    if (j != -1)
+        G_triplets.emplace_back(j, j, g);
+    if (i != -1 && j != -1) {
+        G_triplets.emplace_back(i, j, -g);
+        G_triplets.emplace_back(j, i, -g);
+    }
     double I = g * (x_previous[i] - x_previous[j]);
     b[i] +=  I;
     b[j] += -I;

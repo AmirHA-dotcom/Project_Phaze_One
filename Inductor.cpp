@@ -46,9 +46,13 @@ void Inductor::stamp(double current_time, double time_step, vector<Triplet> &G_t
     j = node2->get_index();
     a = aux_index;
     double g = time_step/value;
-    G_triplets.emplace_back(i, j, g);
-    G_triplets.emplace_back(i, j, -g);
-    G_triplets.emplace_back(j, i, -g);
-    G_triplets.emplace_back(j, j, g);
+    if (i != -1)
+        G_triplets.emplace_back(i, i, g);
+    if (j != -1)
+        G_triplets.emplace_back(j, j, g);
+    if (i != -1 && j != -1) {
+        G_triplets.emplace_back(i, j, -g);
+        G_triplets.emplace_back(j, i, -g);
+    }
     b[a] -= g * x_previous[a];
 }
