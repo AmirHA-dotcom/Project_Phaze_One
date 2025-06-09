@@ -57,3 +57,8 @@ void Zener_Diode::display_info()
 {
     cout << "No Info" << endl;
 }
+
+double Zener_Diode::get_current(double time, double time_step)
+{
+    return 0.0;
+}

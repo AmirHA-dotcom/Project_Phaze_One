@@ -41,3 +41,8 @@ void VCVS::display_info()
 {
     cout << "No Info" << endl;
 }
+
+double VCVS::get_current(double time, double time_step)
+{
+    return 0.0;
+}

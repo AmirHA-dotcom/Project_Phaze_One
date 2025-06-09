@@ -32,3 +32,8 @@ void VCCS::display_info()
 {
     cout << "No Info" << endl;
 }
+
+double VCCS::get_current(double time, double time_step)
+{
+    return 0.0;
+}

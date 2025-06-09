@@ -19,6 +19,7 @@ public:
     void display_info() override;
     void change_value(double new_value) override;
     void change_name(string new_name) override;
+    double get_current(double time, double time_step) override;
 };
 
 class DC_Source : public Voltage_Source
@@ -105,5 +106,6 @@ public:
             : Voltage_Source(_name, _node1, _node2, 0.0), v_initial(v1), v_peak(v2), time_delay(td), period(per) {}
     double get_value_at(double time, double time_step) const override;
 };
+
 
 #endif //PROJECT_PHAZE_ONE_VOLTAGE_SOURCE_H

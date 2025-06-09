@@ -48,3 +48,8 @@ void CCVS::display_info()
 {
     cout << "No Info" << endl;
 }
+
+double CCVS::get_current(double time, double time_step)
+{
+    return 0.0;
+}

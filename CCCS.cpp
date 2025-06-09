@@ -32,3 +32,8 @@ void CCCS::display_info()
 {
     cout << "No Info" << endl;
 }
+
+double CCCS::get_current(double time, double time_step)
+{
+    return 0.0;
+}

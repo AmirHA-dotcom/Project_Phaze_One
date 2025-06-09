@@ -28,3 +28,8 @@ void Current_Source::display_info()
 {
     cout << "No Info" << endl;
 }
+
+double Current_Source::get_current(double time, double time_step)
+{
+    return value;
+}

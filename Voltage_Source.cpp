@@ -24,6 +24,11 @@ void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet
     b[a] = get_value_at(current_time, time_step);
 }
 
+double Voltage_Source::get_current(double time, double time_step)
+{
+    return 0.0;
+}
+
 void Voltage_Source::display_info()
 {
     cout << "Element: " << name << endl;

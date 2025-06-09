@@ -297,7 +297,7 @@ void Controller::tranAnalysisOrders(vector<string> orders){
             return;
         }
         else
-            for(auto jj : element.)
+            for(auto jj )
             cout << "Current through element " << i << " at time" << jj.second << ": " << jj.first << endl;
     }
 }
