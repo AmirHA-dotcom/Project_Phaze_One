@@ -28,6 +28,7 @@ public:
     virtual void change_value(double new_value) = 0;
     virtual void change_name(string new_name) = 0;
     virtual void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) = 0;
+    virtual double get_current(double time) = 0;
 };
 
 
