@@ -40,6 +40,7 @@ public:
     Circuit(string _name) : name(_name) {total_unknowns = 0;}
     void change_name(string new_name);
     string get_name() const;
+    vector<pair<double, double>> get_node_voltages(string name);
     void change_value_of_element(string name ,double value);
     void change_name_of_element(string old_name ,string new_name);
     void change_name_of_node(string old_name, string new_name);

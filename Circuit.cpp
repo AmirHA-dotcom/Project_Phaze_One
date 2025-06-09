@@ -432,22 +432,27 @@ void Circuit::delete_element(string name)
     Elements.erase(Elements.begin() + element_index);
 }
 
+vector<pair<double, double>> Circuit::get_node_voltages(std::string name)
+{
+    return Nodes[node_index_finder_by_name(name)]->get_all_voltages();
+}
+
 void Circuit::analyse_data()
 {
     // getting non_ground nodes
-    vector<Node*> Active_Nodes;
+    vector<Node*> Active_Nodes_;
     for (int i = 0; i < Nodes.size(); i++)
     {
         if (!Nodes[i]->is_the_node_ground())
-            Active_Nodes.push_back(Nodes[i]);
+            Active_Nodes_.push_back(Nodes[i]);
         else
             Nodes[i]->set_index(-1);
     }
     // indexing nodes
-    for (int i = 0; i < Active_Nodes.size(); i++)
-        Active_Nodes[i]->set_index(i);
+    for (int i = 0; i < Active_Nodes_.size(); i++)
+        Active_Nodes_[i]->set_index(i);
     // indexing aux
-    int aux_index = Active_Nodes.size();
+    int aux_index = Active_Nodes_.size();
     for (auto* e : Elements)
     {
         if (auto* L = dynamic_cast<Inductor*>(e))
@@ -460,10 +465,10 @@ void Circuit::analyse_data()
         if (auto* Dv = dynamic_cast<VCVS*>(e))
             Dv->set_aux_index(aux_index++);
     }
-    int total_unknowns = aux_index;
     // saving data
-    this-> Active_Nodes = Active_Nodes;
-    this-> total_unknowns = total_unknowns;
+    this-> Active_Nodes = Active_Nodes_;
+    this-> total_unknowns = aux_index;
+    cout << "analyse_data finished. Active nodes found: " << this->Active_Nodes.size() << endl;
 }
 
 //  checks the convergencr of NR
@@ -477,7 +482,6 @@ bool check_convergence(const vector<double>& b, double tolerance = 1e-9)
     return norm < tolerance;
 }
 
-// --- Helper function for matrix-vector multiplication (needed for the fix) ---
 vector<double> multiply_matrix_vector(const vector<vector<double>>& A, const vector<double>& x)
 {
     int n = A.size();
@@ -492,7 +496,6 @@ vector<double> multiply_matrix_vector(const vector<vector<double>>& A, const vec
     return result;
 }
 
-// --- Helper function for vector subtraction ---
 vector<double> subtract_vectors(const vector<double>& a, const vector<double>& b)
 {
     int n = a.size();
@@ -519,7 +522,7 @@ void Circuit::transient()
 
         for (int k = 0; k < max_NR_its; ++k)
         {
-            // 1. Build the Jacobian Matrix G and the RHS vector b_rhs from stamps.
+            // stamping elements
             vector<Triplet> triplets;
             vector<double>  b_rhs(total_unknowns, 0.0);
             for (auto* e : Elements) {
@@ -530,25 +533,25 @@ void Circuit::transient()
                 G[tr.Row][tr.Column] += tr.Value;
             }
 
-            // 2. Calculate the residual error: F(x_k) = (G * x_k) - b_rhs
+            // calculating residual error
             vector<double> G_times_xk = multiply_matrix_vector(G, x_k);
             vector<double> residual = subtract_vectors(G_times_xk, b_rhs);
 
-            // 3. Check for convergence based on the residual error
+            // checking the convergence
             if (check_convergence(residual)) {
                 converged = true;
                 break;
             }
 
-            // 4. Solve for the update: G * delta_x = -F(x_k)
-            for(double& val : residual) { val = -val; } // Negate the residual vector
+            // solving
+            for(double& val : residual) { val = -val; }
             vector<double> delta_x = algorithems.solve_LU(G, residual);
 
             if (delta_x.empty()) {
-                break; // Solver failed
+                break;
             }
 
-            // 5. Update the solution guess
+            // updating the solution
             for(int i = 0; i < x_k.size(); ++i) {
                 x_k[i] += delta_x[i];
             }
@@ -561,7 +564,7 @@ void Circuit::transient()
 
         x_previous = x_k;
 
-        // Save results...
+        // saving data
         for (auto* n : Active_Nodes) {
             n->set_voltage(x_previous[n->get_index()], t);
         }

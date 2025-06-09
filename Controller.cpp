@@ -298,6 +298,7 @@ void Controller::tranAnalysisOrders(vector<string> orders){
         Node* node = findNode(i);
 
         cout << node->get_all_voltages().size() << endl;
+        cout << circuit->get_node_voltages(i).size() << endl;
 
         if (node == nullptr) {
             cerr << "Node " << i << " not found." << endl;
@@ -305,7 +306,7 @@ void Controller::tranAnalysisOrders(vector<string> orders){
         }
         else
             for(auto jj : node->get_all_voltages())
-            cout << " " << jj.first;
+                cout << " " << jj.first;
             cout << endl;
     }
     for (auto i : elementCurrents) {

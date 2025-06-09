@@ -36,6 +36,8 @@ double Node::get_voltage_in_time(double time)
 
 vector<pair<double, double>> Node::get_all_voltages()
 {
+//    for (int i = 0; i < voltage.size(); i++)
+//        cout << voltage[i].second << ": " << voltage[i].first << endl;
     return voltage;
 }
 
