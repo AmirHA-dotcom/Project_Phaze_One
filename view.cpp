@@ -462,7 +462,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addRCheck(i)) {
-
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -470,6 +471,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delRCheck(i)) {
+
         auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
@@ -478,6 +480,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -493,6 +497,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addICheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -508,6 +514,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addDCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -537,7 +545,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
-
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
@@ -545,6 +554,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCSCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
@@ -552,6 +563,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addSinusoidalCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -560,6 +573,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addPulse1eCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -567,6 +582,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addPulse2Check(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -574,6 +591,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addPulse3Check(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -581,6 +600,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addPulse4Check(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -588,6 +609,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVcVsCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -595,6 +618,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCcVsCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -602,6 +627,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVcCsCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }
@@ -609,6 +636,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCcCsCheck(i)) {
+        if (i[2] == i[3])
+            throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
             throw elementExists(i[1].substr(1,i[1].size()-1));
         }

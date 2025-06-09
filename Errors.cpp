@@ -27,6 +27,10 @@ const char* invalidCapacity::what() const noexcept {
     cout << "Error: Capacity cannot be zero or negative" << endl;
     return ""; // Return a valid string
 }
+const char* sameNode::what() const noexcept {
+    cout << "Error: Both nodes are same!" << endl;
+    return ""; // Return a valid string
+}
 
 // For classes with custom messages, we build the message string first.
 invalidDiodeModel::invalidDiodeModel(const std::string& name) {

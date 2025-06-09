@@ -22,6 +22,11 @@ public:
     // Added override for consistency
     const char *what() const noexcept override;
 };
+class sameNode : public std::exception {
+public:
+    // Added override for consistency
+    const char *what() const noexcept override;
+};
 
 class invalidCapacity : public std::exception {
 public:
