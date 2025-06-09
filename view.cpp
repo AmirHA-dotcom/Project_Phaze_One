@@ -124,14 +124,15 @@ bool isValidSpiceNumber(const std::string& input) {
 
     return true;
 }
-bool isValidDiodeName(const std::string& input){
+bool
+isValidDiodeName(const std::string& input){
     return (input == "D" || input == "Z");
 }
 bool addRCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || i[1][0] != 'R'){
         return false;
     }
-    if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
+    if (!isDigit(i[4]) || stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
         throw invalidResistance();
 
     }
@@ -177,13 +178,14 @@ bool addDCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add"){
         return false;
     }
-    if (i[1][0] != 'D' && i[1][0] != 'R' && i[1][0] != 'L' && i[1][0] != 'C'){
+    if (i[1][0] != 'D' && i[1][0] != 'R' && i[1][0] != 'L' && i[1][0] != 'C' && i[1][0] != 'G' && i[1][0] != 'E' &&
+        i[1][0] != 'F' && i[1][0] != 'V' && i[1][0] != 'H' && i[1][0] != 'C'){
         throw notFindInLibrary(i[1]);
     }
     if (i[1][0] != 'D'){
         return false;
     }
-    if (stod(i[4]) <= 0 || !isValidDiodeName(i[4]) ) {
+    if ( !isValidDiodeName(i[4]) ) {
         throw invalidDiodeModel(i[4]);
     }
     return true;
@@ -332,7 +334,7 @@ bool componentListCheck (vector<string> i) {
     if (i.size() != 2 || i[0] != ".list"){
         return false;
     }
-    if (i[1] != "Resistor" && i[1] != "Inⅾuⅽtor" && i[1] != "Capacitor" && i[1] != "Diode") {
+    if (i[1] != "resistor" && i[1] != "Induⅽtor" && i[1] != "capacitor" && i[1] != "diode") {
         throw invalidSyntax();
     }
     return true;
@@ -413,13 +415,17 @@ bool View::handleCircuitMenu (Controller* C) {
         return false;
     }
     if (line == "return") {
-        analysisMenu = false;
+        circuitMenu = false;
         mainMenu = true;
         return true;
     }
+    if (line.empty()) {
+        return true;
+    }
+
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
-        cout << "dodo" << endl;
+
 
         if (C->findCircuit(i[2])) {
             throw circuitExists();
@@ -531,7 +537,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
-        cout << "dodo" << endl;
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
@@ -542,6 +547,7 @@ bool View::handleCircuitMenu (Controller* C) {
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
+        cout << "dodo" << i[1].substr(13,i[1].size()-13) << endl;
         C->addCS(i[1].substr(13,i[1].size()-13),i[2],i[3],toValue(i[4]));
         return true;
     }
@@ -618,13 +624,13 @@ bool View::handleCircuitMenu (Controller* C) {
          return true;
     }
     if (componentListCheck(i)) {
-        if(i[1] == "Resistor") {
+        if(i[1] == "resistor") {
             C->showResistors();
-        } else if (i[1] == "Induⅽtor") {
+        } else if (i[1] == "induⅽtor") {
             C->showInductors();
-        } else if (i[1] == "Capacitor") {
+        } else if (i[1] == "capacitor") {
             C->showCapacitors();
-        } else if (i[1] == "Diode") {
+        } else if (i[1] == "diode") {
             C->showDiodes();
         }
         else
@@ -719,7 +725,6 @@ bool View::handleAnalysisMenu (Controller* C) {
 }
 
 bool View::inputHandler (Controller* C) {
-    //cout << (mainMenu || circuitMenu || fileMenu || analysisMenu) << endl;
     if (mainMenu)
         return handleMainMenu(C);
     if (circuitMenu) {
