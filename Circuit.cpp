@@ -289,7 +289,83 @@ void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_n
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));
+    Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));    
+}
+
+void
+Circuit::create_new_Sin_voltage_source(std::string name, std::string node1_name, std::string node2_name, double offset, double amplitude, double frequency)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    Elements.push_back(new Sine_Source(name, Nodes[node1_index], Nodes[node2_index],offset, amplitude, frequency, 0.0));
+}
+
+void Circuit::create_new_Pulse_voltage_source(std::string name, std::string node1_name, std::string node2_name, double period, double value)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    Elements.push_back(new Pulse_Source(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period/100, period/100, 2, period));
+}
+
+void Circuit::create_new_Delta_voltage_source(std::string name, std::string node1_name, std::string node2_name, double time)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    Elements.push_back(new Delta_Dirac(name, Nodes[node1_index], Nodes[node2_index], time));
+}
+
+void Circuit::create_new_Square_voltage_source(string name, string node1_name, string node2_name, double period, double value)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    Elements.push_back(new Square_Source(name, Nodes[node1_index], Nodes[node2_index], -1 * value, value, 0.0, 2, period));
+}
+
+void Circuit::create_new_Triangle_voltage_source(string name, string node1_name, string node2_name, double period, double value)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(new Node(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(new Node(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    Elements.push_back(new Triangular_Source(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period));
 }
 
 void Circuit::delete_element(string name)

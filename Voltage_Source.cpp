@@ -24,6 +24,24 @@ void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet
     b[a] = get_value_at(current_time, time_step);
 }
 
+void Voltage_Source::display_info()
+{
+    cout << "Element: " << name << endl;
+    cout << "Type: Voltage Source" << endl;
+    cout << "Node 1: " << node1->get_name() << endl;
+    cout << "Node 2: " << node2->get_name() << endl;
+}
+
+void Voltage_Source::change_value(double new_value)
+{
+    this->value = new_value;
+}
+
+void Voltage_Source::change_name(std::string new_name)
+{
+    this->name = new_name;
+}
+
 double DC_Source::get_value_at(double time, double time_step) const
 {
         return dc_value;

@@ -16,6 +16,9 @@ public:
     void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
     void set_aux_index(int i);
     virtual double get_value_at(double time, double time_step) const = 0;
+    void display_info() override;
+    void change_value(double new_value) override;
+    void change_name(string new_name) override;
 };
 
 class DC_Source : public Voltage_Source
