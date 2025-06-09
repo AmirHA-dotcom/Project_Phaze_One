@@ -211,7 +211,6 @@ bool addVSCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || !i[1].find("VoltageSource")){
         return false;
     }
-    cout << "error" << endl;
 //    if (i[0] != "add" && i[1][0] != 'C'){
 //        Error::notFindElement(i[4]);
 //    }
@@ -419,9 +418,13 @@ bool View::handleCircuitMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
+    if (line.empty()) {
+        return true;
+    }
+
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
-        //cout << "dodo" << endl;
+
 
         if (C->findCircuit(i[2])) {
             throw circuitExists();
@@ -533,7 +536,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
-        cout << "dodo" << endl;
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
