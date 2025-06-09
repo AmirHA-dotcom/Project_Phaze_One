@@ -624,13 +624,13 @@ bool View::handleCircuitMenu (Controller* C) {
          return true;
     }
     if (componentListCheck(i)) {
-        if(i[1] == "Resistor") {
+        if(i[1] == "resistor") {
             C->showResistors();
-        } else if (i[1] == "Induⅽtor") {
+        } else if (i[1] == "induⅽtor") {
             C->showInductors();
-        } else if (i[1] == "Capacitor") {
+        } else if (i[1] == "capacitor") {
             C->showCapacitors();
-        } else if (i[1] == "Diode") {
+        } else if (i[1] == "diode") {
             C->showDiodes();
         }
         else
