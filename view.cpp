@@ -660,6 +660,9 @@ bool View::handleFileMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
+    if (line.empty()) {
+        return true;
+    }
     if (C->validSchematicChoice(line)) {
         C->showFile(stoi(line));
         return true;
@@ -686,6 +689,9 @@ bool View::handleAnalysisMenu (Controller* C) {
     if (line == "return") {
         analysisMenu = false;
         mainMenu = true;
+        return true;
+    }
+    if (line.empty()) {
         return true;
     }
     if (i.size() == 2 && i[0] == "circuit"){
