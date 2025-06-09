@@ -60,5 +60,36 @@ void Zener_Diode::display_info()
 
 double Zener_Diode::get_current(double time, double time_step)
 {
-    return 0.0;
+    for (int i = 0; i < currents.size(); i++)
+    {
+        if (abs(time - currents[i].second) < time_step)
+            return currents[i].first;
+    }
+    return 0.0;}
+
+void Zener_Diode::set_current(double current, double time)
+{
+    currents.emplace_back(current, time);
+}
+
+double Zener_Diode::calculate_current(const std::vector<double>& x) const
+{
+    const double Is = 1e-14;
+    const double Vt = 0.026;
+    const double n = 1.0;
+    const double Vz = 0.7; // Zener breakdown voltage
+    int i = node1->get_index();
+    int j = node2->get_index();
+    double Vd = x[i] - x[j];
+    // forward bias or reverse breakdown
+    if (Vd >= -Vz)
+    {
+        // forward bias
+        return Is * (exp(Vd / (n * Vt)) - 1.0);
+    }
+    else
+    {
+        // reverse breakdown
+        return -Is * (exp(-(Vd + Vz) / Vt) - 1.0);
+    }
 }

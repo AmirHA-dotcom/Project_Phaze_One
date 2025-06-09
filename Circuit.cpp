@@ -556,6 +556,19 @@ void Circuit::transient()
                 double current = x_previous[current_index];
                 vcvs->set_current(current, t);
             }
+            // real diode
+            else if (auto* diode = dynamic_cast<Real_Diode*>(e))
+            {
+                // calculating the current
+                double current = diode->calculate_current(x_previous);
+                diode->set_current(current, t);
+            }
+            // zener diode
+            else if (auto* zener = dynamic_cast<Zener_Diode*>(e))
+            {
+                double current = zener->calculate_current(x_previous);
+                zener->set_current(current, t);
+            }
         }
     }
     cout << "transient worked! DEBUG" << endl;

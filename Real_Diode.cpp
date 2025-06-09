@@ -47,5 +47,27 @@ void Real_Diode::display_info()
 
 double Real_Diode::get_current(double time, double time_step)
 {
+    for (int i = 0; i < currents.size(); i++)
+    {
+        if (abs(time - currents[i].second) < time_step)
+            return currents[i].first;
+    }
     return 0.0;
+}
+
+void Real_Diode::set_current(double current, double time)
+{
+    currents.emplace_back(current, time);
+}
+
+double Real_Diode::calculate_current(const std::vector<double>& x) const
+{
+    const double Is = 1e-14;
+    const double Vt = 0.026;
+    const double n = 1.0;
+    int i = node1->get_index();
+    int j = node2->get_index();
+    double Vd = x[i] - x[j];
+    // equation
+    return Is * (exp(Vd / (n * Vt)) - 1.0);
 }
