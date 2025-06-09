@@ -145,7 +145,7 @@ bool delRCheck (const vector<string> i) {
     return true;
 }
 bool addCCheck (vector<string> i) {
-    if (i.size() != 5 || i[0] != "add" || i[1][0] != 'C'){
+    if (i.size() != 5 || i[0] != "add" || i[1][0] != 'C' || i[1].find("CurrentSourse") != string::npos) {
         return false;
     }
     if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
