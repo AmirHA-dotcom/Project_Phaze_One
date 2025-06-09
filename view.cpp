@@ -419,7 +419,7 @@ bool View::handleCircuitMenu (Controller* C) {
     }
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
-        cout << "dodo" << endl;
+        //cout << "dodo" << endl;
 
         if (C->findCircuit(i[2])) {
             throw circuitExists();
@@ -719,7 +719,6 @@ bool View::handleAnalysisMenu (Controller* C) {
 }
 
 bool View::inputHandler (Controller* C) {
-    //cout << (mainMenu || circuitMenu || fileMenu || analysisMenu) << endl;
     if (mainMenu)
         return handleMainMenu(C);
     if (circuitMenu) {
