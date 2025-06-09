@@ -258,6 +258,7 @@ void Controller::renameNode(string oldName, string newName){
         cerr << "ERROR: Node " << oldName << " not found." << endl;
         return;
     }
+    node->change_name(newName);
     cout << "SUCCESS: Node renamed from " << oldName << " to " << newName << endl;
 }
 
