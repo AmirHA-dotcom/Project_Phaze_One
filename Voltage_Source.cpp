@@ -24,9 +24,24 @@ void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet
     b[a] = get_value_at(current_time, time_step);
 }
 
+void Voltage_Source::set_current(double current, double time)
+{
+    currents.emplace_back(current, time);
+}
+
 double Voltage_Source::get_current(double time, double time_step)
 {
+    for (int i = 0; i < currents.size(); i++)
+    {
+        if (abs(time - currents[i].second) < time_step)
+            return currents[i].first;
+    }
     return 0.0;
+}
+
+int Voltage_Source::get_aux_index() const
+{
+    return aux_index;
 }
 
 void Voltage_Source::display_info()

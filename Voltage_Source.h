@@ -11,6 +11,7 @@ class Voltage_Source : public Element
 {
 protected:
     int aux_index;
+    vector<pair<double, double>> currents;  // current time
 public:
     Voltage_Source(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Voltage_Source, _node1, _node2, 0.0) {}
     void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
@@ -20,6 +21,8 @@ public:
     void change_value(double new_value) override;
     void change_name(string new_name) override;
     double get_current(double time, double time_step) override;
+    void set_current(double current, double time);
+    int get_aux_index() const;
 };
 
 class DC_Source : public Voltage_Source

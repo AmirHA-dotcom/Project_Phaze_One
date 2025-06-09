@@ -44,5 +44,20 @@ void VCVS::display_info()
 
 double VCVS::get_current(double time, double time_step)
 {
+    for (int i = 0; i < currents.size(); i++)
+    {
+        if (abs(time - currents[i].second) < time_step)
+            return currents[i].first;
+    }
     return 0.0;
+}
+
+void VCVS::set_current(double current, double time)
+{
+    currents.emplace_back(current, time);
+}
+
+int VCVS::get_aux_index() const
+{
+    return aux_index;
 }

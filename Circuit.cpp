@@ -539,6 +539,24 @@ void Circuit::transient()
         {
             n->set_voltage(x_previous[n->get_index()], t);
         }
+        for (auto* e : Elements)
+        {
+            if (auto* v_source = dynamic_cast<Voltage_Source*>(e))
+            {
+                int current_index = v_source->get_aux_index();
+                // getting the current from matrix
+                double current = x_previous[current_index];
+                // saving
+                v_source->set_current(current, t);
+            }
+            // saving current for VCVS
+            else if (auto* vcvs = dynamic_cast<VCVS*>(e))
+            {
+                int current_index = vcvs->get_aux_index();
+                double current = x_previous[current_index];
+                vcvs->set_current(current, t);
+            }
+        }
     }
     cout << "transient worked! DEBUG" << endl;
 }
