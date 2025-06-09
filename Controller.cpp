@@ -66,6 +66,7 @@ void Controller::addD (string name, string Node1, string Node2, string model){
 
 void Controller::addGND (string name){
     circuit->make_node_ground(name);
+    circuit->ground(true);
 }
 
 void Controller::addVS (string name, string Node1, string Node2, double value){
@@ -132,6 +133,12 @@ void Controller::showNodes(){
 }
 void Controller::delGND(string name){
     circuit->make_node_NOT_ground(name);
+    bool check = false;
+    for (auto i : circuit->get_Nodes())
+        if(i->is_the_node_ground())
+            check = true;
+    if (!check)
+        circuit->ground(false);
 }
 void Controller::showAllElements(){
     vector<Element*> elements = circuit->get_Elements();

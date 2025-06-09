@@ -33,7 +33,9 @@ private:
     double t_end;
     Algorithems algorithems;
     string name;
+    bool haveGround;
 public:
+    void ground(bool b);
     Circuit(string _name) : name(_name) {total_unknowns = 0;}
     void change_name(string new_name);
     string get_name() const;
