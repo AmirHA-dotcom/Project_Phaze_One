@@ -523,8 +523,8 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addGCheck(i)) {
-        if (C->findNode(i[2])) {
-            throw elementExists("GND " + i[2]);
+        if (!C->findNode(i[2])) {
+            throw elementNotFind("GND " + i[2]);
         }
         C->addGND(i[2]);
         return true;
