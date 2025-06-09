@@ -363,6 +363,8 @@ bool dcAnalysisCheck (vector<string> i) {
 }
 bool printTranCheck (vector<string> i) {
     if ( i.size() < 3 || i[0] != ".print" || i[1] != "TRAN"){
+        cout << i[0] << "  " << i[1] << endl;
+
         return false;
     }
     return true;
