@@ -504,6 +504,7 @@ vector<double> subtract_vectors(const vector<double>& a, const vector<double>& b
 
 void Circuit::transient()
 {
+    cout << t_start << " " << time_step << " " << t_end << endl;
     const int max_NR_its = 100;
 
     vector<double> x_previous(total_unknowns, 0.0);
@@ -517,7 +518,6 @@ void Circuit::transient()
         for (int k = 0; k < max_NR_its; ++k)
         {
             // 1. Build the Jacobian Matrix G and the RHS vector b_rhs from stamps.
-            // Your stamp functions are written to produce the RHS of a linear system, which is perfect.
             vector<Triplet> triplets;
             vector<double>  b_rhs(total_unknowns, 0.0);
             for (auto* e : Elements) {
@@ -529,32 +529,25 @@ void Circuit::transient()
             }
 
             // 2. Calculate the residual error: F(x_k) = (G * x_k) - b_rhs
-            // This is the crucial step that makes the NR loop correct.
             vector<double> G_times_xk = multiply_matrix_vector(G, x_k);
             vector<double> residual = subtract_vectors(G_times_xk, b_rhs);
 
-            // checking convergence based on the residual error
-            if (check_convergence(residual))
-            {
+            // 3. Check for convergence based on the residual error
+            if (check_convergence(residual)) {
                 converged = true;
                 break;
             }
 
-            // solving and updating
-            for(double& val : residual)
-            {
-                val = -val;
-            }
+            // 4. Solve for the update: G * delta_x = -F(x_k)
+            for(double& val : residual) { val = -val; } // Negate the residual vector
             vector<double> delta_x = algorithems.solve_LU(G, residual);
 
-            if (delta_x.empty())
-            {
+            if (delta_x.empty()) {
                 break; // Solver failed
             }
 
             // 5. Update the solution guess
-            for(int i = 0; i < x_k.size(); ++i)
-            {
+            for(int i = 0; i < x_k.size(); ++i) {
                 x_k[i] += delta_x[i];
             }
         }
@@ -567,31 +560,25 @@ void Circuit::transient()
         x_previous = x_k;
 
         // Save results...
-        for (auto* n : Active_Nodes)
-        {
+        for (auto* n : Active_Nodes) {
             n->set_voltage(x_previous[n->get_index()], t);
         }
-        for (auto* e : Elements)
-        {
-            if (auto* v_source = dynamic_cast<Voltage_Source*>(e))
-            {
+        for (auto* e : Elements) {
+            if (auto* v_source = dynamic_cast<Voltage_Source*>(e)) {
                 int current_index = v_source->get_aux_index();
                 double current = x_previous[current_index];
                 v_source->set_current(current, t);
             }
-            else if (auto* vcvs = dynamic_cast<VCVS*>(e))
-            {
+            else if (auto* vcvs = dynamic_cast<VCVS*>(e)) {
                 int current_index = vcvs->get_aux_index();
                 double current = x_previous[current_index];
                 vcvs->set_current(current, t);
             }
-            else if (auto* diode = dynamic_cast<Real_Diode*>(e))
-            {
+            else if (auto* diode = dynamic_cast<Real_Diode*>(e)) {
                 double current = diode->calculate_current(x_previous);
                 diode->set_current(current, t);
             }
-            else if (auto* zener = dynamic_cast<Zener_Diode*>(e))
-            {
+            else if (auto* zener = dynamic_cast<Zener_Diode*>(e)) {
                 double current = zener->calculate_current(x_previous);
                 zener->set_current(current, t);
             }

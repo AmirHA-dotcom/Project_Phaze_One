@@ -266,6 +266,9 @@ void Controller::tranAnalysis(double stepTime, double stopTime, double startTime
     time_step = stepTime;
     start_time = startTime;
     end_time = stopTime;
+    circuit->set_time_start(startTime);
+    circuit->set_time_end(end_time);
+    circuit->set_time_step(time_step);
     circuit->analyse_data();
     circuit->transient();
 }
