@@ -395,7 +395,7 @@ bool View::handleMainMenu (Controller* C) {
     }
     else if (s == "3") {
         analysisMenu = true;
-        cout << "Enter the name of the circuit to load: ";
+        C->circuit = nullptr;
         return true;
     }
     else {
@@ -676,6 +676,8 @@ bool View::handleFileMenu (Controller* C) {
 bool View::handleAnalysisMenu (Controller* C) {
     string line;
     getline(cin,line);
+    if (C->circuit == nullptr)
+        cout << "Enter the name of the circuit in form <circuit> <name> to load: " << endl;
     vector<string> i = splitString(line);
     if (line == "end") {
         cout << "program ended!" << endl;
