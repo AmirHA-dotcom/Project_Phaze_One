@@ -127,6 +127,7 @@ void Circuit::make_node_ground(string name)
         return;
     }
     Nodes[node_index]->make_ground();
+    haveGround = true;
 }
 
 void Circuit::make_node_NOT_ground(string name)
@@ -138,6 +139,7 @@ void Circuit::make_node_NOT_ground(string name)
         return;
     }
     Nodes[node_index]->return_to_normal();
+    haveGround = false;
 }
 
 void Circuit::create_new_resistor(string name, string node1_name, string node2_name, double resistance)
@@ -306,7 +308,7 @@ void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_n
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));    
+    Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));
 }
 
 void
@@ -529,7 +531,22 @@ void Circuit::transient()
                 e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
             }
             vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
+//            for (const auto& tr : triplets) {
+//                G[tr.Row][tr.Column] += tr.Value;
+//            }
+//            std::cerr << "[DEBUG] t=" << t
+//                      << ", total_unknowns=" << total_unknowns
+//                      << ", triplets.size()=" << triplets.size() << endl;
+            // In transient() function
             for (const auto& tr : triplets) {
+                if (tr.Row < 0 || tr.Row >= total_unknowns ||
+                    tr.Column < 0 || tr.Column >= total_unknowns) {
+
+                    std::cerr << "[FATAL ERROR] Out-of-bounds index detected in stamping!\n"
+                              << "Triplet values: Row=" << tr.Row << ", Column=" << tr.Column << "\n"
+                              << "Total unknowns = " << total_unknowns << "\n";
+                    std::abort(); // Stop the program immediately
+                }
                 G[tr.Row][tr.Column] += tr.Value;
             }
 
@@ -590,4 +607,13 @@ void Circuit::transient()
         }
     }
     cout << "transient worked!" << endl;
+}
+
+Circuit::~Circuit() {
+    for (Element* elem : Elements) {
+        delete elem;
+    }
+    for (Node* node : Nodes) {
+        delete node;
+    }
 }

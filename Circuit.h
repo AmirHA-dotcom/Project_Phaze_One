@@ -65,13 +65,14 @@ public:
     void create_new_Square_voltage_source(string name, string node1_name, string node2_name, double period, double value);
     void create_new_Triangle_voltage_source(string name, string node1_name, string node2_name, double period, double value);
     void create_new_Delta_voltage_source(string name, string node1_name, string node2_name, double time);
-
     void analyse_data();
     const vector<Element*> get_Elements();
     const vector<Node*> get_Nodes();
     const vector<Element*> get_Elements_of_type(Element_Type type);
     void transient();
     void delete_element(string name);
+    ~Circuit();
+
 private:
     int node_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
     int element_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
