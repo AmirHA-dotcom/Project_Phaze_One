@@ -255,6 +255,7 @@ void Controller::renameNode(string oldName, string newName){
 }
 
 void Controller::tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep){
+    time_step = stepTime;
     circuit->analyse_data();
     circuit->transient();
 }

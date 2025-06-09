@@ -4,8 +4,9 @@
 
 #include "Inductor.h"
 
-double Inductor::get_current(double time1, double time2)
+double Inductor::get_current(double time1, double time_step)
 {
+    double time2 = time1 + time_step;
     double dV1 = node1->get_voltage_in_time(time1) - node2->get_voltage_in_time(time1);
     double dV2 = node1->get_voltage_in_time(time2) - node2->get_voltage_in_time(time2);
     double dT = time2 - time1;

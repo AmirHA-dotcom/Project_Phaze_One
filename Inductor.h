@@ -12,7 +12,7 @@ class Inductor : public Element
     int aux_index; // this is added so it can be used in the solving matrix
 public:
     Inductor(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Inductor, _node1, _node2, _value) {}
-    double get_current(double time1, double time2);
+    double get_current(double time1, double time_step);
     void display_info() override;
     void change_value(double new_value) override;
     void change_name(string new_name) override;

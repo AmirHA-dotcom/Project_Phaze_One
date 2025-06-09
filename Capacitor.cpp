@@ -4,8 +4,9 @@
 
 #include "Capacitor.h"
 
-double Capacitor::get_current(double time1, double time2)
+double Capacitor::get_current(double time1, double time_step)
 {
+    double time2 = time1 + time_step;
     // i = C dv/dt
     double dV1 = node1->get_voltage_in_time(time1) - node2->get_voltage_in_time(time1);
     double dV2 = node1->get_voltage_in_time(time2) - node2->get_voltage_in_time(time2);

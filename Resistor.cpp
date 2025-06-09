@@ -4,7 +4,7 @@
 
 #include "Resistor.h"
 
-double Resistor::get_current(double time)
+double Resistor::get_current(double time, double time_step)
 {
     return (node1->get_voltage_in_time(time) - node2->get_voltage_in_time(time))/value;
 }
