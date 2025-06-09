@@ -76,7 +76,9 @@ void Controller::addGND (string name){
 void Controller::addCS (string name, string Node1, string Node2, double value){
     circuit->create_new_current_source(name, Node1, Node2, value);
 }
+void Controller::addVS(std::string name, std::string node1, std::string node2, double value) {
 
+}
 void Controller::addSin (string name, string Node1, string Node2, double offset, double amplitude, double frequency){
     circuit->create_new_Sin_voltage_source(name, Node1, Node2, offset, amplitude, frequency);
 }
