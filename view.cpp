@@ -395,7 +395,7 @@ bool View::handleMainMenu (Controller* C) {
     }
     else if (s == "3") {
         analysisMenu = true;
-        cout << "Enter the name of the circuit to load: ";
+        C->circuit = nullptr;
         return true;
     }
     else {
@@ -675,6 +675,8 @@ bool View::handleFileMenu (Controller* C) {
 }
 bool View::handleAnalysisMenu (Controller* C) {
     string line;
+    if (C->circuit == nullptr)
+        cout << "Enter the name of the circuit in form <circuit> <name> to load: " << endl;
     getline(cin,line);
     vector<string> i = splitString(line);
     if (line == "end") {
@@ -686,12 +688,24 @@ bool View::handleAnalysisMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
+    if (i.size() == 2 && i[0] == "circuit"){
+        C->circuit = C->findCircuit(i[1]);
+        return true;
+    }
     if (i.size() == 3 && i[0] == "switch" && i[1] == "to") {
         // add circuit <Name>
         if (!C->findCircuit(i[2])) {
             throw circuitNotFind(i[2]);
         }
         C->circuit = C->findCircuit(i[2]);
+        return true;
+    }
+    if (i.size() == 3 && i[0] == "rename") {
+        auto c = C->findCircuit(i[1]);
+        if (!C->findCircuit(i[1])) {
+            throw circuitNotFind(i[1]);
+        }
+        C->renameCircuit(c,i[2]);
         return true;
     }
     if (line == "show circuits") {
