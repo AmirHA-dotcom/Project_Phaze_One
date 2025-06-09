@@ -11,17 +11,23 @@ void Voltage_Source::set_aux_index(int i)
 
 void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
 {
-    int i, j, a;
-    i = node1->get_index();
-    j = node2->get_index();
-    a = aux_index;
-    // stamping in G
-    G_triplets.emplace_back(i, a, 1.0);
-    G_triplets.emplace_back(j, a, -1.0);
-    G_triplets.emplace_back(a, i, 1.0);
-    G_triplets.emplace_back(a, j, -1.0);
-    // stamping in b
-    b[a] = get_value_at(current_time, time_step);
+    int i = node1->get_index();
+    int j = node2->get_index();
+    int a = aux_index;
+
+    if (i != -1) {
+        G_triplets.emplace_back(i, a, 1.0);
+    }
+    if (j != -1) {
+        G_triplets.emplace_back(j, a, -1.0);
+    }
+    if (i != -1) {
+        G_triplets.emplace_back(a, i, 1.0);
+    }
+    if (j != -1) {
+        G_triplets.emplace_back(a, j, -1.0);
+    }
+    b[a] += get_value_at(current_time, time_step);
 }
 
 void Voltage_Source::set_current(double current, double time)
