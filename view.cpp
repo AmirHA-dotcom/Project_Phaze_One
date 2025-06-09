@@ -362,7 +362,7 @@ bool dcAnalysisCheck (vector<string> i) {
     return true;
 }
 bool printTranCheck (vector<string> i) {
-    if ( i[0] != ".print" || i[1] != "TRAN"){
+    if ( i.size() < 3 || i[0] != ".print" || i[1] != "TRAN"){
         return false;
     }
     return true;
@@ -745,6 +745,7 @@ bool View::handleAnalysisMenu (Controller* C) {
         }
         C->DcAnalysisOrders(orders);
     }
+    cout << "dodo" << endl;
         throw invalidSyntax();
 }
 
