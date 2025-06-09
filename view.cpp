@@ -362,7 +362,7 @@ bool dcAnalysisCheck (vector<string> i) {
     return true;
 }
 bool printTranCheck (vector<string> i) {
-    if (i.size() < 3 || i[0] != ".print" || i[1] != "TRAN"){
+    if ( i[0] != ".print" || i[1] != "TRAN"){
         return false;
     }
     return true;
