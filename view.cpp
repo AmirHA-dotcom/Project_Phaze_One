@@ -749,7 +749,6 @@ bool View::handleAnalysisMenu (Controller* C) {
         return true;
 
     }
-    cout << "dodo" << endl;
         throw invalidSyntax();
 }
 
