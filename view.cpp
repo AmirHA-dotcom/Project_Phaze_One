@@ -131,7 +131,7 @@ bool addRCheck (vector<string> i) {
     if (i.size() != 5 || i[0] != "add" || i[1][0] != 'R'){
         return false;
     }
-    if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
+    if (!isDigit(i[4]) || stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
         throw invalidResistance();
 
     }
@@ -184,7 +184,7 @@ bool addDCheck (vector<string> i) {
     if (i[1][0] != 'D'){
         return false;
     }
-    if (stod(i[4]) <= 0 || !isValidDiodeName(i[4]) ) {
+    if ( !isValidDiodeName(i[4]) ) {
         throw invalidDiodeModel(i[4]);
     }
     return true;
