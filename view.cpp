@@ -537,7 +537,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
-        cout << "dodo" << i[1].substr(13,i[1].size()-13) << endl;
 
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
@@ -549,7 +548,6 @@ bool View::handleCircuitMenu (Controller* C) {
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
             throw elementExists(i[1].substr(13,i[1].size()-13));
         }
-        cout << "dodo" << i[1].substr(13,i[1].size()-13) << endl;
         C->addCS(i[1].substr(13,i[1].size()-13),i[2],i[3],toValue(i[4]));
         return true;
     }
