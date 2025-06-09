@@ -712,6 +712,10 @@ bool View::handleAnalysisMenu (Controller* C) {
         C->showCircuits();
     }
     if (tranAnalysisCheck(i)) {
+        if (!C->circuit->isGround()) {
+            cout << "please Ground first !" << endl;
+            return true;
+        }
         C->tranAnalysis(toValue(i[1]), toValue(i[2]),toValue(i[3].substr(1,i[3].size()-2))
                         , toValue(i[4].substr(1,i[4].size()-2)));
         return true;

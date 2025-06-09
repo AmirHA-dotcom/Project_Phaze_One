@@ -16,6 +16,9 @@ int Circuit::node_index_finder_by_name(const string& name)
 void Circuit::ground(bool b){
     this->haveGround = b;
 }
+bool Circuit::isGround(){
+    return haveGround;
+}
 
 int Circuit::element_index_finder_by_name(const string& name)
 {
