@@ -688,6 +688,10 @@ bool View::handleAnalysisMenu (Controller* C) {
         mainMenu = true;
         return true;
     }
+    if (i.size() == 2 && i[0] == "circuit"){
+        C->circuit = C->findCircuit(i[1]);
+        return true;
+    }
     if (i.size() == 3 && i[0] == "switch" && i[1] == "to") {
         // add circuit <Name>
         if (!C->findCircuit(i[2])) {
