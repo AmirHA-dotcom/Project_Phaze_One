@@ -340,10 +340,7 @@ bool componentListCheck (vector<string> i) {
     return true;
 }
 bool renameNodeCheck (vector<string> i) {
-    if (i.size() != 4 && i[0] == ".rename" && i[1] == "node"){
-        return false;
-    }
-    if (i.size() != 4 || i[0] != ".rename" || i[1] == "node"){
+    if (i.size() != 4 || i[0] != ".rename" || i[1] != "node"){
         return false;
     }
     return true;
