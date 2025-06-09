@@ -362,10 +362,7 @@ bool dcAnalysisCheck (vector<string> i) {
     return true;
 }
 bool printTranCheck (vector<string> i) {
-    cout << i[0] << "  " << i[1] << endl;
-
     if ( i.size() < 3 || i[0] != ".print" || i[1] != "TRAN"){
-        cout << i[0] << "  " << i[1] << endl;
         return false;
     }
     return true;
@@ -739,7 +736,7 @@ bool View::handleAnalysisMenu (Controller* C) {
         for (size_t j = 2; j < i.size(); ++j) {
             orders.push_back(i[j]);
         }
-        cout << "jojo" << endl;
+        cout << orders.size() << endl;
         C->tranAnalysisOrders(orders);
         return true;
     }
