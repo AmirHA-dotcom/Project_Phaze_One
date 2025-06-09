@@ -274,7 +274,7 @@ void Controller::DcAnalysis(double sourceName, double startValue, double endValu
 }
 
 void Controller::tranAnalysisOrders(vector<string> orders){
-    cout << "dodo" <<orders[0] << endl;
+    //cout << "dodo  " <<orders[0].substr(2, orders[0].size() - 3) << endl;
     vector<string> nodeVoltages;
     vector<string> elementCurrents;
     for (const auto& order : orders) {
@@ -291,6 +291,7 @@ void Controller::tranAnalysisOrders(vector<string> orders){
         return;
     }
     for (auto i : nodeVoltages) {
+        cout << i << endl;
         Node* node = findNode(i);
         if (node == nullptr) {
             cerr << "Node " << i << " not found." << endl;
