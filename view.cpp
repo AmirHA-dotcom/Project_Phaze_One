@@ -401,8 +401,12 @@ bool View::handleMainMenu (Controller* C) {
 }
 bool View::handleCircuitMenu (Controller* C) {
     if (C->circuit == nullptr) {
-        cout << "No circuit selected. Please add or switch to a circuit first." << endl;
+        if (!C->circuits.empty())
+            C->showCircuits();
+        else
+          cout << "No circuit selected. Please add or switch to a circuit first." << endl;
     }
+
     string line;
     getline(cin,line);
     vector<string> i = splitString(line);
