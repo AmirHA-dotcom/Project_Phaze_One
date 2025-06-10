@@ -65,7 +65,7 @@ double toValue(const std::string& inputRaw) {
 bool isDigit(const std::string& s) {
     if (s.empty()) return false;
     for (char c : s) {
-        if ((c < '0' || c > '9') && c != ')') return false;
+        if ((c < '0' || c > '9') && c != ')' && c != '.' && c != '(') return false;
     }
     return true;
 }
@@ -244,7 +244,7 @@ bool addSinusoidalCheck (vector<string> i) {
     return true;
 }
 bool addPulse1eCheck (vector<string> i) {
-    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || !i[4].find("PULSE1")){
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || i[4].find("PULSE1") != std::string::npos ){
         return false;
     }
     if (!isDigit(i[6].substr(1,i[6].size()-2))) {
@@ -253,7 +253,7 @@ bool addPulse1eCheck (vector<string> i) {
     return true;
 }
 bool addPulse2Check (vector<string> i) {
-    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || !i[4].find("PULSE2")){
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || i[4].find("PULSE2") != std::string::npos ){
         return false;
     }
     if (i[4] != "PULSE")
