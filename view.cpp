@@ -208,7 +208,7 @@ bool delGCheck (const vector<string> i) {
     return true;
 }
 bool addVSCheck (vector<string> i) {
-    if (i.size() != 5 || i[0] != "add" || !i[1].find("VoltageSource")){
+    if (i.size() != 5 || i[0] != "add" || i[1].find("VoltageSource") == std::string::npos){
         return false;
     }
 //    if (i[0] != "add" && i[1][0] != 'C'){
@@ -220,7 +220,7 @@ bool addVSCheck (vector<string> i) {
     return true;
 }
 bool addCSCheck (vector<string> i) {
-    if (i.size() != 5 || i[0] != "add" || !i[1].find("CurrentSource")){
+    if (i.size() != 5 || i[0] != "add" || i[1].find("CurrentSource") == std::string::npos){
         return false;
     }
 //    if (i[0] != "add" && i[1][0] != 'C'){
