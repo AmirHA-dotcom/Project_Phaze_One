@@ -437,6 +437,8 @@ void Circuit::delete_element(string name)
     }
 
     delete element_to_delete;
+    cout <<"dodo " << element_to_delete->get_name() << endl;
+
     Elements.erase(Elements.begin() + element_index);
 }
 
