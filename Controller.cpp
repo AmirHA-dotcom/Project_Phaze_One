@@ -350,9 +350,15 @@ void Controller::showFile(int num){
 }
 
 bool Controller::validSchematicChoice(string s){
+    if (stoi(s) <= 0 || stoi(s) > file_handler.get_file_names().size())
     return false; // Placeholder
 }
 
 void Controller::handleNewFile(string path){
     file_handler.add_file(path);
+}
+
+bool Controller::is_files_empty()
+{
+    return file_handler.get_file_names().empty();
 }
