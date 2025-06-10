@@ -144,7 +144,7 @@ void Circuit::make_node_NOT_ground(string name)
 
 void Circuit::create_new_resistor(string name, string node1_name, string node2_name, double resistance)
 {
-    cout << "ojn" << endl;
+    //cout << "ojn" << endl;
     // finding if we need to make a new node
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -299,7 +299,7 @@ void Circuit::create_new_zener_diode(string name, string node1_name, string node
 
 void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_name, std::string node2_name, double voltage)
 {
-    cout << "meow" << endl;
+    //cout << "meow" << endl;
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
