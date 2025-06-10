@@ -221,7 +221,7 @@ bool addVSCheck (vector<string> i) {
 }
 bool addCSCheck (vector<string> i) {
     cout << i[1] << endl;
-    if (i.size() != 5 || i[0] != "add" || i[1].find("CurrentSource") == std::string::npos){
+    if (i.size() != 5 || i[0] != "add" || i[1][7] != 'S'){
         return false;
     }
 //    if (i[0] != "add" && i[1][0] != 'C'){
@@ -479,7 +479,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCCheck(i)) {
-        cout << "C check called in view" << endl;
         if (i[2] == i[3])
             throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
