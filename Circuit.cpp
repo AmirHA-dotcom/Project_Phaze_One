@@ -427,6 +427,7 @@ void Circuit::delete_element(string name)
 
     node1->disconnect_element();
     node2->disconnect_element();
+    cout <<"dodo " << element_to_delete->get_name() << endl;
 
     delete_node_if_unused(node1);
 
@@ -436,7 +437,7 @@ void Circuit::delete_element(string name)
         delete_node_if_unused(node2);
     }
 
-    delete element_to_delete;
+    //delete element_to_delete;
     cout <<"dodo " << element_to_delete->get_name() << endl;
 
     Elements.erase(Elements.begin() + element_index);
