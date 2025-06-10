@@ -87,6 +87,7 @@ public:
 
     void handleNewFile(string path);
 
+    bool is_files_empty();
 
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H
