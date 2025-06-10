@@ -42,7 +42,8 @@ void File_Handler::show_current_file()
         cerr << "Error: Could not open the file " << file_path << endl;
         return;
     }
-    cout << file_name << ":" << endl;
+    cout << file_name << " :" << endl;
+    cout << "-------------------------------" << endl;
     // reading and showing the file
     string line;
     while (getline(input_file, line))
@@ -51,6 +52,7 @@ void File_Handler::show_current_file()
     }
     input_file.close();
     cout << ".end" << endl;
+    cout << "-------------------------------" << endl;
 }
 
 void File_Handler::add_file(const string& file_path)
