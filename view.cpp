@@ -421,7 +421,6 @@ bool View::handleCircuitMenu (Controller* C) {
 
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
-
         if (C->findCircuit(i[2])) {
             throw circuitExists();
         }
@@ -455,7 +454,8 @@ bool View::handleCircuitMenu (Controller* C) {
     if (i.size() == 6 && i[0] == "save" && i[2] == "as" && i[3] == "file" && i[4] == "to"){
         if (!C->findCircuit(i[1]))
             throw circuitNotFind(i[1]);
-        C->saveCircuit(C->findCircuit(i[1]),i[4]);
+        C->saveCircuit(C->findCircuit(i[1]),i[5]);
+        return true;
     }
     if (line == "show circuits") {
         C->showCircuits();
