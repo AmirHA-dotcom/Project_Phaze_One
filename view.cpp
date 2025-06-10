@@ -519,6 +519,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delDCheck(i)) {
+        cout << "dod";
         auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             throw elementFind(i[1].substr(1,i[1].size()-1));
