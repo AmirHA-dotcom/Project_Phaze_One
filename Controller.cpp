@@ -341,7 +341,7 @@ void Controller::delElement (Element* element){
 void Controller::showSchematics(){
     vector<string> file_names = file_handler.get_file_names();
     for (int i = 0; i < file_names.size(); i++)
-        cout << i + 1 << "-" << file_names[i] << endl;
+        cout << i + 1 << " - " << file_names[i] << endl;
 }
 
 void Controller::showFile(int num){

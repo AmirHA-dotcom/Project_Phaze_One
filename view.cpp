@@ -214,7 +214,7 @@ bool addVSCheck (vector<string> i) {
 //    if (i[0] != "add" && i[1][0] != 'C'){
 //        Error::notFindElement(i[4]);
 //    }
-    if (!isDigit(i[4])) {
+    if (!isValidSpiceNumber(i[4])) {
         throw invalidSyntax();
     }
     return true;
@@ -226,7 +226,7 @@ bool addCSCheck (vector<string> i) {
 //    if (i[0] != "add" && i[1][0] != 'C'){
 //        Error::notFindElement(i[4]);
 //    }
-    if (!isDigit(i[4])) {
+    if (!isValidSpiceNumber(i[4])) {
         throw invalidSyntax();
     }
     return true;
@@ -238,7 +238,7 @@ bool addSinusoidalCheck (vector<string> i) {
 //    if (!i[4].find("SIN") ){
 //        throw notFindInLibrary(i[4]);
 //    }
-    if (!isDigit(i[5])) {
+    if (!isValidSpiceNumber(i[5])) {
         throw invalidSyntax();
     }
     return true;
@@ -247,7 +247,7 @@ bool addPulse1eCheck (vector<string> i) {
     if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || i[4].find("PULSE1") != std::string::npos ){
         return false;
     }
-    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+    if (!isValidSpiceNumber(i[6].substr(1,i[6].size()-2))) {
         throw invalidSyntax();
     }
     return true;
@@ -258,7 +258,7 @@ bool addPulse2Check (vector<string> i) {
     }
     if (i[4] != "PULSE")
         throw notFindInLibrary(i[1]);
-    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+    if (!isValidSpiceNumber(i[6].substr(1,i[6].size()-2))) {
         throw invalidSyntax();
     }
     return true;
@@ -269,7 +269,7 @@ bool addPulse3Check (vector<string> i) {
     }
     if (i[4] != "PULSE3")
         throw notFindInLibrary(i[1]);
-    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+    if (!isValidSpiceNumber(i[6].substr(1,i[6].size()-2))) {
         throw invalidSyntax();
     }
     return true;
@@ -280,7 +280,7 @@ bool addPulse4Check (vector<string> i) {
     }
     if (i[4] != "PULSE4")
         throw notFindInLibrary(i[1]);
-    if (!isDigit(i[6].substr(1,i[6].size()-2))) {
+    if (!isValidSpiceNumber(i[6].substr(1,i[6].size()-2))) {
         throw invalidSyntax();
     }
     return true;
@@ -289,7 +289,7 @@ bool addVcVsCheck (vector<string> i) {
     if (i.size() != 7 || i[0] != "add" || i[1][0] != 'E'){
         return false;
     }
-    if (!isDigit(i[6])) {
+    if (!isValidSpiceNumber(i[6])) {
         throw invalidSyntax();
     }
     return true;
@@ -298,7 +298,7 @@ bool addCcVsCheck (vector<string> i) {
     if (i.size() != 7 || i[0] != "add" || i[1][0] != 'G'){
         return false;
     }
-    if (!isDigit(i[6])) {
+    if (!isValidSpiceNumber(i[6])) {
         throw invalidSyntax();
     }
     return true;
@@ -307,7 +307,7 @@ bool addVcCsCheck (vector<string> i) {
     if (i.size() != 6 || i[0] != "add" || i[1][0] != 'H'){
         return false;
     }
-    if (!isDigit(i[5])) {
+    if (!isValidSpiceNumber(i[5])) {
         throw invalidSyntax();
     }
     return true;
@@ -322,7 +322,7 @@ bool addCcCsCheck (vector<string> i) {
     if (i[1][0] != 'F'){
         return false;
     }
-    if (!isDigit(i[5])) {
+    if (!isValidSpiceNumber(i[5])) {
         throw invalidSyntax();
     }
     return true;
