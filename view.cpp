@@ -422,7 +422,6 @@ bool View::handleCircuitMenu (Controller* C) {
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
 
-
         if (C->findCircuit(i[2])) {
             throw circuitExists();
         }
@@ -452,6 +451,11 @@ bool View::handleCircuitMenu (Controller* C) {
         }
         C->renameCircuit(c,i[2]);
         return true;
+    }
+    if (i.size() == 6 && i[0] == "save" && i[2] == "as" && i[3] == "file" && i[4] == "to"){
+        if (!C->findCircuit(i[1]))
+            throw circuitNotFind(i[1]);
+        C->saveCircuit(C->findCircuit(i[1]),i[4]);
     }
     if (line == "show circuits") {
         C->showCircuits();
@@ -699,6 +703,11 @@ bool View::handleFileMenu (Controller* C) {
     if (line.empty()) {
         return true;
     }
+    if (i.size() == 4 && i[0] == "add" && i[2] == "to" && i[3] == "circuits"){
+        if (!C->validSchematicChoice(i[1]))
+            throw invalidSchematicChoice();
+        C->addFileToCircuits(stoi(i[1]));
+    }
     if (isDigit(line) && C->validSchematicChoice(line)) {
         C->showFile(stoi(line));
         return true;
@@ -757,6 +766,7 @@ bool View::handleAnalysisMenu (Controller* C) {
     if (line == "show circuits") {
         C->showCircuits();
     }
+
     if (tranAnalysisCheck(i)) {
         if (!C->circuit->isGround()) {
             cout << "please Ground first !" << endl;
@@ -764,6 +774,14 @@ bool View::handleAnalysisMenu (Controller* C) {
         }
         C->tranAnalysis(toValue(i[1]), toValue(i[2]),toValue(i[3].substr(1,i[3].size()-2))
                         , toValue(i[4].substr(1,i[4].size()-2)));
+        return true;
+    }
+    if (i.size() == 3 && i[0] == ".TRAN") {
+        if (!C->circuit->isGround()) {
+            cout << "please Ground first !" << endl;
+            return true;
+        }
+        C->tranAnalysis2(toValue(i[1]), toValue(i[2]));
         return true;
     }
     if (dcAnalysisCheck(i)) {

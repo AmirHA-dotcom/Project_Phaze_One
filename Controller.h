@@ -66,7 +66,7 @@ public:
     void showCapacitors();
 
     void showDiodes();
-
+    void createFile(string name, string path);
     void renameNode(string oldName, string newName);
 
     void tranAnalysis(double stepTime, double stopTime, double startTime, double maxTimeStep);
@@ -75,7 +75,13 @@ public:
 
     void tranAnalysisOrders(vector<string> orders);
 
+    void tranAnalysis2(double stepTime, double stopTime);
+
     void DcAnalysisOrders(vector<string> orders);
+
+    void saveCircuit(Circuit* circuit, string path);
+
+    void addFileToCircuits(int fileIndex);
 
     void delElement(Element *element);
 

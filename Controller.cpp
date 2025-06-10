@@ -275,6 +275,16 @@ void Controller::tranAnalysis(double stepTime, double stopTime, double startTime
     circuit->analyse_data();
     circuit->transient();
 }
+void Controller::tranAnalysis2(double stepTime, double stopTime){
+    time_step = stepTime;
+    start_time = 0;
+    end_time = stopTime;
+    circuit->set_time_start(start_time);
+    circuit->set_time_end(end_time);
+    circuit->set_time_step(time_step);
+    circuit->analyse_data();
+    circuit->transient();
+}
 
 void Controller::DcAnalysis(double sourceName, double startValue, double endValue, double increment){
     // Implementation
@@ -328,6 +338,35 @@ void Controller::tranAnalysisOrders(vector<string> orders){
                 cout << element->get_current(t, time_step) << " ";
             cout << endl;
     }
+}
+
+void Controller::saveCircuit(Circuit* circuit, string path){
+    createFile(circuit->get_name(),path);
+}
+void Controller::createFile (string name, string path){
+    // اطمینان از اینکه مسیر با / یا \ تمام می‌شود
+    if (!path.empty() && path.back() != '/' && path.back() != '\\') {
+#ifdef _WIN32
+        path += "\\";
+#else
+        path += "/";
+#endif
+    }
+    std::string fullPath = path + name + ".txt";
+    filesystem::create_directories(path);
+
+    ofstream file(fullPath);
+    if (file.is_open()) {
+        file << "circuit schematic:";
+        file.close();
+    } else {
+        cerr << "Error: could not create file at " << fullPath << std::endl;
+    }
+}
+void Controller::addFileToCircuits(int fileIndex) {
+    string circuitName;
+    auto* c = new Circuit(circuitName);
+    circuits.push_back(c);
 }
 
 void Controller::DcAnalysisOrders(vector<string> orders){
