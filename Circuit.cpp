@@ -512,191 +512,114 @@ vector<double> subtract_vectors(const vector<double>& a, const vector<double>& b
     return result;
 }
 
-void Circuit::transient()
-{
-    //cout << t_start << " " << time_step << " " << t_end << endl;
-    const int max_NR_its = 100;
-
-    vector<double> x_previous(total_unknowns, 0.0);
-
-    // outer loop that goes in time
-    for (double t = t_start; t < t_end; t += time_step)
-    {
-        //cout << "tran start" << endl;
-        vector<double> x_k = x_previous;
-        bool converged = false;
-
-        for (int k = 0; k < max_NR_its; ++k)
-        {
-            //cout << "NR started" << endl;
-            // stamping elements
-            vector<Triplet> triplets;
-            vector<double>  b_rhs(total_unknowns, 0.0);
-            for (auto* e : Elements) {
-                e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
-            }
-            //cout << "\n--- Checking Element Types before Stamping (t=" << t << ", k=" << k << ") ---" << endl;
-//            for (auto* e : Elements) {
-//                if (e == nullptr) {
-//                    cout << "FATAL: Found a nullptr Element!" << endl;
-//                    continue;
-//                }
-//
-//                cout << "Object '" << e->get_name() << "' at address " << e << ":" << endl;
-//
-//                // Ask the object what it *really* is
-//                if (dynamic_cast<Resistor*>(e)) {
-//                    cout << "  -> Type check: OK (Resistor). Calling stamp..." << endl;
-//                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
-//                } else if (dynamic_cast<DC_Source*>(e)) {
-//                    cout << "  -> Type check: OK (DC_Source). Calling stamp..." << endl;
-//                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
-//                }
-////                else if (dynamic_cast<DC_Source*>(e)) {
-////                    cout << "  -> Type check: OK (Some other Voltage_Source). Calling stamp..." << endl;
-////                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
-////                }
-//                else {
-//                    // This is what we expect to see for the broken object
-//                    cout << "  -> Type check: FAILED! Object is of an UNKNOWN OR CORRUPTED TYPE." << endl;
-//                    cout << "  -> NOT calling stamp() on this corrupted object." << endl;
-//                }
-//            }
-            //cout << "--- Finished Stamping ---" << endl;
-            //cout << "stamp works" << endl;
-            vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
-//            for (const auto& tr : triplets) {
-//                G[tr.Row][tr.Column] += tr.Value;
-//            }
-//            std::cerr << "[DEBUG] t=" << t
-//                      << ", total_unknowns=" << total_unknowns
-//                      << ", triplets.size()=" << triplets.size() << endl;
-            for (const auto& tr : triplets) {
-                if (tr.Row < 0 || tr.Row >= total_unknowns ||
-                    tr.Column < 0 || tr.Column >= total_unknowns) {
-
-                    std::cerr << "[FATAL ERROR] Out-of-bounds index detected in stamping!\n"
-                              << "Triplet values: Row=" << tr.Row << ", Column=" << tr.Column << "\n"
-                              << "Total unknowns = " << total_unknowns << "\n";
-                    std::abort(); // Stop the program immediately
-                }
-                //cout << "G assembelling" << endl;
-                G[tr.Row][tr.Column] += tr.Value;
-            }
-
-            // calculating residual error
-            vector<double> G_times_xk = multiply_matrix_vector(G, x_k);
-            vector<double> residual = subtract_vectors(G_times_xk, b_rhs);
-
-            //cout << "calcing residual errors" << endl;
-            // checking the convergence
-            if (check_convergence(residual)) {
-                converged = true;
-                break;
-            }
-
-            // solving
-            for(double& val : residual) { val = -val; }
-            vector<double> delta_x = algorithems.solve_LU(G, residual);
-
-            if (delta_x.empty()) {
-                break;
-            }
-
-            // updating the solution
-            //cout << "updating soloution" << endl;
-            for(int i = 0; i < x_k.size(); ++i) {
-                x_k[i] += delta_x[i];
-            }
-            //cout << "solution updated" << endl;
-        }
-        //cout << "NR done" << endl;
-        if (!converged) {
-            cout << "Error: Newton-Raphson failed to converge at time t = " << t << endl;
-            return;
-        }
-
-        x_previous = x_k;
-
-        //cout << "saving data" << endl;
-        // saving data
-        for (auto* n : Active_Nodes) {
-            n->set_voltage(x_previous[n->get_index()], t);
-        }
-        for (auto* e : Elements) {
-            if (auto* v_source = dynamic_cast<DC_Source*>(e)) {
-                int current_index = v_source->get_aux_index();
-                double current = x_previous[current_index];
-                v_source->set_current(current, t);
-            }
-            else if (auto* vcvs = dynamic_cast<VCVS*>(e)) {
-                int current_index = vcvs->get_aux_index();
-                double current = x_previous[current_index];
-                vcvs->set_current(current, t);
-            }
-            else if (auto* diode = dynamic_cast<Real_Diode*>(e)) {
-                double current = diode->calculate_current(x_previous);
-                diode->set_current(current, t);
-            }
-            else if (auto* zener = dynamic_cast<Zener_Diode*>(e)) {
-                double current = zener->calculate_current(x_previous);
-                zener->set_current(current, t);
-            }
-            //cout << "data saved" << endl;
-        }
-    }
-    cout << "transient worked!" << endl;
-}
-
 //void Circuit::transient()
 //{
-//    // Initialize the vector of unknowns. For t=0, we assume a zero initial state.
+//    //cout << t_start << " " << time_step << " " << t_end << endl;
+//    const int max_NR_its = 100;
+//
 //    vector<double> x_previous(total_unknowns, 0.0);
 //
-//    // The main loop that advances through time
+//    // outer loop that goes in time
 //    for (double t = t_start; t < t_end; t += time_step)
 //    {
-//        // For an LTI system, we build and solve the system of equations once per time step.
+//        //cout << "tran start" << endl;
+//        vector<double> x_k = x_previous;
+//        bool converged = false;
 //
-//        // 1. Initialize containers for the matrix (triplets) and the RHS vector (b_rhs)
-//        vector<Triplet> triplets;
-//        vector<double>  b_rhs(total_unknowns, 0.0);
-//
-//        // 2. Stamp all elements to build the system of equations.
-//        // Since the system is linear, the stamp result doesn't depend on the current unknown solution (x_k).
-//        // We pass x_previous for both x_k and x_previous arguments to satisfy the existing
-//        // stamp function signature without needing to change it.
-//        for (auto* e : Elements) {
-//            e->stamp(t, time_step, triplets, b_rhs, x_previous, x_previous);
-//        }
-//
-//        // 3. Assemble the G matrix from the stamped triplets.
-//        vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
-//        for (const auto& tr : triplets) {
-//            if (tr.Row < 0 || tr.Row >= total_unknowns ||
-//                tr.Column < 0 || tr.Column >= total_unknowns) {
-//
-//                std::cerr << "[FATAL ERROR] Out-of-bounds index detected in stamping!\n"
-//                          << "Triplet values: Row=" << tr.Row << ", Column=" << tr.Column << "\n"
-//                          << "Total unknowns = " << total_unknowns << "\n";
-//                std::abort(); // Stop the program immediately
+//        for (int k = 0; k < max_NR_its; ++k)
+//        {
+//            //cout << "NR started" << endl;
+//            // stamping elements
+//            vector<Triplet> triplets;
+//            vector<double>  b_rhs(total_unknowns, 0.0);
+//            for (auto* e : Elements) {
+//                e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
 //            }
-//            G[tr.Row][tr.Column] += tr.Value;
+//            //cout << "\n--- Checking Element Types before Stamping (t=" << t << ", k=" << k << ") ---" << endl;
+////            for (auto* e : Elements) {
+////                if (e == nullptr) {
+////                    cout << "FATAL: Found a nullptr Element!" << endl;
+////                    continue;
+////                }
+////
+////                cout << "Object '" << e->get_name() << "' at address " << e << ":" << endl;
+////
+////                // Ask the object what it *really* is
+////                if (dynamic_cast<Resistor*>(e)) {
+////                    cout << "  -> Type check: OK (Resistor). Calling stamp..." << endl;
+////                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+////                } else if (dynamic_cast<DC_Source*>(e)) {
+////                    cout << "  -> Type check: OK (DC_Source). Calling stamp..." << endl;
+////                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+////                }
+//////                else if (dynamic_cast<DC_Source*>(e)) {
+//////                    cout << "  -> Type check: OK (Some other Voltage_Source). Calling stamp..." << endl;
+//////                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+//////                }
+////                else {
+////                    // This is what we expect to see for the broken object
+////                    cout << "  -> Type check: FAILED! Object is of an UNKNOWN OR CORRUPTED TYPE." << endl;
+////                    cout << "  -> NOT calling stamp() on this corrupted object." << endl;
+////                }
+////            }
+//            //cout << "--- Finished Stamping ---" << endl;
+//            //cout << "stamp works" << endl;
+//            vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
+////            for (const auto& tr : triplets) {
+////                G[tr.Row][tr.Column] += tr.Value;
+////            }
+////            std::cerr << "[DEBUG] t=" << t
+////                      << ", total_unknowns=" << total_unknowns
+////                      << ", triplets.size()=" << triplets.size() << endl;
+//            for (const auto& tr : triplets) {
+//                if (tr.Row < 0 || tr.Row >= total_unknowns ||
+//                    tr.Column < 0 || tr.Column >= total_unknowns) {
+//
+//                    std::cerr << "[FATAL ERROR] Out-of-bounds index detected in stamping!\n"
+//                              << "Triplet values: Row=" << tr.Row << ", Column=" << tr.Column << "\n"
+//                              << "Total unknowns = " << total_unknowns << "\n";
+//                    std::abort(); // Stop the program immediately
+//                }
+//                //cout << "G assembelling" << endl;
+//                G[tr.Row][tr.Column] += tr.Value;
+//            }
+//
+//            // calculating residual error
+//            vector<double> G_times_xk = multiply_matrix_vector(G, x_k);
+//            vector<double> residual = subtract_vectors(G_times_xk, b_rhs);
+//
+//            //cout << "calcing residual errors" << endl;
+//            // checking the convergence
+//            if (check_convergence(residual)) {
+//                converged = true;
+//                break;
+//            }
+//
+//            // solving
+//            for(double& val : residual) { val = -val; }
+//            vector<double> delta_x = algorithems.solve_LU(G, residual);
+//
+//            if (delta_x.empty()) {
+//                break;
+//            }
+//
+//            // updating the solution
+//            //cout << "updating soloution" << endl;
+//            for(int i = 0; i < x_k.size(); ++i) {
+//                x_k[i] += delta_x[i];
+//            }
+//            //cout << "solution updated" << endl;
 //        }
-//
-//        // 4. Directly solve the linear system G * x = b_rhs
-//        vector<double> x_current = algorithems.solve_LU(G, b_rhs);
-//
-//        // Check if the solver failed (e.g., singular matrix)
-//        if (x_current.empty()) {
-//            cout << "Error: Linear solver failed at time t = " << t << endl;
+//        //cout << "NR done" << endl;
+//        if (!converged) {
+//            cout << "Error: Newton-Raphson failed to converge at time t = " << t << endl;
 //            return;
 //        }
 //
-//        // 5. The solution for this time step becomes the 'previous' solution for the next step.
-//        x_previous = x_current;
+//        x_previous = x_k;
 //
-//        // 6. Save the calculated data for this time step
+//        //cout << "saving data" << endl;
+//        // saving data
 //        for (auto* n : Active_Nodes) {
 //            n->set_voltage(x_previous[n->get_index()], t);
 //        }
@@ -711,20 +634,90 @@ void Circuit::transient()
 //                double current = x_previous[current_index];
 //                vcvs->set_current(current, t);
 //            }
-//                // NOTE: The logic for non-linear elements like diodes remains.
-//                // This function will produce INCORRECT results if used with such elements.
 //            else if (auto* diode = dynamic_cast<Real_Diode*>(e)) {
 //                double current = diode->calculate_current(x_previous);
 //                diode->set_current(current, t);
+//            }
+//            else if (auto* inductor = dynamic_cast<Inductor*>(e)) {
+//                int current_index = inductor->get_aux_index();
+//                double current = x_previous[current_index];
+//                inductor->set_current(current, t);
 //            }
 //            else if (auto* zener = dynamic_cast<Zener_Diode*>(e)) {
 //                double current = zener->calculate_current(x_previous);
 //                zener->set_current(current, t);
 //            }
+//            //cout << "data saved" << endl;
 //        }
 //    }
 //    cout << "transient worked!" << endl;
 //}
+
+void Circuit::transient()
+{
+    vector<double> x_previous(total_unknowns, 0.0);
+
+    for (double t = t_start; t < t_end; t += time_step)
+    {
+
+        vector<Triplet> triplets;
+        vector<double>  b_rhs(total_unknowns, 0.0);
+
+
+        for (auto* e : Elements) {
+            e->stamp(t, time_step, triplets, b_rhs, x_previous, x_previous);
+        }
+
+        vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
+        for (const auto& tr : triplets) {
+            if (tr.Row < 0 || tr.Row >= total_unknowns ||
+                tr.Column < 0 || tr.Column >= total_unknowns) {
+
+                std::cerr << "[FATAL ERROR] Out-of-bounds index detected in stamping!\n"
+                          << "Triplet values: Row=" << tr.Row << ", Column=" << tr.Column << "\n"
+                          << "Total unknowns = " << total_unknowns << "\n";
+                std::abort();
+            }
+            G[tr.Row][tr.Column] += tr.Value;
+        }
+        vector<double> x_current = algorithems.solve_LU(G, b_rhs);
+        if (x_current.empty()) {
+            cout << "Error: Linear solver failed at time t = " << t << endl;
+            return;
+        }
+        x_previous = x_current;
+
+        for (auto* n : Active_Nodes) {
+            n->set_voltage(x_previous[n->get_index()], t);
+        }
+        for (auto* e : Elements) {
+            if (auto* v_source = dynamic_cast<DC_Source*>(e)) {
+                int current_index = v_source->get_aux_index();
+                double current = x_previous[current_index];
+                v_source->set_current(current, t);
+            }
+            else if (auto* vcvs = dynamic_cast<VCVS*>(e)) {
+                int current_index = vcvs->get_aux_index();
+                double current = x_previous[current_index];
+                vcvs->set_current(current, t);
+            }
+            else if (auto* inductor = dynamic_cast<Inductor*>(e)) {
+                int current_index = inductor->get_aux_index();
+                double current = x_previous[current_index];
+                inductor->set_current(current, t);
+            }
+            else if (auto* diode = dynamic_cast<Real_Diode*>(e)) {
+                double current = diode->calculate_current(x_previous);
+                diode->set_current(current, t);
+            }
+            else if (auto* zener = dynamic_cast<Zener_Diode*>(e)) {
+                double current = zener->calculate_current(x_previous);
+                zener->set_current(current, t);
+            }
+        }
+    }
+    cout << "transient worked!" << endl;
+}
 
 Circuit::~Circuit() {
     for (Element* elem : Elements) {

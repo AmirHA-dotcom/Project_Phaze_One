@@ -6,12 +6,17 @@
 
 double Inductor::get_current(double time1, double time_step)
 {
-    double time2 = time1 + time_step;
-    double dV1 = node1->get_voltage_in_time(time1) - node2->get_voltage_in_time(time1);
-    double dV2 = node1->get_voltage_in_time(time2) - node2->get_voltage_in_time(time2);
-    double dT = time2 - time1;
-    // I = 1/L * integral(Vdt) = 1/2L * dT * (dV2 + dV1)
-    return (dV2 + dV1) * dT/(2 * value);
+    for (int i = 0; i < currents.size(); i++)
+    {
+        if (abs(time1 - currents[i].second) < time_step)
+            return currents[i].first;
+    }
+    return 0.0;
+}
+
+void Inductor::set_current(double current, double time)
+{
+    currents.emplace_back(current, time);
 }
 
 void Inductor::display_info()
