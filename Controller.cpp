@@ -307,10 +307,15 @@ void Controller::tranAnalysisOrders(vector<string> orders){
             cerr << "Node " << i << " not found." << endl;
             return;
         }
-        else
-            for(auto jj : node->get_all_voltages())
-                cout << " " << jj.first;
+        else {
+            if (node->is_the_node_ground()){
+                cout << "This is GND Voltage is = 0" << endl;
+            }
+            else
+                for (auto jj: node->get_all_voltages())
+                    cout << " " << jj.first;
             cout << endl;
+        }
     }
     for (auto i : elementCurrents) {
         Element* element = findElement(i);

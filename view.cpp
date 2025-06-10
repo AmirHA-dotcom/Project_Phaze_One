@@ -729,6 +729,10 @@ bool View::handleAnalysisMenu (Controller* C) {
         return true;
     }
     if (i.size() == 2 && i[0] == "circuit"){
+        if (!C->findCircuit(i[1])){
+
+            return true;
+        }
         C->circuit = C->findCircuit(i[1]);
         return true;
     }
