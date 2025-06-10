@@ -44,7 +44,7 @@ Node* Controller::findNode (string name){
 }
 
 void Controller::addR (string name, string Node1, string Node2, double value){
-    cout << "called controller to add reisitor" << endl;
+    //cout << "called controller to add reisitor" << endl;
     circuit->create_new_resistor(name, Node1, Node2, value);
 }
 
@@ -71,12 +71,12 @@ void Controller::addGND (string name){
 }
 
 void Controller::addVS (string name, string Node1, string Node2, double value){
-    cout << "called controller to add dc source" << endl;
+    //cout << "called controller to add dc source" << endl;
     circuit->create_new_DC_voltage_source(name, Node1, Node2, value);
 }
 
 void Controller::addCS (string name, string Node1, string Node2, double value){
-    cout << "called controller to add current source" << endl;
+    //cout << "called controller to add current source" << endl;
     circuit->create_new_current_source(name, Node1, Node2, value);
 }
 
