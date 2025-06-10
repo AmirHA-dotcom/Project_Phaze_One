@@ -79,7 +79,7 @@ void Voltage_Source::change_name(std::string new_name)
 
 double DC_Source::get_value_at(double time, double time_step) const
 {
-        return dc_value;
+    return dc_value;
 }
 
 double Sine_Source::get_value_at(double time, double time_step) const
@@ -142,7 +142,7 @@ double Square_Source::get_value_at(double time, double time_step) const
     {
         return v_up;
     }
-    // lower part
+        // lower part
     else
     {
         return v_down;
@@ -166,7 +166,7 @@ double Triangular_Source::get_value_at(double time, double time_step) const
     {
         return v_initial + (v_peak - v_initial) * (time_in_period / half_period);
     }
-    // falling half (-m)
+        // falling half (-m)
     else
     {
         return v_peak + (v_initial - v_peak) * ((time_in_period - half_period) / half_period);

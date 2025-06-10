@@ -78,7 +78,7 @@ private:
     double time_of_delta;
 public:
     Delta_Dirac(string _name, Node* _node1, Node* _node2, double time)
-    : Voltage_Source(_name, _node1, _node2, 0.0), delta_value(10000000000), not_delta_value(0.0), time_of_delta(time) {}
+            : Voltage_Source(_name, _node1, _node2, 0.0), delta_value(10000000000), not_delta_value(0.0), time_of_delta(time) {}
     double get_value_at(double time, double time_step) const override;
 };
 
@@ -92,8 +92,8 @@ private:
     double period;
 public:
     Square_Source(string _name, Node* _node1, Node* _node2, double v1, double v2, double td, double pw, double per)
-    : Voltage_Source(_name, _node1, _node2, 0.0), v_down(v1), v_up(v2), time_delay(td),
-     square_width(pw), period(per) {}
+            : Voltage_Source(_name, _node1, _node2, 0.0), v_down(v1), v_up(v2), time_delay(td),
+              square_width(pw), period(per) {}
     double get_value_at(double time, double time_step) const override;
 };
 

@@ -144,6 +144,7 @@ void Circuit::make_node_NOT_ground(string name)
 
 void Circuit::create_new_resistor(string name, string node1_name, string node2_name, double resistance)
 {
+    cout << "ojn" << endl;
     // finding if we need to make a new node
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -298,6 +299,7 @@ void Circuit::create_new_zener_diode(string name, string node1_name, string node
 
 void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_name, std::string node2_name, double voltage)
 {
+    cout << "meow" << endl;
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
@@ -309,6 +311,8 @@ void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_n
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
     Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));
+    cout << "ADDING DC S\n" << "node 1 name " << Nodes[node1_index]->get_name() << " node 2 name " << Nodes[node2_index]->get_name() << endl;
+    cout << Elements[Elements.size() - 1]->get_name() << endl;
 }
 
 void
@@ -459,7 +463,7 @@ void Circuit::analyse_data()
     {
         if (auto* L = dynamic_cast<Inductor*>(e))
             L->set_aux_index(aux_index++);
-        else if (auto* V = dynamic_cast<Voltage_Source*>(e))
+        else if (auto* V = dynamic_cast<DC_Source*>(e))
             V->set_aux_index(aux_index++);
     }
     for (auto* e : Elements)
@@ -519,17 +523,49 @@ void Circuit::transient()
     // outer loop that goes in time
     for (double t = t_start; t < t_end; t += time_step)
     {
+        cout << "tran start" << endl;
         vector<double> x_k = x_previous;
         bool converged = false;
 
         for (int k = 0; k < max_NR_its; ++k)
         {
+            cout << "NR started" << endl;
             // stamping elements
             vector<Triplet> triplets;
             vector<double>  b_rhs(total_unknowns, 0.0);
+//            for (auto* e : Elements) {
+//                e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+//            }
+// ==================== NEW DEBUGGING BLOCK ====================
+            cout << "\n--- Checking Element Types before Stamping (t=" << t << ", k=" << k << ") ---" << endl;
             for (auto* e : Elements) {
-                e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+                if (e == nullptr) {
+                    cout << "FATAL: Found a nullptr Element!" << endl;
+                    continue;
+                }
+
+                cout << "Object '" << e->get_name() << "' at address " << e << ":" << endl;
+
+                // Ask the object what it *really* is
+                if (dynamic_cast<Resistor*>(e)) {
+                    cout << "  -> Type check: OK (Resistor). Calling stamp..." << endl;
+                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+                } else if (dynamic_cast<DC_Source*>(e)) {
+                    cout << "  -> Type check: OK (DC_Source). Calling stamp..." << endl;
+                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+                }
+//                else if (dynamic_cast<DC_Source*>(e)) {
+//                    cout << "  -> Type check: OK (Some other Voltage_Source). Calling stamp..." << endl;
+//                    e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
+//                }
+                else {
+                    // This is what we expect to see for the broken object
+                    cout << "  -> Type check: FAILED! Object is of an UNKNOWN OR CORRUPTED TYPE." << endl;
+                    cout << "  -> NOT calling stamp() on this corrupted object." << endl;
+                }
             }
+            cout << "--- Finished Stamping ---" << endl;
+            cout << "stamp works" << endl;
             vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
 //            for (const auto& tr : triplets) {
 //                G[tr.Row][tr.Column] += tr.Value;
@@ -547,6 +583,7 @@ void Circuit::transient()
                               << "Total unknowns = " << total_unknowns << "\n";
                     std::abort(); // Stop the program immediately
                 }
+                cout << "G assembelling" << endl;
                 G[tr.Row][tr.Column] += tr.Value;
             }
 
@@ -554,6 +591,7 @@ void Circuit::transient()
             vector<double> G_times_xk = multiply_matrix_vector(G, x_k);
             vector<double> residual = subtract_vectors(G_times_xk, b_rhs);
 
+            cout << "calcing residual errors" << endl;
             // checking the convergence
             if (check_convergence(residual)) {
                 converged = true;
@@ -569,11 +607,13 @@ void Circuit::transient()
             }
 
             // updating the solution
+            cout << "updating soloution" << endl;
             for(int i = 0; i < x_k.size(); ++i) {
                 x_k[i] += delta_x[i];
             }
+            cout << "solution updated" << endl;
         }
-
+        cout << "NR done" << endl;
         if (!converged) {
             cout << "Error: Newton-Raphson failed to converge at time t = " << t << endl;
             return;
@@ -581,12 +621,13 @@ void Circuit::transient()
 
         x_previous = x_k;
 
+        cout << "saving data" << endl;
         // saving data
         for (auto* n : Active_Nodes) {
             n->set_voltage(x_previous[n->get_index()], t);
         }
         for (auto* e : Elements) {
-            if (auto* v_source = dynamic_cast<Voltage_Source*>(e)) {
+            if (auto* v_source = dynamic_cast<DC_Source*>(e)) {
                 int current_index = v_source->get_aux_index();
                 double current = x_previous[current_index];
                 v_source->set_current(current, t);
@@ -604,6 +645,7 @@ void Circuit::transient()
                 double current = zener->calculate_current(x_previous);
                 zener->set_current(current, t);
             }
+            cout << "data saved" << endl;
         }
     }
     cout << "transient worked!" << endl;
