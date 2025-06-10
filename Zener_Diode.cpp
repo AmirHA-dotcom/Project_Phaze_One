@@ -48,8 +48,10 @@ void Zener_Diode::stamp(double current_time, double time_step, vector<Triplet> &
     }
 
     // stamping current source I_eq in b
-    b[i] -= I_eq;
-    b[j] += I_eq;
+    if (i != -1)
+        b[i] -= I_eq;
+    if (j != -1)
+        b[j] += I_eq;
 }
 
 void Zener_Diode::change_name(std::string new_name)

@@ -35,8 +35,10 @@ void Real_Diode::stamp(double current_time, double time_step, vector<Triplet> &G
     }
 
     // stamping the current source in b (because of the error)
-    b[i] -= I_eq;
-    b[j] += I_eq;
+    if (i != -1)
+        b[i] -= I_eq;
+    if (j != -1)
+        b[j] += I_eq;
 }
 
 void Real_Diode::change_name(std::string new_name)
