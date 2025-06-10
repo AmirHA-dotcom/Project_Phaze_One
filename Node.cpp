@@ -23,15 +23,24 @@ void Node::change_name(string new_name)
 
 double Node::get_voltage_in_time(double time)
 {
-    for (int i = 0; i < voltage.size() - 1; i++)
+    if (voltage.size() < 2)
     {
-        if (time < voltage[i + 1].second && time >= voltage[i].second)
+        if (!voltage.empty()) {
+            return voltage[0].first;
+        }
+        return 0.0;
+    }
+    for (size_t i = 0; i < voltage.size() - 1; ++i)
+    {
+        if (time >= voltage[i].second && time < voltage[i+1].second)
         {
-            if (abs(voltage[i + 1].second) - time > abs(voltage[i].second - time))
+            if ((time - voltage[i].second) < (voltage[i+1].second - time))
                 return voltage[i].first;
-            return voltage[i + 1].first;
+            else
+                return voltage[i+1].first;
         }
     }
+    return voltage.back().first;
 }
 
 vector<pair<double, double>> Node::get_all_voltages()

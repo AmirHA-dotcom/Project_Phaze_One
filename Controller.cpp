@@ -320,7 +320,8 @@ void Controller::tranAnalysisOrders(vector<string> orders){
         }
         else
             for(double t = start_time; t < end_time; t += time_step)
-            cout << "Current through element " << i << " at time" << t << ": " << element->get_current(t, time_step) << endl;
+                cout << element->get_current(t, time_step) << " ";
+            cout << endl;
     }
 }
 

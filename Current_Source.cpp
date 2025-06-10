@@ -10,8 +10,10 @@ void Current_Source::stamp(double current_time, double time_step, vector<Triplet
     i = node1->get_index();
     j = node2->get_index();
     // stamp in b
-    b[i] += value;
-    b[j] -= value;
+    if (i != -1)
+        b[i] += value;
+    if (j != -1)
+        b[j] += -value;
 }
 
 void Current_Source::change_name(std::string new_name)

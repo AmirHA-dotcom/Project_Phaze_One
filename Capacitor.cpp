@@ -31,6 +31,7 @@ void Capacitor::change_name(std::string new_name)
 
 void Capacitor::stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
 {
+    //cout << "stamping capacitor" << endl;
     int i, j;
     i = node1->get_index();
     j = node2->get_index();
@@ -43,7 +44,12 @@ void Capacitor::stamp(double current_time, double time_step, vector<Triplet> &G_
         G_triplets.emplace_back(i, j, -g);
         G_triplets.emplace_back(j, i, -g);
     }
+    double v_i_previous = (i != -1) ? x_previous[i] : 0.0;
+    double v_j_previous = (j != -1) ? x_previous[j] : 0.0;
     double I = g * (x_previous[i] - x_previous[j]);
-    b[i] +=  I;
-    b[j] += -I;
+    if (i != -1)
+        b[i] +=  I;
+    if (j != -1)
+        b[j] += -I;
+    //cout << "stamping capacitor completed" << endl;
 }
