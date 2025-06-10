@@ -731,9 +731,8 @@ Circuit::~Circuit() {
 
 void Circuit::transient()
 {
-    transient_linear();
-//    if (is_diode_added)
-//        transient_NR();
-//    else
-//        transient_linear();
+    if (is_diode_added)
+        transient_NR();
+    else
+        transient_linear();
 }
