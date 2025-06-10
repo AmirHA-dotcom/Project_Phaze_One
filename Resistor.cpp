@@ -26,7 +26,7 @@ void Resistor::change_name(std::string new_name)
 
 void Resistor::stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
 {
-    cout << "Resistor stamp called" <<endl;
+    //cout << "Resistor stamp called" <<endl;
     int i, j;
     i = node1->get_index();
     j = node2->get_index();
