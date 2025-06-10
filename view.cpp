@@ -202,7 +202,7 @@ bool addGCheck (vector<string> i) {
     return true;
 }
 bool delGCheck (const vector<string> i) {
-    if (i.size() != 3 || i[0] != "delete" || i[1] == "GND"){
+    if (i.size() != 3 || i[0] != "delete" || i[1] != "GND"){
         return false;
     }
     return true;
@@ -529,14 +529,22 @@ bool View::handleCircuitMenu (Controller* C) {
     }
     if (addGCheck(i)) {
         if (!C->findNode(i[2])) {
-            throw elementNotFind("GND " + i[2]);
+            throw elementNotFind("Node " + i[2]);
+        }
+        if (C->findNode(i[2])->is_the_node_ground()) {
+            cout << "ERROR: This node is already GND!" << endl;
+            return true;
         }
         C->addGND(i[2]);
         return true;
     }
     if (delGCheck(i)) {
-        if (C->findNode(i[2])) {
-            throw elementExists("GND " + i[2]);
+        if (!C->findNode(i[2])) {
+            throw elementNotFind("Node " + i[2]);
+        }
+        if (!C->findNode(i[2])->is_the_node_ground()) {
+            cout << "ERROR: This node is not GND!" << endl;
+            return true;
         }
         C->delGND(i[2]);
         return true;
