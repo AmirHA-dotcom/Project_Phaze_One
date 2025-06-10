@@ -220,6 +220,7 @@ bool addVSCheck (vector<string> i) {
     return true;
 }
 bool addCSCheck (vector<string> i) {
+    cout << i[1] << endl;
     if (i.size() != 5 || i[0] != "add" || i[1].find("CurrentSource") == std::string::npos){
         return false;
     }
