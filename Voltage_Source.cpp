@@ -11,7 +11,7 @@ void Voltage_Source::set_aux_index(int i)
 
 void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
 {
-    cout << "VS stamp called" <<endl;
+    //cout << "VS stamp called" <<endl;
     int i = node1->get_index();
     int j = node2->get_index();
     int a = aux_index;
@@ -29,13 +29,13 @@ void Voltage_Source::stamp(double current_time, double time_step, vector<Triplet
         G_triplets.emplace_back(a, j, -1.0);
     }
     double value_to_add = get_value_at(current_time, time_step);
-    cout << "[DEBUG] In stamp for " << get_name() << ":" << endl;
-    cout << "[DEBUG]   b.size() = " << b.size() << endl;
-    cout << "[DEBUG]   aux_index 'a' = " << a << endl;
-    if (a >= b.size()) {
-        cout << "[FATAL] Index 'a' is out of bounds for vector 'b'!" << endl;
-    }
-    cout << "[DEBUG] Stamping " << get_name() << " with value: " << value_to_add << endl;
+//    cout << "[DEBUG] In stamp for " << get_name() << ":" << endl;
+//    cout << "[DEBUG]   b.size() = " << b.size() << endl;
+//    cout << "[DEBUG]   aux_index 'a' = " << a << endl;
+//    if (a >= b.size()) {
+//        cout << "[FATAL] Index 'a' is out of bounds for vector 'b'!" << endl;
+//    }
+    //cout << "[DEBUG] Stamping " << get_name() << " with value: " << value_to_add << endl;
     b[a] += get_value_at(current_time, time_step);
 }
 
