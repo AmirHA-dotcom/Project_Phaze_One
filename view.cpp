@@ -333,7 +333,7 @@ bool componentListCheck (vector<string> i) {
     if (i.size() != 2 || i[0] != ".list"){
         return false;
     }
-    if (i[1] != "resistor" && i[1] != "induⅽtor" && i[1] != "capacitor" && i[1] != "diode") {
+    if (i[1] != "resistor" && i[1] != "inductor" && i[1] != "capacitor" && i[1] != "diode") {
         throw invalidSyntax();
     }
     return true;
@@ -660,7 +660,7 @@ bool View::handleCircuitMenu (Controller* C) {
     if (componentListCheck(i)) {
         if(i[1] == "resistor") {
             C->showResistors();
-        } else if (i[1] == "induⅽtor") {
+        } else if (i[1] == "inductor") {
             C->showInductors();
         } else if (i[1] == "capacitor") {
             C->showCapacitors();
