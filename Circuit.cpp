@@ -474,7 +474,7 @@ void Circuit::analyse_data()
     // saving data
     this-> Active_Nodes = Active_Nodes_;
     this-> total_unknowns = aux_index;
-    cout << "analyse_data finished. Active nodes found: " << this->Active_Nodes.size() << endl;
+    //cout << "analyse_data finished. Active nodes found: " << this->Active_Nodes.size() << endl;
 }
 
 //  checks the convergencr of NR
@@ -536,7 +536,6 @@ void Circuit::transient()
 //            for (auto* e : Elements) {
 //                e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
 //            }
-// ==================== NEW DEBUGGING BLOCK ====================
             cout << "\n--- Checking Element Types before Stamping (t=" << t << ", k=" << k << ") ---" << endl;
             for (auto* e : Elements) {
                 if (e == nullptr) {
@@ -573,7 +572,6 @@ void Circuit::transient()
 //            std::cerr << "[DEBUG] t=" << t
 //                      << ", total_unknowns=" << total_unknowns
 //                      << ", triplets.size()=" << triplets.size() << endl;
-            // In transient() function
             for (const auto& tr : triplets) {
                 if (tr.Row < 0 || tr.Row >= total_unknowns ||
                     tr.Column < 0 || tr.Column >= total_unknowns) {
