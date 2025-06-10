@@ -682,7 +682,8 @@ bool View::handleCircuitMenu (Controller* C) {
 }
 bool View::handleFileMenu (Controller* C) {
     C->showSchematics();
-    //if (    C->is)
+    if (C->is_files_empty())
+        cout << "There is No Schematics; add a new." << endl;
     string line;
     getline(cin,line);
     vector<string> i = splitString(line);
