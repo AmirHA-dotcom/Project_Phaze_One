@@ -717,6 +717,7 @@ void Circuit::transient_linear()
         }
     }
     cout << "transient worked!" << endl;
+    // this version is working just fine . if it doesnt work we should see whats added 11.08
 }
 
 Circuit::~Circuit() {
