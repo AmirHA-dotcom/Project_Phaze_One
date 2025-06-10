@@ -708,8 +708,8 @@ bool View::handleFileMenu (Controller* C) {
     if (i.size() == 4 && i[0] == "add" && i[2] == "to" && i[3] == "circuits"){
         if (!C->validSchematicChoice(i[1]))
             throw invalidSchematicChoice();
-        cout << "odododod" << endl;
         C->addFileToCircuits(stoi(i[1]));
+        return true;
     }
     if (isDigit(line) && C->validSchematicChoice(line)) {
         C->showFile(stoi(line));

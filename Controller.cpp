@@ -364,7 +364,7 @@ void Controller::createFile (string name, string path){
     }
 }
 void Controller::addFileToCircuits(int fileIndex) {
-    string circuitName;
+    string circuitName = file_handler.get_file_names()[fileIndex-1];
     auto* c = new Circuit(circuitName);
     circuits.push_back(c);
 }
