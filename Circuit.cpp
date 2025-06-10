@@ -311,8 +311,8 @@ void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_n
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
     Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));
-    cout << "ADDING DC S\n" << "node 1 name " << Nodes[node1_index]->get_name() << " node 2 name " << Nodes[node2_index]->get_name() << endl;
-    cout << Elements[Elements.size() - 1]->get_name() << endl;
+    //cout << "ADDING DC S\n" << "node 1 name " << Nodes[node1_index]->get_name() << " node 2 name " << Nodes[node2_index]->get_name() << endl;
+    //cout << Elements[Elements.size() - 1]->get_name() << endl;
 }
 
 void
