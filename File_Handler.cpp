@@ -51,7 +51,6 @@ void File_Handler::show_current_file()
         cout << line << endl;
     }
     input_file.close();
-    cout << ".end" << endl;
     cout << "-------------------------------" << endl;
 }
 
