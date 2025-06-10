@@ -12,10 +12,14 @@ void VCCS::stamp(double current_time, double time_step, vector<Triplet> &G_tripl
     ictrl = ctrl_node1->get_index();
     jctrl = ctrl_node1->get_index();
     // stamping
-    G_triplets.emplace_back(i, ictrl, value);
-    G_triplets.emplace_back(i, jctrl, -value);
-    G_triplets.emplace_back(j, ictrl, -value);
-    G_triplets.emplace_back(j, jctrl, value);
+    if (i != -1 && ictrl != -1)
+        G_triplets.emplace_back(i, ictrl, value);
+    if (i != -1 && jctrl != -1)
+        G_triplets.emplace_back(i, jctrl, -value);
+    if (j != -1 && ictrl != -1)
+        G_triplets.emplace_back(j, ictrl, -value);
+    if (j != -1 && jctrl != -1)
+        G_triplets.emplace_back(j, jctrl, value);
 }
 
 void VCCS::change_name(std::string new_name)
