@@ -220,7 +220,6 @@ bool addVSCheck (vector<string> i) {
     return true;
 }
 bool addCSCheck (vector<string> i) {
-    cout << i[1] << endl;
     if (i.size() != 5 || i[0] != "add" || i[1][7] != 'S'){
         return false;
     }
@@ -459,7 +458,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addRCheck(i)) {
-        //cout << "R check called in view" << endl;
         if (i[2] == i[3])
             throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
@@ -469,7 +467,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delRCheck(i)) {
-        cout << "dood" << endl;
         auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
@@ -554,7 +551,6 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCSCheck(i)) {
-        cout << "CS check called in view" << endl;
         if (i[2] == i[3])
             throw sameNode();
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
