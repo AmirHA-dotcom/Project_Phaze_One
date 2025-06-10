@@ -17,14 +17,20 @@ void VCVS::stamp(double current_time, double time_step, vector<Triplet> &G_tripl
     ictrl = ctrl_node1->get_index();
     jctrl = ctrl_node1->get_index();
     a = aux_index;
-    // tieing to ctrl nodes
-    G_triplets.emplace_back(i, a, 1.0);
-    G_triplets.emplace_back(j, a, -1.0);
     // now stamping in G
-    G_triplets.emplace_back(a, i, 1.0);
-    G_triplets.emplace_back(a, j, -1.0);
-    G_triplets.emplace_back(a, ictrl, -value);
-    G_triplets.emplace_back(a, jctrl, value);
+    if (i != -1)
+        G_triplets.emplace_back(i, a, 1.0);
+    if (j != -1)
+        G_triplets.emplace_back(j, a, -1.0);
+    if (i != -1)
+        G_triplets.emplace_back(a, i, 1.0);
+    if (j != -1)
+        G_triplets.emplace_back(a, j, -1.0);
+    // tieing to ctrl nodes
+    if (ictrl != -1)
+        G_triplets.emplace_back(a, ictrl, -value);
+    if (jctrl != -1)
+        G_triplets.emplace_back(a, jctrl, value);
 }
 
 void VCVS::change_name(std::string new_name)
