@@ -649,6 +649,84 @@ void Circuit::transient()
     cout << "transient worked!" << endl;
 }
 
+//void Circuit::transient()
+//{
+//    // Initialize the vector of unknowns. For t=0, we assume a zero initial state.
+//    vector<double> x_previous(total_unknowns, 0.0);
+//
+//    // The main loop that advances through time
+//    for (double t = t_start; t < t_end; t += time_step)
+//    {
+//        // For an LTI system, we build and solve the system of equations once per time step.
+//
+//        // 1. Initialize containers for the matrix (triplets) and the RHS vector (b_rhs)
+//        vector<Triplet> triplets;
+//        vector<double>  b_rhs(total_unknowns, 0.0);
+//
+//        // 2. Stamp all elements to build the system of equations.
+//        // Since the system is linear, the stamp result doesn't depend on the current unknown solution (x_k).
+//        // We pass x_previous for both x_k and x_previous arguments to satisfy the existing
+//        // stamp function signature without needing to change it.
+//        for (auto* e : Elements) {
+//            e->stamp(t, time_step, triplets, b_rhs, x_previous, x_previous);
+//        }
+//
+//        // 3. Assemble the G matrix from the stamped triplets.
+//        vector<vector<double>> G(total_unknowns, vector<double>(total_unknowns, 0.0));
+//        for (const auto& tr : triplets) {
+//            if (tr.Row < 0 || tr.Row >= total_unknowns ||
+//                tr.Column < 0 || tr.Column >= total_unknowns) {
+//
+//                std::cerr << "[FATAL ERROR] Out-of-bounds index detected in stamping!\n"
+//                          << "Triplet values: Row=" << tr.Row << ", Column=" << tr.Column << "\n"
+//                          << "Total unknowns = " << total_unknowns << "\n";
+//                std::abort(); // Stop the program immediately
+//            }
+//            G[tr.Row][tr.Column] += tr.Value;
+//        }
+//
+//        // 4. Directly solve the linear system G * x = b_rhs
+//        vector<double> x_current = algorithems.solve_LU(G, b_rhs);
+//
+//        // Check if the solver failed (e.g., singular matrix)
+//        if (x_current.empty()) {
+//            cout << "Error: Linear solver failed at time t = " << t << endl;
+//            return;
+//        }
+//
+//        // 5. The solution for this time step becomes the 'previous' solution for the next step.
+//        x_previous = x_current;
+//
+//        // 6. Save the calculated data for this time step
+//        for (auto* n : Active_Nodes) {
+//            n->set_voltage(x_previous[n->get_index()], t);
+//        }
+//        for (auto* e : Elements) {
+//            if (auto* v_source = dynamic_cast<DC_Source*>(e)) {
+//                int current_index = v_source->get_aux_index();
+//                double current = x_previous[current_index];
+//                v_source->set_current(current, t);
+//            }
+//            else if (auto* vcvs = dynamic_cast<VCVS*>(e)) {
+//                int current_index = vcvs->get_aux_index();
+//                double current = x_previous[current_index];
+//                vcvs->set_current(current, t);
+//            }
+//                // NOTE: The logic for non-linear elements like diodes remains.
+//                // This function will produce INCORRECT results if used with such elements.
+//            else if (auto* diode = dynamic_cast<Real_Diode*>(e)) {
+//                double current = diode->calculate_current(x_previous);
+//                diode->set_current(current, t);
+//            }
+//            else if (auto* zener = dynamic_cast<Zener_Diode*>(e)) {
+//                double current = zener->calculate_current(x_previous);
+//                zener->set_current(current, t);
+//            }
+//        }
+//    }
+//    cout << "transient worked!" << endl;
+//}
+
 Circuit::~Circuit() {
     for (Element* elem : Elements) {
         delete elem;
