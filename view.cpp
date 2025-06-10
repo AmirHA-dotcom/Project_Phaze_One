@@ -682,6 +682,7 @@ bool View::handleCircuitMenu (Controller* C) {
 }
 bool View::handleFileMenu (Controller* C) {
     C->showSchematics();
+    //if (    C->is)
     string line;
     getline(cin,line);
     vector<string> i = splitString(line);
@@ -697,7 +698,7 @@ bool View::handleFileMenu (Controller* C) {
     if (line.empty()) {
         return true;
     }
-    if (C->validSchematicChoice(line)) {
+    if (isDigit(line) && C->validSchematicChoice(line)) {
         C->showFile(stoi(line));
         return true;
     }
