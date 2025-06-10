@@ -232,7 +232,7 @@ bool addCSCheck (vector<string> i) {
     return true;
 }
 bool addSinusoidalCheck (vector<string> i) {
-    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || !i[4].find("SIN") ){
+    if (i.size() != 7 || i[0] != "add" || i[1][0] != 'V' || i[4][0] != 'S' ){
         return false;
     }
 //    if (!i[4].find("SIN") ){
