@@ -11,8 +11,8 @@ void VCVS::set_aux_index(int i)
 
 void VCVS::stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous)
 {
-=
-=    int i = node1->get_index();
+
+    int i = node1->get_index();
     int j = node2->get_index();
 
     int ictrl = ctrl_node1->get_index();
