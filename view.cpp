@@ -703,6 +703,9 @@ bool View::handleFileMenu (Controller* C) {
     if (line.empty()) {
         return true;
     }
+    for (auto u : i)
+        cout << u << "   ";
+        cout << endl;
     if (i.size() == 4 && i[0] == "add" && i[2] == "to" && i[3] == "circuits"){
         if (!C->validSchematicChoice(i[1]))
             throw invalidSchematicChoice();
