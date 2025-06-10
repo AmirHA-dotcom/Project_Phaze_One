@@ -420,14 +420,12 @@ void Circuit::delete_element(string name)
         }
     };
     Element* element_to_delete = Elements[element_index];
-            cout <<"dodo " << element_to_delete->get_name() << endl;
     pair<Node*, Node*> nodes_pair = element_to_delete->get_nodes();
     Node* node1 = nodes_pair.first;
     Node* node2 = nodes_pair.second;
 
     node1->disconnect_element();
     node2->disconnect_element();
-    cout <<"dodo " << element_to_delete->get_name() << endl;
 
     delete_node_if_unused(node1);
 
@@ -436,10 +434,6 @@ void Circuit::delete_element(string name)
     {
         delete_node_if_unused(node2);
     }
-
-    //delete element_to_delete;
-    cout <<"dodo " << element_to_delete->get_name() << endl;
-
     Elements.erase(Elements.begin() + element_index);
 }
 
