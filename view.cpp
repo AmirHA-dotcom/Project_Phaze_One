@@ -458,7 +458,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addRCheck(i)) {
-        cout << "R check called in view" << endl;
+        //cout << "R check called in view" << endl;
         if (i[2] == i[3])
             throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
@@ -478,6 +478,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addCCheck(i)) {
+        cout << "C check called in view" << endl;
         if (i[2] == i[3])
             throw sameNode();
         if (C->findElement(i[1].substr(1,i[1].size()-1))) {
@@ -543,7 +544,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (addVSCheck(i)) {
-        cout << "VS check called in view" << endl;
+        //cout << "VS check called in view" << endl;
         if (i[2] == i[3])
             throw sameNode();
         if (C->findElement(i[1].substr(13,i[1].size()-13))) {
