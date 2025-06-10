@@ -14,7 +14,7 @@ void Real_Diode::stamp(double current_time, double time_step, vector<Triplet> &G
     else if (i != -1)
         Vd = x_k[i];
     else
-        Vd = x_k[j];
+        Vd = -x_k[j];
     // shockley diode equation i = Is * (exp(Vd / (n*Vt)) - 1)
     double Id = Is * (exp(Vd / (n * Vt)) - 1.0);
 

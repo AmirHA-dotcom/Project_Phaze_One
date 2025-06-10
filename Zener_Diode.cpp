@@ -16,7 +16,7 @@ void Zener_Diode::stamp(double current_time, double time_step, vector<Triplet> &
     else if (i != -1)
         Vd = x_k[i];
     else
-        Vd = x_k[j];
+        Vd = -x_k[j];
     double Id, g;
 
     // forward bias or reverse breakdown
