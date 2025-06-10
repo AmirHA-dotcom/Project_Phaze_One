@@ -459,7 +459,7 @@ bool View::handleCircuitMenu (Controller* C) {
         if (!C->findCircuit(i[1]))
             throw circuitNotFind(i[1]);
         C->saveCircuit(C->findCircuit(i[1]),i[5]);
-        C->handleNewFile(i[5]);
+        C->handleNewFile(i[5] + C->findCircuit(i[1])->get_name() + ".txt" );
         return true;
     }
     if (line == "show circuits") {
