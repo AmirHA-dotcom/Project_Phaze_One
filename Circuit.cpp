@@ -418,6 +418,7 @@ void Circuit::delete_element(string name)
         }
     };
     Element* element_to_delete = Elements[element_index];
+            cout <<"dodo " << element_to_delete->get_name() << endl;
     pair<Node*, Node*> nodes_pair = element_to_delete->get_nodes();
     Node* node1 = nodes_pair.first;
     Node* node2 = nodes_pair.second;
