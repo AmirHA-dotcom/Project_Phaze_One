@@ -144,7 +144,7 @@ bool delRCheck (const vector<string> i) {
     return true;
 }
 bool addCCheck (vector<string> i) {
-    if (i.size() != 5 || i[0] != "add" || i[1][0] != 'C' || i[1].find("CurrentSource") != string::npos) {
+    if (i.size() != 5 || i[0] != "add" || i[1][0] != 'C' || i[1][7] == 'S' || i[1].find("CurrentSource") != std::string::npos) {
         return false;
     }
     if (stod(i[4]) <= 0 || !isValidSpiceNumber(i[4]) ) {
@@ -220,6 +220,7 @@ bool addVSCheck (vector<string> i) {
     return true;
 }
 bool addCSCheck (vector<string> i) {
+    cout << i[1] << endl;
     if (i.size() != 5 || i[0] != "add" || i[1].find("CurrentSource") == std::string::npos){
         return false;
     }
