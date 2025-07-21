@@ -103,18 +103,19 @@ bool graphical_view::run(Controller *C)
                 }
             }
 
+            auto& graphical_elements = C->get_graphical_elements();
+
             if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
             {
                 SDL_Point mouse_pos = {event.button.x, event.button.y};
-
-                auto& blocks = EG->get_blocks();
-                for (int i = 0; i < blocks.size(); ++i) {
-                    if (SDL_PointInRect(&mouse_pos, &blocks[i]))
+                for (int i = graphical_elements.size() - 1; i >= 0; --i)
+                {
+                    if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
                     {
                         m_is_dragging = true;
-                        m_dragged_block_index = i;
-                        m_drag_offset.x = mouse_pos.x - blocks[i].x;
-                        m_drag_offset.y = mouse_pos.y - blocks[i].y;
+                        m_dragged_element_index = i;
+                        m_drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
+                        m_drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
                         break;
                     }
                 }
@@ -123,23 +124,26 @@ bool graphical_view::run(Controller *C)
             if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
             {
                 m_is_dragging = false;
-                m_dragged_block_index = -1;
+                m_dragged_element_index = -1;
             }
 
             if (event.type == SDL_MOUSEMOTION && m_is_dragging)
             {
                 SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-                auto& blocks = EG->get_blocks();
-                blocks[m_dragged_block_index].x = mouse_pos.x - m_drag_offset.x;
-                blocks[m_dragged_block_index].y = mouse_pos.y - m_drag_offset.y;
+                graphical_elements[m_dragged_element_index]->bounding_box.x = mouse_pos.x - m_drag_offset.x;
+                graphical_elements[m_dragged_element_index]->bounding_box.y = mouse_pos.y - m_drag_offset.y;
             }
         }
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        C->draw_elements(renderer);
+        auto& graphical_elements = C->get_graphical_elements();
 
+        for (const auto& element : graphical_elements)
+        {
+            element->draw(renderer);
+        }
         SDL_RenderPresent(renderer);
     }
 

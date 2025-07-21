@@ -23,7 +23,7 @@ private:
     int m_window_height;
 
     bool m_is_dragging = false;
-    int m_dragged_block_index = -1;
+    int m_dragged_element_index = -1;
     SDL_Point m_drag_offset = {0, 0};
 
 public:
