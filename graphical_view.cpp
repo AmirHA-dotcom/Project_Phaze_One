@@ -56,124 +56,25 @@ bool graphical_view::run(Controller *C)
     {
         auto& graphical_elements = C->get_graphical_elements();
 
-        while (SDL_PollEvent(&event) != 0) 
+        while (SDL_PollEvent(&event) != 0)
         {
-            if (event.type == SDL_QUIT) 
-            {
-                running = false;
-            }
-
-            if (event.type == SDL_WINDOWEVENT)
-            {
-                if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-                {
-                    m_window_width = event.window.data1;
-                    m_window_height = event.window.data2;
-                    cout << "Window resized to " << m_window_width << "x" << m_window_height << endl;
-                }
-            }
-
-            if (event.type == SDL_KEYDOWN)
-            {
-                int mouseX, mouseY;
-                SDL_GetMouseState(&mouseX, &mouseY);
-                switch (event.key.keysym.sym)
-                {
-                    case SDLK_r:
-                    {
-                        cout << "R key was pressed." << endl;
-                        C->add_Graphical_Resistor(mouseX, mouseY);
-                        break;
-                    }
-
-                    case SDLK_c:
-                    {
-                        cout << "C key was pressed." << endl;
-                        C->add_Graphical_Capacitor(mouseX, mouseY);
-                        break;
-                    }
-
-                    case SDLK_l:
-                    {
-                        cout << "L key was pressed." << endl;
-                        C->add_Graphical_Inductor(mouseX, mouseY);
-                        break;
-                    }
-
-                    case SDLK_s:
-                    {
-                        cout << "S key was pressed." << endl;
-                        C->add_Graphical_Current_Source(mouseX, mouseY);
-                        break;
-                    }
-
-                    case SDLK_d:
-                    {
-                        cout << "D key was pressed." << endl;
-                        C->add_Graphical_Real_Diode(mouseX, mouseY);
-                        break;
-                    }
-
-                    case SDLK_z:
-                    {
-                        cout << "Z key was pressed." << endl;
-                        C->add_Graphical_Zener_Diode(mouseX, mouseY);
-                        break;
-                    }
-
-                    case SDLK_RETURN: 
-                        cout << "Enter key was pressed." << endl;
-                        break;
-
-                    case SDLK_ESCAPE:
-                        cout << "Escape key was pressed." << endl;
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-//            auto& graphical_elements = C->get_graphical_elements();
-
-            if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-            {
-                SDL_Point mouse_pos = {event.button.x, event.button.y};
-                for (int i = graphical_elements.size() - 1; i >= 0; --i)
-                {
-                    if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
-                    {
-                        m_is_dragging = true;
-                        m_dragged_element_index = i;
-                        m_drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
-                        m_drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
-                        break;
-                    }
-                }
-            }
-
-            if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
-            {
-                m_is_dragging = false;
-                m_dragged_element_index = -1;
-            }
-
-            if (event.type == SDL_MOUSEMOTION && m_is_dragging)
-            {
-                SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-                graphical_elements[m_dragged_element_index]->bounding_box.x = mouse_pos.x - m_drag_offset.x;
-                graphical_elements[m_dragged_element_index]->bounding_box.y = mouse_pos.y - m_drag_offset.y;
+            if (elements_menu) {
+                 running = handle_menu_events(event, C);
+            } else {
+                running = handle_events(event, C);
             }
         }
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-//        auto& graphical_elements = C->get_graphical_elements();
-
         for (const auto& element : graphical_elements)
         {
             element->draw(renderer);
+        }
+
+        if (elements_menu) {
+            //draw_component_menu(renderer, font); // A new function to draw the menu
         }
         SDL_RenderPresent(renderer);
     }
@@ -183,5 +84,152 @@ bool graphical_view::run(Controller *C)
     TTF_Quit();
     SDL_Quit();
 
+    return true;
+}
+
+bool graphical_view::handle_events(SDL_Event& event, Controller* C)
+{
+    // quit
+    if (event.type == SDL_QUIT)
+    {
+        return false;
+    }
+
+    // window events
+    if (event.type == SDL_WINDOWEVENT)
+    {
+        if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+        {
+            m_window_width = event.window.data1;
+            m_window_height = event.window.data2;
+            cout << "Window resized to " << m_window_width << "x" << m_window_height << endl;
+        }
+    }
+
+    // keyboard events
+    if (event.type == SDL_KEYDOWN)
+    {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        switch (event.key.keysym.sym)
+        {
+            case SDLK_r:
+            {
+                cout << "R key was pressed." << endl;
+                C->add_Graphical_Resistor(mouseX, mouseY);
+                break;
+            }
+
+            case SDLK_c:
+            {
+                cout << "C key was pressed." << endl;
+                C->add_Graphical_Capacitor(mouseX, mouseY);
+                break;
+            }
+
+            case SDLK_l:
+            {
+                cout << "L key was pressed." << endl;
+                C->add_Graphical_Inductor(mouseX, mouseY);
+                break;
+            }
+
+            case SDLK_s:
+            {
+                cout << "S key was pressed." << endl;
+                C->add_Graphical_Current_Source(mouseX, mouseY);
+                break;
+            }
+
+            case SDLK_d:
+            {
+                cout << "D key was pressed." << endl;
+                C->add_Graphical_Real_Diode(mouseX, mouseY);
+                break;
+            }
+
+            case SDLK_z:
+            {
+                cout << "Z key was pressed." << endl;
+                C->add_Graphical_Zener_Diode(mouseX, mouseY);
+                break;
+            }
+
+            case SDLK_p:
+            {
+                cout << "P key was pressed." << endl;
+                elements_menu = !elements_menu;
+                break;
+            }
+
+            case SDLK_RETURN:
+                cout << "Enter key was pressed." << endl;
+                break;
+
+            case SDLK_ESCAPE:
+                cout << "Escape key was pressed." << endl;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    // mouse events
+    auto& graphical_elements = C->get_graphical_elements();
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+        for (int i = graphical_elements.size() - 1; i >= 0; --i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
+            {
+                m_is_dragging = true;
+                m_dragged_element_index = i;
+                m_drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
+                m_drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
+                break;
+            }
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+    {
+        m_is_dragging = false;
+        m_dragged_element_index = -1;
+    }
+
+    if (event.type == SDL_MOUSEMOTION && m_is_dragging)
+    {
+        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
+        graphical_elements[m_dragged_element_index]->bounding_box.x = mouse_pos.x - m_drag_offset.x;
+        graphical_elements[m_dragged_element_index]->bounding_box.y = mouse_pos.y - m_drag_offset.y;
+    }
+
+    return true;
+}
+
+bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
+{
+    if (event.type == SDL_QUIT)
+    {
+        return false;
+    }
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_p || event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            elements_menu = false;
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        // TODO: Logic to check if a menu item was clicked
+    }
     return true;
 }

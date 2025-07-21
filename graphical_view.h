@@ -14,10 +14,7 @@
 class graphical_view
 {
 private:
-    bool mainMenu = true;
-    bool circuitMenu = false;
-    bool fileMenu = false;
-    bool analysisMenu = false;
+    bool elements_menu = false;
 
     int m_window_width;
     int m_window_height;
@@ -25,6 +22,11 @@ private:
     bool m_is_dragging = false;
     int m_dragged_element_index = -1;
     SDL_Point m_drag_offset = {0, 0};
+
+
+    bool handle_events(SDL_Event& event, Controller* C);
+
+    bool handle_menu_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);
