@@ -8,28 +8,30 @@
 
 const char* invalidSyntax::what() const noexcept {
     cout << "Error: Syntax error" << endl;
-    return ""; // Return a valid string to prevent crash
+    return "";
+}
+const char* duplicatePath::what() const noexcept {
+    cout << "Error: This file already added to list" << endl;
+    return "";
 }
 
 const char* invalidResistance::what() const noexcept {
     cout << "Error: Resistance cannot be zero or negative" << endl;
-    return ""; // Return a valid string
+    return "";
 }
 
 const char* invalidInductance::what() const noexcept {
-    // Note: I am fixing the Unicode character typo from your view.cpp here.
-    // Your original code had "Inⅾuⅽtance" with special characters.
     cout << "Error: Inductance cannot be zero or negative" << endl;
-    return ""; // Return a valid string
+    return "";
 }
 
 const char* invalidCapacity::what() const noexcept {
     cout << "Error: Capacity cannot be zero or negative" << endl;
-    return ""; // Return a valid string
+    return "";
 }
 const char* sameNode::what() const noexcept {
     cout << "Error: Both nodes are same!" << endl;
-    return ""; // Return a valid string
+    return "";
 }
 
 // For classes with custom messages, we build the message string first.

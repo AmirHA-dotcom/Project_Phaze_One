@@ -11,6 +11,13 @@ vector<string> File_Handler::get_file_names()
         file_names.push_back(f.first);
     return file_names;
 }
+vector<string> File_Handler::get_file_paths()
+{
+    vector<string> file_paths;
+    for (const auto& f : files)
+        file_paths.push_back(f.second);
+    return file_paths;
+}
 
 void File_Handler::set_file_index(int file_index)
 {
@@ -74,5 +81,42 @@ void File_Handler::add_file(const string& file_path)
     {
         file_name = file_name.substr(0, dot_pos);
     }
+    // checking if the file already exists
+    for (const auto& f : files)
+    {
+        if (f.second == file_path)
+        {
+            cerr << "Error: This file already added to list" << endl;
+            return;
+        }
+    }
     files.push_back({file_name, file_path});
 }
+
+vector<vector<string>> File_Handler::showText (int file_index) {
+    vector<vector<string>> file_content;
+    string filePath = get_file_paths()[file_index];
+    ifstream file_stream(filePath);
+
+    if (!file_stream.is_open()) {
+        cerr << "Error: Could not open file at path: " << filePath << endl;
+        return file_content;
+    }
+
+    string line;
+    while (getline(file_stream, line)) {
+        vector<string> line_as_vector;
+        stringstream line_stream(line);
+        string word;
+
+        while (line_stream >> word) {
+            line_as_vector.push_back(word);
+        }
+
+        file_content.push_back(line_as_vector);
+    }
+
+    file_stream.close();
+    return file_content;
+}
+

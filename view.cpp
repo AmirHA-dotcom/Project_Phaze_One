@@ -459,7 +459,7 @@ bool View::handleCircuitMenu (Controller* C) {
         if (!C->findCircuit(i[1]))
             throw circuitNotFind(i[1]);
         C->saveCircuit(C->findCircuit(i[1]),i[5]);
-        C->handleNewFile(i[5] + C->findCircuit(i[1])->get_name() + ".txt" );
+        //C->handleNewFile(i[5] + C->findCircuit(i[1])->get_name() + ".txt" );
         return true;
     }
     if (line == "show circuits") {
@@ -708,9 +708,7 @@ bool View::handleFileMenu (Controller* C) {
     if (line.empty()) {
         return true;
     }
-
-
-    if (i.size() == 4 && i[0] == "add" && i[2] == "to" && i[3] == "circuits"){
+    if (i.size() == 4 && i[0] == "add" && i[2] == "to" && i[3] == "circuits") {
         if (!C->validSchematicChoice(i[1]))
             throw invalidSchematicChoice();
         C->addFileToCircuits(stoi(i[1]));
@@ -727,7 +725,7 @@ bool View::handleFileMenu (Controller* C) {
         C->handleNewFile(i[1]);
         return true;
     }
-        throw InappropriateInput();
+    throw InappropriateInput();
 }
 bool View::handleAnalysisMenu (Controller* C) {
     string line;

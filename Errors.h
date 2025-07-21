@@ -11,6 +11,10 @@ class invalidSyntax : public std::exception {
 public:
     const char *what() const noexcept override;
 };
+class duplicatePath : public std::exception {
+public:
+    const char *what() const noexcept override;
+};
 
 class invalidResistance : public std::exception {
 public:
