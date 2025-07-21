@@ -14,6 +14,27 @@
 #include "Real_Diode.h"
 #include "Zener_Diode.h"
 
+inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, int x, int y, SDL_Color color = {0, 0, 0, 255})
+{
+    if (!font) return;
+
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+    if (!surface) return;
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        SDL_FreeSurface(surface);
+        return;
+    }
+
+    SDL_Rect dest_rect = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
+
+
 class Graphical_Element
 {
 protected:
