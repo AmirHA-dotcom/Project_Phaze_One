@@ -5,6 +5,15 @@
 #include "Controller.h"
 #include "Libraries.h"
 
+Controller::Controller() {
+    // Initialize the circuit member pointer
+    circuit = nullptr; // Start it as null just in case
+
+    // Create a new default circuit and make it the active one
+    circuit = new Circuit("default_circuit");
+    circuits.push_back(circuit);
+}
+
 void Controller::addCircuit(string name){
     auto* c = new Circuit(name);
     circuits.push_back(c);
@@ -680,4 +689,53 @@ void Controller::handleNewFile(string path){
 bool Controller::is_files_empty()
 {
     return file_handler.get_file_names().empty();
+}
+
+// GRAPHICS!!!
+
+void Controller::addGraphicalResistor(int screenX, int screenY) {
+    m_node_count++;
+    string n1_name = "N" + std::to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + std::to_string(m_node_count);
+    m_resistor_count++;
+    string r_name = "R" + std::to_string(m_resistor_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    Resistor* sim_resistor = new Resistor(r_name, n1, n2, 1000.0);
+
+    circuit->addElement(sim_resistor);
+
+    auto gfx_resistor = std::make_unique<Graphical_Resistor>(sim_resistor);
+
+    gfx_resistor->bounding_box = {screenX, screenY, 100, 40};
+
+    m_graphical_elements.push_back(std::move(gfx_resistor));
+}
+
+void Controller::addGraphicalCapacitor(int screenX, int screenY) {
+    m_node_count++;
+    string n1_name = "N" + std::to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + std::to_string(m_node_count);
+    m_capacitor_count++;
+    string c_name = "C" + std::to_string(m_capacitor_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    Capacitor* sim_capacitor = new Capacitor(c_name, n1, n2, 1e-6);
+
+    circuit->addElement(sim_capacitor);
+
+    auto gfx_capacitor = std::make_unique<Graphical_Capacitor>(sim_capacitor);
+    gfx_capacitor->bounding_box = {screenX, screenY, 100, 40};
+    m_graphical_elements.push_back(std::move(gfx_capacitor));
+}
+
+
+std::vector<std::unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() {
+    return m_graphical_elements;
 }
