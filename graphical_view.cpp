@@ -80,8 +80,6 @@ bool graphical_view::run(Controller *C)
                     case SDLK_r:
                     {
                         cout << "R key was pressed." << endl;
-                        int mouseX, mouseY;
-                        SDL_GetMouseState(&mouseX, &mouseY);
                         C->add_Graphical_Resistor(mouseX, mouseY);
                         break;
                     }
@@ -89,8 +87,6 @@ bool graphical_view::run(Controller *C)
                     case SDLK_c:
                     {
                         cout << "C key was pressed." << endl;
-                        int mouseX, mouseY;
-                        SDL_GetMouseState(&mouseX, &mouseY);
                         C->add_Graphical_Capacitor(mouseX, mouseY);
                         break;
                     }
@@ -98,8 +94,6 @@ bool graphical_view::run(Controller *C)
                     case SDLK_l:
                     {
                         cout << "L key was pressed." << endl;
-                        int mouseX, mouseY;
-                        SDL_GetMouseState(&mouseX, &mouseY);
                         C->add_Graphical_Inductor(mouseX, mouseY);
                         break;
                     }
@@ -107,8 +101,6 @@ bool graphical_view::run(Controller *C)
                     case SDLK_s:
                     {
                         cout << "S key was pressed." << endl;
-                        int mouseX, mouseY;
-                        SDL_GetMouseState(&mouseX, &mouseY);
                         C->add_Graphical_Current_Source(mouseX, mouseY);
                         break;
                     }
