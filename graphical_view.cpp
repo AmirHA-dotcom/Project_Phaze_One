@@ -83,9 +83,9 @@ bool graphical_view::run(Controller *C)
                         break;
                     }
 
-                    case SDLK_i:
+                    case SDLK_l:
                     {
-                        cout << "I key was pressed." << endl;
+                        cout << "L key was pressed." << endl;
                         int mouseX, mouseY;
                         SDL_GetMouseState(&mouseX, &mouseY);
                         C->add_Graphical_Inductor(mouseX, mouseY);
