@@ -736,3 +736,18 @@ void Circuit::transient()
     else
         transient_linear();
 }
+
+Node* Circuit::create_new_node(const string& name)
+{
+    int existing_node_index = node_index_finder_by_name(name);
+    if (existing_node_index != -1)
+    {
+        return Nodes[existing_node_index];
+    }
+
+    Node* new_node = new Node(name);
+
+    Nodes.push_back(new_node);
+
+    return new_node;
+}
