@@ -19,6 +19,7 @@
 #include <unordered_set>
 #include <fstream>
 #include <filesystem>
+#include <SDL.h>
 
 using namespace std;
 
