@@ -49,6 +49,13 @@ void draw_arc(SDL_Renderer* renderer, int center_x, int center_y, int radius, in
     SDL_RenderDrawLines(renderer, points, segments + 1);
 }
 
+TTF_Font* Graphical_Element::font = nullptr;
+
+void Graphical_Element::set_font(TTF_Font* font_)
+{
+    font = font_;
+}
+
 void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, int x, int y, SDL_Color color = {0, 0, 0, 255})
 {
     if (!font) return;
@@ -70,13 +77,6 @@ void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::string& text
 }
 
 // main functions
-
-TTF_Font* Graphical_Element::font = nullptr;
-
-void Graphical_Element::set_font(TTF_Font* font_)
-{
-    font = font_;
-}
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
 {
