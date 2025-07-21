@@ -15,8 +15,7 @@ void elements_graphics::draw(SDL_Renderer* renderer)
     }
 }
 
-// Getter to access the blocks from the main loop
-vector<SDL_Rect>& elements_graphics::get_blocks() 
+vector<SDL_Rect>& elements_graphics::get_blocks()
 {
     return m_blocks;
 }
