@@ -4,6 +4,70 @@
 
 #include "graphical_view.h"
 
+// helper functions
+
+
+
+void graphical_view::initialize_menu()
+{
+    menu_items.clear();
+    menu_items.push_back({"Resistor", Element_Type::Resistor});
+    menu_items.push_back({"Capacitor", Element_Type::Capacitor});
+    menu_items.push_back({"Inductor", Element_Type::Inductor});
+    menu_items.push_back({"Current Source", Element_Type::Current_Source});
+    menu_items.push_back({"Diode", Element_Type::Real_Diode});
+    menu_items.push_back({"Zener Diode", Element_Type::Zener_Diode});
+}
+
+void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font) {
+    // fade
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 180);
+    SDL_RenderFillRect(renderer, NULL);
+
+    SDL_Rect menu_panel = {200, 100, 800, 500};
+    SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
+
+    // panels
+    SDL_SetRenderDrawColor(renderer, 45, 45, 45, 255);
+    SDL_RenderFillRect(renderer, &menu_panel);
+    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+    SDL_RenderFillRect(renderer, &preview_panel);
+
+    // items
+    int start_y = menu_panel.y + 60;
+    for (int i = 0; i < menu_items.size(); ++i) {
+        menu_items[i].rect = {menu_panel.x + 20, start_y + (i * 30), 200, 25};
+        render_text(renderer, font, menu_items[i].name, menu_items[i].rect.x, menu_items[i].rect.y, {200, 200, 200, 255});
+    }
+
+    // preview
+    if (selected_menu_item_index != -1) {
+        switch (menu_items[selected_menu_item_index].type) {
+            case Element_Type::Resistor: {
+                Graphical_Resistor preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer);
+                break;
+            }
+            case Element_Type::Capacitor: {
+                Graphical_Capacitor preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer);
+                break;
+            }
+            case Element_Type::Inductor: {
+                Graphical_Inductor preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer);
+                break;
+            }
+        }
+    }
+}
+
+// main functions
+
 bool graphical_view::run(Controller *C)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -52,7 +116,7 @@ bool graphical_view::run(Controller *C)
     SDL_Event event;
 
 
-    while (running) 
+    while (running)
     {
         auto& graphical_elements = C->get_graphical_elements();
 
@@ -74,7 +138,7 @@ bool graphical_view::run(Controller *C)
         }
 
         if (elements_menu) {
-            //draw_component_menu(renderer, font); // A new function to draw the menu
+            draw_component_menu(renderer, font);
         }
         SDL_RenderPresent(renderer);
     }

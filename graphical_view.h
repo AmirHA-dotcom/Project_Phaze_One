@@ -11,10 +11,17 @@
 #include <SDL.h>
 #include "elements_graphics.h"
 
+
+struct MenuItem {
+    string name;
+    Element_Type type;
+    SDL_Rect rect;
+};
+
 class graphical_view
 {
 private:
-    bool elements_menu = false;
+    TTF_Font* m_font = nullptr;
 
     int m_window_width;
     int m_window_height;
@@ -23,7 +30,16 @@ private:
     int m_dragged_element_index = -1;
     SDL_Point m_drag_offset = {0, 0};
 
+    bool elements_menu = false;
 
+    vector<MenuItem> menu_items;
+    int selected_menu_item_index = -1;
+
+    // helper functions
+    void initialize_menu();
+    void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
+
+    // main functions
     bool handle_events(SDL_Event& event, Controller* C);
 
     bool handle_menu_events(SDL_Event& event, Controller* C);
