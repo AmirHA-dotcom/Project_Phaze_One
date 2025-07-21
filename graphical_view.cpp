@@ -17,7 +17,7 @@ bool graphical_view::run(Controller *C)
         throw runtime_error("SDL_ttf could not initialize! TTF_Error: " + string(TTF_GetError()));
     }
 
-    TTF_Font* font = TTF_OpenFont("arial.ttf", 16);
+    TTF_Font* font = TTF_OpenFont("D:/Fonts/Roboto/static/Roboto-Regular.ttf", 16);
     if (!font)
     {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
@@ -54,6 +54,8 @@ bool graphical_view::run(Controller *C)
 
     while (running) 
     {
+        auto& graphical_elements = C->get_graphical_elements();
+
         while (SDL_PollEvent(&event) != 0) 
         {
             if (event.type == SDL_QUIT) 
@@ -118,7 +120,7 @@ bool graphical_view::run(Controller *C)
                 }
             }
 
-            auto& graphical_elements = C->get_graphical_elements();
+//            auto& graphical_elements = C->get_graphical_elements();
 
             if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
             {
@@ -153,7 +155,7 @@ bool graphical_view::run(Controller *C)
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        auto& graphical_elements = C->get_graphical_elements();
+//        auto& graphical_elements = C->get_graphical_elements();
 
         for (const auto& element : graphical_elements)
         {

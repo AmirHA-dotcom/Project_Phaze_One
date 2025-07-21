@@ -4,6 +4,8 @@
 
 #include "graphical_element.h"
 
+// helper functions
+
 void draw_circle(SDL_Renderer* renderer, int center_x, int center_y, int radius)
 {
     int x = radius - 1;
@@ -45,6 +47,35 @@ void draw_arc(SDL_Renderer* renderer, int center_x, int center_y, int radius, in
         points[i].y = center_y + (int)(radius * sin(angle_rad));
     }
     SDL_RenderDrawLines(renderer, points, segments + 1);
+}
+
+void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, int x, int y, SDL_Color color = {0, 0, 0, 255})
+{
+    if (!font) return;
+
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+    if (!surface) return;
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        SDL_FreeSurface(surface);
+        return;
+    }
+
+    SDL_Rect dest_rect = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
+
+// main functions
+
+TTF_Font* Graphical_Element::s_font = nullptr;
+
+void Graphical_Element::set_font(TTF_Font* font)
+{
+    s_font = font;
 }
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
