@@ -105,6 +105,7 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
 
     SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
 
+    render_text(renderer, font, model_element->get_name(), x, y - 20);
 }
 
 void Graphical_Capacitor::draw(SDL_Renderer *renderer)
@@ -127,6 +128,8 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
     SDL_RenderDrawLine(renderer, center_x - gap/2, center_y - plate_height/2, center_x - gap/2, center_y + plate_height/2);
     SDL_RenderDrawLine(renderer, center_x + gap/2, center_y - plate_height/2, center_x + gap/2, center_y + plate_height/2);
     SDL_RenderDrawLine(renderer, center_x + gap/2, center_y, x + w, center_y);
+
+    render_text(renderer, font, model_element->get_name(), x, y - 20);
 }
 
 void Graphical_Inductor::draw(SDL_Renderer* renderer)
@@ -155,6 +158,8 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
     }
 
     SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+
+    render_text(renderer, font, model_element->get_name(), x, y - 20);
 }
 
 void Graphical_Current_Source::draw(SDL_Renderer* renderer)
@@ -180,6 +185,8 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
 
     SDL_RenderDrawLine(renderer, x, center_y, center_x - radius, center_y);
     SDL_RenderDrawLine(renderer, center_x + radius, center_y, x + w, center_y);
+
+    render_text(renderer, font, model_element->get_name(), x, y - 20);
 }
 
 void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
