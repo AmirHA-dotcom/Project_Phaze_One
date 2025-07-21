@@ -456,8 +456,7 @@ void Controller::addGraphicalCapacitor(int screenX, int screenY) {
     m_graphical_elements.push_back(std::move(gfx_capacitor));
 }
 
-void Controller::draw_elements(SDL_Renderer* renderer) {
-    for (const auto& gfx_element : m_graphical_elements) {
-        gfx_element->draw(renderer);
-    }
+
+std::vector<std::unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() {
+    return m_graphical_elements;
 }

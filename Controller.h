@@ -22,7 +22,7 @@ private:
     int m_capacitor_count = 0;
     int m_node_count = 0;
 
-    std::vector<std::unique_ptr<Graphical_Element>> m_graphical_elements;
+    vector<unique_ptr<Graphical_Element>> m_graphical_elements;
 public:
     Controller();
     vector<Circuit *> circuits;
@@ -103,12 +103,14 @@ public:
 
     bool is_files_empty();
 
+    // GRAPHICS!!!
+
     void addGraphicalResistor(int screenX, int screenY);
 
     void addGraphicalCapacitor(int screenX, int screenY);
 
-    void draw_elements(SDL_Renderer* renderer);
+    vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
 
-    };
+};
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H
