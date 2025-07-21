@@ -35,6 +35,18 @@ void draw_circle(SDL_Renderer* renderer, int center_x, int center_y, int radius)
     }
 }
 
+void draw_arc(SDL_Renderer* renderer, int center_x, int center_y, int radius, int start_angle_deg, int end_angle_deg, int segments = 20) {
+    SDL_Point points[segments + 1];
+    float angle_step = (float)(end_angle_deg - start_angle_deg) / segments;
+
+    for (int i = 0; i <= segments; ++i) {
+        float angle_rad = (float)(start_angle_deg + i * angle_step) * M_PI / 180.0f;
+        points[i].x = center_x + (int)(radius * cos(angle_rad));
+        points[i].y = center_y + (int)(radius * sin(angle_rad));
+    }
+    SDL_RenderDrawLines(renderer, points, segments + 1);
+}
+
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -65,20 +77,20 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
-    SDL_RenderDrawLine(renderer, x, center_y, x + w / 4, center_y);
+    int num_loops = 3;
+    int lead_length = w / 6;
+    int loops_total_width = w - (2 * lead_length);
+    int loop_width = loops_total_width / num_loops;
+    int radius = h / 3;
 
-    SDL_Point points[] = {
-            {x + w / 4, center_y},
-            {x + w / 4 + 5, center_y - 10},
-            {x + w / 2 - 5, center_y - 10},
-            {x + w / 2, center_y},
-            {x + w / 2 + 5, center_y + 10},
-            {x + 3 * w / 4 - 5, center_y + 10},
-            {x + 3 * w / 4, center_y}
-    };
-    SDL_RenderDrawLines(renderer, points, 7);
+    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
 
-    SDL_RenderDrawLine(renderer, x + 3 * w / 4, center_y, x + w, center_y);
+    for (int i = 0; i < num_loops; ++i) {
+        int loop_center_x = x + lead_length + (i * loop_width) + (loop_width / 2);
+        draw_arc(renderer, loop_center_x, center_y, radius, 180, 360);
+    }
+
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
 }
 
 void Graphical_Current_Source::draw(SDL_Renderer* renderer)
