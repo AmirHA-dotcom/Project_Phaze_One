@@ -65,7 +65,8 @@ bool graphical_view::run(Controller *C)
                 SDL_GetMouseState(&mouseX, &mouseY);
                 switch (event.key.keysym.sym)
                 {
-                    case SDLK_r: {
+                    case SDLK_r:
+                    {
                         cout << "R key was pressed." << endl;
                         int mouseX, mouseY;
                         SDL_GetMouseState(&mouseX, &mouseY);
@@ -73,7 +74,8 @@ bool graphical_view::run(Controller *C)
                         break;
                     }
 
-                    case SDLK_c: {
+                    case SDLK_c:
+                    {
                         cout << "C key was pressed." << endl;
                         int mouseX, mouseY;
                         SDL_GetMouseState(&mouseX, &mouseY);
@@ -90,9 +92,14 @@ bool graphical_view::run(Controller *C)
                         break;
                     }
 
-                    case SDLK_d:
-                        cout << "D key was pressed." << endl;
+                    case SDLK_s:
+                    {
+                        cout << "S key was pressed." << endl;
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        C->add_Graphical_Current_Source(mouseX, mouseY);
                         break;
+                    }
 
                     case SDLK_RETURN: 
                         cout << "Enter key was pressed." << endl;

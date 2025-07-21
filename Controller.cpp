@@ -30,7 +30,7 @@ void Controller::renameCircuit(Circuit* circuit,string name){
 }
 void Controller::deleteCircuit(Circuit* circuit){
     circuits.erase(
-            std::remove(circuits.begin(), circuits.end(), circuit),
+            remove(circuits.begin(), circuits.end(), circuit),
             circuits.end()
     );
 }
@@ -357,9 +357,9 @@ void Controller::tranAnalysisOrders(vector<string> orders){
 #include <string>
 #include <vector>
 
-void Controller::saveCircuit(Circuit* circuit, std::string path) {
+void Controller::saveCircuit(Circuit* circuit, string path) {
     if (!circuit) {
-        std::cerr << "Error: Null circuit pointer provided" << std::endl;
+        cerr << "Error: Null circuit pointer provided" << endl;
         return;
     }
 
@@ -371,12 +371,12 @@ void Controller::saveCircuit(Circuit* circuit, std::string path) {
         path += "/";
 #endif
     }
-    std::string fullPath = path + circuit->get_name() + ".txt";
-    std::filesystem::create_directories(path);
+    string fullPath = path + circuit->get_name() + ".txt";
+    filesystem::create_directories(path);
 
-    std::ofstream file(fullPath);
+    ofstream file(fullPath);
     if (!file.is_open()) {
-        std::cerr << "Error: could not create file at " << fullPath << std::endl;
+        cerr << "Error: could not create file at " << fullPath << endl;
         return;
     }
 
@@ -384,31 +384,31 @@ void Controller::saveCircuit(Circuit* circuit, std::string path) {
     file << "Circuit: " << circuit->get_name() << "\n";
 
     // Helper function to format numerical values with appropriate suffixes
-    auto formatValue = [](double value) -> std::string {
-        const std::vector<std::pair<std::string, double>> suffixes = {
+    auto formatValue = [](double value) -> string {
+        const vector<pair<string, double>> suffixes = {
                 {"t", 1e12}, {"g", 1e9}, {"meg", 1e6}, {"k", 1e3},
                 {"", 1.0}, {"m", 1e-3}, {"u", 1e-6}, {"n", 1e-9}, {"p", 1e-12}, {"f", 1e-15}
         };
         for (const auto& suffix : suffixes) {
-            if (std::abs(value) >= suffix.second || suffix.second == 1.0) {
+            if (abs(value) >= suffix.second || suffix.second == 1.0) {
                 double scaled = value / suffix.second;
-                std::string result = std::to_string(scaled);
+                string result = to_string(scaled);
                 result.erase(result.find_last_not_of('0') + 1);
                 if (result.back() == '.') result.pop_back();
                 return result + suffix.first;
             }
         }
-        return std::to_string(value);
+        return to_string(value);
     };
 
     // Iterate through circuit components
     for (auto* component : circuit->get_Elements()) {
-        std::string line;
+        string line;
         Element_Type type = component->get_type();
-        std::string element_name = component->get_name();
+        string element_name = component->get_name();
         const pair<Node*, Node*> nodes = component->get_nodes();
-        std::string node1 = nodes.first ? nodes.first->get_name() : "0";
-        std::string node2 = nodes.second ? nodes.second->get_name() : "0";
+        string node1 = nodes.first ? nodes.first->get_name() : "0";
+        string node2 = nodes.second ? nodes.second->get_name() : "0";
         double value = component->get_value();
 
         switch (type) {
@@ -448,7 +448,7 @@ void Controller::saveCircuit(Circuit* circuit, std::string path) {
                 line = "Z" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
                 break;
             default:
-                std::cerr << "Unsupported component type: " << static_cast<int>(type) << std::endl;
+                cerr << "Unsupported component type: " << static_cast<int>(type) << endl;
                 continue;
         }
         file << line << "\n";
@@ -465,14 +465,14 @@ void Controller::saveCircuit(Circuit* circuit, std::string path) {
     file.close();
 }
 
-double Value(const std::string& inputRaw) {
-    std::string input;
+double Value(const string& inputRaw) {
+    string input;
     for (char c : inputRaw) {
         if (c == ',') input += '.';
         else input += c;
     }
 
-    static const std::unordered_map<std::string, double> suffixes = {
+    static const unordered_map<string, double> suffixes = {
             {"f", 1e-15}, {"p", 1e-12}, {"n", 1e-9}, {"u", 1e-6}, {"m", 1e-3},
             {"k", 1e3}, {"meg", 1e6}, {"g", 1e9}, {"t", 1e12}
     };
@@ -482,7 +482,7 @@ double Value(const std::string& inputRaw) {
     bool eSeen = false;
     while (pos < input.size()) {
         char c = input[pos];
-        if (std::isdigit(c) || c == '.' || c == '-' || c == '+') {
+        if (isdigit(c) || c == '.' || c == '-' || c == '+') {
             pos++;
         } else if ((c == 'e' || c == 'E') && !eSeen) {
             eSeen = true;
@@ -492,18 +492,18 @@ double Value(const std::string& inputRaw) {
         }
     }
 
-    std::string numberPart = input.substr(0, pos);
-    std::string suffixPart = input.substr(pos);
+    string numberPart = input.substr(0, pos);
+    string suffixPart = input.substr(pos);
 
-    double number = std::stod(numberPart);
+    double number = stod(numberPart);
 
-    for (char& c : suffixPart) c = std::tolower(c);
+    for (char& c : suffixPart) c = tolower(c);
     if (!suffixPart.empty()) {
         auto it = suffixes.find(suffixPart);
         if (it != suffixes.end()) {
             number *= it->second;
         } else {
-            throw std::invalid_argument("Unknown suffix: " + suffixPart);
+            throw invalid_argument("Unknown suffix: " + suffixPart);
         }
     }
 
@@ -695,11 +695,11 @@ bool Controller::is_files_empty()
 
 void Controller::add_Graphical_Resistor(int screenX, int screenY) {
     m_node_count++;
-    string n1_name = "N" + std::to_string(m_node_count);
+    string n1_name = "N" + to_string(m_node_count);
     m_node_count++;
-    string n2_name = "N" + std::to_string(m_node_count);
+    string n2_name = "N" + to_string(m_node_count);
     m_resistor_count++;
-    string r_name = "R" + std::to_string(m_resistor_count);
+    string r_name = "R" + to_string(m_resistor_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -708,20 +708,20 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
 
     circuit->addElement(sim_resistor);
 
-    auto gfx_resistor = std::make_unique<Graphical_Resistor>(sim_resistor);
+    auto gfx_resistor = make_unique<Graphical_Resistor>(sim_resistor);
 
     gfx_resistor->bounding_box = {screenX, screenY, 100, 40};
 
-    m_graphical_elements.push_back(std::move(gfx_resistor));
+    m_graphical_elements.push_back(move(gfx_resistor));
 }
 
 void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
     m_node_count++;
-    string n1_name = "N" + std::to_string(m_node_count);
+    string n1_name = "N" + to_string(m_node_count);
     m_node_count++;
-    string n2_name = "N" + std::to_string(m_node_count);
+    string n2_name = "N" + to_string(m_node_count);
     m_capacitor_count++;
-    string c_name = "C" + std::to_string(m_capacitor_count);
+    string c_name = "C" + to_string(m_capacitor_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -730,32 +730,54 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
 
     circuit->addElement(sim_capacitor);
 
-    auto gfx_capacitor = std::make_unique<Graphical_Capacitor>(sim_capacitor);
+    auto gfx_capacitor = make_unique<Graphical_Capacitor>(sim_capacitor);
     gfx_capacitor->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(std::move(gfx_capacitor));
+    m_graphical_elements.push_back(move(gfx_capacitor));
 }
 
 void Controller::add_Graphical_Inductor(int screenX, int screenY) {
     m_node_count++;
-    string n1_name = "N" + std::to_string(m_node_count);
+    string n1_name = "N" + to_string(m_node_count);
     m_node_count++;
-    string n2_name = "N" + std::to_string(m_node_count);
+    string n2_name = "N" + to_string(m_node_count);
     m_inductor_count++;
-    string c_name = "I" + std::to_string(m_inductor_count);
+    string i_name = "I" + to_string(m_inductor_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
-    Inductor* sim_inductor = new Inductor(c_name, n1, n2, 1e-6);
+    Inductor* sim_inductor = new Inductor(i_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_inductor);
 
-    auto gfx_inductor = std::make_unique<Graphical_Inductor>(sim_inductor);
+    auto gfx_inductor = make_unique<Graphical_Inductor>(sim_inductor);
     gfx_inductor->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(std::move(gfx_inductor));
+    m_graphical_elements.push_back(move(gfx_inductor));
+}
+
+void Controller::add_Graphical_Current_Source(int screenX, int screenY)
+{
+    m_node_count++;
+    string n1_name = "N" + to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + to_string(m_node_count);
+    m_current_source_count++;
+    string cs_name = "CS" + to_string(m_current_source_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    Current_Source* sim_current_source = new Current_Source(cs_name, n1, n2, 1e-6);
+
+    circuit->addElement(sim_current_source);
+
+    auto gfx_current_source = make_unique<Graphical_Current_Source>(sim_current_source);
+    gfx_current_source->bounding_box = {screenX, screenY, 100, 40};
+    m_graphical_elements.push_back(move(gfx_current_source));
 }
 
 
-std::vector<std::unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() {
+vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() 
+{
     return m_graphical_elements;
 }
