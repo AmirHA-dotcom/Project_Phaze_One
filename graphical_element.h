@@ -16,11 +16,15 @@ class Graphical_Element
 {
 protected:
     Element* model_element;
+
+    static TTF_Font* s_font;
 public:
     Graphical_Element(Element* element_model) : model_element(element_model) {}
     virtual ~Graphical_Element() = default;
 
     virtual void draw(SDL_Renderer* renderer) = 0;
+
+    static void set_font(TTF_Font* font);
 
     SDL_Rect bounding_box;
 

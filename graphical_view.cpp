@@ -11,6 +11,19 @@ bool graphical_view::run(Controller *C)
         throw runtime_error("SDL could not initialize! SDL_Error: " + string(SDL_GetError()));
     }
 
+    if (TTF_Init() == -1)
+    {
+        SDL_Quit();
+        throw runtime_error("SDL_ttf could not initialize! TTF_Error: " + string(TTF_GetError()));
+    }
+
+    TTF_Font* font = TTF_OpenFont("arial.ttf", 16);
+    if (!font)
+    {
+        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+    }
+    Graphical_Element::set_font(font);
+
     SDL_Window* window = SDL_CreateWindow(
             "AHA & AS",
             SDL_WINDOWPOS_CENTERED,
@@ -38,7 +51,6 @@ bool graphical_view::run(Controller *C)
     bool running = true;
     SDL_Event event;
 
-    elements_graphics* EG = new elements_graphics();
 
     while (running) 
     {
@@ -158,9 +170,9 @@ bool graphical_view::run(Controller *C)
         SDL_RenderPresent(renderer);
     }
 
-    delete EG;
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
 
     return true;
