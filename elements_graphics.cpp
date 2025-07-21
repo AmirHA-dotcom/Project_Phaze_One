@@ -7,7 +7,7 @@ void elements_graphics::add_block(int x, int y) {
 
 void elements_graphics::draw(SDL_Renderer* renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x66, 0xCC, 0xFF);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 
     for (const auto& block : m_blocks) 
     {
