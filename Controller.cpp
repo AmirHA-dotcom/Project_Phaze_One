@@ -349,11 +349,21 @@ void Controller::tranAnalysisOrders(vector<string> orders){
     }
 }
 
-void Controller::saveCircuit(Circuit* circuit, string path){
-    createFile(circuit->get_name(),path);
-}
-void Controller::createFile (string name, string path){
-    // اطمینان از اینکه مسیر با / یا \ تمام می‌شود
+
+
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+#include <string>
+#include <vector>
+
+void Controller::saveCircuit(Circuit* circuit, std::string path) {
+    if (!circuit) {
+        std::cerr << "Error: Null circuit pointer provided" << std::endl;
+        return;
+    }
+
+    // Ensure path ends with appropriate separator
     if (!path.empty() && path.back() != '/' && path.back() != '\\') {
 #ifdef _WIN32
         path += "\\";
@@ -361,22 +371,291 @@ void Controller::createFile (string name, string path){
         path += "/";
 #endif
     }
-    std::string fullPath = path + name + ".txt";
-    filesystem::create_directories(path);
+    std::string fullPath = path + circuit->get_name() + ".txt";
+    std::filesystem::create_directories(path);
 
-    ofstream file(fullPath);
-    if (file.is_open()) {
-        file << "circuit schematic:";
-        file.close();
-    } else {
-        cerr << "Error: could not create file at " << fullPath << std::endl;
+    std::ofstream file(fullPath);
+    if (!file.is_open()) {
+        std::cerr << "Error: could not create file at " << fullPath << std::endl;
+        return;
     }
+
+    // Write circuit name
+    file << "Circuit: " << circuit->get_name() << "\n";
+
+    // Helper function to format numerical values with appropriate suffixes
+    auto formatValue = [](double value) -> std::string {
+        const std::vector<std::pair<std::string, double>> suffixes = {
+                {"t", 1e12}, {"g", 1e9}, {"meg", 1e6}, {"k", 1e3},
+                {"", 1.0}, {"m", 1e-3}, {"u", 1e-6}, {"n", 1e-9}, {"p", 1e-12}, {"f", 1e-15}
+        };
+        for (const auto& suffix : suffixes) {
+            if (std::abs(value) >= suffix.second || suffix.second == 1.0) {
+                double scaled = value / suffix.second;
+                std::string result = std::to_string(scaled);
+                result.erase(result.find_last_not_of('0') + 1);
+                if (result.back() == '.') result.pop_back();
+                return result + suffix.first;
+            }
+        }
+        return std::to_string(value);
+    };
+
+    // Iterate through circuit components
+    for (auto* component : circuit->get_Elements()) {
+        std::string line;
+        Element_Type type = component->get_type();
+        std::string element_name = component->get_name();
+        const pair<Node*, Node*> nodes = component->get_nodes();
+        std::string node1 = nodes.first ? nodes.first->get_name() : "0";
+        std::string node2 = nodes.second ? nodes.second->get_name() : "0";
+        double value = component->get_value();
+
+        switch (type) {
+            case Element_Type::Resistor:
+                line = "R" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Capacitor:
+                line = "C" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Inductor:
+                line = "L" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Current_Source:
+                line = "I" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Voltage_Source:
+                // Assume DC voltage source, as Element doesn't store sourceType
+                line = "V" + element_name + " " + node1 + " " + node2 + " DC " + formatValue(value);
+                break;
+            case Element_Type::VC_Voltage_Source:
+                // Control nodes not in Element; assume "0 0" or handle via derived class if available
+                line = "E" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::CC_Current_source:
+                line = "F" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::VC_Current_Source:
+                line = "G" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::CC_Voltage_Source:
+                line = "H" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::Real_Diode:
+                line = "D" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Zener_Diode:
+                line = "Z" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            default:
+                std::cerr << "Unsupported component type: " << static_cast<int>(type) << std::endl;
+                continue;
+        }
+        file << line << "\n";
+    }
+
+    // Write ground directive if present
+    if (circuit->isGround()) {
+        file << "GND GND\n";
+    }
+
+    // End of circuit
+    file << ".END\n";
+
+    file.close();
 }
+
+double Value(const std::string& inputRaw) {
+    std::string input;
+    for (char c : inputRaw) {
+        if (c == ',') input += '.';
+        else input += c;
+    }
+
+    static const std::unordered_map<std::string, double> suffixes = {
+            {"f", 1e-15}, {"p", 1e-12}, {"n", 1e-9}, {"u", 1e-6}, {"m", 1e-3},
+            {"k", 1e3}, {"meg", 1e6}, {"g", 1e9}, {"t", 1e12}
+    };
+
+    // پیدا کردن جایی که suffix شروع میشه (یعنی جایی که دیگه e-style number تموم شده)
+    size_t pos = 0;
+    bool eSeen = false;
+    while (pos < input.size()) {
+        char c = input[pos];
+        if (std::isdigit(c) || c == '.' || c == '-' || c == '+') {
+            pos++;
+        } else if ((c == 'e' || c == 'E') && !eSeen) {
+            eSeen = true;
+            pos++;
+        } else {
+            break;
+        }
+    }
+
+    std::string numberPart = input.substr(0, pos);
+    std::string suffixPart = input.substr(pos);
+
+    double number = std::stod(numberPart);
+
+    for (char& c : suffixPart) c = std::tolower(c);
+    if (!suffixPart.empty()) {
+        auto it = suffixes.find(suffixPart);
+        if (it != suffixes.end()) {
+            number *= it->second;
+        } else {
+            throw std::invalid_argument("Unknown suffix: " + suffixPart);
+        }
+    }
+
+    return number;
+}
+
+Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
+    Circuit* circuit = new Circuit(Name);
+
+    auto groundCheck = [&](const string& node) {
+        if (node == "0" || node == "GND") {
+            circuit->make_node_ground(node);
+        }
+    };
+
+    for (const auto& tokens : lines) {
+        if (tokens.empty()) continue;
+
+        string type = tokens[0];
+        char prefix = toupper(type[0]);
+        string element_name = type.substr(1); // Remove type prefix (e.g., R1 → 1)
+
+        try {
+            if(tokens == lines[0] && tokens[0][tokens.size()-1] == '.' && tokens.size() == 1) {
+                circuit->change_name(tokens[0].substr(0,tokens[0].size()-1));
+            }
+            else if (prefix == 'R' && tokens.size() >= 4) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                groundCheck(n1); groundCheck(n2);
+                circuit->create_new_resistor(element_name, n1, n2, val);
+            }
+            else if (prefix == 'C' && tokens.size() >= 4 && type != "CCVS" && type != "CCCS") {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                groundCheck(n1); groundCheck(n2);
+                circuit->create_new_capacitor(element_name, n1, n2, val);
+            }
+            else if (prefix == 'L' && tokens.size() >= 4) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                groundCheck(n1); groundCheck(n2);
+                circuit->create_new_inductor(element_name, n1, n2, val);
+            }
+            else if (prefix == 'I' && tokens.size() >= 4) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                groundCheck(n1); groundCheck(n2);
+                circuit->create_new_current_source(element_name, n1, n2, val);
+            }
+            else if (prefix == 'V' && tokens.size() >= 4) {
+                string n1 = tokens[1], n2 = tokens[2];
+                groundCheck(n1); groundCheck(n2);
+                if (tokens[3] == "DC" && tokens.size() >= 5) {
+                    double val = Value(tokens[4]);
+                    circuit->create_new_DC_voltage_source(element_name, n1, n2, val);
+                }
+                else if (tokens[3] == "SIN" && tokens.size() >= 7) {
+                    double offset = Value(tokens[4]);
+                    double amp = Value(tokens[5]);
+                    double freq = Value(tokens[6]);
+                    circuit->create_new_Sin_voltage_source(element_name, n1, n2, offset, amp, freq);
+                }
+                else if (tokens[3] == "PULSE" && tokens.size() >= 6) {
+                    double period = Value(tokens[4]);
+                    double val = Value(tokens[5]);
+                    circuit->create_new_Pulse_voltage_source(element_name, n1, n2, period, val);
+                }
+                else if (tokens[3] == "SQUARE" && tokens.size() >= 6) {
+                    double period = Value(tokens[4]);
+                    double val = Value(tokens[5]);
+                    circuit->create_new_Square_voltage_source(element_name, n1, n2, period, val);
+                }
+                else if (tokens[3] == "TRIANGLE" && tokens.size() >= 6) {
+                    double period = Value(tokens[4]);
+                    double val = Value(tokens[5]);
+                    circuit->create_new_Triangle_voltage_source(element_name, n1, n2, period, val);
+                }
+                else if (tokens[3] == "DELTA" && tokens.size() >= 5) {
+                    double time = Value(tokens[4]);
+                    circuit->create_new_Delta_voltage_source(element_name, n1, n2, time);
+                }
+                else {
+                    double val = stod(tokens[3]);
+                    circuit->create_new_DC_voltage_source(element_name, n1, n2, val);
+                }
+            }
+            else if (prefix == 'E' && tokens.size() >= 6) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
+                circuit->create_new_VCVS(element_name, n1, n2, ctrl1, ctrl2, gain);
+            }
+            else if (prefix == 'F' && tokens.size() >= 6) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
+                circuit->create_new_CCCS(element_name, n1, n2, ctrl1, ctrl2, gain);
+            }
+            else if (prefix == 'G' && tokens.size() >= 6) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
+                circuit->create_new_VCCS(element_name, n1, n2, ctrl1, ctrl2, gain);
+            }
+            else if (prefix == 'H' && tokens.size() >= 6) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
+                circuit->create_new_CCVS(element_name, n1, n2, ctrl1, ctrl2, gain);
+            }
+            else if (prefix == 'D' && tokens.size() >= 4) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double dummy = Value(tokens[3]);
+                groundCheck(n1); groundCheck(n2);
+                circuit->create_new_real_diode(element_name, n1, n2, dummy);
+            }
+            else if (prefix == 'Z' && tokens.size() >= 4) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double dummy = Value(tokens[3]);
+                groundCheck(n1); groundCheck(n2);
+                circuit->create_new_zener_diode(element_name, n1, n2, dummy);
+            }
+            else if (prefix == 'G' && tokens.size() >= 3 && tokens[1] == "GND") {
+                circuit->make_node_ground("GND");
+                circuit->ground(true);
+            }
+            else if (type == ".END") {
+                break;
+            }
+            else {
+                cerr << "Unsupported or malformed element: ";
+                for (const string& t : tokens) cerr << t << " ";
+                cerr << endl;
+            }
+        }
+        catch (const exception& e) {
+            cerr << "Error processing element " << type << ": " << e.what() << endl;
+        }
+    }
+
+    return circuit;
+}
+
+
 void Controller::addFileToCircuits(int fileIndex) {
-    string circuitName = file_handler.get_file_names()[fileIndex-1];
-    auto* c = new Circuit(circuitName);
+    string name = file_handler.get_file_names()[fileIndex-1];
+    auto text = file_handler.showText(fileIndex - 1);
+    auto* c = textToCircuit(name,text);
     circuits.push_back(c);
 }
+
 
 void Controller::DcAnalysisOrders(vector<string> orders){
     // Implementation
@@ -399,7 +678,7 @@ void Controller::showFile(int num){
 
 bool Controller::validSchematicChoice(string s){
     if (stoi(s) <= 0 || stoi(s) > file_handler.get_file_names().size())
-      return false; // Placeholder
+      return false;
     return true;
 }
 
