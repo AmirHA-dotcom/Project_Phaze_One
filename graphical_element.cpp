@@ -148,5 +148,4 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
 
     SDL_RenderDrawLine(renderer, x, center_y, center_x - radius, center_y);
     SDL_RenderDrawLine(renderer, center_x + radius, center_y, x + w, center_y);
-
 }
