@@ -5,6 +5,15 @@
 #include "Controller.h"
 #include "Libraries.h"
 
+Controller::Controller() {
+    // Initialize the circuit member pointer
+    circuit = nullptr; // Start it as null just in case
+
+    // Create a new default circuit and make it the active one
+    circuit = new Circuit("default_circuit");
+    circuits.push_back(circuit);
+}
+
 void Controller::addCircuit(string name){
     auto* c = new Circuit(name);
     circuits.push_back(c);
@@ -401,4 +410,68 @@ void Controller::handleNewFile(string path){
 bool Controller::is_files_empty()
 {
     return file_handler.get_file_names().empty();
+}
+
+// GRAPHICS!!!
+
+void Controller::addGraphicalResistor(int screenX, int screenY) {
+    // 1. Generate unique names for the new nodes and resistor
+    m_node_count++;
+    string n1_name = "N" + std::to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + std::to_string(m_node_count);
+    m_resistor_count++;
+    string r_name = "R" + std::to_string(m_resistor_count);
+
+    // 2. Create the new Node objects for the backend
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    // 3. Create the backend Resistor object using 'new'
+    Resistor* sim_resistor = new Resistor(r_name, n1, n2, 1000.0); // Default 1k Ohm
+
+    // 4. Add the raw pointer to the circuit's list
+    circuit->addElement(sim_resistor);
+
+    // 5. Create the corresponding graphical object, linking it to the simulation object
+    auto gfx_resistor = std::make_unique<Graphical_Resistor>(sim_resistor);
+
+    // 6. Position the new graphical object on screen
+    gfx_resistor->bounding_box = {screenX, screenY, 100, 40};
+
+    // 7. Add the graphical object to the controller's graphical list
+    m_graphical_elements.push_back(std::move(gfx_resistor));
+}
+
+void Controller::addGraphicalCapacitor(int screenX, int screenY) {
+    // 1. Generate unique names
+    m_node_count++;
+    string n1_name = "N" + std::to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + std::to_string(m_node_count);
+    m_capacitor_count++;
+    string c_name = "C" + std::to_string(m_capacitor_count);
+
+    // 2. Create new Node objects
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    // 3. Create backend Capacitor using 'new'
+    Capacitor* sim_capacitor = new Capacitor(c_name, n1, n2, 1e-6); // Default 1uF
+
+    // 4. Add the raw pointer to the circuit's list
+    circuit->addElement(sim_capacitor);
+
+    // 5. Create graphical Capacitor (this can still be a unique_ptr for safety)
+    auto gfx_capacitor = std::make_unique<Graphical_Capacitor>(sim_capacitor);
+    gfx_capacitor->bounding_box = {screenX, screenY, 100, 40};
+    m_graphical_elements.push_back(std::move(gfx_capacitor));
+}
+
+void Controller::draw_elements(SDL_Renderer* renderer) {
+    // Loop through the vector of graphical elements
+    for (const auto& gfx_element : m_graphical_elements) {
+        // Call the specific draw() method for each element (resistor, capacitor, etc.)
+        gfx_element->draw(renderer);
+    }
 }

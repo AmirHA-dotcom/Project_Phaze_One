@@ -9,6 +9,7 @@
 #include "Circuit.h"
 #include "Libraries.h"
 #include "File_Handler.h"
+#include "graphical_element.h"
 
 class Controller {
 private:
@@ -16,7 +17,14 @@ private:
     double time_step = 0;
     double start_time = 0;
     double end_time = 0;
+
+    int m_resistor_count = 0;
+    int m_capacitor_count = 0;
+    int m_node_count = 0;
+
+    std::vector<std::unique_ptr<Graphical_Element>> m_graphical_elements;
 public:
+    Controller();
     vector<Circuit *> circuits;
     Circuit *circuit;
 
@@ -95,5 +103,12 @@ public:
 
     bool is_files_empty();
 
-};
+    void addGraphicalResistor(int screenX, int screenY);
+
+    void addGraphicalCapacitor(int screenX, int screenY);
+
+    void draw_elements(SDL_Renderer* renderer);
+
+
+    };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

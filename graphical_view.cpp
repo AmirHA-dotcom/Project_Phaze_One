@@ -65,14 +65,22 @@ bool graphical_view::run(Controller *C)
                 SDL_GetMouseState(&mouseX, &mouseY);
                 switch (event.key.keysym.sym)
                 {
-                    case SDLK_r:
+                    case SDLK_r: { // Use braces for local scope
                         cout << "R key was pressed." << endl;
-                        EG->add_block(mouseX, mouseY);
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        // Call the NEW graphical method
+                        C->addGraphicalResistor(mouseX, mouseY);
                         break;
+                    }
 
-                    case SDLK_s:
-                        cout << "S key was pressed." << endl;
+                    case SDLK_c: { // Example for adding a capacitor with 'C' key
+                        cout << "C key was pressed." << endl;
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        C->addGraphicalCapacitor(mouseX, mouseY);
                         break;
+                    }
 
                     case SDLK_a:
                         cout << "A key was pressed." << endl;
@@ -130,7 +138,7 @@ bool graphical_view::run(Controller *C)
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        EG->draw(renderer);
+        C->draw_elements(renderer);
 
         SDL_RenderPresent(renderer);
     }
