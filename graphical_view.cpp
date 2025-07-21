@@ -91,7 +91,6 @@ bool graphical_view::run(Controller *C)
                         break;
 
                     default:
-                        // Optional: handle other keys
                         break;
                 }
             }

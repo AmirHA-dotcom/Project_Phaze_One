@@ -15,11 +15,9 @@ private:
 public:
     void add_block(int x, int y);
 
-    // Draws all blocks to the screen
     void draw(SDL_Renderer* renderer);
 
-    // Give graphical_view access to the blocks for collision detection
-    std::vector<SDL_Rect>& get_blocks();
+    vector<SDL_Rect>& get_blocks();
 };
 
 
