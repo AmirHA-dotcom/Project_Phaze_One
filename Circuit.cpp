@@ -751,3 +751,10 @@ Node* Circuit::create_new_node(const string& name)
 
     return new_node;
 }
+
+void Circuit::addElement(Element* new_element)
+{
+    if (new_element) {
+        Elements.push_back(new_element);
+    }
+}
