@@ -49,20 +49,52 @@ void draw_arc(SDL_Renderer* renderer, int center_x, int center_y, int radius, in
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
-}
-
-void Graphical_Capacitor::draw(SDL_Renderer *renderer)
-{
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     int x = bounding_box.x;
     int y = bounding_box.y;
     int w = bounding_box.w;
     int h = bounding_box.h;
+    int center_y = y + h / 2;
 
-    SDL_RenderDrawLine(renderer, x + w/2 - 5, y + 10, x + w/2 - 5, y + h - 10);
-    SDL_RenderDrawLine(renderer, x + w/2 + 5, y + 10, x + w/2 + 5, y + h - 10);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+    SDL_RenderDrawRect(renderer, &bounding_box);
+
+    int lead_length = w / 5;
+
+    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
+
+    SDL_Point points[] = {
+            {x + lead_length, center_y},
+            {x + lead_length + (w - 2 * lead_length) * 1 / 6, center_y + 10},
+            {x + lead_length + (w - 2 * lead_length) * 3 / 6, center_y - 10},
+            {x + lead_length + (w - 2 * lead_length) * 5 / 6, center_y + 10},
+            {x + w - lead_length, center_y}
+    };
+    SDL_RenderDrawLines(renderer, points, 5);
+
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+}
+
+void Graphical_Capacitor::draw(SDL_Renderer *renderer)
+{
+    int x = bounding_box.x;
+    int y = bounding_box.y;
+    int w = bounding_box.w;
+    int h = bounding_box.h;
+    int center_x = x + w / 2;
+    int center_y = y + h / 2;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+    SDL_RenderDrawRect(renderer, &bounding_box);
+
+    int plate_height = h / 2;
+    int gap = 8;
+
+    SDL_RenderDrawLine(renderer, x, center_y, center_x - gap/2, center_y);
+    SDL_RenderDrawLine(renderer, center_x - gap/2, center_y - plate_height/2, center_x - gap/2, center_y + plate_height/2);
+    SDL_RenderDrawLine(renderer, center_x + gap/2, center_y - plate_height/2, center_x + gap/2, center_y + plate_height/2);
+    SDL_RenderDrawLine(renderer, center_x + gap/2, center_y, x + w, center_y);
 }
 
 void Graphical_Inductor::draw(SDL_Renderer* renderer)
@@ -102,13 +134,19 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
 
     int center_x = x + w / 2;
     int center_y = y + h / 2;
-    int radius = h / 2 - 5;
+    int radius = h / 2;
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
+    SDL_RenderDrawRect(renderer, &bounding_box);
+
     draw_circle(renderer, center_x, center_y, radius);
 
-    SDL_RenderDrawLine(renderer, center_x, center_y - radius + 5, center_x, center_y + radius - 5);
-    SDL_RenderDrawLine(renderer, center_x, center_y - radius + 5, center_x - 5, center_y - radius + 15);
-    SDL_RenderDrawLine(renderer, center_x, center_y - radius + 5, center_x + 5, center_y - radius + 15);
+    SDL_RenderDrawLine(renderer, center_x - radius + 5, center_y, center_x + radius - 5, center_y);
+    SDL_RenderDrawLine(renderer, center_x + radius - 5, center_y, center_x + radius - 15, center_y - 5);
+    SDL_RenderDrawLine(renderer, center_x + radius - 5, center_y, center_x + radius - 15, center_y + 5);
+
+    SDL_RenderDrawLine(renderer, x, center_y, center_x - radius, center_y);
+    SDL_RenderDrawLine(renderer, center_x + radius, center_y, x + w, center_y);
+
 }
