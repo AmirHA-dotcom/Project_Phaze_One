@@ -9,6 +9,8 @@
 #include "Element.h"
 #include "Resistor.h"
 #include "Capacitor.h"
+#include "Inductor.h"
+#include "Current_Source.h"
 
 class Graphical_Element
 {
@@ -28,26 +30,28 @@ class Graphical_Resistor : public Graphical_Element {
 public:
     Graphical_Resistor(Resistor* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderDrawRect(renderer, &bounding_box);
-    }
+    void draw(SDL_Renderer* renderer) override;
 };
 
 class Graphical_Capacitor : public Graphical_Element {
 public:
     Graphical_Capacitor(Capacitor* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        int x = bounding_box.x;
-        int y = bounding_box.y;
-        int w = bounding_box.w;
-        int h = bounding_box.h;
+    void draw(SDL_Renderer* renderer) override;
+};
 
-        SDL_RenderDrawLine(renderer, x + w/2 - 5, y + 10, x + w/2 - 5, y + h - 10);
-        SDL_RenderDrawLine(renderer, x + w/2 + 5, y + 10, x + w/2 + 5, y + h - 10);
-    }
+class Graphical_Inductor : public Graphical_Element {
+public:
+    Graphical_Inductor(Inductor* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer) override;
+};
+
+class Graphical_Current_Source : public Graphical_Element {
+public:
+    Graphical_Current_Source(Current_Source* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer) override;
 };
 
 #endif //PROJECT_PHAZE_ONE_GRAPHICAL_ELEMENT_H
