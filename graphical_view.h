@@ -1,0 +1,28 @@
+//
+// Created by amirh on 2025-07-20.
+//
+
+#ifndef PROJECT_PHAZE_ONE_GRAPHICAL_VIEW_H
+#define PROJECT_PHAZE_ONE_GRAPHICAL_VIEW_H
+
+#include "Libraries.h"
+#include "Errors.h"
+#include "Controller.h"
+#include <SDL.h>
+
+class graphical_view
+{
+private:
+    bool mainMenu = true;
+    bool circuitMenu = false;
+    bool fileMenu = false;
+    bool analysisMenu = false;
+
+    int m_window_width;
+    int m_window_height;
+
+public:
+    bool run (Controller* C);
+};
+
+#endif //PROJECT_PHAZE_ONE_GRAPHICAL_VIEW_H
