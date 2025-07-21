@@ -9,6 +9,7 @@
 #include "Errors.h"
 #include "Controller.h"
 #include <SDL.h>
+#include "elements_graphics.h"
 
 class graphical_view
 {
@@ -20,6 +21,10 @@ private:
 
     int m_window_width;
     int m_window_height;
+
+    bool m_is_dragging = false;
+    int m_dragged_block_index = -1;
+    SDL_Point m_drag_offset = {0, 0};
 
 public:
     bool run (Controller* C);
