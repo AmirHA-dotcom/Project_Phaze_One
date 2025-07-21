@@ -693,7 +693,7 @@ bool Controller::is_files_empty()
 
 // GRAPHICS!!!
 
-void Controller::addGraphicalResistor(int screenX, int screenY) {
+void Controller::add_Graphical_Resistor(int screenX, int screenY) {
     m_node_count++;
     string n1_name = "N" + std::to_string(m_node_count);
     m_node_count++;
@@ -715,7 +715,7 @@ void Controller::addGraphicalResistor(int screenX, int screenY) {
     m_graphical_elements.push_back(std::move(gfx_resistor));
 }
 
-void Controller::addGraphicalCapacitor(int screenX, int screenY) {
+void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
     m_node_count++;
     string n1_name = "N" + std::to_string(m_node_count);
     m_node_count++;
@@ -733,6 +733,26 @@ void Controller::addGraphicalCapacitor(int screenX, int screenY) {
     auto gfx_capacitor = std::make_unique<Graphical_Capacitor>(sim_capacitor);
     gfx_capacitor->bounding_box = {screenX, screenY, 100, 40};
     m_graphical_elements.push_back(std::move(gfx_capacitor));
+}
+
+void Controller::add_Graphical_Inductor(int screenX, int screenY) {
+    m_node_count++;
+    string n1_name = "N" + std::to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + std::to_string(m_node_count);
+    m_inductor_count++;
+    string c_name = "I" + std::to_string(m_inductor_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    Inductor* sim_inductor = new Inductor(c_name, n1, n2, 1e-6);
+
+    circuit->addElement(sim_inductor);
+
+    auto gfx_inductor = std::make_unique<Graphical_Inductor>(sim_inductor);
+    gfx_inductor->bounding_box = {screenX, screenY, 100, 40};
+    m_graphical_elements.push_back(std::move(gfx_inductor));
 }
 
 

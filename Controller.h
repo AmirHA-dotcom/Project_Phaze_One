@@ -20,6 +20,7 @@ private:
 
     int m_resistor_count = 0;
     int m_capacitor_count = 0;
+    int m_inductor_count = 0;
     int m_node_count = 0;
 
     vector<unique_ptr<Graphical_Element>> m_graphical_elements;
@@ -105,9 +106,11 @@ public:
 
     // GRAPHICS!!!
 
-    void addGraphicalResistor(int screenX, int screenY);
+    void add_Graphical_Resistor(int screenX, int screenY);
 
-    void addGraphicalCapacitor(int screenX, int screenY);
+    void add_Graphical_Capacitor(int screenX, int screenY);
+
+    void add_Graphical_Inductor(int screenX, int screenY);
 
     vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 

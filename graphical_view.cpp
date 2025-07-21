@@ -12,7 +12,7 @@ bool graphical_view::run(Controller *C)
     }
 
     SDL_Window* window = SDL_CreateWindow(
-            "My Application",
+            "AHA & AS",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             1280,
@@ -65,26 +65,30 @@ bool graphical_view::run(Controller *C)
                 SDL_GetMouseState(&mouseX, &mouseY);
                 switch (event.key.keysym.sym)
                 {
-                    case SDLK_r: { // Use braces for local scope
+                    case SDLK_r: {
                         cout << "R key was pressed." << endl;
                         int mouseX, mouseY;
                         SDL_GetMouseState(&mouseX, &mouseY);
-                        // Call the NEW graphical method
-                        C->addGraphicalResistor(mouseX, mouseY);
+                        C->add_Graphical_Resistor(mouseX, mouseY);
                         break;
                     }
 
-                    case SDLK_c: { // Example for adding a capacitor with 'C' key
+                    case SDLK_c: {
                         cout << "C key was pressed." << endl;
                         int mouseX, mouseY;
                         SDL_GetMouseState(&mouseX, &mouseY);
-                        C->addGraphicalCapacitor(mouseX, mouseY);
+                        C->add_Graphical_Capacitor(mouseX, mouseY);
                         break;
                     }
 
-                    case SDLK_a:
-                        cout << "A key was pressed." << endl;
+                    case SDLK_i:
+                    {
+                        cout << "I key was pressed." << endl;
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        C->add_Graphical_Inductor(mouseX, mouseY);
                         break;
+                    }
 
                     case SDLK_d:
                         cout << "D key was pressed." << endl;
