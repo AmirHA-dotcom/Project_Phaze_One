@@ -88,7 +88,7 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
-    int plate_height = h / 2;
+    int plate_height = h;
     int gap = 8;
 
     SDL_RenderDrawLine(renderer, x, center_y, center_x - gap/2, center_y);
