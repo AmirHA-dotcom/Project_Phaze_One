@@ -107,6 +107,20 @@ bool graphical_view::run(Controller *C)
                         break;
                     }
 
+                    case SDLK_d:
+                    {
+                        cout << "D key was pressed." << endl;
+                        C->add_Graphical_Real_Diode(mouseX, mouseY);
+                        break;
+                    }
+
+                    case SDLK_z:
+                    {
+                        cout << "Z key was pressed." << endl;
+                        C->add_Graphical_Zener_Diode(mouseX, mouseY);
+                        break;
+                    }
+
                     case SDLK_RETURN: 
                         cout << "Enter key was pressed." << endl;
                         break;

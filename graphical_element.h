@@ -11,13 +11,15 @@
 #include "Capacitor.h"
 #include "Inductor.h"
 #include "Current_Source.h"
+#include "Real_Diode.h"
+#include "Zener_Diode.h"
 
 class Graphical_Element
 {
 protected:
     Element* model_element;
 
-    static TTF_Font* s_font;
+    static TTF_Font* font;
 public:
     Graphical_Element(Element* element_model) : model_element(element_model) {}
     virtual ~Graphical_Element() = default;
@@ -54,6 +56,20 @@ public:
 class Graphical_Current_Source : public Graphical_Element {
 public:
     Graphical_Current_Source(Current_Source* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer) override;
+};
+
+class Graphical_Real_Diode : public Graphical_Element {
+public:
+    Graphical_Real_Diode(Real_Diode* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer) override;
+};
+
+class Graphical_Zener_Diode : public Graphical_Element {
+public:
+    Graphical_Zener_Diode(Zener_Diode* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
 };

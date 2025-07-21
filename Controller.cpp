@@ -776,6 +776,48 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
     m_graphical_elements.push_back(move(gfx_current_source));
 }
 
+void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
+{
+    m_node_count++;
+    string n1_name = "N" + to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + to_string(m_node_count);
+    m_real_diode_count++;
+    string RD_name = "RD" + to_string(m_real_diode_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    Real_Diode* sim_real_diode = new Real_Diode(RD_name, n1, n2, 1e-6);
+
+    circuit->addElement(sim_real_diode);
+
+    auto gfx_sim_real_diode = make_unique<Graphical_Real_Diode>(sim_real_diode);
+    gfx_sim_real_diode->bounding_box = {screenX, screenY, 100, 40};
+    m_graphical_elements.push_back(move(gfx_sim_real_diode));
+}
+
+void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
+{
+    m_node_count++;
+    string n1_name = "N" + to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + to_string(m_node_count);
+    m_zener_diode_count++;
+    string ZD_name = "ZD" + to_string(m_zener_diode_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    Zener_Diode* sim_zener_diode = new Zener_Diode(ZD_name, n1, n2, 1e-6);
+
+    circuit->addElement(sim_zener_diode);
+
+    auto gfx_sim_zener_diode = make_unique<Graphical_Zener_Diode>(sim_zener_diode);
+    gfx_sim_zener_diode->bounding_box = {screenX, screenY, 100, 40};
+    m_graphical_elements.push_back(move(gfx_sim_zener_diode));
+}
+
 
 vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() 
 {

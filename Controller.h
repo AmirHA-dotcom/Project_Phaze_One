@@ -23,6 +23,9 @@ private:
     int m_inductor_count = 0;
     int m_node_count = 0;
     int m_current_source_count = 0;
+    int m_real_diode_count = 0;
+    int m_zener_diode_count = 0;
+
 
     vector<unique_ptr<Graphical_Element>> m_graphical_elements;
 public:
@@ -114,6 +117,10 @@ public:
     void add_Graphical_Inductor(int screenX, int screenY);
 
     void add_Graphical_Current_Source(int screenX, int screenY);
+
+    void add_Graphical_Real_Diode(int screenX, int screenY);
+
+    void add_Graphical_Zener_Diode(int screenX, int screenY);
 
     vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 

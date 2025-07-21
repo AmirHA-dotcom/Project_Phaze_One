@@ -71,11 +71,11 @@ void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::string& text
 
 // main functions
 
-TTF_Font* Graphical_Element::s_font = nullptr;
+TTF_Font* Graphical_Element::font = nullptr;
 
-void Graphical_Element::set_font(TTF_Font* font)
+void Graphical_Element::set_font(TTF_Font* font_)
 {
-    s_font = font;
+    font = font_;
 }
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
@@ -104,6 +104,7 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
     SDL_RenderDrawLines(renderer, points, 5);
 
     SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+
 }
 
 void Graphical_Capacitor::draw(SDL_Renderer *renderer)
@@ -179,4 +180,69 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
 
     SDL_RenderDrawLine(renderer, x, center_y, center_x - radius, center_y);
     SDL_RenderDrawLine(renderer, center_x + radius, center_y, x + w, center_y);
+}
+
+void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
+{
+    int x = bounding_box.x;
+    int y = bounding_box.y;
+    int w = bounding_box.w;
+    int h = bounding_box.h;
+    int center_y = y + h / 2;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+    SDL_RenderDrawRect(renderer, &bounding_box);
+
+    int lead_length = w / 4;
+
+    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
+
+    SDL_Point triangle_points[] = {
+            {x + lead_length, center_y - 15},
+            {x + w - lead_length, center_y},
+            {x + lead_length, center_y + 15},
+            {x + lead_length, center_y - 15}
+    };
+    SDL_RenderDrawLines(renderer, triangle_points, 4);
+
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y - 15, x + w - lead_length, center_y + 15);
+
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+
+    render_text(renderer, font, model_element->get_name(), x, y - 20);
+}
+
+void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
+{
+    int x = bounding_box.x;
+    int y = bounding_box.y;
+    int w = bounding_box.w;
+    int h = bounding_box.h;
+    int center_y = y + h / 2;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+    SDL_RenderDrawRect(renderer, &bounding_box);
+
+    int lead_length = w / 4;
+
+    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
+
+    SDL_Point triangle_points[] = {
+            {x + lead_length, center_y - 15},
+            {x + w - lead_length, center_y},
+            {x + lead_length, center_y + 15},
+            {x + lead_length, center_y - 15}
+    };
+    SDL_RenderDrawLines(renderer, triangle_points, 4);
+
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y - 15, x + w - lead_length, center_y + 15);
+
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y - 15, x + w - lead_length - 8, center_y - 10);
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y + 15, x + w - lead_length + 8, center_y + 10);
+
+    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+
+    render_text(renderer, font, model_element->get_name(), x, y - 20);
 }
