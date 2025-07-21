@@ -20,6 +20,7 @@
 #include <fstream>
 #include <filesystem>
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 using namespace std;
 
