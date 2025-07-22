@@ -6,6 +6,7 @@
 
 // helper functions
 
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
 
 
 void graphical_view::initialize_menu()
@@ -108,7 +109,7 @@ bool graphical_view::run(Controller *C)
         throw runtime_error("SDL_ttf could not initialize! TTF_Error: " + string(TTF_GetError()));
     }
 
-    TTF_Font* font = TTF_OpenFont("D:/Fonts/Roboto/static/Roboto-Regular.ttf", 16);
+    TTF_Font* font = TTF_OpenFont(FONT , 16);
     if (!font)
     {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
