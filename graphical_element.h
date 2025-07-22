@@ -17,7 +17,7 @@
 
 // helpers
 
-inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, int x, int y, SDL_Color color = {0, 0, 0, 255})
+inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const string& text, int x, int y, SDL_Color color = {0, 0, 0, 255})
 {
     if (!font) return;
 
