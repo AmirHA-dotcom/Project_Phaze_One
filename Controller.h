@@ -239,5 +239,8 @@ public:
     void update_element_properties(int element_index, const vector<string>& new_values);
 
     vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
+
+    void add_Graphical_Wire(const vector<Connection_Point>& points);
+    void connect_nodes(Node* node_to_keep, Node* node_to_merge);
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

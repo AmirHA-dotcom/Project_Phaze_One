@@ -887,3 +887,21 @@ vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()
 {
     return m_graphical_wires;
 }
+
+void Controller::add_Graphical_Wire(const vector<Connection_Point>& points) {
+    auto new_wire = std::make_unique<Graphical_Wire>();
+    for (const auto& p : points) {
+        new_wire->path.push_back(p.pos);
+    }
+    m_graphical_wires.push_back(std::move(new_wire));
+}
+
+void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge) {
+    if (!node_to_keep || !node_to_merge || node_to_keep == node_to_merge) {
+        return;
+    }
+    for (const auto& element : circuit->get_Elements()) {
+        element->replace_node(node_to_merge, node_to_keep);
+    }
+    circuit->delete_node(node_to_merge);
+}
