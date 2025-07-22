@@ -16,7 +16,7 @@ SDL_Point snap_to_grid(int x, int y, int grid_size)
 }
 
 void graphical_view::draw_grid(SDL_Renderer* renderer) {
-    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255); // Light gray
+    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
     for (int x = 0; x < m_window_width; x += GRID_SIZE) {
         SDL_RenderDrawLine(renderer, x, 0, x, m_window_height);
     }
