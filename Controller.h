@@ -11,7 +11,7 @@
 #include "File_Handler.h"
 #include "graphical_element.h"
 
-double toValue(const std::string& inputRaw) {
+inline double toValue(const std::string& inputRaw) {
     std::string input;
     for (char c : inputRaw) {
         if (c == ',') input += '.';
@@ -55,14 +55,14 @@ double toValue(const std::string& inputRaw) {
 
     return number;
 }
-bool isDigit(const std::string& s) {
+inline bool isDigit(const std::string& s) {
     if (s.empty()) return false;
     for (char c : s) {
         if ((c < '0' || c > '9') && c != ')' && c != '.' && c != '(') return false;
     }
     return true;
 }
-bool isValidSpiceNumber(const std::string& input) {
+inline bool isValidSpiceNumber(const std::string& input) {
     static const std::unordered_set<std::string> validSuffixes = {
             "f", "p", "n", "u", "m", "k", "meg", "g", "t"
     };
