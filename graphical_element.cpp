@@ -375,6 +375,7 @@ vector<Editable_Property> Graphical_Resistor::get_editable_properties()
 {
     vector<Editable_Property> props;
 
+    props.push_back({"Name", model_element->get_name()});
     props.push_back({"Resistance (Ohms)", to_string(model_element->get_value())});
     return props;
 }
@@ -382,6 +383,8 @@ vector<Editable_Property> Graphical_Resistor::get_editable_properties()
 vector<Editable_Property> Graphical_Capacitor::get_editable_properties()
 {
     vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
     props.push_back({"Capacitance (F)", to_string(model_element->get_value())});
     return props;
 }
@@ -390,6 +393,7 @@ vector<Editable_Property> Graphical_Inductor::get_editable_properties()
 {
     vector<Editable_Property> props;
 
+    props.push_back({"Name", model_element->get_name()});
     props.push_back({"Inductance (H)", to_string(model_element->get_value())});
     return props;
 }
@@ -397,6 +401,8 @@ vector<Editable_Property> Graphical_Inductor::get_editable_properties()
 vector<Editable_Property> Graphical_Current_Source::get_editable_properties()
 {
     vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
     props.push_back({"Current (A)", to_string(model_element->get_value())});
     return props;
 }
@@ -405,6 +411,7 @@ vector<Editable_Property> Graphical_Real_Diode::get_editable_properties()
 {
     vector<Editable_Property> props;
 
+    props.push_back({"Name", model_element->get_name()});
     props.push_back({"Voltage (V)", to_string(model_element->get_value())});
     return props;
 }
@@ -412,6 +419,8 @@ vector<Editable_Property> Graphical_Real_Diode::get_editable_properties()
 vector<Editable_Property> Graphical_Zener_Diode::get_editable_properties()
 {
     vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
     props.push_back({"Voltage (V)", to_string(model_element->get_value())});
     return props;
 }

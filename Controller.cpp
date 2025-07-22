@@ -835,46 +835,50 @@ void Controller::update_element_properties(int element_index, const vector<strin
     Element* element_model = m_graphical_elements[element_index]->get_model();
     if (!element_model) return;
 
+    if (new_values.size() < 2) return;
+
+    element_model->change_name(new_values[0]);
+
     if (auto* element = dynamic_cast<Resistor*>(element_model))
     {
-        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        if (isValidSpiceNumber(new_values[1]))
         {
-            element->change_value(toValue(new_values[0]));
+            element->change_value(toValue(new_values[1]));
         }
     }
     else if (auto* element = dynamic_cast<Capacitor*>(element_model))
     {
-        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        if (isValidSpiceNumber(new_values[1]))
         {
-            element->change_value(toValue(new_values[0]));
+            element->change_value(toValue(new_values[1]));
         }
     }
     else if (auto* element = dynamic_cast<Inductor*>(element_model))
     {
-        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        if (isValidSpiceNumber(new_values[1]))
         {
-            element->change_value(toValue(new_values[0]));
+            element->change_value(toValue(new_values[1]));
         }
     }
     else if (auto* element = dynamic_cast<Current_Source*>(element_model))
     {
-        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        if (isValidSpiceNumber(new_values[1]))
         {
-            element->change_value(toValue(new_values[0]));
+            element->change_value(toValue(new_values[1]));
         }
     }
     else if (auto* element = dynamic_cast<Real_Diode*>(element_model))
     {
-        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        if (isValidSpiceNumber(new_values[1]))
         {
-            element->change_value(toValue(new_values[0]));
+            element->change_value(toValue(new_values[1]));
         }
     }
     else if (auto* element = dynamic_cast<Zener_Diode*>(element_model))
     {
-        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        if (isValidSpiceNumber(new_values[1]))
         {
-            element->change_value(toValue(new_values[0]));
+            element->change_value(toValue(new_values[1]));
         }
     }
 }
