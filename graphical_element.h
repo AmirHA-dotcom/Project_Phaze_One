@@ -39,6 +39,11 @@ inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const string& te
 
 enum class Rotation{Right, Left, Up, Down};
 
+struct Editable_Property {
+    string label;
+    string value_as_string;
+};
+
 // main classes
 
 class Graphical_Element
@@ -64,6 +69,8 @@ public:
     void change_rotation();
 
     Element* get_model();
+
+    virtual vector<Editable_Property> get_editable_properties() = 0;
 };
 
 class Graphical_Resistor : public Graphical_Element {
@@ -71,6 +78,8 @@ public:
     Graphical_Resistor(Resistor* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
+
+    vector<Editable_Property> get_editable_properties() override;
 };
 
 class Graphical_Capacitor : public Graphical_Element {
@@ -78,6 +87,8 @@ public:
     Graphical_Capacitor(Capacitor* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
+
+    vector<Editable_Property> get_editable_properties() override;
 };
 
 class Graphical_Inductor : public Graphical_Element {
@@ -85,6 +96,8 @@ public:
     Graphical_Inductor(Inductor* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
+
+    vector<Editable_Property> get_editable_properties() override;
 };
 
 class Graphical_Current_Source : public Graphical_Element {
@@ -92,6 +105,8 @@ public:
     Graphical_Current_Source(Current_Source* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
+
+    vector<Editable_Property> get_editable_properties() override;
 };
 
 class Graphical_Real_Diode : public Graphical_Element {
@@ -99,6 +114,8 @@ public:
     Graphical_Real_Diode(Real_Diode* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
+
+    vector<Editable_Property> get_editable_properties() override;
 };
 
 class Graphical_Zener_Diode : public Graphical_Element {
@@ -106,6 +123,8 @@ public:
     Graphical_Zener_Diode(Zener_Diode* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
+
+    vector<Editable_Property> get_editable_properties() override;
 };
 
 #endif //PROJECT_PHAZE_ONE_GRAPHICAL_ELEMENT_H

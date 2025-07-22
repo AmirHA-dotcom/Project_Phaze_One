@@ -91,7 +91,7 @@ SDL_Point Graphical_Element::transform_point(SDL_Point point_to_rotate)
 
 Element *Graphical_Element::get_model() { return model_element; }
 
-// main functions
+// draw functions
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
 {
@@ -367,4 +367,51 @@ void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
     {
         render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
     }
+}
+
+// get properties functions
+
+vector<Editable_Property> Graphical_Resistor::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Resistance (Ohms)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_Capacitor::get_editable_properties()
+{
+    vector<Editable_Property> props;
+    props.push_back({"Capacitance (F)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_Inductor::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Inductance (H)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_Current_Source::get_editable_properties()
+{
+    vector<Editable_Property> props;
+    props.push_back({"Current (A)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_Real_Diode::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_Zener_Diode::get_editable_properties()
+{
+    vector<Editable_Property> props;
+    props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    return props;
 }

@@ -405,5 +405,13 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C)
 {
+    if (event.type == SDL_QUIT) return false;
 
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            editing = false;
+        }
+    }
 }
