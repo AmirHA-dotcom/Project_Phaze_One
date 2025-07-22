@@ -93,34 +93,36 @@ SDL_Point Graphical_Element::transform_point(SDL_Point point_to_rotate)
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
 {
+    // bounding box
     SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
     SDL_RenderDrawRect(renderer, &bounding_box);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    // local coordinate system
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
+    // horizental or vertical
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     int lead_length = half_length / 2.5;
 
+    // coordinates
     SDL_Point local_points[] = {
             {-half_length, 0},
             {-lead_length, 0},
-            {-lead_length + (half_length - lead_length) * 1 / 3, 10},
-            { lead_length - (half_length - lead_length) * 2 / 3, -10},
-            { lead_length - (half_length - lead_length) * 1 / 3, 10},
-            { lead_length, 0},
-            { half_length, 0}
+            {(int)(-lead_length + (half_length - lead_length) * 0.33), 10},
+            {(int)(lead_length - (half_length - lead_length) * 0.66), -10},
+            {(int)(lead_length - (half_length - lead_length) * 0.33), 10},
+            {lead_length, 0},
+            {half_length, 0}
     };
 
     // draw the points
     for (size_t i = 0; i < (sizeof(local_points) / sizeof(SDL_Point)) - 1; ++i)
     {
         SDL_Point p1 = transform_point(local_points[i]);
-        SDL_Point p2 = transform_point(local_points[i+1]);
+        SDL_Point p2 = transform_point(local_points[i + 1]);
         SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
     }
 
-    // name
+    // text
     if (model_element != nullptr)
     {
         render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
@@ -129,24 +131,44 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
 
 void Graphical_Capacitor::draw(SDL_Renderer *renderer)
 {
-    int x = bounding_box.x;
-    int y = bounding_box.y;
-    int w = bounding_box.w;
-    int h = bounding_box.h;
-    int center_x = x + w / 2;
-    int center_y = y + h / 2;
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int plate_height = 20;
+    int gap = 4;
 
-    int plate_height = h;
-    int gap = 8;
+    // local points
+    SDL_Point lead1_start = {-half_length, 0};
+    SDL_Point lead1_end = {-gap, 0};
 
-    SDL_RenderDrawLine(renderer, x, center_y, center_x - gap/2, center_y);
-    SDL_RenderDrawLine(renderer, center_x - gap/2, center_y - plate_height/2, center_x - gap/2, center_y + plate_height/2);
-    SDL_RenderDrawLine(renderer, center_x + gap/2, center_y - plate_height/2, center_x + gap/2, center_y + plate_height/2);
-    SDL_RenderDrawLine(renderer, center_x + gap/2, center_y, x + w, center_y);
+    SDL_Point plate1_top = {-gap, -plate_height / 2};
+    SDL_Point plate1_bottom = {-gap, plate_height / 2};
+
+    SDL_Point plate2_top = {gap, -plate_height / 2};
+    SDL_Point plate2_bottom = {gap, plate_height / 2};
+
+    SDL_Point lead2_start = {gap, 0};
+    SDL_Point lead2_end = {half_length, 0};
+
+    // draw points
+    SDL_Point p1 = transform_point(lead1_start);
+    SDL_Point p2 = transform_point(lead1_end);
+    SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+
+    p1 = transform_point(plate1_top);
+    p2 = transform_point(plate1_bottom);
+    SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+
+    p1 = transform_point(plate2_top);
+    p2 = transform_point(plate2_bottom);
+    SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+
+    p1 = transform_point(lead2_start);
+    p2 = transform_point(lead2_end);
+    SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
 
     if (model_element != nullptr)
     {
@@ -156,30 +178,38 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
 
 void Graphical_Inductor::draw(SDL_Renderer* renderer)
 {
-    int x = bounding_box.x;
-    int y = bounding_box.y;
-    int w = bounding_box.w;
-    int h = bounding_box.h;
-    int center_y = y + h / 2;
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    SDL_RenderDrawRect(renderer, &bounding_box);
-
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int lead_length = half_length / 3;
+    int loops_total_length = (half_length - lead_length) * 2;
     int num_loops = 3;
-    int lead_length = w / 6;
-    int loops_total_width = w - (2 * lead_length);
-    int loop_width = loops_total_width / num_loops;
-    int radius = h / 3;
+    int loop_width = loops_total_length / num_loops;
+    int radius = 10;
 
-    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-half_length + lead_length, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
 
+    SDL_Point lead2_p1 = transform_point({half_length - lead_length, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+
+    // drawing arc points
     for (int i = 0; i < num_loops; ++i) {
-        int loop_center_x = x + lead_length + (i * loop_width) + (loop_width / 2);
-        draw_arc(renderer, loop_center_x, center_y, radius, 180, 360);
-    }
+        int local_center_x = (-half_length + lead_length) + (i * loop_width) + (loop_width / 2);
 
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+        std::vector<SDL_Point> arc_points;
+        for (int j = 0; j <= 10; ++j)
+        {
+            float angle_rad = (180.0f + j * 18.0f) * M_PI / 180.0f;
+            arc_points.push_back(transform_point({(int)(local_center_x + radius * cos(angle_rad)),(int)(0 + radius * sin(angle_rad))}));
+        }
+        SDL_RenderDrawLines(renderer, arc_points.data(), arc_points.size());
+    }
 
     if (model_element != nullptr)
     {
@@ -189,27 +219,43 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
 
 void Graphical_Current_Source::draw(SDL_Renderer* renderer)
 {
-    int x = bounding_box.x;
-    int y = bounding_box.y;
-    int w = bounding_box.w;
-    int h = bounding_box.h;
-
-    int center_x = x + w / 2;
-    int center_y = y + h / 2;
-    int radius = h / 2;
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int radius = 15;
 
-    draw_circle(renderer, center_x, center_y, radius);
+    // leads
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
 
-    SDL_RenderDrawLine(renderer, center_x - radius + 5, center_y, center_x + radius - 5, center_y);
-    SDL_RenderDrawLine(renderer, center_x + radius - 5, center_y, center_x + radius - 15, center_y - 5);
-    SDL_RenderDrawLine(renderer, center_x + radius - 5, center_y, center_x + radius - 15, center_y + 5);
+    SDL_Point lead2_p1 = transform_point({radius, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
 
-    SDL_RenderDrawLine(renderer, x, center_y, center_x - radius, center_y);
-    SDL_RenderDrawLine(renderer, center_x + radius, center_y, x + w, center_y);
+    // circle
+    vector<SDL_Point> circle_points;
+    for (int i = 0; i < 360; i += 10)
+    {
+        float angle_rad = (float)i * M_PI / 180.0f;
+        circle_points.push_back(transform_point({(int)(radius * cos(angle_rad)),(int)(radius * sin(angle_rad))}));
+    }
+    SDL_RenderDrawLines(renderer, circle_points.data(), circle_points.size());
+
+    // arrow
+    SDL_Point arrow_points[] = {
+            {-radius / 2, 0}, {radius / 2, 0},
+            {radius / 2, 0}, {(int)(radius / 2) - 5, -5},
+            {radius / 2, 0}, {(int)(radius / 2) - 5, 5}
+    };
+    for (size_t i = 0; i < 6; i+=2) {
+        SDL_Point p1 = transform_point(arrow_points[i]);
+        SDL_Point p2 = transform_point(arrow_points[i+1]);
+        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+    }
 
     if (model_element != nullptr)
     {
@@ -219,31 +265,42 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
 
 void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
 {
-    int x = bounding_box.x;
-    int y = bounding_box.y;
-    int w = bounding_box.w;
-    int h = bounding_box.h;
-    int center_y = y + h / 2;
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int body_length = (half_length * 2) * 0.7;
+    int half_body = body_length / 2;
 
-    int lead_length = w / 4;
+    // local points
+    SDL_Point lead1 = {-half_length, 0};
+    SDL_Point tri_base_center = {-half_body, 0};
+    SDL_Point tri_top = {-half_body, -15};
+    SDL_Point tri_bottom = {-half_body, 15};
+    SDL_Point tri_tip = {half_body, 0};
+    SDL_Point bar_top = {half_body, -15};
+    SDL_Point bar_bottom = {half_body, 15};
+    SDL_Point lead2 = {half_length, 0};
 
-    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
+    // transform all points
+    SDL_Point p_lead1 = transform_point(lead1);
+    SDL_Point p_tri_base = transform_point(tri_base_center);
+    SDL_Point p_tri_top = transform_point(tri_top);
+    SDL_Point p_tri_bottom = transform_point(tri_bottom);
+    SDL_Point p_tri_tip = transform_point(tri_tip);
+    SDL_Point p_bar_top = transform_point(bar_top);
+    SDL_Point p_bar_bottom = transform_point(bar_bottom);
+    SDL_Point p_lead2 = transform_point(lead2);
 
-    SDL_Point triangle_points[] = {
-            {x + lead_length, center_y - 15},
-            {x + w - lead_length, center_y},
-            {x + lead_length, center_y + 15},
-            {x + lead_length, center_y - 15}
-    };
-    SDL_RenderDrawLines(renderer, triangle_points, 4);
-
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y - 15, x + w - lead_length, center_y + 15);
-
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+    // leads, triangle, bar
+    SDL_RenderDrawLine(renderer, p_lead1.x, p_lead1.y, p_tri_base.x, p_tri_base.y);
+    SDL_RenderDrawLine(renderer, p_tri_top.x, p_tri_top.y, p_tri_tip.x, p_tri_tip.y);
+    SDL_RenderDrawLine(renderer, p_tri_bottom.x, p_tri_bottom.y, p_tri_tip.x, p_tri_tip.y);
+    SDL_RenderDrawLine(renderer, p_tri_top.x, p_tri_top.y, p_tri_bottom.x, p_tri_bottom.y);
+    SDL_RenderDrawLine(renderer, p_bar_top.x, p_bar_top.y, p_bar_bottom.x, p_bar_bottom.y);
+    SDL_RenderDrawLine(renderer, p_tri_tip.x, p_tri_tip.y, p_lead2.x, p_lead2.y);
 
     if (model_element != nullptr)
     {
@@ -253,34 +310,56 @@ void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
 
 void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
 {
-    int x = bounding_box.x;
-    int y = bounding_box.y;
-    int w = bounding_box.w;
-    int h = bounding_box.h;
-    int center_y = y + h / 2;
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int body_length = (half_length * 2) * 0.7;
+    int half_body = body_length / 2;
 
-    int lead_length = w / 4;
+    // local points
+    SDL_Point lead1 = {-half_length, 0};
+    SDL_Point tri_base_center = {-half_body, 0};
+    SDL_Point tri_top = {-half_body, -15};
+    SDL_Point tri_bottom = {-half_body, 15};
+    SDL_Point tri_tip = {half_body, 0};
+    SDL_Point bar_top = {half_body, -15};
+    SDL_Point bar_bottom = {half_body, 15};
+    SDL_Point lead2 = {half_length, 0};
 
-    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
+    // transform all points
+    SDL_Point p_lead1 = transform_point(lead1);
+    SDL_Point p_tri_base = transform_point(tri_base_center);
+    SDL_Point p_tri_top = transform_point(tri_top);
+    SDL_Point p_tri_bottom = transform_point(tri_bottom);
+    SDL_Point p_tri_tip = transform_point(tri_tip);
+    SDL_Point p_bar_top = transform_point(bar_top);
+    SDL_Point p_bar_bottom = transform_point(bar_bottom);
+    SDL_Point p_lead2 = transform_point(lead2);
 
-    SDL_Point triangle_points[] = {
-            {x + lead_length, center_y - 15},
-            {x + w - lead_length, center_y},
-            {x + lead_length, center_y + 15},
-            {x + lead_length, center_y - 15}
-    };
-    SDL_RenderDrawLines(renderer, triangle_points, 4);
+    // leads, triangle, bar
+    SDL_RenderDrawLine(renderer, p_lead1.x, p_lead1.y, p_tri_base.x, p_tri_base.y);
+    SDL_RenderDrawLine(renderer, p_tri_top.x, p_tri_top.y, p_tri_tip.x, p_tri_tip.y);
+    SDL_RenderDrawLine(renderer, p_tri_bottom.x, p_tri_bottom.y, p_tri_tip.x, p_tri_tip.y);
+    SDL_RenderDrawLine(renderer, p_tri_top.x, p_tri_top.y, p_tri_bottom.x, p_tri_bottom.y);
+    SDL_RenderDrawLine(renderer, p_bar_top.x, p_bar_top.y, p_bar_bottom.x, p_bar_bottom.y);
+    SDL_RenderDrawLine(renderer, p_tri_tip.x, p_tri_tip.y, p_lead2.x, p_lead2.y);
 
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y - 15, x + w - lead_length, center_y + 15);
+    // wings
+    SDL_Point wing1_start = {half_body, -15};
+    SDL_Point wing1_end = {half_body - 8, -10};
+    SDL_Point wing2_start = {half_body, 15};
+    SDL_Point wing2_end = {half_body + 8, 10};
 
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y - 15, x + w - lead_length - 8, center_y - 10);
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y + 15, x + w - lead_length + 8, center_y + 10);
+    SDL_Point p1 = transform_point(wing1_start);
+    SDL_Point p2 = transform_point(wing1_end);
+    SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
 
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+    p1 = transform_point(wing2_start);
+    p2 = transform_point(wing2_end);
+    SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
 
     if (model_element != nullptr)
     {
