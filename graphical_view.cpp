@@ -311,8 +311,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
                 {
-                    cout << "selected" << endl;
-                    //std::cout << "Right-clicked on: " << graphical_elements[i]->get_model()->get_name() << std::endl;
+                    cout << "Right-clicked on: " << graphical_elements[i]->get_model()->get_name() << endl;
 
                     editing = true;
                     edited_element_index = i;
