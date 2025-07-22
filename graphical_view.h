@@ -10,6 +10,7 @@
 #include "Controller.h"
 #include <SDL.h>
 #include "elements_graphics.h"
+#include "Graphical_Wire.h"
 
 
 struct MenuItem {
@@ -46,9 +47,9 @@ private:
     // griding the workspace
     const int GRID_SIZE = 10;
 
-    // m_is_wiring mode
+    // wiring mode
     bool m_is_wiring = false;
-    vector<SDL_Point> new_wire_points;
+    vector<Connection_Point> new_wire_points;
 
     // helper functions
     void initialize_menu();
@@ -64,7 +65,7 @@ private:
 
     bool handle_edit_properties_menu(SDL_Event& event, Controller* C);
 
-    bool handle_m_is_wiring_events(SDL_Event& event, Controller* C);
+    bool handle_wiring_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);
