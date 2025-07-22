@@ -315,7 +315,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                     SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
                     cout << "R key was pressed." << endl;
-                    C->add_Graphical_Resistor(mouseX, mouseY);
+                    C->add_Graphical_Resistor(snapped_pos.x, snapped_pos.y);
                 }
                 break;
             }
@@ -325,7 +325,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
                 cout << "C key was pressed." << endl;
-                C->add_Graphical_Capacitor(mouseX, mouseY);
+                C->add_Graphical_Capacitor(snapped_pos.x, snapped_pos.y);
                 break;
             }
 
@@ -334,7 +334,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
                 cout << "L key was pressed." << endl;
-                C->add_Graphical_Inductor(mouseX, mouseY);
+                C->add_Graphical_Inductor(snapped_pos.x, snapped_pos.y);
                 break;
             }
 
@@ -343,7 +343,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
                 cout << "S key was pressed." << endl;
-                C->add_Graphical_Current_Source(mouseX, mouseY);
+                C->add_Graphical_Current_Source(snapped_pos.x, snapped_pos.y);
                 break;
             }
 
@@ -352,7 +352,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
                 cout << "D key was pressed." << endl;
-                C->add_Graphical_Real_Diode(mouseX, mouseY);
+                C->add_Graphical_Real_Diode(snapped_pos.x, snapped_pos.y);
                 break;
             }
 
@@ -361,7 +361,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
                 cout << "Z key was pressed." << endl;
-                C->add_Graphical_Zener_Diode(mouseX, mouseY);
+                C->add_Graphical_Zener_Diode(snapped_pos.x, snapped_pos.y);
                 break;
             }
 
