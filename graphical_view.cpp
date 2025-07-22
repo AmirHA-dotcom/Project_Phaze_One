@@ -21,9 +21,9 @@ void graphical_view::initialize_menu()
 
 void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font) {
     // fade
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 180);
-    SDL_RenderFillRect(renderer, NULL);
+//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+//    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 180);
+//    SDL_RenderFillRect(renderer, NULL);
 
     SDL_Rect menu_panel = {200, 100, 800, 500};
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
@@ -36,7 +36,8 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
 
     // items
     int start_y = menu_panel.y + 60;
-    for (int i = 0; i < menu_items.size(); ++i) {
+    for (int i = 0; i < menu_items.size(); ++i)
+    {
         menu_items[i].rect = {menu_panel.x + 20, start_y + (i * 30), 200, 25};
         render_text(renderer, font, menu_items[i].name, menu_items[i].rect.x, menu_items[i].rect.y, {200, 200, 200, 255});
     }
