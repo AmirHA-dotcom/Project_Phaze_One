@@ -94,6 +94,64 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
     }
 }
 
+void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C)
+{
+    const SDL_Color PANEL_BG = {50, 58, 69, 255};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color TEXT_BOX_BG = {33, 37, 41, 255};
+    const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
+    const SDL_Color HIGHLIGHT_COLOR = {52, 152, 219, 255};
+
+//    // 1. Draw a semi-transparent overlay to dim the background
+//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+//    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 180);
+//    SDL_RenderFillRect(renderer, NULL);
+//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE); // Reset blend mode
+
+    int menu_width = 400;
+    int menu_height = 300;
+    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
+    SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
+    SDL_RenderFillRect(renderer, &menu_panel);
+
+    auto& element = C->get_graphical_elements()[edited_element_index];
+    vector<Editable_Property> props = element->get_editable_properties();
+
+    property_rects.clear();
+
+    int start_y = menu_panel.y + 50;
+    int row_height = 40;
+    for (int i = 0; i < props.size(); ++i) {
+        render_text(renderer, font, props[i].label, menu_panel.x + 20, start_y + (i * row_height), TEXT_COLOR);
+
+        SDL_Rect textbox_rect = {menu_panel.x + 180, start_y + (i * row_height) - 5, 200, 30};
+        property_rects.push_back(textbox_rect);
+
+        SDL_SetRenderDrawColor(renderer, TEXT_BOX_BG.r, TEXT_BOX_BG.g, TEXT_BOX_BG.b, TEXT_BOX_BG.a);
+        SDL_RenderFillRect(renderer, &textbox_rect);
+
+        if (i == active_edit_box) {
+            SDL_SetRenderDrawColor(renderer, HIGHLIGHT_COLOR.r, HIGHLIGHT_COLOR.g, HIGHLIGHT_COLOR.b, HIGHLIGHT_COLOR.a);
+        } else {
+            SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+        }
+        SDL_RenderDrawRect(renderer, &textbox_rect);
+
+        if (i < edit_buffers.size()) {
+            render_text(renderer, font, edit_buffers[i], textbox_rect.x + 5, textbox_rect.y + 5, TEXT_COLOR);
+        }
+    }
+
+    ok_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 30};
+    cancel_button_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 30};
+
+    SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+    SDL_RenderFillRect(renderer, &ok_button_rect);
+    SDL_RenderFillRect(renderer, &cancel_button_rect);
+
+    render_text(renderer, font, "OK", ok_button_rect.x + 40, ok_button_rect.y + 5, TEXT_COLOR);
+    render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
+}
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -174,8 +232,14 @@ bool graphical_view::run(Controller *C)
             element->draw(renderer);
         }
 
-        if (elements_menu) {
+        if (elements_menu)
+        {
             draw_component_menu(renderer, font);
+        }
+
+        if (editing)
+        {
+            draw_properties_menu(renderer, font, C);
         }
         SDL_RenderPresent(renderer);
     }
@@ -323,7 +387,14 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                     editing = true;
                     edited_element_index = i;
 
-                    // m_text_input_buffer = std::to_string(graphical_elements[i]->get_model()->get_value());
+                    auto props = graphical_elements[i]->get_editable_properties();
+
+                    edit_buffers.clear();
+                    for (const auto& prop : props)
+                    {
+                        edit_buffers.push_back(prop.value_as_string);
+                    }
+                    active_edit_box = -1;
 
                     break;
                 }
@@ -407,11 +478,76 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
 {
     if (event.type == SDL_QUIT) return false;
 
-    if (event.type == SDL_KEYDOWN)
-    {
-        if (event.key.keysym.sym == SDLK_ESCAPE)
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        // OK or Cancel
+        if (SDL_PointInRect(&mouse_pos, &ok_button_rect))
         {
+            // OK
+            C->update_element_properties(edited_element_index, edit_buffers);
             editing = false;
+            SDL_StopTextInput();
+        }
+        else if (SDL_PointInRect(&mouse_pos, &cancel_button_rect))
+        {
+            // Cancel
+            editing = false;
+            SDL_StopTextInput();
+        }
+        else
+        {
+            // text box
+            // (Note: the text box rects are defined in your draw_properties_menu function)
+            bool an_edit_box_was_clicked = false;
+            for (int i = 0; i < property_rects.size(); ++i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &property_rects[i]))
+                {
+                    active_edit_box = i;
+                    SDL_StartTextInput();
+                    an_edit_box_was_clicked = true;
+                    break;
+                }
+            }
+            if (!an_edit_box_was_clicked)
+            {
+                active_edit_box = -1;
+                SDL_StopTextInput();
+            }
         }
     }
+
+    // Handle text input, but only if a text box is active
+    if (event.type == SDL_TEXTINPUT && active_edit_box != -1)
+    {
+        edit_buffers[active_edit_box] += event.text.text;
+    }
+
+    // Handle special keys
+    if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
+        {
+            case SDLK_ESCAPE:
+                editing = false;
+                SDL_StopTextInput();
+                break;
+
+            case SDLK_BACKSPACE:
+                if (active_edit_box != -1 && !edit_buffers[active_edit_box].empty())
+                {
+                    edit_buffers[active_edit_box].pop_back();
+                }
+                break;
+
+            case SDLK_RETURN:
+                C->update_element_properties(edited_element_index, edit_buffers);
+                editing = false;
+                SDL_StopTextInput();
+                break;
+        }
+    }
+
+    return true;
 }

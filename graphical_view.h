@@ -37,10 +37,17 @@ private:
 
     bool editing = false;
     int edited_element_index = -1;
+    vector<string> edit_buffers;
+    int active_edit_box = -1;
+    SDL_Rect ok_button_rect;
+    SDL_Rect cancel_button_rect;
+    vector<SDL_Rect> property_rects;  // store text boxes
 
     // helper functions
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
+    void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
+
 
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
