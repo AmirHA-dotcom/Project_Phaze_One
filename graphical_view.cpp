@@ -29,9 +29,9 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
 
     // panels
-    SDL_SetRenderDrawColor(renderer, 45, 45, 45, 255);
+    SDL_SetRenderDrawColor(renderer, 50, 58, 69, 255);
     SDL_RenderFillRect(renderer, &menu_panel);
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+    SDL_SetRenderDrawColor(renderer, 236, 239, 244, 255);
     SDL_RenderFillRect(renderer, &preview_panel);
 
     // items
