@@ -6,6 +6,34 @@
 
 // helper functions
 
+inline string format_with_suffix(double value, const string& unit) {
+    if (value == 0.0) return "0.00 " + unit;
+
+    static const struct { double threshold; const char* suffix; } suffixes[] = {
+            {1e12, "T"}, {1e9, "G"}, {1e6, "M"}, {1e3, "k"},
+            {1.0,  ""},
+            {1e-3, "m"}, {1e-6, "u"}, {1e-9, "n"}, {1e-12, "p"}, {1e-15, "f"}
+    };
+
+    double abs_value = std::abs(value);
+    string prefix = (value < 0) ? "-" : "";
+
+    for (const auto& s : suffixes)
+    {
+        if (abs_value >= s.threshold)
+        {
+            double scaled_value = value / s.threshold;
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(2) << scaled_value;
+            return prefix + ss.str() + s.suffix + unit;
+        }
+    }
+    // using scientific notation for very small numbers
+    stringstream ss;
+    ss << scientific << setprecision(2) << value;
+    return ss.str() + unit;
+}
+
 void draw_circle(SDL_Renderer* renderer, int center_x, int center_y, int radius)
 {
     int x = radius - 1;
@@ -128,9 +156,7 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
     if (model_element != nullptr)
     {
         double value = model_element->get_value();
-        stringstream ss;
-        ss << fixed << setprecision(2) << value;
-        string value_str = ss.str();
+        string value_str = format_with_suffix(value, " Ohms");
 
         int text_y_name = bounding_box.y - 20;
         int text_y_value = bounding_box.y + bounding_box.h + 5;
@@ -185,9 +211,7 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
     if (model_element != nullptr)
     {
         double value = model_element->get_value();
-        stringstream ss;
-        ss << fixed << setprecision(2) << value;
-        string value_str = ss.str();
+        string value_str = format_with_suffix(value, " F");
 
         int text_y_name = bounding_box.y - 20;
         int text_y_value = bounding_box.y + bounding_box.h + 5;
@@ -236,9 +260,7 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
     if (model_element != nullptr)
     {
         double value = model_element->get_value();
-        stringstream ss;
-        ss << fixed << setprecision(2) << value;
-        string value_str = ss.str();
+        string value_str = format_with_suffix(value, " H");
 
         int text_y_name = bounding_box.y - 20;
         int text_y_value = bounding_box.y + bounding_box.h + 5;
@@ -292,9 +314,7 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
     if (model_element != nullptr)
     {
         double value = model_element->get_value();
-        stringstream ss;
-        ss << fixed << setprecision(2) << value;
-        string value_str = ss.str();
+        string value_str = format_with_suffix(value, " A");
 
         int text_y_name = bounding_box.y - 20;
         int text_y_value = bounding_box.y + bounding_box.h + 5;
