@@ -319,8 +319,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
     return true;
 }
 
-// graphical_view.cpp
-
 bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
 {
     if (event.type == SDL_QUIT) return false;
