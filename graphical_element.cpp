@@ -66,37 +66,61 @@ void Graphical_Element::change_rotation()
         rotation = Rotation::Down;
     else
         rotation = Rotation::Right;
+
+    std::swap(bounding_box.w, bounding_box.h);
+}
+
+SDL_Point Graphical_Element::transform_point(SDL_Point point_to_rotate)
+{
+    int center_x = bounding_box.x + bounding_box.w / 2;
+    int center_y = bounding_box.y + bounding_box.h / 2;
+
+    switch (rotation)
+    {
+        case Rotation::Up:
+            return {center_x - point_to_rotate.y, center_y + point_to_rotate.x};
+        case Rotation::Left:
+            return {center_x - point_to_rotate.x, center_y - point_to_rotate.y};
+        case Rotation::Down:
+            return {center_x + point_to_rotate.y, center_y - point_to_rotate.x};
+        case Rotation::Right:
+        default:
+            return {center_x + point_to_rotate.x, center_y + point_to_rotate.y};
+    }
 }
 
 // main functions
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
 {
-    int x = bounding_box.x;
-    int y = bounding_box.y;
-    int w = bounding_box.w;
-    int h = bounding_box.h;
-    int center_y = y + h / 2;
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    // local coordinate system
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
+    int lead_length = half_length / 2.5;
 
-    int lead_length = w / 5;
-
-    SDL_RenderDrawLine(renderer, x, center_y, x + lead_length, center_y);
-
-    SDL_Point points[] = {
-            {x + lead_length, center_y},
-            {x + lead_length + (w - 2 * lead_length) * 1 / 6, center_y + 10},
-            {x + lead_length + (w - 2 * lead_length) * 3 / 6, center_y - 10},
-            {x + lead_length + (w - 2 * lead_length) * 5 / 6, center_y + 10},
-            {x + w - lead_length, center_y}
+    SDL_Point local_points[] = {
+            {-half_length, 0},
+            {-lead_length, 0},
+            {-lead_length + (half_length - lead_length) * 1 / 3, 10},
+            { lead_length - (half_length - lead_length) * 2 / 3, -10},
+            { lead_length - (half_length - lead_length) * 1 / 3, 10},
+            { lead_length, 0},
+            { half_length, 0}
     };
-    SDL_RenderDrawLines(renderer, points, 5);
 
-    SDL_RenderDrawLine(renderer, x + w - lead_length, center_y, x + w, center_y);
+    // draw the points
+    for (size_t i = 0; i < (sizeof(local_points) / sizeof(SDL_Point)) - 1; ++i)
+    {
+        SDL_Point p1 = transform_point(local_points[i]);
+        SDL_Point p2 = transform_point(local_points[i+1]);
+        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+    }
 
+    // name
     if (model_element != nullptr)
     {
         render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);

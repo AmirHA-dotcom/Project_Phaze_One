@@ -49,6 +49,8 @@ protected:
     static TTF_Font* font;
 
     Rotation rotation;
+
+    SDL_Point transform_point(SDL_Point point_to_rotate);
 public:
     Graphical_Element(Element* element_model) : model_element(element_model) { rotation = Rotation::Right; }
     virtual ~Graphical_Element() = default;
