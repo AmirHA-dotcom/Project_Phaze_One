@@ -221,7 +221,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
                         element_to_rotate->change_rotation();
 
-                        // Swap the bounding box dimensions for a natural rotation
                         swap(element_to_rotate->bounding_box.w, element_to_rotate->bounding_box.h);
                     }
                 }
