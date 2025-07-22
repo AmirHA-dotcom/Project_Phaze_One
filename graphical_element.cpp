@@ -89,6 +89,8 @@ SDL_Point Graphical_Element::transform_point(SDL_Point point_to_rotate)
     }
 }
 
+Element *Graphical_Element::get_model() { return model_element; }
+
 // main functions
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)

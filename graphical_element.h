@@ -62,6 +62,8 @@ public:
     SDL_Rect bounding_box;
 
     void change_rotation();
+
+    Element* get_model();
 };
 
 class Graphical_Resistor : public Graphical_Element {
