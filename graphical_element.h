@@ -72,7 +72,7 @@ public:
 
     virtual vector<Editable_Property> get_editable_properties() = 0;
 
-//    virtual vector<SDL_Point> get_connection_points() = 0;
+    virtual vector<SDL_Point> get_connection_points() = 0;
 };
 
 class Graphical_Resistor : public Graphical_Element {
@@ -82,7 +82,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-//    vector<SDL_Point> get_connection_points() override;
+    vector<SDL_Point> get_connection_points() override;
 };
 
 class Graphical_Capacitor : public Graphical_Element {
@@ -92,7 +92,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-//    vector<SDL_Point> get_connection_points() override;
+    vector<SDL_Point> get_connection_points() override;
 
 };
 
@@ -103,7 +103,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-//    vector<SDL_Point> get_connection_points() override;
+    vector<SDL_Point> get_connection_points() override;
 
 };
 
@@ -114,7 +114,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-//    vector<SDL_Point> get_connection_points() override;
+    vector<SDL_Point> get_connection_points() override;
 
 };
 
@@ -125,7 +125,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-//    vector<SDL_Point> get_connection_points() override;
+    vector<SDL_Point> get_connection_points() override;
 
 };
 
@@ -136,7 +136,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-//    vector<SDL_Point> get_connection_points() override;
+    vector<SDL_Point> get_connection_points() override;
 
 };
 

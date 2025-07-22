@@ -223,7 +223,7 @@ bool graphical_view::run(Controller *C)
     while (running)
     {
         auto& graphical_elements = C->get_graphical_elements();
-//        auto& graphical_wires = C->get_graphical_wires();
+        auto& graphical_wires = C->get_graphical_wires();
 
         while (SDL_PollEvent(&event) != 0)
         {
@@ -251,10 +251,10 @@ bool graphical_view::run(Controller *C)
             element->draw(renderer);
         }
 
-//        for (const auto& wire : graphical_wires)
-//        {
-//            wire->draw(renderer);
-//        }
+        for (const auto& wire : graphical_wires)
+        {
+            wire->draw(renderer);
+        }
 
         if (m_is_wiring && !new_wire_points.empty())
         {
@@ -391,17 +391,17 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_w:
             {
-//                m_is_wiring = !m_is_wiring;
-//                new_wire_points.clear();
-//                if (m_is_wiring)
-//                {
-//                    cout << "Entered m_is_wiring Mode." << endl;
-//                }
-//                else
-//                {
-//                    cout << "Exited m_is_wiring Mode." << endl;
-//                }
-//                break;
+                m_is_wiring = !m_is_wiring;
+                new_wire_points.clear();
+                if (m_is_wiring)
+                {
+                    cout << "Entered m_is_wiring Mode." << endl;
+                }
+                else
+                {
+                    cout << "Exited m_is_wiring Mode." << endl;
+                }
+                break;
             }
 
             case SDLK_RETURN:
@@ -479,14 +479,11 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
         SDL_Point mouse_pos = {event.motion.x, event.motion.y};
 
-        // Calculate the element's potential new top-left corner
         int new_x = mouse_pos.x - m_drag_offset.x;
         int new_y = mouse_pos.y - m_drag_offset.y;
 
-        // Snap that new position to the grid
         SDL_Point snapped_pos = snap_to_grid(new_x, new_y, GRID_SIZE);
 
-        // Update the element's position with the snapped coordinates
         graphical_elements[m_dragged_element_index]->bounding_box.x = snapped_pos.x;
         graphical_elements[m_dragged_element_index]->bounding_box.y = snapped_pos.y;
     }
@@ -627,42 +624,42 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
     return true;
 }
 
-//bool graphical_view::handle_m_is_wiring_events(SDL_Event& event, Controller* C)
-//{
-//    if (event.type == SDL_QUIT) return false;
-//
-//    if (event.type == SDL_KEYDOWN) {
-//        if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_ESCAPE) {
-//            m_is_wiring = false;
-//            new_wire_points.clear();
-//        }
-//    }
-//
-//    // start m_is_wiring
-//    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-//        int mouseX, mouseY;
-//        SDL_GetMouseState(&mouseX, &mouseY);
-//        SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
-//
-//
-//        if (new_wire_points.empty()) {
-//            // check if the click is on any components connection point
-//            auto& elements = C->get_graphical_elements();
-//            for (const auto& element : elements)
-//            {
-//                for (const auto& point : element->get_connection_points())
-//                {
-//                    // check if the snapped click is within a small radius of the connection point
-//                    if (abs(snapped_pos.x - point.x) < 5 && abs(snapped_pos.y - point.y) < 5)
-//                    {
-//                        cout << "Wire started at a connection point." << endl;
-//                        new_wire_points.push_back(point);
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    return true;
-//}
+bool graphical_view::handle_m_is_wiring_events(SDL_Event& event, Controller* C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_ESCAPE) {
+            m_is_wiring = false;
+            new_wire_points.clear();
+        }
+    }
+
+    // start m_is_wiring
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
+
+        if (new_wire_points.empty()) {
+            // check if the click is on any components connection point
+            auto& elements = C->get_graphical_elements();
+            for (const auto& element : elements)
+            {
+                for (const auto& point : element->get_connection_points())
+                {
+                    // check if the snapped click is within a small radius of the connection point
+                    if (abs(snapped_pos.x - point.x) < 5 && abs(snapped_pos.y - point.y) < 5)
+                    {
+                        cout << "Wire started at a connection point." << endl;
+                        new_wire_points.push_back(point);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}

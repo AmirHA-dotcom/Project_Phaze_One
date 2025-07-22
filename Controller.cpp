@@ -883,7 +883,7 @@ void Controller::update_element_properties(int element_index, const vector<strin
     }
 }
 
-//vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()
-//{
-//    return get_graphical_wires();
-//}
+vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()
+{
+    return m_graphical_wires;
+}

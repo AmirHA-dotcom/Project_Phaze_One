@@ -64,7 +64,7 @@ private:
 
     bool handle_edit_properties_menu(SDL_Event& event, Controller* C);
 
-    //bool handle_m_is_wiring_events(SDL_Event& event, Controller* C);
+    bool handle_m_is_wiring_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);
