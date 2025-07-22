@@ -8,6 +8,22 @@
 
 const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
 
+SDL_Point snap_to_grid(int x, int y, int grid_size)
+{
+    int snapped_x = round((float)x / grid_size) * grid_size;
+    int snapped_y = round((float)y / grid_size) * grid_size;
+    return {snapped_x, snapped_y};
+}
+
+void graphical_view::draw_grid(SDL_Renderer* renderer) {
+    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255); // Light gray
+    for (int x = 0; x < m_window_width; x += GRID_SIZE) {
+        SDL_RenderDrawLine(renderer, x, 0, x, m_window_height);
+    }
+    for (int y = 0; y < m_window_height; y += GRID_SIZE) {
+        SDL_RenderDrawLine(renderer, 0, y, m_window_width, y);
+    }
+}
 
 void graphical_view::initialize_menu()
 {
@@ -227,6 +243,8 @@ bool graphical_view::run(Controller *C)
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
+        draw_grid(renderer);
+
         for (const auto& element : graphical_elements)
         {
             element->draw(renderer);
@@ -294,6 +312,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 }
                 else
                 {
+                    SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
                     cout << "R key was pressed." << endl;
                     C->add_Graphical_Resistor(mouseX, mouseY);
                 }
@@ -302,6 +322,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_c:
             {
+                SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
                 cout << "C key was pressed." << endl;
                 C->add_Graphical_Capacitor(mouseX, mouseY);
                 break;
@@ -309,6 +331,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_l:
             {
+                SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
                 cout << "L key was pressed." << endl;
                 C->add_Graphical_Inductor(mouseX, mouseY);
                 break;
@@ -316,6 +340,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_s:
             {
+                SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
                 cout << "S key was pressed." << endl;
                 C->add_Graphical_Current_Source(mouseX, mouseY);
                 break;
@@ -323,6 +349,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_d:
             {
+                SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
                 cout << "D key was pressed." << endl;
                 C->add_Graphical_Real_Diode(mouseX, mouseY);
                 break;
@@ -330,6 +358,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_z:
             {
+                SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
                 cout << "Z key was pressed." << endl;
                 C->add_Graphical_Zener_Diode(mouseX, mouseY);
                 break;
@@ -411,9 +441,22 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
     if (event.type == SDL_MOUSEMOTION && m_is_dragging)
     {
+//        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
+//        graphical_elements[m_dragged_element_index]->bounding_box.x = mouse_pos.x - m_drag_offset.x;
+//        graphical_elements[m_dragged_element_index]->bounding_box.y = mouse_pos.y - m_drag_offset.y;
+
         SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-        graphical_elements[m_dragged_element_index]->bounding_box.x = mouse_pos.x - m_drag_offset.x;
-        graphical_elements[m_dragged_element_index]->bounding_box.y = mouse_pos.y - m_drag_offset.y;
+
+        // Calculate the element's potential new top-left corner
+        int new_x = mouse_pos.x - m_drag_offset.x;
+        int new_y = mouse_pos.y - m_drag_offset.y;
+
+        // Snap that new position to the grid
+        SDL_Point snapped_pos = snap_to_grid(new_x, new_y, GRID_SIZE);
+
+        // Update the element's position with the snapped coordinates
+        graphical_elements[m_dragged_element_index]->bounding_box.x = snapped_pos.x;
+        graphical_elements[m_dragged_element_index]->bounding_box.y = snapped_pos.y;
     }
 
     return true;

@@ -43,11 +43,16 @@ private:
     SDL_Rect cancel_button_rect;
     vector<SDL_Rect> property_rects;  // store text boxes
 
+    // griding the workspace
+    const int GRID_SIZE = 10;
+
+
     // helper functions
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
     void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
 
+    void draw_grid(SDL_Renderer* renderer);
 
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
