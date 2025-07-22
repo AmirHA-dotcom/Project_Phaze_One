@@ -152,9 +152,16 @@ bool graphical_view::run(Controller *C)
 
         while (SDL_PollEvent(&event) != 0)
         {
-            if (elements_menu) {
+            if (elements_menu)
+            {
                  running = handle_menu_events(event, C);
-            } else {
+            }
+            else if (editing)
+            {
+                running = handle_edit_properties_menu(event, C);
+            }
+            else
+            {
                 running = handle_events(event, C);
             }
         }
@@ -394,4 +401,9 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
         }
     }
     return true;
+}
+
+bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C)
+{
+
 }
