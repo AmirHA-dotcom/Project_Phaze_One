@@ -46,8 +46,8 @@ private:
     // griding the workspace
     const int GRID_SIZE = 10;
 
-    // wiring mode
-    bool wiring = false;
+    // m_is_wiring mode
+    bool m_is_wiring = false;
     vector<SDL_Point> new_wire_points;
 
     // helper functions
@@ -64,7 +64,7 @@ private:
 
     bool handle_edit_properties_menu(SDL_Event& event, Controller* C);
 
-    bool handle_wiring_events(SDL_Event& event, Controller* C);
+    //bool handle_m_is_wiring_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);

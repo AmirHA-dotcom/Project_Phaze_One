@@ -238,6 +238,6 @@ public:
 
     void update_element_properties(int element_index, const vector<string>& new_values);
 
-    vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
+//    vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H
