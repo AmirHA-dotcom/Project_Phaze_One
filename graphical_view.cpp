@@ -223,6 +223,7 @@ bool graphical_view::run(Controller *C)
     while (running)
     {
         auto& graphical_elements = C->get_graphical_elements();
+        auto& graphical_wires = C->get_graphical_wires();
 
         while (SDL_PollEvent(&event) != 0)
         {
@@ -248,6 +249,10 @@ bool graphical_view::run(Controller *C)
         for (const auto& element : graphical_elements)
         {
             element->draw(renderer);
+        }
+
+        for (const auto& wire : graphical_wires) {
+            wire->draw(renderer);
         }
 
         if (elements_menu)

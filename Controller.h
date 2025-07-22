@@ -10,6 +10,7 @@
 #include "Libraries.h"
 #include "File_Handler.h"
 #include "graphical_element.h"
+#include "Graphical_Wire.h"
 
 inline double toValue(const std::string& inputRaw) {
     std::string input;
@@ -133,6 +134,7 @@ private:
     int m_real_diode_count = 0;
     int m_zener_diode_count = 0;
 
+    vector<unique_ptr<Graphical_Wire>> m_graphical_wires;
 
     vector<unique_ptr<Graphical_Element>> m_graphical_elements;
 public:
@@ -235,5 +237,7 @@ public:
     vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
     void update_element_properties(int element_index, const vector<string>& new_values);
+
+    vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

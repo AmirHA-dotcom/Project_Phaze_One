@@ -42,6 +42,8 @@ add_executable(Project_Phaze_One
         elements_graphics.cpp
         graphical_element.cpp
         graphical_element.h
+        Graphical_Wire.cpp
+        Graphical_Wire.h
 )
 
 target_link_libraries(Project_Phaze_One
