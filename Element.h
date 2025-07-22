@@ -29,6 +29,7 @@ public:
     virtual void change_name(string new_name) = 0;
     virtual void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) = 0;
     virtual double get_current(double time, double time_step) = 0;
+    void replace_node(Node* node_to_merge, Node* node_to_keep);
 };
 
 
