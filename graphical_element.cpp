@@ -127,7 +127,16 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
     // text
     if (model_element != nullptr)
     {
-        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        double value = model_element->get_value();
+        stringstream ss;
+        ss << fixed << setprecision(2) << value;
+        string value_str = ss.str();
+
+        int text_y_name = bounding_box.y - 20;
+        int text_y_value = bounding_box.y + bounding_box.h + 5;
+
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, text_y_name);
+        render_text(renderer, font, value_str, bounding_box.x, text_y_value);
     }
 }
 
@@ -172,9 +181,19 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
     p2 = transform_point(lead2_end);
     SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
 
+    // text
     if (model_element != nullptr)
     {
-        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        double value = model_element->get_value();
+        stringstream ss;
+        ss << fixed << setprecision(2) << value;
+        string value_str = ss.str();
+
+        int text_y_name = bounding_box.y - 20;
+        int text_y_value = bounding_box.y + bounding_box.h + 5;
+
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, text_y_name);
+        render_text(renderer, font, value_str, bounding_box.x, text_y_value);
     }
 }
 
@@ -213,9 +232,19 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
         SDL_RenderDrawLines(renderer, arc_points.data(), arc_points.size());
     }
 
+    // text
     if (model_element != nullptr)
     {
-        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        double value = model_element->get_value();
+        stringstream ss;
+        ss << fixed << setprecision(2) << value;
+        string value_str = ss.str();
+
+        int text_y_name = bounding_box.y - 20;
+        int text_y_value = bounding_box.y + bounding_box.h + 5;
+
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, text_y_name);
+        render_text(renderer, font, value_str, bounding_box.x, text_y_value);
     }
 }
 
@@ -259,9 +288,19 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
         SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
     }
 
+    // text
     if (model_element != nullptr)
     {
-        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        double value = model_element->get_value();
+        stringstream ss;
+        ss << fixed << setprecision(2) << value;
+        string value_str = ss.str();
+
+        int text_y_name = bounding_box.y - 20;
+        int text_y_value = bounding_box.y + bounding_box.h + 5;
+
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, text_y_name);
+        render_text(renderer, font, value_str, bounding_box.x, text_y_value);
     }
 }
 
