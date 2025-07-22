@@ -287,19 +287,42 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
     // mouse events
     auto& graphical_elements = C->get_graphical_elements();
 
-    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    if (event.type == SDL_MOUSEBUTTONDOWN)
     {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
-        for (int i = graphical_elements.size() - 1; i >= 0; --i)
+
+        if (event.button.button == SDL_BUTTON_LEFT)
         {
-            if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
+            for (int i = graphical_elements.size() - 1; i >= 0; --i)
             {
-                m_is_dragging = true;
-                m_dragged_element_index = i;
-                m_drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
-                m_drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
-                break;
+                if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
+                {
+                    m_is_dragging = true;
+                    m_dragged_element_index = i;
+                    m_drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
+                    m_drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
+                    break;
+                }
             }
+        }
+        else if (event.button.button == SDL_BUTTON_RIGHT)
+        {
+            for (int i = graphical_elements.size() - 1; i >= 0; --i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
+                {
+                    cout << "selected" << endl;
+                    //std::cout << "Right-clicked on: " << graphical_elements[i]->get_model()->get_name() << std::endl;
+
+                    editing = true;
+                    edited_element_index = i;
+
+                    // m_text_input_buffer = std::to_string(graphical_elements[i]->get_model()->get_value());
+
+                    break;
+                }
+            }
+
         }
     }
 

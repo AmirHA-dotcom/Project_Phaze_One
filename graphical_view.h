@@ -35,6 +35,9 @@ private:
     vector<MenuItem> menu_items;
     int selected_menu_item_index = -1;
 
+    bool editing = false;
+    int edited_element_index = -1;
+
     // helper functions
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
