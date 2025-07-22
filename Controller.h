@@ -10,6 +10,7 @@
 #include "Libraries.h"
 #include "File_Handler.h"
 #include "graphical_element.h"
+#include "view.h"
 
 class Controller {
 private:
@@ -127,6 +128,6 @@ public:
 
     vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
-
+    void update_element_properties(int element_index, const vector<string>& new_values);
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

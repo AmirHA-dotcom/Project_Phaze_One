@@ -827,3 +827,54 @@ vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements()
 {
     return m_graphical_elements;
 }
+
+void Controller::update_element_properties(int element_index, const vector<string>& new_values)
+{
+    if (element_index < 0 || element_index >= m_graphical_elements.size()) return;
+
+    Element* element_model = m_graphical_elements[element_index]->get_model();
+    if (!element_model) return;
+
+    if (auto* element = dynamic_cast<Resistor*>(element_model))
+    {
+        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        {
+            element->change_value(toValue(new_values[0]));
+        }
+    }
+    else if (auto* element = dynamic_cast<Capacitor*>(element_model))
+    {
+        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        {
+            element->change_value(toValue(new_values[0]));
+        }
+    }
+    else if (auto* element = dynamic_cast<Inductor*>(element_model))
+    {
+        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        {
+            element->change_value(toValue(new_values[0]));
+        }
+    }
+    else if (auto* element = dynamic_cast<Current_Source*>(element_model))
+    {
+        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        {
+            element->change_value(toValue(new_values[0]));
+        }
+    }
+    else if (auto* element = dynamic_cast<Real_Diode*>(element_model))
+    {
+        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        {
+            element->change_value(toValue(new_values[0]));
+        }
+    }
+    else if (auto* element = dynamic_cast<Zener_Diode*>(element_model))
+    {
+        if (!new_values.empty() && isValidSpiceNumber(new_values[0]))
+        {
+            element->change_value(toValue(new_values[0]));
+        }
+    }
+}
