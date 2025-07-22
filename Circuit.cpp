@@ -758,3 +758,9 @@ void Circuit::addElement(Element* new_element)
         Elements.push_back(new_element);
     }
 }
+
+    Node* SubCircuit::getInput() const { return input; }
+    Node* SubCircuit::getOutput() const { return output; }
+    void SubCircuit::setInput(Node* newInput) { input = newInput; }
+    void SubCircuit::setOutput(Node* newOutput) { output = newOutput; }
+

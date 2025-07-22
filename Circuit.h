@@ -84,4 +84,18 @@ private:
     int element_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
 };
 
+class SubCircuit : public Circuit
+{
+private:
+    Node* input;
+    Node* output;
+public:
+    SubCircuit(string _name, Node* _input, Node* _output) : Circuit(_name), input(_input), output(_output) {}
+    Node* getInput() const;
+    Node* getOutput() const;
+    void setInput(Node* newInput);
+    void setOutput(Node* newOutput);
+
+};
+
 #endif //PROJECT_PHAZE_ONE_CIRCUIT_H

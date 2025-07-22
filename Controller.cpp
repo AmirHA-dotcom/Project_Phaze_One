@@ -18,6 +18,10 @@ void Controller::addCircuit(string name){
     auto* c = new Circuit(name);
     circuits.push_back(c);
 }
+void Controller::addSubCircuit(string name, Node* inputNode, Node* outputNode) {
+    auto* sc = new SubCircuit(name,inputNode,outputNode);
+    subCircuits.push_back(sc);
+}
 Circuit* Controller::findCircuit(string name){
     for (auto i : circuits) {
         if(i->get_name() == name)
@@ -381,7 +385,7 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
     }
 
     // Write circuit name
-    file << "Circuit: " << circuit->get_name() << "\n";
+    file << circuit->get_name() << ": " << "\n";
 
     // Helper function to format numerical values with appropriate suffixes
     auto formatValue = [](double value) -> string {

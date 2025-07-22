@@ -462,6 +462,17 @@ bool View::handleCircuitMenu (Controller* C) {
         //C->handleNewFile(i[5] + C->findCircuit(i[1])->get_name() + ".txt" );
         return true;
     }
+    if (i.size() == 7 && i[0] == "add" && i[2] == "to" && i[3] == "subCircuits" && i[4] == "by"){
+        if (!C->findCircuit(i[1]))
+            throw circuitNotFind(i[1]);
+        if (!C->findNode(i[5]))
+            throw elementNotFind("Node " + i[5]);
+        if (!C->findNode(i[6]))
+            throw elementNotFind("Node " + i[6]);
+        C->addSubCircuit(i[1],C->findNode(i[5]),C->findNode(i[6]));
+        //C->handleNewFile(i[5] + C->findCircuit(i[1])->get_name() + ".txt" );
+        return true;
+    }
     if (line == "show circuits") {
         C->showCircuits();
         return true;
@@ -682,7 +693,7 @@ bool View::handleCircuitMenu (Controller* C) {
     }
     if (renameNodeCheck(i)) {
         if (!C->findNode(i[2])) {
-            throw elementNotFind(i[2]);
+            throw elementNotFind("Node " + i[2]);
         }
         C->renameNode(i[2],i[3]);
         return true;

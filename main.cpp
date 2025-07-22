@@ -17,10 +17,9 @@ int main(int argc, char* argv[]) {
 
     try {
         if (choice == 1) {  // graphical view
-            graphical_view* gv = new graphical_view;
+            auto* gv = new graphical_view;
             gv->run(C);
             delete gv;
-
         } else if (choice == 2) {   // old view
             View* V = new View;
             bool running = true;

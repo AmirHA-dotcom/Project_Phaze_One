@@ -31,6 +31,8 @@ private:
 public:
     Controller();
     vector<Circuit *> circuits;
+    vector<SubCircuit *> subCircuits;
+
     Circuit *circuit;
 
     Circuit *findCircuit(string name);
@@ -40,7 +42,8 @@ public:
 
     Node *findNode(string name);
     void addCircuit(string name);
-    void addR(string name, string Node1, string Node2, double value);
+    void addSubCircuit(string name, Node* inputNode, Node* outputNode);
+        void addR(string name, string Node1, string Node2, double value);
 
     void addC(string name, string Node1, string Node2, double value);
 
