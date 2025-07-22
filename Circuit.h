@@ -74,6 +74,7 @@ public:
     void transient_linear();
     void transient_NR();
     void delete_element(string name);
+    void delete_node(Node* node_to_delete);
     ~Circuit();
 
     Node* create_new_node(const string& name);

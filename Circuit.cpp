@@ -759,6 +759,22 @@ void Circuit::addElement(Element* new_element)
     }
 }
 
+void Circuit::delete_node(Node *node_to_delete)
+{
+    for (auto it = Nodes.begin(); it != Nodes.end(); )
+    {
+        if ((*it)->get_name() == node_to_delete->get_name())
+        {
+            delete *it;
+            it = Nodes.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
     Node* SubCircuit::getInput() const { return input; }
     Node* SubCircuit::getOutput() const { return output; }
     void SubCircuit::setInput(Node* newInput) { input = newInput; }
