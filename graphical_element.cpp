@@ -67,7 +67,7 @@ void Graphical_Element::change_rotation()
     else
         rotation = Rotation::Right;
 
-    std::swap(bounding_box.w, bounding_box.h);
+    swap(bounding_box.w, bounding_box.h);
 }
 
 SDL_Point Graphical_Element::transform_point(SDL_Point point_to_rotate)
@@ -100,7 +100,7 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     // horizental or vertical
-    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
     int lead_length = half_length / 2.5;
 
     // coordinates
@@ -136,7 +136,7 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
     int plate_height = 20;
     int gap = 4;
 
@@ -183,7 +183,7 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
     int lead_length = half_length / 3;
     int loops_total_length = (half_length - lead_length) * 2;
     int num_loops = 3;
@@ -202,7 +202,7 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
     for (int i = 0; i < num_loops; ++i) {
         int local_center_x = (-half_length + lead_length) + (i * loop_width) + (loop_width / 2);
 
-        std::vector<SDL_Point> arc_points;
+        vector<SDL_Point> arc_points;
         for (int j = 0; j <= 10; ++j)
         {
             float angle_rad = (180.0f + j * 18.0f) * M_PI / 180.0f;
@@ -224,7 +224,7 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
     int radius = 15;
 
     // leads
@@ -270,7 +270,7 @@ void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
     int body_length = (half_length * 2) * 0.7;
     int half_body = body_length / 2;
 
@@ -315,7 +315,7 @@ void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
-    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
     int body_length = (half_length * 2) * 0.7;
     int half_body = body_length / 2;
 
