@@ -15,7 +15,7 @@ inline string format_with_suffix(double value, const string& unit) {
             {1e-3, "m"}, {1e-6, "u"}, {1e-9, "n"}, {1e-12, "p"}, {1e-15, "f"}
     };
 
-    double abs_value = std::abs(value);
+    double abs_value = abs(value);
     string prefix = (value < 0) ? "-" : "";
 
     for (const auto& s : suffixes)
@@ -23,8 +23,8 @@ inline string format_with_suffix(double value, const string& unit) {
         if (abs_value >= s.threshold)
         {
             double scaled_value = value / s.threshold;
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(2) << scaled_value;
+            stringstream ss;
+            ss << fixed << setprecision(2) << scaled_value;
             return prefix + ss.str() + s.suffix + unit;
         }
     }
