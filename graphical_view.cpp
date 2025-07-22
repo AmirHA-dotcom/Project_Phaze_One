@@ -251,8 +251,20 @@ bool graphical_view::run(Controller *C)
             element->draw(renderer);
         }
 
-        for (const auto& wire : graphical_wires) {
+        for (const auto& wire : graphical_wires)
+        {
             wire->draw(renderer);
+        }
+
+        if (wiring && !new_wire_points.empty())
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
+            SDL_Point last_point = new_wire_points.back();
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_RenderDrawLine(renderer, last_point.x, last_point.y, snapped_mouse.x, snapped_mouse.y);
         }
 
         if (elements_menu)
@@ -374,6 +386,21 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 cout << "P key was pressed." << endl;
                 elements_menu = !elements_menu;
+                break;
+            }
+
+            case SDLK_w:
+            {
+                wiring = !wiring;
+                new_wire_points.clear();
+                if (wiring)
+                {
+                    cout << "Entered Wiring Mode." << endl;
+                }
+                else
+                {
+                    cout << "Exited Wiring Mode." << endl;
+                }
                 break;
             }
 
@@ -594,6 +621,46 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
                 editing = false;
                 SDL_StopTextInput();
                 break;
+        }
+    }
+
+    return true;
+}
+
+bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_ESCAPE) {
+            wiring = false;
+            new_wire_points.clear();
+        }
+    }
+
+    // start wiring
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
+
+        if (new_wire_points.empty()) {
+            // check if the click is on any components connection point
+            auto& elements = C->get_graphical_elements();
+            for (const auto& element : elements)
+            {
+                for (const auto& point : element->get_connection_points())
+                {
+                    // check if the snapped click is within a small radius of the connection point
+                    if (abs(snapped_pos.x - point.x) < 5 && abs(snapped_pos.y - point.y) < 5)
+                    {
+                        cout << "Wire started at a connection point." << endl;
+                        new_wire_points.push_back(point);
+                        return true;
+                    }
+                }
+            }
         }
     }
 

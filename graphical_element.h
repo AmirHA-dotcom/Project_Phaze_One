@@ -71,6 +71,8 @@ public:
     Element* get_model();
 
     virtual vector<Editable_Property> get_editable_properties() = 0;
+
+    virtual vector<SDL_Point> get_connection_points() = 0;
 };
 
 class Graphical_Resistor : public Graphical_Element {
@@ -80,6 +82,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
+    vector<SDL_Point> get_connection_points() override;
 };
 
 class Graphical_Capacitor : public Graphical_Element {
@@ -89,6 +92,8 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
+    vector<SDL_Point> get_connection_points() override;
+
 };
 
 class Graphical_Inductor : public Graphical_Element {
@@ -98,6 +103,8 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
+    vector<SDL_Point> get_connection_points() override;
+
 };
 
 class Graphical_Current_Source : public Graphical_Element {
@@ -107,6 +114,8 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
+    vector<SDL_Point> get_connection_points() override;
+
 };
 
 class Graphical_Real_Diode : public Graphical_Element {
@@ -116,6 +125,8 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
+    vector<SDL_Point> get_connection_points() override;
+
 };
 
 class Graphical_Zener_Diode : public Graphical_Element {
@@ -125,6 +136,8 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
+    vector<SDL_Point> get_connection_points() override;
+
 };
 
 #endif //PROJECT_PHAZE_ONE_GRAPHICAL_ELEMENT_H
