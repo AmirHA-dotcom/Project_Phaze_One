@@ -42,22 +42,48 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
     }
 
     // preview
-    if (selected_menu_item_index != -1) {
-        switch (menu_items[selected_menu_item_index].type) {
-            case Element_Type::Resistor: {
+    if (selected_menu_item_index != -1)
+    {
+        switch (menu_items[selected_menu_item_index].type)
+        {
+            case Element_Type::Resistor:
+            {
                 Graphical_Resistor preview(nullptr);
                 preview.bounding_box = preview_panel;
                 preview.draw(renderer);
                 break;
             }
-            case Element_Type::Capacitor: {
+            case Element_Type::Capacitor:
+            {
                 Graphical_Capacitor preview(nullptr);
                 preview.bounding_box = preview_panel;
                 preview.draw(renderer);
                 break;
             }
-            case Element_Type::Inductor: {
+            case Element_Type::Inductor:
+            {
                 Graphical_Inductor preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer);
+                break;
+            }
+            case Element_Type::Current_Source:
+            {
+                Graphical_Current_Source preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer);
+                break;
+            }
+            case Element_Type::Real_Diode:
+            {
+                Graphical_Real_Diode preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer);
+                break;
+            }
+            case Element_Type::Zener_Diode:
+            {
+                Graphical_Zener_Diode preview(nullptr);
                 preview.bounding_box = preview_panel;
                 preview.draw(renderer);
                 break;
@@ -87,6 +113,8 @@ bool graphical_view::run(Controller *C)
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
     }
     Graphical_Element::set_font(font);
+
+    initialize_menu();
 
     SDL_Window* window = SDL_CreateWindow(
             "AHA & AS",
@@ -274,12 +302,11 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
     return true;
 }
 
+// graphical_view.cpp
+
 bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_QUIT)
-    {
-        return false;
-    }
+    if (event.type == SDL_QUIT) return false;
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -289,11 +316,45 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
         }
     }
 
-    if (event.type == SDL_MOUSEBUTTONDOWN)
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
-        int mouseX, mouseY;
-        SDL_GetMouseState(&mouseX, &mouseY);
-        // TODO: Logic to check if a menu item was clicked
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        bool clicked_on_item = false;
+        for (int i = 0; i < menu_items.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &menu_items[i].rect))
+            {
+                clicked_on_item = true;
+
+                // click
+                if (event.button.clicks == 1)
+                {
+                    selected_menu_item_index = i;
+                }
+                // double click
+                else if (event.button.clicks == 2)
+                {
+                    int mouseX, mouseY;
+                    SDL_GetMouseState(&mouseX, &mouseY);
+
+                    // adding the component
+                    switch (menu_items[i].type)
+                    {
+                        case Element_Type::Resistor: C->add_Graphical_Resistor(mouseX, mouseY); break;
+                        case Element_Type::Capacitor: C->add_Graphical_Capacitor(mouseX, mouseY); break;
+                        case Element_Type::Inductor: C->add_Graphical_Inductor(mouseX, mouseY); break;
+                        case Element_Type::Current_Source: C->add_Graphical_Current_Source(mouseX, mouseY); break;
+                        case Element_Type::Real_Diode: C->add_Graphical_Real_Diode(mouseX, mouseY); break;
+                        case Element_Type::Zener_Diode: C->add_Graphical_Zener_Diode(mouseX, mouseY); break;
+                    }
+
+                    elements_menu = false;
+                    selected_menu_item_index = -1;
+                }
+                break;
+            }
+        }
     }
     return true;
 }
