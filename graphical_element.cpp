@@ -66,7 +66,7 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
     int h = bounding_box.h;
     int center_y = y + h / 2;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
@@ -100,7 +100,7 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
     int center_x = x + w / 2;
     int center_y = y + h / 2;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
@@ -126,7 +126,7 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
     int h = bounding_box.h;
     int center_y = y + h / 2;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
@@ -162,7 +162,7 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
     int center_y = y + h / 2;
     int radius = h / 2;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
@@ -189,7 +189,7 @@ void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
     int h = bounding_box.h;
     int center_y = y + h / 2;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
@@ -223,7 +223,7 @@ void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
     int h = bounding_box.h;
     int center_y = y + h / 2;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     SDL_RenderDrawRect(renderer, &bounding_box);
 
