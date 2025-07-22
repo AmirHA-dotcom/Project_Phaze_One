@@ -486,92 +486,86 @@ vector<Editable_Property> Graphical_Zener_Diode::get_editable_properties()
 
 // get connection points functions
 
-vector<SDL_Point> Graphical_Resistor::get_connection_points()
+vector<Connection_Point> Graphical_Resistor::get_connection_points()
 {
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
-
-    // endpoints in local coordinates
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
-    // transform
-    SDL_Point screen_start = transform_point(local_start);
-    SDL_Point screen_end = transform_point(local_end);
+    auto nodes = model_element->get_nodes();
 
-    return {screen_start, screen_end};
+    return {
+            {transform_point(local_start), nodes.first},
+            {transform_point(local_end), nodes.second}
+    };
 }
 
-vector<SDL_Point> Graphical_Capacitor::get_connection_points()
+vector<Connection_Point> Graphical_Capacitor::get_connection_points()
 {
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
-
-    // endpoints in local coordinates
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
-    // transform
-    SDL_Point screen_start = transform_point(local_start);
-    SDL_Point screen_end = transform_point(local_end);
+    auto nodes = model_element->get_nodes();
 
-    return {screen_start, screen_end};
+    return {
+            {transform_point(local_start), nodes.first},
+            {transform_point(local_end), nodes.second}
+    };
 }
 
-vector<SDL_Point> Graphical_Inductor::get_connection_points()
+vector<Connection_Point> Graphical_Inductor::get_connection_points()
 {
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
-
-    // endpoints in local coordinates
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
-    // transform
-    SDL_Point screen_start = transform_point(local_start);
-    SDL_Point screen_end = transform_point(local_end);
+    auto nodes = model_element->get_nodes();
 
-    return {screen_start, screen_end};
+    return {
+            {transform_point(local_start), nodes.first},
+            {transform_point(local_end), nodes.second}
+    };
 }
 
-vector<SDL_Point> Graphical_Current_Source::get_connection_points()
+vector<Connection_Point> Graphical_Current_Source::get_connection_points()
 {
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
-
-    // endpoints in local coordinates
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
-    // transform
-    SDL_Point screen_start = transform_point(local_start);
-    SDL_Point screen_end = transform_point(local_end);
+    auto nodes = model_element->get_nodes();
 
-    return {screen_start, screen_end};
+    return {
+            {transform_point(local_start), nodes.first},
+            {transform_point(local_end), nodes.second}
+    };
 }
 
-vector<SDL_Point> Graphical_Real_Diode::get_connection_points()
+vector<Connection_Point> Graphical_Real_Diode::get_connection_points()
 {
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
-
-    // endpoints in local coordinates
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
-    // transform
-    SDL_Point screen_start = transform_point(local_start);
-    SDL_Point screen_end = transform_point(local_end);
+    auto nodes = model_element->get_nodes();
 
-    return {screen_start, screen_end};
+    return {
+            {transform_point(local_start), nodes.first},
+            {transform_point(local_end), nodes.second}
+    };
 }
 
-vector<SDL_Point> Graphical_Zener_Diode::get_connection_points()
+vector<Connection_Point> Graphical_Zener_Diode::get_connection_points()
 {
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
-
-    // endpoints in local coordinates
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
-    // transform
-    SDL_Point screen_start = transform_point(local_start);
-    SDL_Point screen_end = transform_point(local_end);
+    auto nodes = model_element->get_nodes();
 
-    return {screen_start, screen_end};
+    return {
+            {transform_point(local_start), nodes.first},
+            {transform_point(local_end), nodes.second}
+    };
 }

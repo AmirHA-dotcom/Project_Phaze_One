@@ -44,6 +44,11 @@ struct Editable_Property {
     string value_as_string;
 };
 
+struct Connection_Point {
+    SDL_Point pos;
+    Node* node;
+};
+
 // main classes
 
 class Graphical_Element
@@ -72,7 +77,7 @@ public:
 
     virtual vector<Editable_Property> get_editable_properties() = 0;
 
-    virtual vector<SDL_Point> get_connection_points() = 0;
+    virtual vector<Connection_Point> get_connection_points() = 0;
 };
 
 class Graphical_Resistor : public Graphical_Element {
@@ -82,7 +87,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-    vector<SDL_Point> get_connection_points() override;
+    vector<Connection_Point> get_connection_points() override;
 };
 
 class Graphical_Capacitor : public Graphical_Element {
@@ -92,7 +97,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-    vector<SDL_Point> get_connection_points() override;
+    vector<Connection_Point> get_connection_points() override;
 
 };
 
@@ -103,7 +108,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-    vector<SDL_Point> get_connection_points() override;
+    vector<Connection_Point> get_connection_points() override;
 
 };
 
@@ -114,7 +119,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-    vector<SDL_Point> get_connection_points() override;
+    vector<Connection_Point> get_connection_points() override;
 
 };
 
@@ -125,7 +130,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-    vector<SDL_Point> get_connection_points() override;
+    vector<Connection_Point> get_connection_points() override;
 
 };
 
@@ -136,7 +141,7 @@ public:
     void draw(SDL_Renderer* renderer) override;
 
     vector<Editable_Property> get_editable_properties() override;
-    vector<SDL_Point> get_connection_points() override;
+    vector<Connection_Point> get_connection_points() override;
 
 };
 
