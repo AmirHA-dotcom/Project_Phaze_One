@@ -204,12 +204,32 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
     {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_Keymod modState = SDL_GetModState();
+
         switch (event.key.keysym.sym)
         {
             case SDLK_r:
             {
-                cout << "R key was pressed." << endl;
-                C->add_Graphical_Resistor(mouseX, mouseY);
+                if (modState & KMOD_CTRL)
+                {
+                    if (m_is_dragging)
+                    {
+                        cout << "Ctrl+R was pressed while dragging!" << endl;
+
+                        auto& graphical_elements = C->get_graphical_elements();
+                        auto& element_to_rotate = graphical_elements[m_dragged_element_index];
+
+                        element_to_rotate->change_rotation();
+
+                        // Swap the bounding box dimensions for a natural rotation
+                        swap(element_to_rotate->bounding_box.w, element_to_rotate->bounding_box.h);
+                    }
+                }
+                else
+                {
+                    cout << "R key was pressed." << endl;
+                    C->add_Graphical_Resistor(mouseX, mouseY);
+                }
                 break;
             }
 

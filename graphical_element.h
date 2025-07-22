@@ -14,6 +14,9 @@
 #include "Real_Diode.h"
 #include "Zener_Diode.h"
 
+
+// helpers
+
 inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, int x, int y, SDL_Color color = {0, 0, 0, 255})
 {
     if (!font) return;
@@ -34,6 +37,9 @@ inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const std::strin
     SDL_FreeSurface(surface);
 }
 
+enum class Rotation{Right, Left, Up, Down};
+
+// main classes
 
 class Graphical_Element
 {
@@ -41,8 +47,10 @@ protected:
     Element* model_element;
 
     static TTF_Font* font;
+
+    Rotation rotation;
 public:
-    Graphical_Element(Element* element_model) : model_element(element_model) {}
+    Graphical_Element(Element* element_model) : model_element(element_model) { rotation = Rotation::Right; }
     virtual ~Graphical_Element() = default;
 
     virtual void draw(SDL_Renderer* renderer) = 0;
@@ -51,6 +59,7 @@ public:
 
     SDL_Rect bounding_box;
 
+    void change_rotation();
 };
 
 class Graphical_Resistor : public Graphical_Element {

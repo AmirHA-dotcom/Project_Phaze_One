@@ -56,6 +56,18 @@ void Graphical_Element::set_font(TTF_Font* font_)
     font = font_;
 }
 
+void Graphical_Element::change_rotation()
+{
+    if (rotation == Rotation::Right)
+        rotation = Rotation::Up;
+    else if (rotation == Rotation::Up)
+        rotation = Rotation::Left;
+    else if (rotation == Rotation::Left)
+        rotation = Rotation::Down;
+    else
+        rotation = Rotation::Right;
+}
+
 // main functions
 
 void Graphical_Resistor::draw(SDL_Renderer *renderer)
