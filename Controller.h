@@ -240,7 +240,7 @@ public:
 
     vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
 
-    void add_Graphical_Wire(const vector<Connection_Point>& points);
+    void add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end);
     void connect_nodes(Node* node_to_keep, Node* node_to_merge);
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

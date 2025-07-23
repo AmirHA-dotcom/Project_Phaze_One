@@ -888,11 +888,14 @@ vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()
     return m_graphical_wires;
 }
 
-void Controller::add_Graphical_Wire(const vector<Connection_Point>& points) {
+void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end) {
     auto new_wire = std::make_unique<Graphical_Wire>();
     for (const auto& p : points) {
         new_wire->path.push_back(p.pos);
     }
+
+    new_wire->start_node = start;
+    new_wire->end_node = end;
     m_graphical_wires.push_back(std::move(new_wire));
 }
 

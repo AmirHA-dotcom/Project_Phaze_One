@@ -26,6 +26,16 @@ inline SDL_Point snap_to_grid(int x, int y, int grid_size)
     return {snapped_x, snapped_y};
 }
 
+// Helper function to calculate the distance from a point (p) to a line segment (v, w)
+float dist_to_segment(SDL_Point p, SDL_Point v, SDL_Point w) {
+    float l2 = (v.x - w.x)*(v.x - w.x) + (v.y - w.y)*(v.y - w.y);
+    if (l2 == 0.0) return sqrt((p.x - v.x)*(p.x - v.x) + (p.y - v.y)*(p.y - v.y));
+    float t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+    t = std::max(0.0f, std::min(1.0f, t));
+    SDL_Point projection = { int(v.x + t * (w.x - v.x)), int(v.y + t * (w.y - v.y)) };
+    return sqrt((p.x - projection.x)*(p.x - projection.x) + (p.y - projection.y)*(p.y - projection.y));
+}
+
 void graphical_view::draw_grid(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
     for (int x = 0; x < m_window_width; x += GRID_SIZE) {
@@ -663,18 +673,21 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
         }
     }
 
-    // start wiring
+
+
+// start wiring
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
         if (new_wire_points.empty())
         {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point click_pos = {mouseX, mouseY};
             SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
-            auto& elements = C->get_graphical_elements();
 
-            // finding connection point
-            for (auto& element : elements)
+            // if the click is on a components connecction point
+            bool started_on_component = false;
+            for (auto& element : C->get_graphical_elements())
             {
                 auto connection_points = element->get_connection_points();
                 for (auto& point : connection_points)
@@ -683,13 +696,89 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     {
                         cout << element.get()->get_model()->get_name() << " is selected" << endl;
                         new_wire_points.push_back(point);
-                        return true;
+                        started_on_component = true;
+                        break;
                     }
                 }
+                if (started_on_component) break;
+            }
+            if(started_on_component) return true;
+
+
+            // see if the click is on a wire
+            const float CLICK_TOLERANCE = 10.0f;
+            auto& wires = C->get_graphical_wires();
+
+            int index_to_delete = -1;
+            SDL_Point junction_pos;
+            size_t segment_index = 0;
+
+            // finding the wire
+            for (size_t k = 0; k < wires.size(); ++k)
+            {
+                auto& wire = wires[k];
+                for (size_t i = 0; i < wire->path.size() - 1; ++i)
+                {
+                    SDL_Point p1 = wire->path[i];
+                    SDL_Point p2 = wire->path[i+1];
+
+                    if (dist_to_segment(click_pos, p1, p2) < CLICK_TOLERANCE)
+                    {
+                        index_to_delete = k;
+                        segment_index = i;
+
+                        // junction position
+                        // vertical segment
+                        if (p1.x == p2.x)
+                        {
+                            junction_pos = { p1.x, snapped_pos.y };
+                        }
+                        // horizantal segment
+                        else
+                        {
+                            junction_pos = { snapped_pos.x, p1.y };
+                        }
+
+                        break;
+                    }
+                }
+                if (index_to_delete != -1)
+                {
+                    break;
+                }
+            }
+
+            if (index_to_delete != -1)
+            {
+                Node* existing_node = wires[index_to_delete]->start_node;
+                std::vector<SDL_Point> original_path = wires[index_to_delete]->path;
+
+                // wire from start to junction
+                std::vector<Connection_Point> path_a;
+                for(size_t j=0; j <= segment_index; ++j) path_a.push_back({original_path[j]});
+                path_a.push_back({junction_pos});
+                C->add_Graphical_Wire(path_a, existing_node, existing_node);
+
+                // wire from junction to end
+                std::vector<Connection_Point> path_b;
+                path_b.push_back({junction_pos});
+                for(size_t j = segment_index + 1; j < original_path.size(); ++j) path_b.push_back({original_path[j]});
+                C->add_Graphical_Wire(path_b, existing_node, existing_node);
+
+                // deleting the old wire
+                wires.erase(wires.begin() + index_to_delete);
+
+                // starting the new wire
+                SDL_Point p1 = original_path[segment_index];
+                SDL_Point p2 = original_path[segment_index + 1];
+                Rotation new_wire_rot = (p1.x == p2.x) ? Rotation::Right : Rotation::Down;
+                new_wire_points.push_back({junction_pos, existing_node, new_wire_rot});
+
+                cout << "Started wiring from existing net." << endl;
+                return true;
             }
         }
     }
-
     // finishing wiring
     if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
     {
@@ -717,59 +806,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 if (target_point) break;
             }
 
-            // creating wire
-//            if (target_point)
-//            {
-//                Node* start_node = new_wire_points.front().node;
-//                Node* end_node = target_point->node;
-//
-//                // position and rotation
-//                SDL_Point start_pos = new_wire_points.front().pos;
-//                SDL_Point end_pos = target_point->pos;
-//                Rotation start_orientation = new_wire_points.front().rotation;
-//                Rotation end_orientation = target_point->rotation;
-//
-//                if (start_orientation == end_orientation)
-//                {
-//                    // h to h
-//                    if (start_orientation == Rotation::Left || start_orientation == Rotation::Right)
-//                    {
-//                        int mid_x = start_pos.x + (end_pos.x - start_pos.x) / 2;
-//                        SDL_Point corner1 = { mid_x, start_pos.y };
-//                        SDL_Point corner2 = { mid_x, end_pos.y };
-//                        new_wire_points.push_back({ corner1, nullptr, {} });
-//                        new_wire_points.push_back({ corner2, nullptr, {} });
-//                    }
-//                    else
-//                    {
-//                        // V to V
-//                        int mid_y = start_pos.y + (end_pos.y - start_pos.y) / 2;
-//                        SDL_Point corner1 = { start_pos.x, mid_y };
-//                        SDL_Point corner2 = { end_pos.x, mid_y };
-//                        new_wire_points.push_back({ corner1, nullptr, {} });
-//                        new_wire_points.push_back({ corner2, nullptr, {} });
-//                    }
-//                }
-//                else
-//                {
-//                    if (start_orientation == Rotation::Left || start_orientation == Rotation::Right)
-//                    {
-//                        // h to v
-//                        SDL_Point corner = { end_pos.x, start_pos.y };
-//                        new_wire_points.push_back({ corner, nullptr, {} });
-//                    }
-//                    else
-//                    {
-//                        // v to h
-//                        SDL_Point corner = { start_pos.x, end_pos.y };
-//                        new_wire_points.push_back({ corner, nullptr, {} });
-//                    }
-//                }
-//                new_wire_points.push_back(*target_point);
-//
-//                C->connect_nodes(start_node, end_node);
-//                C->add_Graphical_Wire(new_wire_points);
-//            }
+
 
             if (target_point)
             {
@@ -838,9 +875,96 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 
 
                 C->connect_nodes(start_node, end_node);
-                C->add_Graphical_Wire(new_wire_points);
+                C->add_Graphical_Wire(new_wire_points, start_node, start_node);
             }
 
+            new_wire_points.clear();
+        }
+    }
+
+    return true;
+}
+
+// start wiring
+//    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+//    {
+//        if (new_wire_points.empty())
+//        {
+//            int mouseX, mouseY;
+//            SDL_GetMouseState(&mouseX, &mouseY);
+//            SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+//            auto& elements = C->get_graphical_elements();
+//
+//            // finding connection point
+//            for (auto& element : elements)
+//            {
+//                auto connection_points = element->get_connection_points();
+//                for (auto& point : connection_points)
+//                {
+//                    if (abs(snapped_pos.x - point.pos.x) < 20 && abs(snapped_pos.y - point.pos.y) < 20)
+//                    {
+//                        cout << element.get()->get_model()->get_name() << " is selected" << endl;
+//                        new_wire_points.push_back(point);
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+// creating wire
+//            if (target_point)
+//            {
+//                Node* start_node = new_wire_points.front().node;
+//                Node* end_node = target_point->node;
+//
+//                // position and rotation
+//                SDL_Point start_pos = new_wire_points.front().pos;
+//                SDL_Point end_pos = target_point->pos;
+//                Rotation start_orientation = new_wire_points.front().rotation;
+//                Rotation end_orientation = target_point->rotation;
+//
+//                if (start_orientation == end_orientation)
+//                {
+//                    // h to h
+//                    if (start_orientation == Rotation::Left || start_orientation == Rotation::Right)
+//                    {
+//                        int mid_x = start_pos.x + (end_pos.x - start_pos.x) / 2;
+//                        SDL_Point corner1 = { mid_x, start_pos.y };
+//                        SDL_Point corner2 = { mid_x, end_pos.y };
+//                        new_wire_points.push_back({ corner1, nullptr, {} });
+//                        new_wire_points.push_back({ corner2, nullptr, {} });
+//                    }
+//                    else
+//                    {
+//                        // V to V
+//                        int mid_y = start_pos.y + (end_pos.y - start_pos.y) / 2;
+//                        SDL_Point corner1 = { start_pos.x, mid_y };
+//                        SDL_Point corner2 = { end_pos.x, mid_y };
+//                        new_wire_points.push_back({ corner1, nullptr, {} });
+//                        new_wire_points.push_back({ corner2, nullptr, {} });
+//                    }
+//                }
+//                else
+//                {
+//                    if (start_orientation == Rotation::Left || start_orientation == Rotation::Right)
+//                    {
+//                        // h to v
+//                        SDL_Point corner = { end_pos.x, start_pos.y };
+//                        new_wire_points.push_back({ corner, nullptr, {} });
+//                    }
+//                    else
+//                    {
+//                        // v to h
+//                        SDL_Point corner = { start_pos.x, end_pos.y };
+//                        new_wire_points.push_back({ corner, nullptr, {} });
+//                    }
+//                }
+//                new_wire_points.push_back(*target_point);
+//
+//                C->connect_nodes(start_node, end_node);
+//                C->add_Graphical_Wire(new_wire_points);
+//            }
 
 //            if (target_point)
 //            {
@@ -932,10 +1056,3 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 //                C->connect_nodes(start_node, end_node);
 //                C->add_Graphical_Wire(new_wire_points);
 //            }
-
-            new_wire_points.clear();
-        }
-    }
-
-    return true;
-}
