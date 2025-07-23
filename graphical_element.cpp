@@ -509,8 +509,8 @@ vector<Connection_Point> Graphical_Resistor::get_connection_points()
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first},
-            {final_screen_end, nodes.second}
+            {final_screen_start, nodes.first, rotation},
+            {final_screen_end, nodes.second, rotation}
     };
 }
 
@@ -530,8 +530,8 @@ vector<Connection_Point> Graphical_Capacitor::get_connection_points()
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first},
-            {final_screen_end, nodes.second}
+            {final_screen_start, nodes.first, rotation},
+            {final_screen_end, nodes.second, rotation}
     };
 }
 
@@ -551,8 +551,8 @@ vector<Connection_Point> Graphical_Inductor::get_connection_points()
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first},
-            {final_screen_end, nodes.second}
+            {final_screen_start, nodes.first, rotation},
+            {final_screen_end, nodes.second, rotation}
     };
 }
 
@@ -572,8 +572,8 @@ vector<Connection_Point> Graphical_Current_Source::get_connection_points()
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first},
-            {final_screen_end, nodes.second}
+            {final_screen_start, nodes.first, rotation},
+            {final_screen_end, nodes.second, rotation}
     };
 }
 
@@ -593,8 +593,8 @@ vector<Connection_Point> Graphical_Real_Diode::get_connection_points()
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first},
-            {final_screen_end, nodes.second}
+            {final_screen_start, nodes.first, rotation},
+            {final_screen_end, nodes.second, rotation}
     };
 }
 
@@ -614,7 +614,7 @@ vector<Connection_Point> Graphical_Zener_Diode::get_connection_points()
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first},
-            {final_screen_end, nodes.second}
+            {final_screen_start, nodes.first, rotation},
+            {final_screen_end, nodes.second, rotation}
     };
 }

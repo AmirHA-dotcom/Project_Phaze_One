@@ -658,8 +658,6 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
     // start wiring
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
-        cout << "detected left key in wiring mode" << endl;
-
         if (new_wire_points.empty())
         {
             int mouseX, mouseY;
@@ -684,7 +682,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
         }
     }
 
-    // finishing wiring-
+    // finishing wiring
     if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
     {
         if (!new_wire_points.empty())
@@ -704,6 +702,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     if (abs(snapped_pos.x - point.pos.x) < 5 && abs(snapped_pos.y - point.pos.y) < 5)
                     {
                         target_point = &point;
+                        cout << element.get()->get_model()->get_name() << " is selected" << endl;
                         break;
                     }
                 }
@@ -716,23 +715,49 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 Node* start_node = new_wire_points.front().node;
                 Node* end_node = target_point->node;
 
-//                SDL_Point start_pos = new_wire_points.front().pos;
-//                new_wire_points.push_back({ {target_point->pos.x, start_pos.y}, nullptr });
-//                new_wire_points.push_back(*target_point);
-
-
+                // position and rotation
                 SDL_Point start_pos = new_wire_points.front().pos;
                 SDL_Point end_pos = target_point->pos;
+                Rotation start_orientation = new_wire_points.front().rotation;
+                Rotation end_orientation = target_point->rotation;
 
-                int mid_y = start_pos.y + (end_pos.y - start_pos.y) / 2;
-
-                SDL_Point corner1 = { start_pos.x, mid_y };
-                SDL_Point corner2 = { end_pos.x, mid_y };
-
-                new_wire_points.push_back({ corner1, nullptr });
-                new_wire_points.push_back({ corner2, nullptr });
+                if (start_orientation == end_orientation)
+                {
+                    // h to h
+                    if (start_orientation == Rotation::Left || start_orientation == Rotation::Right)
+                    {
+                        int mid_x = start_pos.x + (end_pos.x - start_pos.x) / 2;
+                        SDL_Point corner1 = { mid_x, start_pos.y };
+                        SDL_Point corner2 = { mid_x, end_pos.y };
+                        new_wire_points.push_back({ corner1, nullptr, {} });
+                        new_wire_points.push_back({ corner2, nullptr, {} });
+                    }
+                    else
+                    {
+                        // V to V
+                        int mid_y = start_pos.y + (end_pos.y - start_pos.y) / 2;
+                        SDL_Point corner1 = { start_pos.x, mid_y };
+                        SDL_Point corner2 = { end_pos.x, mid_y };
+                        new_wire_points.push_back({ corner1, nullptr, {} });
+                        new_wire_points.push_back({ corner2, nullptr, {} });
+                    }
+                }
+                else
+                {
+                    if (start_orientation == Rotation::Left || start_orientation == Rotation::Right)
+                    {
+                        // h to v
+                        SDL_Point corner = { end_pos.x, start_pos.y };
+                        new_wire_points.push_back({ corner, nullptr, {} });
+                    }
+                    else
+                    {
+                        // v to h
+                        SDL_Point corner = { start_pos.x, end_pos.y };
+                        new_wire_points.push_back({ corner, nullptr, {} });
+                    }
+                }
                 new_wire_points.push_back(*target_point);
-
 
                 C->connect_nodes(start_node, end_node);
                 C->add_Graphical_Wire(new_wire_points);

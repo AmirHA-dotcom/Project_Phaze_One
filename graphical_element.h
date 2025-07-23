@@ -47,6 +47,7 @@ struct Editable_Property {
 struct Connection_Point {
     SDL_Point pos;
     Node* node;
+    Rotation rotation;
 };
 
 // main classes
