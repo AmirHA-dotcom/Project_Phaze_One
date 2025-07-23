@@ -679,7 +679,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 auto connection_points = element->get_connection_points();
                 for (auto& point : connection_points)
                 {
-                    if (abs(snapped_pos.x - point.pos.x) < 5 && abs(snapped_pos.y - point.pos.y) < 5)
+                    if (abs(snapped_pos.x - point.pos.x) < 20 && abs(snapped_pos.y - point.pos.y) < 20)
                     {
                         cout << element.get()->get_model()->get_name() << " is selected" << endl;
                         new_wire_points.push_back(point);
@@ -707,7 +707,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 auto connection_points = element->get_connection_points();
                 for (auto& point : connection_points)
                 {
-                    if (abs(snapped_pos.x - point.pos.x) < 5 && abs(snapped_pos.y - point.pos.y) < 5)
+                    if (abs(snapped_pos.x - point.pos.x) < 20 && abs(snapped_pos.y - point.pos.y) < 20)
                     {
                         target_point = &point;
                         cout << element.get()->get_model()->get_name() << " is selected" << endl;
