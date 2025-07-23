@@ -714,7 +714,7 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
 
     auto gfx_resistor = make_unique<Graphical_Resistor>(sim_resistor);
 
-    gfx_resistor->bounding_box = {screenX, screenY, 100, 50};
+    gfx_resistor->bounding_box = {screenX, screenY, 100, 40};
 
     m_graphical_elements.push_back(move(gfx_resistor));
 }
@@ -735,7 +735,7 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
     circuit->addElement(sim_capacitor);
 
     auto gfx_capacitor = make_unique<Graphical_Capacitor>(sim_capacitor);
-    gfx_capacitor->bounding_box = {screenX, screenY, 100, 50};
+    gfx_capacitor->bounding_box = {screenX, screenY, 100, 40};
     m_graphical_elements.push_back(move(gfx_capacitor));
 }
 
@@ -755,7 +755,7 @@ void Controller::add_Graphical_Inductor(int screenX, int screenY) {
     circuit->addElement(sim_inductor);
 
     auto gfx_inductor = make_unique<Graphical_Inductor>(sim_inductor);
-    gfx_inductor->bounding_box = {screenX, screenY, 100, 50};
+    gfx_inductor->bounding_box = {screenX, screenY, 100, 40};
     m_graphical_elements.push_back(move(gfx_inductor));
 }
 
@@ -776,7 +776,7 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
     circuit->addElement(sim_current_source);
 
     auto gfx_current_source = make_unique<Graphical_Current_Source>(sim_current_source);
-    gfx_current_source->bounding_box = {screenX, screenY, 100, 50};
+    gfx_current_source->bounding_box = {screenX, screenY, 100, 40};
     m_graphical_elements.push_back(move(gfx_current_source));
 }
 
@@ -797,7 +797,7 @@ void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
     circuit->addElement(sim_real_diode);
 
     auto gfx_sim_real_diode = make_unique<Graphical_Real_Diode>(sim_real_diode);
-    gfx_sim_real_diode->bounding_box = {screenX, screenY, 100, 50};
+    gfx_sim_real_diode->bounding_box = {screenX, screenY, 100, 40};
     m_graphical_elements.push_back(move(gfx_sim_real_diode));
 }
 
@@ -818,7 +818,7 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
     circuit->addElement(sim_zener_diode);
 
     auto gfx_sim_zener_diode = make_unique<Graphical_Zener_Diode>(sim_zener_diode);
-    gfx_sim_zener_diode->bounding_box = {screenX, screenY, 100, 50};
+    gfx_sim_zener_diode->bounding_box = {screenX, screenY, 100, 40};
     m_graphical_elements.push_back(move(gfx_sim_zener_diode));
 }
 
