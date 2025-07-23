@@ -6,6 +6,13 @@
 
 // helper functions
 
+inline SDL_Point snap_to_grid(int x, int y, int grid_size)
+{
+    int snapped_x = round((float)x / grid_size) * grid_size;
+    int snapped_y = round((float)y / grid_size) * grid_size;
+    return {snapped_x, snapped_y};
+}
+
 inline string format_with_suffix(double value, const string& unit) {
     if (value == 0.0) return "0.00 " + unit;
 
@@ -492,11 +499,18 @@ vector<Connection_Point> Graphical_Resistor::get_connection_points()
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {transform_point(local_start), nodes.first},
-            {transform_point(local_end), nodes.second}
+            {final_screen_start, nodes.first},
+            {final_screen_end, nodes.second}
     };
 }
 
@@ -506,11 +520,18 @@ vector<Connection_Point> Graphical_Capacitor::get_connection_points()
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {transform_point(local_start), nodes.first},
-            {transform_point(local_end), nodes.second}
+            {final_screen_start, nodes.first},
+            {final_screen_end, nodes.second}
     };
 }
 
@@ -520,11 +541,18 @@ vector<Connection_Point> Graphical_Inductor::get_connection_points()
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {transform_point(local_start), nodes.first},
-            {transform_point(local_end), nodes.second}
+            {final_screen_start, nodes.first},
+            {final_screen_end, nodes.second}
     };
 }
 
@@ -534,11 +562,18 @@ vector<Connection_Point> Graphical_Current_Source::get_connection_points()
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {transform_point(local_start), nodes.first},
-            {transform_point(local_end), nodes.second}
+            {final_screen_start, nodes.first},
+            {final_screen_end, nodes.second}
     };
 }
 
@@ -548,11 +583,18 @@ vector<Connection_Point> Graphical_Real_Diode::get_connection_points()
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {transform_point(local_start), nodes.first},
-            {transform_point(local_end), nodes.second}
+            {final_screen_start, nodes.first},
+            {final_screen_end, nodes.second}
     };
 }
 
@@ -562,10 +604,17 @@ vector<Connection_Point> Graphical_Zener_Diode::get_connection_points()
     SDL_Point local_start = {-half_length, 0};
     SDL_Point local_end = {half_length, 0};
 
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {transform_point(local_start), nodes.first},
-            {transform_point(local_end), nodes.second}
+            {final_screen_start, nodes.first},
+            {final_screen_end, nodes.second}
     };
 }

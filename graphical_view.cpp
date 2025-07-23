@@ -8,7 +8,7 @@
 
 const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
 
-SDL_Point snap_to_grid(int x, int y, int grid_size)
+inline SDL_Point snap_to_grid(int x, int y, int grid_size)
 {
     int snapped_x = round((float)x / grid_size) * grid_size;
     int snapped_y = round((float)y / grid_size) * grid_size;
@@ -168,6 +168,7 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
     render_text(renderer, font, "OK", ok_button_rect.x + 40, ok_button_rect.y + 5, TEXT_COLOR);
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -260,18 +261,25 @@ bool graphical_view::run(Controller *C)
             wire->draw(renderer);
         }
 
+//        if (new_wire_points.empty() && m_is_wiring)
+//            cout << "no wires to draw" << endl;
+
         if (m_is_wiring && !new_wire_points.empty())
         {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
             SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
+            // Get the position from the last connection point in our temporary wire
             SDL_Point last_point = new_wire_points.back().pos;
 
+            // Calculate the corner point for a 90-degree bend
             SDL_Point corner_point = {snapped_mouse.x, last_point.y};
 
+            // Set the color to red for the wire preview
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
+            // Draw the two orthogonal lines for a clean look
             SDL_RenderDrawLine(renderer, last_point.x, last_point.y, corner_point.x, corner_point.y);
             SDL_RenderDrawLine(renderer, corner_point.x, corner_point.y, snapped_mouse.x, snapped_mouse.y);
         }
@@ -404,11 +412,11 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 new_wire_points.clear();
                 if (m_is_wiring)
                 {
-                    cout << "Entered m_is_wiring Mode." << endl;
+                    cout << "Entered wiring Mode." << endl;
                 }
                 else
                 {
-                    cout << "Exited m_is_wiring Mode." << endl;
+                    cout << "Exited wiring Mode." << endl;
                 }
                 break;
             }
@@ -637,52 +645,64 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 {
     if (event.type == SDL_QUIT) return false;
 
-    // Allow exiting wiring mode with W or Escape
-    if (event.type == SDL_KEYDOWN) {
-        if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_ESCAPE) {
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_ESCAPE)
+        {
             m_is_wiring = false;
-            cout << "exiting wiring mode" << endl;
-            new_wire_points.clear(); // Cancel any partial wire
+            cout << "Exiting wiring mode" << endl;
+            new_wire_points.clear();
         }
     }
 
-    // --- START WIRING on Mouse Down ---
-    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-        // Only start a new wire if we aren't already drawing one
-        if (new_wire_points.empty()) {
+    // start wiring
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        cout << "detected left key in wiring mode" << endl;
+
+        if (new_wire_points.empty())
+        {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
             SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
             auto& elements = C->get_graphical_elements();
 
-            // Find if the click was on a connection point
-            for (auto& element : elements) {
+            // finding connection point
+            for (auto& element : elements)
+            {
                 auto connection_points = element->get_connection_points();
-                for (auto& point : connection_points) {
-                    if (abs(snapped_pos.x - point.pos.x) < 5 && abs(snapped_pos.y - point.pos.y) < 5) {
-                        new_wire_points.push_back(point); // Start the wire
-                        return true; // Exit after finding the start point
+                for (auto& point : connection_points)
+                {
+                    if (abs(snapped_pos.x - point.pos.x) < 5 && abs(snapped_pos.y - point.pos.y) < 5)
+                    {
+                        cout << element.get()->get_model()->get_name() << " is selected" << endl;
+                        new_wire_points.push_back(point);
+                        return true;
                     }
                 }
             }
         }
     }
 
-    // --- FINISH WIRING on Mouse Up ---
-    if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT) {
-        // Only try to finish a wire if one has been started
-        if (!new_wire_points.empty()) {
+    // finishing wiring-
+    if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+    {
+        if (!new_wire_points.empty())
+        {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
             SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
             auto& elements = C->get_graphical_elements();
 
-            // Find if the release was on a valid connection point
+            // see if its a valid point
             Connection_Point* target_point = nullptr;
-            for (auto& element : elements) {
+            for (auto& element : elements)
+            {
                 auto connection_points = element->get_connection_points();
-                for (auto& point : connection_points) {
-                    if (abs(snapped_pos.x - point.pos.x) < 5 && abs(snapped_pos.y - point.pos.y) < 5) {
+                for (auto& point : connection_points)
+                {
+                    if (abs(snapped_pos.x - point.pos.x) < 5 && abs(snapped_pos.y - point.pos.y) < 5)
+                    {
                         target_point = &point;
                         break;
                     }
@@ -690,8 +710,9 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 if (target_point) break;
             }
 
-            // If we found a valid endpoint, create the wire
-            if (target_point) {
+            // creating wire
+            if (target_point)
+            {
                 Node* start_node = new_wire_points.front().node;
                 Node* end_node = target_point->node;
 
@@ -700,12 +721,10 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 new_wire_points.push_back({ {target_point->pos.x, start_pos.y}, nullptr });
                 new_wire_points.push_back(*target_point);
 
-                // Create the backend and frontend wire
                 C->connect_nodes(start_node, end_node);
                 C->add_Graphical_Wire(new_wire_points);
             }
 
-            // ALWAYS clear the temporary wire path on mouse up
             new_wire_points.clear();
         }
     }
