@@ -26,22 +26,25 @@ inline SDL_Point snap_to_grid(int x, int y, int grid_size)
     return {snapped_x, snapped_y};
 }
 
-// Helper function to calculate the distance from a point (p) to a line segment (v, w)
-float dist_to_segment(SDL_Point p, SDL_Point v, SDL_Point w) {
+float dist_to_segment(SDL_Point p, SDL_Point v, SDL_Point w)
+{
     float l2 = (v.x - w.x)*(v.x - w.x) + (v.y - w.y)*(v.y - w.y);
     if (l2 == 0.0) return sqrt((p.x - v.x)*(p.x - v.x) + (p.y - v.y)*(p.y - v.y));
     float t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-    t = std::max(0.0f, std::min(1.0f, t));
+    t = max(0.0f, min(1.0f, t));
     SDL_Point projection = { int(v.x + t * (w.x - v.x)), int(v.y + t * (w.y - v.y)) };
     return sqrt((p.x - projection.x)*(p.x - projection.x) + (p.y - projection.y)*(p.y - projection.y));
 }
 
-void graphical_view::draw_grid(SDL_Renderer* renderer) {
+void graphical_view::draw_grid(SDL_Renderer* renderer)
+{
     SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
-    for (int x = 0; x < m_window_width; x += GRID_SIZE) {
+    for (int x = 0; x < m_window_width; x += GRID_SIZE)
+    {
         SDL_RenderDrawLine(renderer, x, 0, x, m_window_height);
     }
-    for (int y = 0; y < m_window_height; y += GRID_SIZE) {
+    for (int y = 0; y < m_window_height; y += GRID_SIZE)
+    {
         SDL_RenderDrawLine(renderer, 0, y, m_window_width, y);
     }
 }
@@ -243,6 +246,8 @@ bool graphical_view::run(Controller *C)
 
     while (running)
     {
+        SDL_GetWindowSize(window, &m_window_width, &m_window_height);
+
         auto& graphical_elements = C->get_graphical_elements();
         auto& graphical_wires = C->get_graphical_wires();
 
@@ -751,16 +756,16 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
             if (index_to_delete != -1)
             {
                 Node* existing_node = wires[index_to_delete]->start_node;
-                std::vector<SDL_Point> original_path = wires[index_to_delete]->path;
+                vector<SDL_Point> original_path = wires[index_to_delete]->path;
 
                 // wire from start to junction
-                std::vector<Connection_Point> path_a;
+                vector<Connection_Point> path_a;
                 for(size_t j=0; j <= segment_index; ++j) path_a.push_back({original_path[j]});
                 path_a.push_back({junction_pos});
                 C->add_Graphical_Wire(path_a, existing_node, existing_node);
 
                 // wire from junction to end
-                std::vector<Connection_Point> path_b;
+                vector<Connection_Point> path_b;
                 path_b.push_back({junction_pos});
                 for(size_t j = segment_index + 1; j < original_path.size(); ++j) path_b.push_back({original_path[j]});
                 C->add_Graphical_Wire(path_b, existing_node, existing_node);
@@ -786,6 +791,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
         {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point click_pos = {mouseX, mouseY};
             SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
             auto& elements = C->get_graphical_elements();
 
@@ -831,9 +837,11 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     c1 = { mid_x, start_pos.y };
                     c2 = { mid_x, end_pos.y };
 
-                    if (start_rot == Rotation::Left && mid_x > start_pos.x) {
+                    if (start_rot == Rotation::Left && mid_x > start_pos.x)
+                    {
                         c1.x = c2.x = min(start_pos.x, end_pos.x) - 20;
-                    } else if (start_rot == Rotation::Right && mid_x < start_pos.x) {
+                    } else if (start_rot == Rotation::Right && mid_x < start_pos.x) 
+                    {
                         c1.x = c2.x = max(start_pos.x, end_pos.x) + 20;
                     }
                 }
@@ -843,28 +851,35 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     c1 = { start_pos.x, mid_y };
                     c2 = { end_pos.x, mid_y };
 
-                    if (start_rot == Rotation::Up && mid_y > start_pos.y) {
+                    if (start_rot == Rotation::Up && mid_y > start_pos.y) 
+                    {
                         c1.y = c2.y = min(start_pos.y, end_pos.y) - 20;
-                    } else if (start_rot == Rotation::Down && mid_y < start_pos.y) {
+                    } else if (start_rot == Rotation::Down && mid_y < start_pos.y)
+                    {
                         c1.y = c2.y = max(start_pos.y, end_pos.y) + 20;
                     }
                 }
 
                 // add corner1 if its not the same as the start
-                if (c1.x != start_pos.x || c1.y != start_pos.y) {
+                if (c1.x != start_pos.x || c1.y != start_pos.y)
+                {
                     path_points.push_back(c1);
                 }
                 // add corner2 if its not the same as the last point
-                if (c2.x != path_points.back().x || c2.y != path_points.back().y) {
+                if (c2.x != path_points.back().x || c2.y != path_points.back().y)
+                {
                     path_points.push_back(c2);
                 }
                 // add the end point if its not the same as the last point
-                if (end_pos.x != path_points.back().x || end_pos.y != path_points.back().y) {
+                if (end_pos.x != path_points.back().x || end_pos.y != path_points.back().y) 
+                {
                     path_points.push_back(end_pos);
                 }
 
                 new_wire_points.clear();
-                for(const auto& p : path_points) {
+                for(const auto& p : path_points)
+                
+                {
                     new_wire_points.push_back({ p, nullptr, {} });
                 }
 
@@ -876,6 +891,117 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 
                 C->connect_nodes(start_node, end_node);
                 C->add_Graphical_Wire(new_wire_points, start_node, start_node);
+            }
+
+            // if click is on i wire
+            else
+            {
+                const float CLICK_TOLERANCE = 10.0f;
+                auto& wires = C->get_graphical_wires();
+
+                int index_to_delete = -1;
+                SDL_Point junction_pos;
+                size_t segment_index = 0;
+
+                // finding the wire
+                for (size_t k = 0; k < wires.size(); ++k) 
+                {
+                    auto& wire = wires[k];
+                    for (size_t i = 0; i < wire->path.size() - 1; ++i)
+                    {
+                        SDL_Point p1 = wire->path[i];
+                        SDL_Point p2 = wire->path[i+1];
+
+                        if (dist_to_segment(click_pos, p1, p2) < CLICK_TOLERANCE)
+                        {
+                            index_to_delete = k;
+                            segment_index = i;
+
+                            // vertical segment
+                            if (p1.x == p2.x) 
+                            { 
+                                junction_pos = { p1.x, snapped_pos.y };
+                            }
+                            // horizontal segment
+                            else 
+                            { 
+                                junction_pos = { snapped_pos.x, p1.y };
+                            }
+
+                            break; 
+                        }
+                    }
+                    if (index_to_delete != -1) 
+                    {
+                        break; 
+                    }
+                }
+                
+                if (index_to_delete != -1) 
+                {
+                    Node* source_node = new_wire_points.front().node;
+                    Node* target_wire_node = wires[index_to_delete]->start_node;
+                    vector<SDL_Point> original_path = wires[index_to_delete]->path;
+
+                    // wire from start to junction
+                    vector<Connection_Point> path_a;
+                    for(size_t j=0; j <= segment_index; ++j) path_a.push_back({original_path[j]});
+                    path_a.push_back({junction_pos});
+                    C->add_Graphical_Wire(path_a, target_wire_node, target_wire_node);
+
+                    // wire from junction to end
+                    vector<Connection_Point> path_b;
+                    path_b.push_back({junction_pos});
+                    for(size_t j = segment_index + 1; j < original_path.size(); ++j) path_b.push_back({original_path[j]});
+                    C->add_Graphical_Wire(path_b, target_wire_node, target_wire_node);
+
+                    // deleting the old wire
+                    wires.erase(wires.begin() + index_to_delete);
+
+                    C->connect_nodes(source_node, target_wire_node);
+
+                    SDL_Point start_pos = new_wire_points.front().pos;
+                    SDL_Point end_pos = junction_pos;
+                    Rotation start_rot = new_wire_points.front().rotation;
+
+                    SDL_Point seg_p1 = original_path[segment_index];
+                    SDL_Point seg_p2 = original_path[segment_index + 1];
+                    Rotation end_rot = (seg_p1.x == seg_p2.x) ? Rotation::Left : Rotation::Up; 
+
+                    vector<SDL_Point> path_points;
+                    path_points.push_back(start_pos);
+                    SDL_Point c1, c2;
+                    bool is_start_horizontal = (start_rot == Rotation::Left || start_rot == Rotation::Right);
+                    if (is_start_horizontal) 
+                    {
+                        int mid_x = start_pos.x + (end_pos.x - start_pos.x) / 2;
+                        c1 = { mid_x, start_pos.y };
+                        c2 = { mid_x, end_pos.y };
+                        if (start_rot == Rotation::Left && mid_x > start_pos.x) c1.x = c2.x = min(start_pos.x, end_pos.x) - 20;
+                        else if (start_rot == Rotation::Right && mid_x < start_pos.x) c1.x = c2.x = max(start_pos.x, end_pos.x) + 20;
+                    } 
+                    else 
+                    {
+                        int mid_y = start_pos.y + (end_pos.y - start_pos.y) / 2;
+                        c1 = { start_pos.x, mid_y };
+                        c2 = { end_pos.x, mid_y };
+                        if (start_rot == Rotation::Up && mid_y > start_pos.y) c1.y = c2.y = min(start_pos.y, end_pos.y) - 20;
+                        else if (start_rot == Rotation::Down && mid_y < start_pos.y) c1.y = c2.y = max(start_pos.y, end_pos.y) + 20;
+                    }
+                    if (c1.x != start_pos.x || c1.y != start_pos.y) path_points.push_back(c1);
+                    if (c2.x != path_points.back().x || c2.y != path_points.back().y) path_points.push_back(c2);
+                    if (end_pos.x != path_points.back().x || end_pos.y != path_points.back().y) path_points.push_back(end_pos);
+
+                    vector<Connection_Point> final_wire_points;
+                    for(const auto& p : path_points) final_wire_points.push_back({ p, nullptr, {} });
+
+                    final_wire_points.front().node = source_node;
+                    final_wire_points.front().rotation = start_rot;
+                    final_wire_points.back().node = source_node;
+                    final_wire_points.back().rotation = end_rot;
+
+                    C->add_Graphical_Wire(final_wire_points, source_node, source_node);
+                }
             }
 
             new_wire_points.clear();
