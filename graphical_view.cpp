@@ -282,12 +282,14 @@ bool graphical_view::run(Controller *C)
 
             SDL_Point last_point = new_wire_points.back().pos;
 
-            SDL_Point corner_point = {snapped_mouse.x, last_point.y};
+            //SDL_Point corner_point = {snapped_mouse.x, last_point.y};
 
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
-            SDL_RenderDrawLine(renderer, last_point.x, last_point.y, corner_point.x, corner_point.y);
-            SDL_RenderDrawLine(renderer, corner_point.x, corner_point.y, snapped_mouse.x, snapped_mouse.y);
+            SDL_RenderDrawLine(renderer, mouseX, mouseY, new_wire_points.front().pos.x - 5, new_wire_points.front().pos.y - 5);
+
+//            SDL_RenderDrawLine(renderer, last_point.x, last_point.y, corner_point.x, corner_point.y);
+//            SDL_RenderDrawLine(renderer, corner_point.x, corner_point.y, snapped_mouse.x, snapped_mouse.y);
         }
 
         if (elements_menu)
