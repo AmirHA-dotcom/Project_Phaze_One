@@ -506,11 +506,34 @@ vector<Connection_Point> Graphical_Resistor::get_connection_points()
     SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
     SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
 
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first, rotation},
-            {final_screen_end, nodes.second, rotation}
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
     };
 }
 
@@ -527,11 +550,34 @@ vector<Connection_Point> Graphical_Capacitor::get_connection_points()
     SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
     SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
 
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first, rotation},
-            {final_screen_end, nodes.second, rotation}
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
     };
 }
 
@@ -548,11 +594,34 @@ vector<Connection_Point> Graphical_Inductor::get_connection_points()
     SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
     SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
 
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first, rotation},
-            {final_screen_end, nodes.second, rotation}
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
     };
 }
 
@@ -569,11 +638,34 @@ vector<Connection_Point> Graphical_Current_Source::get_connection_points()
     SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
     SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
 
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first, rotation},
-            {final_screen_end, nodes.second, rotation}
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
     };
 }
 
@@ -590,11 +682,34 @@ vector<Connection_Point> Graphical_Real_Diode::get_connection_points()
     SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
     SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
 
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first, rotation},
-            {final_screen_end, nodes.second, rotation}
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
     };
 }
 
@@ -611,10 +726,33 @@ vector<Connection_Point> Graphical_Zener_Diode::get_connection_points()
     SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
     SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
 
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
     auto nodes = model_element->get_nodes();
 
     return {
-            {final_screen_start, nodes.first, rotation},
-            {final_screen_end, nodes.second, rotation}
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
     };
 }
