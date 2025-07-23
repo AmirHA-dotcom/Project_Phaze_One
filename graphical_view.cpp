@@ -716,10 +716,23 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 Node* start_node = new_wire_points.front().node;
                 Node* end_node = target_point->node;
 
-                // Add the start, corner, and end points to the path
+//                SDL_Point start_pos = new_wire_points.front().pos;
+//                new_wire_points.push_back({ {target_point->pos.x, start_pos.y}, nullptr });
+//                new_wire_points.push_back(*target_point);
+
+
                 SDL_Point start_pos = new_wire_points.front().pos;
-                new_wire_points.push_back({ {target_point->pos.x, start_pos.y}, nullptr });
+                SDL_Point end_pos = target_point->pos;
+
+                int mid_y = start_pos.y + (end_pos.y - start_pos.y) / 2;
+
+                SDL_Point corner1 = { start_pos.x, mid_y };
+                SDL_Point corner2 = { end_pos.x, mid_y };
+
+                new_wire_points.push_back({ corner1, nullptr });
+                new_wire_points.push_back({ corner2, nullptr });
                 new_wire_points.push_back(*target_point);
+
 
                 C->connect_nodes(start_node, end_node);
                 C->add_Graphical_Wire(new_wire_points);
