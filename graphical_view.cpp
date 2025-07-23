@@ -129,11 +129,10 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
     const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
     const SDL_Color HIGHLIGHT_COLOR = {52, 152, 219, 255};
 
-//    // 1. Draw a semi-transparent overlay to dim the background
 //    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 //    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 180);
 //    SDL_RenderFillRect(renderer, NULL);
-//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE); // Reset blend mode
+//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 
     int menu_width = 400;
     int menu_height = 300;
