@@ -19,6 +19,14 @@ struct MenuItem {
     SDL_Rect rect;
 };
 
+struct Point_Comparator {
+    bool operator()(const SDL_Point& a, const SDL_Point& b) const {
+        if (a.x < b.x) return true;
+        if (a.x > b.x) return false;
+        return a.y < b.y;
+    }
+};
+
 class graphical_view
 {
 private:
