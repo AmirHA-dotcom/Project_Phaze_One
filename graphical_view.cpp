@@ -280,16 +280,12 @@ bool graphical_view::run(Controller *C)
             SDL_GetMouseState(&mouseX, &mouseY);
             SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-            // Get the position from the last connection point in our temporary wire
             SDL_Point last_point = new_wire_points.back().pos;
 
-            // Calculate the corner point for a 90-degree bend
             SDL_Point corner_point = {snapped_mouse.x, last_point.y};
 
-            // Set the color to red for the wire preview
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
-            // Draw the two orthogonal lines for a clean look
             SDL_RenderDrawLine(renderer, last_point.x, last_point.y, corner_point.x, corner_point.y);
             SDL_RenderDrawLine(renderer, corner_point.x, corner_point.y, snapped_mouse.x, snapped_mouse.y);
         }
