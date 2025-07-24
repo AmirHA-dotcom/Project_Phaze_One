@@ -954,6 +954,14 @@ void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
     m_graphical_elements.push_back(move(ground_symbol));
 }
 
+Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, Node* node)
+{
+    auto new_label = make_unique<Graphical_Net_Label>(pos, node);
+    Graphical_Net_Label* ptr = new_label.get();
+    m_graphical_elements.push_back(move(new_label));
+    return ptr;
+}
+
 vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() 
 {
     return m_graphical_elements;

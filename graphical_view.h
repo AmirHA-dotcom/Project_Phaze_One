@@ -40,11 +40,12 @@ private:
     int m_dragged_element_index = -1;
     SDL_Point m_drag_offset = {0, 0};
 
+    // item menu
     bool elements_menu = false;
-
     vector<MenuItem> menu_items;
     int selected_menu_item_index = -1;
 
+    // editing
     bool editing = false;
     int edited_element_index = -1;
     vector<string> edit_buffers;
@@ -63,12 +64,17 @@ private:
     // grounding
     bool is_grounding = false;
 
+    // net labeling
+    bool is_labeling = false;
+
     // helper functions
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
     void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
 
     void draw_grid(SDL_Renderer* renderer);
+
+    void draw_net_labeling_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
 
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
@@ -80,6 +86,8 @@ private:
     bool handle_wiring_events(SDL_Event& event, Controller* C);
 
     bool handle_grounding_events(SDL_Event& event, Controller* C);
+
+    bool handle_net_labeling_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);

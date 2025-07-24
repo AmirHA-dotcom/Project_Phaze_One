@@ -205,6 +205,11 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
 
+void graphical_view::draw_net_labeling_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
+{
+
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -281,6 +286,10 @@ bool graphical_view::run(Controller *C)
             else if (is_grounding)
             {
                 running = handle_grounding_events(event, C);
+            }
+            else if (is_labeling)
+            {
+                running = handle_net_labeling_events(event, C);
             }
             else
             {
@@ -495,8 +504,16 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_w:
             {
+                cout << "W key was pressed." << endl;
                 m_is_wiring = !m_is_wiring;
                 new_wire_points.clear();
+                break;
+            }
+
+            case SDLK_n:
+            {
+                cout << "N key was pressed." << endl;
+                is_labeling = !is_labeling;
                 break;
             }
 
@@ -669,7 +686,22 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
         if (SDL_PointInRect(&mouse_pos, &ok_button_rect))
         {
             // OK
-            C->update_element_properties(edited_element_index, edit_buffers);
+            auto& element = C->get_graphical_elements()[edited_element_index];
+
+            if (auto net_label = dynamic_cast<Graphical_Net_Label*>(element.get()))
+            {
+                Node* node_to_name = net_label->get_node();
+                string new_name = edit_buffers[0];
+
+                C->assign_net_name(node_to_name, new_name);
+
+                net_label->set_label(new_name);
+
+            }
+            else
+            {
+                C->update_element_properties(edited_element_index, edit_buffers);
+            }
             editing = false;
             SDL_StopTextInput();
         }
@@ -682,7 +714,6 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
         else
         {
             // text box
-            // (Note: the text box rects are defined in your draw_properties_menu function)
             bool an_edit_box_was_clicked = false;
             for (int i = 0; i < property_rects.size(); ++i)
             {
@@ -702,13 +733,11 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
         }
     }
 
-    // Handle text input, but only if a text box is active
     if (event.type == SDL_TEXTINPUT && active_edit_box != -1)
     {
         edit_buffers[active_edit_box] += event.text.text;
     }
 
-    // Handle special keys
     if (event.type == SDL_KEYDOWN)
     {
         switch (event.key.keysym.sym)
@@ -1144,5 +1173,77 @@ bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
             return true;
         }
     }
+    return true;
+}
+
+bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_n || event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            is_labeling = false;
+            cout << "Exiting Labeling mode" << endl;
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_Point click_pos = {mouseX, mouseY};
+        SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
+        const float CLICK_TOLERANCE = 10.0f;
+        auto& wires = C->get_graphical_wires();
+        int index_of_clicked_wire = -1;
+        SDL_Point label_pos;
+
+        for (size_t k = 0; k < wires.size(); ++k)
+        {
+            auto& wire = wires[k];
+            for (size_t i = 0; i < wire->path.size() - 1; ++i)
+            {
+                SDL_Point p1 = wire->path[i];
+                SDL_Point p2 = wire->path[i+1];
+
+                if (dist_to_segment(click_pos, p1, p2) < CLICK_TOLERANCE
+                ) {
+                    index_of_clicked_wire = k;
+                    if (p1.x == p2.x)
+                    {
+                        label_pos = { p1.x, snapped_pos.y };
+                    }
+                    else
+                    {
+                        label_pos = { snapped_pos.x, p1.y };
+                    }
+                    break;
+                }
+            }
+            if (index_of_clicked_wire != -1) break;
+        }
+
+        if (index_of_clicked_wire != -1)
+        {
+            Node* target_node = wires[index_of_clicked_wire]->start_node;
+
+            C->add_Graphical_Net_Label(label_pos, target_node);
+
+            is_labeling = false;
+            editing = true;
+
+            edited_element_index = C->get_graphical_elements().size() - 1;
+
+            edit_buffers.assign(1, "");
+            active_edit_box = 0;
+            SDL_StartTextInput();
+
+            cout << "Label placed. Enter name." << endl;
+        }
+    }
+
     return true;
 }

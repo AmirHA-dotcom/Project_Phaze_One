@@ -251,6 +251,8 @@ public:
 
     void add_Graphical_Ground(SDL_Point pos, Node* node);
 
+    Graphical_Net_Label* add_Graphical_Net_Label(SDL_Point pos, Node* node);
+
     vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
     void update_element_properties(int element_index, const vector<string>& new_values);

@@ -185,10 +185,11 @@ public:
     Graphical_Net_Label(SDL_Point pos, Node* node) : Graphical_Element(nullptr), m_position(pos), m_node(node) {}
 
     void set_label(const std::string& text) { m_label_text = text; }
+    Node* get_node() { return m_node; }
 
     void draw(SDL_Renderer* renderer) override;
 
-    std::vector<Connection_Point> get_connection_points() override { return {}; }
-    std::vector<Editable_Property> get_editable_properties() override { return {}; }
+    vector<Connection_Point> get_connection_points() override { return {}; }
+    vector<Editable_Property> get_editable_properties() override { return { {"Name", m_label_text} }; }
 };
 #endif //PROJECT_PHAZE_ONE_GRAPHICAL_ELEMENT_H

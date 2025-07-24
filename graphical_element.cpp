@@ -583,12 +583,18 @@ void Graphical_Ground::draw(SDL_Renderer *renderer)
 
 void Graphical_Net_Label::draw(SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderDrawLine(renderer, m_position.x, m_position.y, m_position.x + 20, m_position.y);
+    // Draw a small wire stub
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black
+    SDL_RenderDrawLine(renderer, m_position.x, m_position.y, m_position.x + 15, m_position.y);
 
-    // Draw the label text next to the stub
-    // (You will need to implement text rendering logic here using your font)
-    render_text(renderer, font, "not named", bounding_box.x, bounding_box.y - 20);
+    // Draw a small circle at the connection point
+    draw_circle(renderer, m_position.x, m_position.y, 3);
+
+    // Draw the label text if it's not empty
+    if (!m_label_text.empty())
+    {
+        render_text(renderer, font, m_label_text, m_position.x + 20, m_position.y - 8, {0, 0, 0, 255});
+    }
 }
 
 // get properties functions
