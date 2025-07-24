@@ -37,6 +37,6 @@ void Element::replace_node(Node *node_to_merge, Node *node_to_keep)
 {
     if (node_to_merge == node1)
         node1 = node_to_keep;
-    else if (node_to_merge == node2)
+    if (node_to_merge == node2)
         node2 = node_to_keep;
 }
