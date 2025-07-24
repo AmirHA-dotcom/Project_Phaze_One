@@ -237,6 +237,16 @@ public:
 
     void add_Graphical_DC_Source(int screenX, int screenY);
 
+    void add_Graphical_Sin_Source(int screenX, int screenY);
+
+    void add_Graphical_Pulse_Source(int screenX, int screenY);
+
+    void add_Graphical_Dirac_Source(int screenX, int screenY);
+
+    void add_Graphical_Square_Source(int screenX, int screenY);
+
+    void add_Graphical_Triangular_Source(int screenX, int screenY);
+
     vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
     void update_element_properties(int element_index, const vector<string>& new_values);
