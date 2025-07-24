@@ -962,7 +962,7 @@ Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, Node* no
     return ptr;
 }
 
-vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() 
+vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements()
 {
     return m_graphical_elements;
 }
@@ -1100,6 +1100,7 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     {
         return;
     }
+
     if (node_to_merge->is_the_node_ground())
     {
         node_to_keep->make_ground();
@@ -1119,6 +1120,17 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     {
         element->replace_node(node_to_merge, node_to_keep);
     }
+
+    for (const auto& wire : m_graphical_wires)
+    {
+        if (wire->start_node == node_to_merge) {
+            wire->start_node = node_to_keep;
+        }
+        if (wire->end_node == node_to_merge) {
+            wire->end_node = node_to_keep;
+        }
+    }
+
     circuit->delete_node(node_to_merge);
 }
 
