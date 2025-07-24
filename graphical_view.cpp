@@ -205,6 +205,69 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
 
+void graphical_view::initialize_toolbar(TTF_Font* font)
+{
+    m_toolbar_buttons.clear();
+
+    const vector<pair<string, Tool_Bar_Action>> button_data = {
+            {"Grid", Tool_Bar_Action::Grid},
+            {"Wire", Tool_Bar_Action::Wire},
+            {"Net Label", Tool_Bar_Action::Net_Label},
+            {"Components", Tool_Bar_Action::Components_Menu},
+            {"File", Tool_Bar_Action::File},
+            {"Analysis", Tool_Bar_Action::Configure_Analysis},
+            {"Run", Tool_Bar_Action::Run}
+    };
+
+    int current_x = 10;
+    const int button_height = 30;
+    const int y_pos = 5;
+    const int internal_padding = 15;
+    const int external_padding = 10;
+
+    for (const auto& data : button_data)
+    {
+        int text_width, text_height;
+        TTF_SizeText(font, data.first.c_str(), &text_width, &text_height);
+
+        int button_width = text_width + (2 * internal_padding);
+
+        m_toolbar_buttons.push_back({
+            {current_x, y_pos, button_width, button_height},
+            data.first,
+            data.second
+        });
+
+        current_x += button_width + external_padding;
+    }
+}
+
+void graphical_view::draw_toolbar(SDL_Renderer* renderer, TTF_Font* font)
+{
+    const int TOOLBAR_HEIGHT = 40;
+    const SDL_Color TOOLBAR_BG = {240, 240, 240, 255};
+    const SDL_Color BUTTON_BG = {200, 200, 200, 255};
+    const SDL_Color TEXT_COLOR = {0, 0, 0, 255};
+
+    SDL_Rect toolbar_rect = {0, 0, m_window_width, TOOLBAR_HEIGHT};
+    SDL_SetRenderDrawColor(renderer, TOOLBAR_BG.r, TOOLBAR_BG.g, TOOLBAR_BG.b, TOOLBAR_BG.a);
+    SDL_RenderFillRect(renderer, &toolbar_rect);
+
+    for (const auto& button : m_toolbar_buttons)
+    {
+        SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
+        SDL_RenderFillRect(renderer, &button.rect);
+
+        int text_width, text_height;
+        TTF_SizeText(font, button.text_label.c_str(), &text_width, &text_height);
+
+        int text_x = button.rect.x + (button.rect.w - text_width) / 2;
+        int text_y = button.rect.y + (button.rect.h - text_height) / 2;
+
+        render_text(renderer, font, button.text_label, text_x, text_y, TEXT_COLOR);
+    }
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -228,6 +291,7 @@ bool graphical_view::run(Controller *C)
     Graphical_Element::set_font(font);
 
     initialize_menu();
+    initialize_toolbar(font);
 
     SDL_Window* window = SDL_CreateWindow(
             "AHA & AS",
@@ -266,29 +330,34 @@ bool graphical_view::run(Controller *C)
 
         while (SDL_PollEvent(&event) != 0)
         {
-            if (elements_menu)
+            bool event_was_handled = handle_toolbar_events(event);
+
+            if (!event_was_handled)
             {
-                 running = handle_menu_events(event, C);
-            }
-            else if (editing)
-            {
-                running = handle_edit_properties_menu(event, C);
-            }
-            else if (m_is_wiring)
-            {
-                running = handle_wiring_events(event, C);
-            }
-            else if (is_grounding)
-            {
-                running = handle_grounding_events(event, C);
-            }
-            else if (is_labeling)
-            {
-                running = handle_net_labeling_events(event, C);
-            }
-            else
-            {
-                running = handle_events(event, C);
+                if (elements_menu)
+                {
+                    running = handle_menu_events(event, C);
+                }
+                else if (editing)
+                {
+                    running = handle_edit_properties_menu(event, C);
+                }
+                else if (m_is_wiring)
+                {
+                    running = handle_wiring_events(event, C);
+                }
+                else if (is_grounding)
+                {
+                    running = handle_grounding_events(event, C);
+                }
+                else if (is_labeling)
+                {
+                    running = handle_net_labeling_events(event, C);
+                }
+                else
+                {
+                    running = handle_events(event, C);
+                }
             }
         }
 
@@ -296,6 +365,8 @@ bool graphical_view::run(Controller *C)
         SDL_RenderClear(renderer);
 
         draw_grid(renderer);
+
+        draw_toolbar(renderer, font);
 
         for (const auto& element : graphical_elements)
         {
@@ -1238,4 +1309,54 @@ bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
     }
 
     return true;
+}
+
+bool graphical_view::handle_toolbar_events(SDL_Event& event)
+{
+    if (event.type == SDL_MOUSEBUTTONDOWN) 
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        if (mouse_pos.y < 40) 
+        { 
+            for (const auto& button : m_toolbar_buttons) 
+            {
+                if (SDL_PointInRect(&mouse_pos, &button.rect))
+                {
+                    switch (button.action) 
+                    {
+                        case Tool_Bar_Action::Wire:
+                            m_is_wiring = !m_is_wiring;
+                            is_labeling = false;
+                            elements_menu = false;
+                            is_grounding = false;
+                            break;
+                        case Tool_Bar_Action::Net_Label:
+                            is_labeling = !is_labeling;
+                            m_is_wiring = false;
+                            elements_menu = false;
+                            is_grounding = false;
+                            break;
+                        case Tool_Bar_Action::Grid:
+                            show_grids = !show_grids;
+                            break;
+                        case Tool_Bar_Action::Components_Menu:
+                            elements_menu = !elements_menu;
+                            m_is_wiring = false;
+                            is_labeling = false;
+                            is_grounding = false;
+                            break;
+                        case Tool_Bar_Action::File:
+                            break;
+                        case Tool_Bar_Action::Configure_Analysis:
+                            break;
+                        case Tool_Bar_Action::Run:
+                            break;
+                    }
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }

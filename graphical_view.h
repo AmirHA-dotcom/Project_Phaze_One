@@ -12,6 +12,13 @@
 #include "elements_graphics.h"
 #include "Graphical_Wire.h"
 
+enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run};
+
+struct ToolbarButton {
+    SDL_Rect rect;
+    string text_label;
+    Tool_Bar_Action action;
+};
 
 struct MenuItem {
     string name;
@@ -36,9 +43,13 @@ private:
     int m_window_width;
     int m_window_height;
 
+    // dragging
     bool m_is_dragging = false;
     int m_dragged_element_index = -1;
     SDL_Point m_drag_offset = {0, 0};
+
+    // show grids
+    bool show_grids = true;
 
     // item menu
     bool elements_menu = false;
@@ -67,12 +78,16 @@ private:
     // net labeling
     bool is_labeling = false;
 
+    // top menu
+    vector<ToolbarButton> m_toolbar_buttons;
+
     // helper functions
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
     void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
-
     void draw_grid(SDL_Renderer* renderer);
+    void initialize_toolbar(TTF_Font* font);
+    void draw_toolbar(SDL_Renderer* renderer, TTF_Font* font);
 
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
@@ -86,6 +101,8 @@ private:
     bool handle_grounding_events(SDL_Event& event, Controller* C);
 
     bool handle_net_labeling_events(SDL_Event& event, Controller* C);
+
+    bool handle_toolbar_events(SDL_Event& event);
 
 public:
     bool run (Controller* C);
