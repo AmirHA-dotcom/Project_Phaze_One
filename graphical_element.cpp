@@ -561,7 +561,6 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer)
     }
 }
 
-
 // get properties functions
 
 vector<Editable_Property> Graphical_Resistor::get_editable_properties()
@@ -623,10 +622,60 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Current (A)", to_string(model_element->get_value())});
+
+    if (auto* dc = dynamic_cast<DC_Source*>(model_element))
+    {
+        props.push_back({"Value (V)", to_string(dc->get_value_at(0, 0))});
+    }
+    else if (auto* sine = dynamic_cast<Sine_Source*>(model_element))
+    {
+        double off, amp, freq, phase;
+        sine->get_parameters(off, amp, freq, phase);
+        props.push_back({"Offset (V)", to_string(off)});
+        props.push_back({"Amplitude (V)", to_string(amp)});
+        props.push_back({"Frequency (Hz)", to_string(freq)});
+        props.push_back({"Phase (deg)", to_string(phase)});
+    }
+    else if (auto* pulse = dynamic_cast<Pulse_Source*>(model_element))
+    {
+        double v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period;
+        pulse->get_parameters(v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period);
+        props.push_back({"Initial V", to_string(v_initial)});
+        props.push_back({"Pulsed V", to_string(v_pulsed)});
+        props.push_back({"Delay (s)", to_string(time_delay)});
+        props.push_back({"Rise Time (s)", to_string(time_rise)});
+        props.push_back({"Fall Time (s)", to_string(time_fall)});
+        props.push_back({"Pulse Width (s)", to_string(pulse_width)});
+        props.push_back({"Period (s)", to_string(period)});
+    }
+    else if (auto* square = dynamic_cast<Square_Source*>(model_element))
+    {
+        double v_down, v_up, time_delay, square_width, period;
+        square->get_parameters(v_down, v_up, time_delay, square_width, period);
+        props.push_back({"Low V", to_string(v_down)});
+        props.push_back({"High V", to_string(v_up)});
+        props.push_back({"Delay (s)", to_string(time_delay)});
+        props.push_back({"Pulse Width (s)", to_string(square_width)});
+        props.push_back({"Period (s)", to_string(period)});
+    }
+    else if (auto* tri = dynamic_cast<Triangular_Source*>(model_element))
+    {
+        double v_initial, v_peak, time_delay, period;
+        tri->get_parameters(v_initial, v_peak, time_delay, period);
+        props.push_back({"Initial V", to_string(v_initial)});
+        props.push_back({"Peak V", to_string(v_peak)});
+        props.push_back({"Delay (s)", to_string(time_delay)});
+        props.push_back({"Period (s)", to_string(period)});
+    }
+    else if (auto* delta = dynamic_cast<Delta_Dirac*>(model_element))
+    {
+        double delta_val, not_delta_val, time;
+        delta->get_parameters(delta_val, not_delta_val, time);
+        props.push_back({"Time (s)", to_string(time)});
+    }
+
     return props;
 }
-
 // get connection points functions
 
 vector<Connection_Point> Graphical_Resistor::get_connection_points()

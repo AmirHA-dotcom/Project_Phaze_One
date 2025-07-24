@@ -34,6 +34,7 @@ public:
             : Voltage_Source(_name, _node1, _node2, 0.0), dc_value(_value) {}
 
     double get_value_at(double time, double time_step) const override;
+    void set_value(double val) { dc_value = val; }
 };
 
 const double PI = 3.14159;
@@ -51,6 +52,10 @@ public:
 
     double get_value_at(double time, double time_step) const override;
     void get_parameters(double& out_offset, double& out_amplitude, double& out_frequency, double& out_phase) const;
+    void set_offset(double val) { offset = val; }
+    void set_amplitude(double val) { amplitude = val; }
+    void set_frequency(double val) { frequency = val; }
+    void set_phase_degrees(double val) { phase_degrees = val; }
 };
 
 class Pulse_Source : public Voltage_Source
@@ -70,6 +75,13 @@ public:
 
     double get_value_at(double time, double time_step) const override;
     void get_parameters(double& v_initial, double& v_pulsed, double& time_delay, double& time_rise, double& time_fall, double& pulse_width, double& period) const;
+    void set_v_initial(double val) { v_initial = val; }
+    void set_v_pulsed(double val) { v_pulsed = val; }
+    void set_time_delay(double val) { time_delay = val; }
+    void set_time_rise(double val) { time_rise = val; }
+    void set_time_fall(double val) { time_fall = val; }
+    void set_pulse_width(double val) { pulse_width = val; }
+    void set_period(double val) { period = val; }
 };
 
 class Delta_Dirac : public Voltage_Source
@@ -83,6 +95,7 @@ public:
             : Voltage_Source(_name, _node1, _node2, 0.0), delta_value(10000000000), not_delta_value(0.0), time_of_delta(time) {}
     double get_value_at(double time, double time_step) const override;
     void get_parameters(double& delta_value, double& not_delta_value, double& time_of_delta) const;
+    void set_time_of_delta(double val) { time_of_delta = val; }
 };
 
 class Square_Source : public Voltage_Source
@@ -99,6 +112,11 @@ public:
               square_width(pw), period(per) {}
     double get_value_at(double time, double time_step) const override;
     void get_parameters(double& v_down, double& v_up, double& time_delay, double& square_width, double& period) const;
+    void set_v_down(double val) { v_down = val; }
+    void set_v_up(double val) { v_up = val; }
+    void set_time_delay(double val) { time_delay = val; }
+    void set_square_width(double val) { square_width = val; }
+    void set_period(double val) { period = val; }
 };
 
 class Triangular_Source : public Voltage_Source
@@ -113,6 +131,10 @@ public:
             : Voltage_Source(_name, _node1, _node2, 0.0), v_initial(v1), v_peak(v2), time_delay(td), period(per) {}
     double get_value_at(double time, double time_step) const override;
     void get_parameters(double& v_initial, double& v_peak, double& time_delay, double& period) const;
+    void set_v_initial(double val) { v_initial = val; }
+    void set_v_peak(double val) { v_peak = val; }
+    void set_time_delay(double val) { time_delay = val; }
+    void set_period(double val) { period = val; }
 };
 
 

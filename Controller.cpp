@@ -1006,6 +1006,62 @@ void Controller::update_element_properties(int element_index, const vector<strin
             element->change_value(toValue(new_values[1]));
         }
     }
+    else if (auto* v_source = dynamic_cast<Voltage_Source*>(element_model))
+    {
+        if (auto* dc = dynamic_cast<DC_Source*>(v_source))
+        {
+            if (new_values.size() > 1 && isValidSpiceNumber(new_values[1]))
+                dc->set_value(toValue(new_values[1]));
+        }
+        else if (auto* sine = dynamic_cast<Sine_Source*>(v_source))
+        {
+            if (new_values.size() > 4)
+            {
+                if (isValidSpiceNumber(new_values[1])) sine->set_offset(toValue(new_values[1]));
+                if (isValidSpiceNumber(new_values[2])) sine->set_amplitude(toValue(new_values[2]));
+                if (isValidSpiceNumber(new_values[3])) sine->set_frequency(toValue(new_values[3]));
+                if (isValidSpiceNumber(new_values[4])) sine->set_phase_degrees(toValue(new_values[4]));
+            }
+        }
+        else if (auto* pulse = dynamic_cast<Pulse_Source*>(v_source))
+        {
+            if (new_values.size() > 7) {
+                if (isValidSpiceNumber(new_values[1])) pulse->set_v_initial(toValue(new_values[1]));
+                if (isValidSpiceNumber(new_values[2])) pulse->set_v_pulsed(toValue(new_values[2]));
+                if (isValidSpiceNumber(new_values[3])) pulse->set_time_delay(toValue(new_values[3]));
+                if (isValidSpiceNumber(new_values[4])) pulse->set_time_rise(toValue(new_values[4]));
+                if (isValidSpiceNumber(new_values[5])) pulse->set_time_fall(toValue(new_values[5]));
+                if (isValidSpiceNumber(new_values[6])) pulse->set_pulse_width(toValue(new_values[6]));
+                if (isValidSpiceNumber(new_values[7])) pulse->set_period(toValue(new_values[7]));
+            }
+        }
+        else if (auto* square = dynamic_cast<Square_Source*>(v_source))
+        {
+            if (new_values.size() > 5)
+            {
+                if (isValidSpiceNumber(new_values[1])) square->set_v_down(toValue(new_values[1]));
+                if (isValidSpiceNumber(new_values[2])) square->set_v_up(toValue(new_values[2]));
+                if (isValidSpiceNumber(new_values[3])) square->set_time_delay(toValue(new_values[3]));
+                if (isValidSpiceNumber(new_values[4])) square->set_square_width(toValue(new_values[4]));
+                if (isValidSpiceNumber(new_values[5])) square->set_period(toValue(new_values[5]));
+            }
+        }
+        else if (auto* tri = dynamic_cast<Triangular_Source*>(v_source))
+        {
+            if (new_values.size() > 4)
+            {
+                if (isValidSpiceNumber(new_values[1])) tri->set_v_initial(toValue(new_values[1]));
+                if (isValidSpiceNumber(new_values[2])) tri->set_v_peak(toValue(new_values[2]));
+                if (isValidSpiceNumber(new_values[3])) tri->set_time_delay(toValue(new_values[3]));
+                if (isValidSpiceNumber(new_values[4])) tri->set_period(toValue(new_values[4]));
+            }
+        }
+        else if (auto* delta = dynamic_cast<Delta_Dirac*>(v_source))
+        {
+            if (new_values.size() > 1 && isValidSpiceNumber(new_values[1]))
+                delta->set_time_of_delta(toValue(new_values[1]));
+        }
+    }
 }
 
 vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()

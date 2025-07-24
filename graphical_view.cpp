@@ -161,7 +161,7 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
 //    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 
     int menu_width = 400;
-    int menu_height = 300;
+    int menu_height = 420;
     SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
     SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
     SDL_RenderFillRect(renderer, &menu_panel);
