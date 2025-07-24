@@ -307,9 +307,6 @@ bool graphical_view::run(Controller *C)
             wire->draw(renderer);
         }
 
-//        if (new_wire_points.empty() && m_is_wiring)
-//            cout << "no wires to draw" << endl;
-
         if (m_is_wiring && !new_wire_points.empty())
         {
             int mouseX, mouseY;
@@ -1000,7 +997,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 size_t segment_index = 0;
 
                 // finding the wire
-                for (size_t k = 0; k < wires.size(); ++k) 
+                for (size_t k = 0; k < wires.size(); ++k)
                 {
                     auto& wire = wires[k];
                     for (size_t i = 0; i < wire->path.size() - 1; ++i)
@@ -1014,25 +1011,25 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                             segment_index = i;
 
                             // vertical segment
-                            if (p1.x == p2.x) 
-                            { 
+                            if (p1.x == p2.x)
+                            {
                                 junction_pos = { p1.x, snapped_pos.y };
                             }
                             // horizontal segment
-                            else 
-                            { 
+                            else
+                            {
                                 junction_pos = { snapped_pos.x, p1.y };
                             }
 
-                            break; 
+                            break;
                         }
                     }
-                    if (index_to_delete != -1) 
+                    if (index_to_delete != -1)
                     {
-                        break; 
+                        break;
                     }
                 }
-                
+
                 if (index_to_delete != -1)
                 {
                     Node* source_node = new_wire_points.front().node;
