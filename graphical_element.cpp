@@ -128,11 +128,14 @@ Element *Graphical_Element::get_model() { return model_element; }
 
 // draw functions
 
-void Graphical_Resistor::draw(SDL_Renderer *renderer)
+void Graphical_Resistor::draw(SDL_Renderer *renderer, bool show_grid)
 {
     // bounding box
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
@@ -173,10 +176,13 @@ void Graphical_Resistor::draw(SDL_Renderer *renderer)
     }
 }
 
-void Graphical_Capacitor::draw(SDL_Renderer *renderer)
+void Graphical_Capacitor::draw(SDL_Renderer *renderer, bool show_grid)
 {
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
@@ -228,10 +234,13 @@ void Graphical_Capacitor::draw(SDL_Renderer *renderer)
     }
 }
 
-void Graphical_Inductor::draw(SDL_Renderer* renderer)
+void Graphical_Inductor::draw(SDL_Renderer* renderer, bool show_grid)
 {
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
@@ -277,10 +286,13 @@ void Graphical_Inductor::draw(SDL_Renderer* renderer)
     }
 }
 
-void Graphical_Current_Source::draw(SDL_Renderer* renderer)
+void Graphical_Current_Source::draw(SDL_Renderer* renderer, bool show_grid)
 {
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
@@ -331,10 +343,13 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
     }
 }
 
-void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
+void Graphical_Real_Diode::draw(SDL_Renderer* renderer, bool show_grid)
 {
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
@@ -376,10 +391,13 @@ void Graphical_Real_Diode::draw(SDL_Renderer* renderer)
     }
 }
 
-void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
+void Graphical_Zener_Diode::draw(SDL_Renderer* renderer, bool show_grid)
 {
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
@@ -435,10 +453,13 @@ void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
     }
 }
 
-void Graphical_Voltage_Source::draw(SDL_Renderer* renderer)
+void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
 {
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    SDL_RenderDrawRect(renderer, &bounding_box);
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
@@ -569,7 +590,7 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer)
     }
 }
 
-void Graphical_Ground::draw(SDL_Renderer *renderer)
+void Graphical_Ground::draw(SDL_Renderer *renderer, bool show_grid)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
@@ -581,16 +602,13 @@ void Graphical_Ground::draw(SDL_Renderer *renderer)
     SDL_RenderDrawLine(renderer, m_position.x - 4,  y + 8, m_position.x + 4,  y + 8);
 }
 
-void Graphical_Net_Label::draw(SDL_Renderer *renderer)
+void Graphical_Net_Label::draw(SDL_Renderer *renderer, bool show_grid)
 {
-    // Draw a small wire stub
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderDrawLine(renderer, m_position.x, m_position.y, m_position.x + 15, m_position.y);
 
-    // Draw a small circle at the connection point
     draw_circle(renderer, m_position.x, m_position.y, 3);
 
-    // Draw the label text if it's not empty
     if (!m_label_text.empty())
     {
         render_text(renderer, font, m_label_text, m_position.x + 20, m_position.y - 8, {0, 0, 0, 255});

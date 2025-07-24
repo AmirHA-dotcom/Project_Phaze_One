@@ -98,49 +98,49 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
             {
                 Graphical_Resistor preview(nullptr);
                 preview.bounding_box = preview_panel;
-                preview.draw(renderer);
+                preview.draw(renderer, false);
                 break;
             }
             case Element_Type::Capacitor:
             {
                 Graphical_Capacitor preview(nullptr);
                 preview.bounding_box = preview_panel;
-                preview.draw(renderer);
+                preview.draw(renderer, false);
                 break;
             }
             case Element_Type::Inductor:
             {
                 Graphical_Inductor preview(nullptr);
                 preview.bounding_box = preview_panel;
-                preview.draw(renderer);
+                preview.draw(renderer, false);
                 break;
             }
             case Element_Type::Current_Source:
             {
                 Graphical_Current_Source preview(nullptr);
                 preview.bounding_box = preview_panel;
-                preview.draw(renderer);
+                preview.draw(renderer, false);
                 break;
             }
             case Element_Type::Real_Diode:
             {
                 Graphical_Real_Diode preview(nullptr);
                 preview.bounding_box = preview_panel;
-                preview.draw(renderer);
+                preview.draw(renderer, false);
                 break;
             }
             case Element_Type::Zener_Diode:
             {
                 Graphical_Zener_Diode preview(nullptr);
                 preview.bounding_box = preview_panel;
-                preview.draw(renderer);
+                preview.draw(renderer, false);
                 break;
             }
             case Element_Type::Voltage_Source:
             {
                 Graphical_Voltage_Source preview(nullptr);
                 preview.bounding_box = preview_panel;
-                preview.draw(renderer);
+                preview.draw(renderer, false);
                 break;
             }
         }
@@ -364,13 +364,16 @@ bool graphical_view::run(Controller *C)
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        draw_grid(renderer);
+        if (show_grids)
+        {
+            draw_grid(renderer);
+        }
 
         draw_toolbar(renderer, font);
 
         for (const auto& element : graphical_elements)
         {
-            element->draw(renderer);
+            element->draw(renderer, show_grids);
         }
 
         for (const auto& wire : graphical_wires)

@@ -67,7 +67,7 @@ public:
     Graphical_Element(Element* element_model) : model_element(element_model) { rotation = Rotation::Right; }
     virtual ~Graphical_Element() = default;
 
-    virtual void draw(SDL_Renderer* renderer) = 0;
+    virtual void draw(SDL_Renderer* renderer, bool show_grid) = 0;
 
     static void set_font(TTF_Font* font);
 
@@ -86,7 +86,7 @@ class Graphical_Resistor : public Graphical_Element {
 public:
     Graphical_Resistor(Resistor* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
@@ -96,7 +96,7 @@ class Graphical_Capacitor : public Graphical_Element {
 public:
     Graphical_Capacitor(Capacitor* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
@@ -107,7 +107,7 @@ class Graphical_Inductor : public Graphical_Element {
 public:
     Graphical_Inductor(Inductor* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
@@ -118,7 +118,7 @@ class Graphical_Current_Source : public Graphical_Element {
 public:
     Graphical_Current_Source(Current_Source* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
@@ -129,7 +129,7 @@ class Graphical_Real_Diode : public Graphical_Element {
 public:
     Graphical_Real_Diode(Real_Diode* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
@@ -140,7 +140,7 @@ class Graphical_Zener_Diode : public Graphical_Element {
 public:
     Graphical_Zener_Diode(Zener_Diode* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
@@ -151,7 +151,7 @@ class Graphical_Voltage_Source : public Graphical_Element {
 public:
     Graphical_Voltage_Source(Voltage_Source* model) : Graphical_Element(model) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
@@ -167,7 +167,7 @@ private:
 public:
     Graphical_Ground(SDL_Point pos, Node* node) : Graphical_Element(nullptr), m_position(pos), m_node(node) {}
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Connection_Point> get_connection_points() override { return {}; }
 
@@ -187,7 +187,7 @@ public:
     void set_label(const std::string& text) { m_label_text = text; }
     Node* get_node() { return m_node; }
 
-    void draw(SDL_Renderer* renderer) override;
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Connection_Point> get_connection_points() override { return {}; }
     vector<Editable_Property> get_editable_properties() override { return { {"Name", m_label_text} }; }
