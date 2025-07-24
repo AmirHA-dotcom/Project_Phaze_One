@@ -16,6 +16,7 @@
 struct MenuItem {
     string name;
     Element_Type type;
+    string subtype_tag;
     SDL_Rect rect;
 };
 

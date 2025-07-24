@@ -50,6 +50,7 @@ public:
             : Voltage_Source(_name, _node1, _node2, 0.0), offset(off), amplitude(amp), frequency(freq), phase_degrees(phase) {}
 
     double get_value_at(double time, double time_step) const override;
+    void get_parameters(double& out_offset, double& out_amplitude, double& out_frequency, double& out_phase) const;
 };
 
 class Pulse_Source : public Voltage_Source
@@ -68,6 +69,7 @@ public:
               time_rise(tr), time_fall(tf), pulse_width(pw), period(per) {}
 
     double get_value_at(double time, double time_step) const override;
+    void get_parameters(double& v_initial, double& v_pulsed, double& time_delay, double& time_rise, double& time_fall, double& pulse_width, double& period) const;
 };
 
 class Delta_Dirac : public Voltage_Source
@@ -80,6 +82,7 @@ public:
     Delta_Dirac(string _name, Node* _node1, Node* _node2, double time)
             : Voltage_Source(_name, _node1, _node2, 0.0), delta_value(10000000000), not_delta_value(0.0), time_of_delta(time) {}
     double get_value_at(double time, double time_step) const override;
+    void get_parameters(double& delta_value, double& not_delta_value, double& time_of_delta) const;
 };
 
 class Square_Source : public Voltage_Source
@@ -95,6 +98,7 @@ public:
             : Voltage_Source(_name, _node1, _node2, 0.0), v_down(v1), v_up(v2), time_delay(td),
               square_width(pw), period(per) {}
     double get_value_at(double time, double time_step) const override;
+    void get_parameters(double& v_down, double& v_up, double& time_delay, double& square_width, double& period) const;
 };
 
 class Triangular_Source : public Voltage_Source
@@ -108,6 +112,7 @@ public:
     Triangular_Source(string _name, Node* _node1, Node* _node2, double v1, double v2, double td, double per)
             : Voltage_Source(_name, _node1, _node2, 0.0), v_initial(v1), v_peak(v2), time_delay(td), period(per) {}
     double get_value_at(double time, double time_step) const override;
+    void get_parameters(double& v_initial, double& v_peak, double& time_delay, double& period) const;
 };
 
 

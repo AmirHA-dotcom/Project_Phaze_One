@@ -58,6 +58,12 @@ void graphical_view::initialize_menu()
     menu_items.push_back({"Current Source", Element_Type::Current_Source});
     menu_items.push_back({"Diode", Element_Type::Real_Diode});
     menu_items.push_back({"Zener Diode", Element_Type::Zener_Diode});
+    menu_items.push_back({"DC Source", Element_Type::Voltage_Source, "DC"});
+    menu_items.push_back({"SIN Source", Element_Type::Voltage_Source, "SIN"});
+    menu_items.push_back({"Pulse Source", Element_Type::Voltage_Source, "Pulse"});
+    menu_items.push_back({"Delta_Dirac Source", Element_Type::Voltage_Source, "Delta"});
+    menu_items.push_back({"Square Source", Element_Type::Voltage_Source, "Square"});
+    menu_items.push_back({"Triangular Source", Element_Type::Voltage_Source, "Triangular"});
 }
 
 void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font) {
@@ -126,6 +132,13 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
             case Element_Type::Zener_Diode:
             {
                 Graphical_Zener_Diode preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer);
+                break;
+            }
+            case Element_Type::Voltage_Source:
+            {
+                Graphical_Voltage_Source preview(nullptr);
                 preview.bounding_box = preview_panel;
                 preview.draw(renderer);
                 break;
@@ -614,6 +627,22 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
                         case Element_Type::Current_Source: C->add_Graphical_Current_Source(mouseX, mouseY); break;
                         case Element_Type::Real_Diode: C->add_Graphical_Real_Diode(mouseX, mouseY); break;
                         case Element_Type::Zener_Diode: C->add_Graphical_Zener_Diode(mouseX, mouseY); break;
+                        case Element_Type::Voltage_Source:
+                        {
+                            if (menu_items[i].subtype_tag == "DC")
+                                C->add_Graphical_DC_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "SIN")
+                                C->add_Graphical_Sin_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "Pulse")
+                                C->add_Graphical_Pulse_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "Delta")
+                                C->add_Graphical_Dirac_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "Square")
+                                C->add_Graphical_Square_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "Triangular")
+                                C->add_Graphical_Triangular_Source(mouseX, mouseY);
+                            break;
+                        }
                     }
 
                     elements_menu = false;

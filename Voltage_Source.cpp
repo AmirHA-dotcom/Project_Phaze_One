@@ -172,3 +172,47 @@ double Triangular_Source::get_value_at(double time, double time_step) const
         return v_peak + (v_initial - v_peak) * ((time_in_period - half_period) / half_period);
     }
 }
+
+// for GRAPHICS!
+
+void Sine_Source::get_parameters(double& out_offset, double& out_amplitude, double& out_frequency, double& out_phase) const {
+    out_offset = offset;
+    out_amplitude = amplitude;
+    out_frequency = frequency;
+    out_phase = phase_degrees;
+}
+
+void Pulse_Source::get_parameters(double &v_initial, double &v_pulsed, double &time_delay, double &time_rise, double &time_fall, double &pulse_width, double &period) const
+{
+    v_initial = this->v_initial;
+    v_pulsed = this->v_pulsed;
+    time_delay = this->time_delay;
+    time_rise = this->time_rise;
+    time_fall = this->time_fall;
+    pulse_width = this->pulse_width;
+    period = this->period;
+}
+
+void Delta_Dirac::get_parameters(double& delta_value, double& not_delta_value, double& time_of_delta) const
+{
+    delta_value = this->delta_value;
+    not_delta_value = this->not_delta_value;
+    time_of_delta = this->time_of_delta;
+}
+
+void Square_Source::get_parameters(double& v_down, double& v_up, double& time_delay, double& square_width, double& period) const
+{
+    v_down = this->v_down;
+    v_up = this->v_up;
+    time_delay = this->time_delay;
+    square_width = this->square_width;
+    period = this->period;
+}
+
+void Triangular_Source::get_parameters(double& v_initial, double& v_peak, double& time_delay, double& period) const
+{
+    v_initial = this->v_initial;
+    v_peak = this->v_peak;
+    time_delay = this->time_delay;
+    period = this->period;
+}

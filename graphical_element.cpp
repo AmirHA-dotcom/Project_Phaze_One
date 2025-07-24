@@ -486,35 +486,74 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer)
 
         string to_be_printed = "";
 
-        if (dynamic_cast<DC_Source*>(model_element))
+        if (auto* dc = dynamic_cast<DC_Source*>(model_element))
         {
-            cout << "This is a DC Source." << endl;
-            double value = model_element->get_value();
-            to_be_printed = format_with_suffix(value, " V");
+            double value = dc->get_value_at(0, 0);
+            to_be_printed = format_with_suffix(value, "V");
         }
-        else if (dynamic_cast<Sine_Source*>(model_element))
+        else if (auto* sine = dynamic_cast<Sine_Source*>(model_element))
         {
-            std::cout << "This is a Sine Source." << std::endl;
+            double off, amp, freq, phase;
+            sine->get_parameters(off, amp, freq, phase);
+
+            stringstream ss;
+            ss << "SIN(" << format_with_suffix(off, " ") << format_with_suffix(amp, " ") << format_with_suffix(freq, "");
+            if (phase != 0.0)
+            {
+                ss << " " << format_with_suffix(phase, "");
+            }
+            ss << ")";
+            to_be_printed = ss.str();
         }
-        else if (dynamic_cast<Pulse_Source*>(model_element))
+        else if (auto* pulse = dynamic_cast<Pulse_Source*>(model_element))
         {
-            std::cout << "This is a Pulse Source." << std::endl;
+            double v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period;
+            pulse->get_parameters(v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period);
+
+            stringstream ss;
+            ss << "PULSE(" << format_with_suffix(v_initial, " ") << format_with_suffix(v_pulsed, "");
+            if (time_delay != 0.0) ss << " " << format_with_suffix(time_delay, "");
+            if (time_rise != 0.0) ss << " " << format_with_suffix(time_rise, "");
+            if (time_fall != 0.0) ss << " " << format_with_suffix(time_fall, "");
+            if (pulse_width != 0.0) ss << " " << format_with_suffix(pulse_width, "");
+            if (period != 0.0) ss << " " << format_with_suffix(period, "");
+            ss << ")";
+            to_be_printed = ss.str();
         }
-        else if (dynamic_cast<Square_Source*>(model_element))
+        else if (auto* square = dynamic_cast<Square_Source*>(model_element))
         {
-            std::cout << "This is a Square Source." << std::endl;
+            double v_down, v_up, time_delay, square_width, period;
+            square->get_parameters(v_down, v_up, time_delay, square_width, period);
+
+            stringstream ss;
+            ss << "SQUARE(" << format_with_suffix(v_down, " ") << format_with_suffix(v_up, "");
+            if (time_delay != 0.0) ss << " " << format_with_suffix(time_delay, "");
+            if (square_width != 0.0) ss << " " << format_with_suffix(square_width, "");
+            if (period != 0.0) ss << " " << format_with_suffix(period, "");
+            ss << ")";
+            to_be_printed = ss.str();
         }
-        else if (dynamic_cast<Triangular_Source*>(model_element))
+        else if (auto* tri = dynamic_cast<Triangular_Source*>(model_element))
         {
-            std::cout << "This is a Triangular Source." << std::endl;
+            double v_initial, v_peak, time_delay, period;
+            tri->get_parameters(v_initial, v_peak, time_delay, period);
+
+            stringstream ss;
+            ss << "TRI(" << format_with_suffix(v_initial, " ") << format_with_suffix(v_peak, "");
+            if (time_delay != 0.0) ss << " " << format_with_suffix(time_delay, "");
+            if (period != 0.0) ss << " " << format_with_suffix(period, "");
+            ss << ")";
+            to_be_printed = ss.str();
         }
-        else if (dynamic_cast<Delta_Dirac*>(model_element))
+        else if (auto* delta = dynamic_cast<Delta_Dirac*>(model_element))
         {
-            std::cout << "This is a Delta Dirac Source." << std::endl;
+            double delta_value, not_delta_value, time_of_delta;
+            delta->get_parameters(delta_value, not_delta_value, time_of_delta);
+            to_be_printed = "DELTA(" + format_with_suffix(time_of_delta, "s)");
         }
         else
         {
-            std::cout << "This is another type of Voltage Source." << std::endl;
+            to_be_printed = format_with_suffix(model_element->get_value(), "V");
         }
 
 
