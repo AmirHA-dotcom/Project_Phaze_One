@@ -677,6 +677,25 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C)
 {
+    // helper
+    auto save_and_exit = [&]() {
+        auto& element = C->get_graphical_elements()[edited_element_index];
+
+        if (auto net_label = dynamic_cast<Graphical_Net_Label*>(element.get()))
+        {
+            Node* node_to_name = net_label->get_node();
+            string new_name = edit_buffers[0];
+            C->assign_net_name(node_to_name, new_name);
+            net_label->set_label(new_name);
+        }
+        else
+        {
+            C->update_element_properties(edited_element_index, edit_buffers);
+        }
+        editing = false;
+        SDL_StopTextInput();
+    };
+
     if (event.type == SDL_QUIT) return false;
 
     if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -686,24 +705,7 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
         if (SDL_PointInRect(&mouse_pos, &ok_button_rect))
         {
             // OK
-            auto& element = C->get_graphical_elements()[edited_element_index];
-
-            if (auto net_label = dynamic_cast<Graphical_Net_Label*>(element.get()))
-            {
-                Node* node_to_name = net_label->get_node();
-                string new_name = edit_buffers[0];
-
-                C->assign_net_name(node_to_name, new_name);
-
-                net_label->set_label(new_name);
-
-            }
-            else
-            {
-                C->update_element_properties(edited_element_index, edit_buffers);
-            }
-            editing = false;
-            SDL_StopTextInput();
+            save_and_exit();
         }
         else if (SDL_PointInRect(&mouse_pos, &cancel_button_rect))
         {
@@ -755,9 +757,7 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
                 break;
 
             case SDLK_RETURN:
-                C->update_element_properties(edited_element_index, edit_buffers);
-                editing = false;
-                SDL_StopTextInput();
+                save_and_exit();
                 break;
         }
     }
