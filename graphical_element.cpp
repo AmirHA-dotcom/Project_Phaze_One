@@ -463,16 +463,24 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer)
     }
     SDL_RenderDrawLines(renderer, circle_points.data(), circle_points.size());
 
-    // V
-    SDL_Point V_points[] = {
-            {0, +radius / 2}, {(int)(radius / 2) - 5, -(int)(radius / 2)},
-            {0, +radius / 2}, {-(int)(radius / 2) + 5, -(int)(radius / 2)},
-            {(int)(radius / 2) - 5, -(int)(radius / 2)}, {(int)(radius / 2) + 3, -(int)(radius / 2)},
-            {-(int)(radius / 2) + 5, -(int)(radius / 2)}, {-(int)(radius / 2) - 3, -(int)(radius / 2)}
+    // V symbol
+//    SDL_Point V_points[] = {
+//            {0, +radius / 2}, {(int)(radius / 2) - 5, -(int)(radius / 2)},
+//            {0, +radius / 2}, {-(int)(radius / 2) + 5, -(int)(radius / 2)},
+//            {(int)(radius / 2) - 5, -(int)(radius / 2)}, {(int)(radius / 2) + 3, -(int)(radius / 2)},
+//            {-(int)(radius / 2) + 5, -(int)(radius / 2)}, {-(int)(radius / 2) - 3, -(int)(radius / 2)}
+//    };
+
+    // - + symbol
+    SDL_Point plus_minus[] = {
+            {-5 , 0}, {- 15, 0},
+            {5, 0}, {15, 0},
+            {10, 5}, {10, -5}
     };
-    for (size_t i = 0; i < 8; i+=2) {
-        SDL_Point p1 = transform_point(V_points[i]);
-        SDL_Point p2 = transform_point(V_points[i+1]);
+
+    for (size_t i = 0; i < 6; i+=2) {
+        SDL_Point p1 = transform_point(plus_minus[i]);
+        SDL_Point p2 = transform_point(plus_minus[i+1]);
         SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
     }
 
