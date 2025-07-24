@@ -74,8 +74,6 @@ private:
 
     void draw_grid(SDL_Renderer* renderer);
 
-    void draw_net_labeling_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
-
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
 

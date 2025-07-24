@@ -205,11 +205,6 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
 
-void graphical_view::draw_net_labeling_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
-{
-
-}
-
 // main functions
 
 bool graphical_view::run(Controller *C)
