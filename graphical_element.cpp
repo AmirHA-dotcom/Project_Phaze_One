@@ -569,6 +569,18 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer)
     }
 }
 
+void Graphical_Ground::draw(SDL_Renderer *renderer)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+    SDL_RenderDrawLine(renderer, m_position.x, m_position.y, m_position.x, m_position.y + 10);
+
+    int y = m_position.y + 10;
+    SDL_RenderDrawLine(renderer, m_position.x - 12, y, m_position.x + 12, y);
+    SDL_RenderDrawLine(renderer, m_position.x - 8,  y + 4, m_position.x + 8,  y + 4);
+    SDL_RenderDrawLine(renderer, m_position.x - 4,  y + 8, m_position.x + 4,  y + 8);
+}
+
 // get properties functions
 
 vector<Editable_Property> Graphical_Resistor::get_editable_properties()
@@ -684,6 +696,7 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
 
     return props;
 }
+
 // get connection points functions
 
 vector<Connection_Point> Graphical_Resistor::get_connection_points()

@@ -278,6 +278,10 @@ bool graphical_view::run(Controller *C)
             {
                 running = handle_wiring_events(event, C);
             }
+            else if (is_grounding)
+            {
+                running = handle_grounding_events(event, C);
+            }
             else
             {
                 running = handle_events(event, C);
@@ -482,18 +486,17 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 break;
             }
 
+            case SDLK_g:
+            {
+                cout << "G key was pressed." << endl;
+                is_grounding = !is_grounding;
+                break;
+            }
+
             case SDLK_w:
             {
                 m_is_wiring = !m_is_wiring;
                 new_wire_points.clear();
-                if (m_is_wiring)
-                {
-                    cout << "Entered wiring Mode." << endl;
-                }
-                else
-                {
-                    cout << "Exited wiring Mode." << endl;
-                }
                 break;
             }
 
@@ -1079,5 +1082,67 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
         }
     }
 
+    return true;
+}
+
+bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_g || event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            is_grounding = false;
+            cout << "Exiting Grounding mode" << endl;
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_Point click_pos = {mouseX, mouseY};
+        SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
+        const float CLICK_TOLERANCE = 5.0f;
+        auto& wires = C->get_graphical_wires();
+
+        int index_to_ground = -1;
+
+        // finding the wire and the node
+        for (size_t k = 0; k < wires.size(); ++k)
+        {
+            auto& wire = wires[k];
+            for (size_t i = 0; i < wire->path.size() - 1; ++i)
+            {
+                SDL_Point p1 = wire->path[i];
+                SDL_Point p2 = wire->path[i+1];
+
+                if (dist_to_segment(click_pos, p1, p2) < CLICK_TOLERANCE)
+                {
+                    index_to_ground = k;
+                    break;
+                }
+            }
+            if (index_to_ground != -1)
+            {
+                break;
+            }
+        }
+
+        if (index_to_ground != -1)
+        {
+            Node* node = wires[index_to_ground]->start_node;
+
+            node->make_ground();
+
+            C->add_Graphical_Ground(snapped_pos, node);
+
+            cout << "made the node ground: " << node->get_name() << endl;
+            is_grounding = false;
+            return true;
+        }
+    }
     return true;
 }

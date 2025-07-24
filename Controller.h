@@ -247,7 +247,9 @@ public:
 
     void add_Graphical_Triangular_Source(int screenX, int screenY);
 
-    vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
+    void add_Graphical_Ground(SDL_Point pos, Node* node);
+
+        vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
     void update_element_properties(int element_index, const vector<string>& new_values);
 

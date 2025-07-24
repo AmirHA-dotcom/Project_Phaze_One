@@ -60,6 +60,9 @@ private:
     bool m_is_wiring = false;
     vector<Connection_Point> new_wire_points;
 
+    // grounding
+    bool is_grounding = false;
+
     // helper functions
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
@@ -75,6 +78,8 @@ private:
     bool handle_edit_properties_menu(SDL_Event& event, Controller* C);
 
     bool handle_wiring_events(SDL_Event& event, Controller* C);
+
+    bool handle_grounding_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);
