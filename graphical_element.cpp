@@ -581,6 +581,16 @@ void Graphical_Ground::draw(SDL_Renderer *renderer)
     SDL_RenderDrawLine(renderer, m_position.x - 4,  y + 8, m_position.x + 4,  y + 8);
 }
 
+void Graphical_Net_Label::draw(SDL_Renderer *renderer)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderDrawLine(renderer, m_position.x, m_position.y, m_position.x + 20, m_position.y);
+
+    // Draw the label text next to the stub
+    // (You will need to implement text rendering logic here using your font)
+    render_text(renderer, font, "not named", bounding_box.x, bounding_box.y - 20);
+}
+
 // get properties functions
 
 vector<Editable_Property> Graphical_Resistor::get_editable_properties()

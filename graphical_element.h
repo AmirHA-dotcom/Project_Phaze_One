@@ -174,4 +174,21 @@ public:
     vector<Editable_Property> get_editable_properties() override { return {}; }
 };
 
+class Graphical_Net_Label : public Graphical_Element
+{
+private:
+    SDL_Point m_position;
+    std::string m_label_text;
+    Node* m_node;
+
+public:
+    Graphical_Net_Label(SDL_Point pos, Node* node) : Graphical_Element(nullptr), m_position(pos), m_node(node) {}
+
+    void set_label(const std::string& text) { m_label_text = text; }
+
+    void draw(SDL_Renderer* renderer) override;
+
+    std::vector<Connection_Point> get_connection_points() override { return {}; }
+    std::vector<Editable_Property> get_editable_properties() override { return {}; }
+};
 #endif //PROJECT_PHAZE_ONE_GRAPHICAL_ELEMENT_H

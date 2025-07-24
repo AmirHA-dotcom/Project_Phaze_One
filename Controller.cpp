@@ -1088,17 +1088,54 @@ void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node
 
 void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
 {
-    if (!node_to_keep || !node_to_merge || node_to_keep == node_to_merge
-    ) {
+    if (!node_to_keep || !node_to_merge || node_to_keep == node_to_merge)
+    {
         return;
     }
     if (node_to_merge->is_the_node_ground())
     {
         node_to_keep->make_ground();
     }
+
+    // for label naming
+    if (!node_to_merge->net_name.empty())
+    {
+        m_named_nets[node_to_merge->net_name] = node_to_keep;
+        if (node_to_keep->net_name.empty())
+        {
+            node_to_keep->net_name = node_to_merge->net_name;
+        }
+    }
+
     for (const auto& element : circuit->get_Elements())
     {
         element->replace_node(node_to_merge, node_to_keep);
     }
     circuit->delete_node(node_to_merge);
+}
+
+void Controller::assign_net_name(Node* node_to_name, const std::string& new_name)
+{
+    // if the node already had a name
+    if (!node_to_name->net_name.empty())
+    {
+        m_named_nets.erase(node_to_name->net_name);
+    }
+
+    node_to_name->net_name = new_name;
+
+    // finding if another node has this name too
+    auto it = m_named_nets.find(new_name);
+    if (it != m_named_nets.end())
+    {
+        Node* existing_node = it->second;
+        if (existing_node != node_to_name)
+        {
+            connect_nodes(existing_node, node_to_name);
+        }
+    }
+    else
+    {
+        m_named_nets[new_name] = node_to_name;
+    }
 }

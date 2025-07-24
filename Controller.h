@@ -138,6 +138,8 @@ private:
     vector<unique_ptr<Graphical_Wire>> m_graphical_wires;
 
     vector<unique_ptr<Graphical_Element>> m_graphical_elements;
+
+    map<string, Node*> m_named_nets;
 public:
     Controller();
     vector<Circuit *> circuits;
@@ -249,13 +251,16 @@ public:
 
     void add_Graphical_Ground(SDL_Point pos, Node* node);
 
-        vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
+    vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
     void update_element_properties(int element_index, const vector<string>& new_values);
 
     vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
 
     void add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end);
+
     void connect_nodes(Node* node_to_keep, Node* node_to_merge);
+
+    void assign_net_name(Node* node_to_name, const string& new_name);
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H
