@@ -1114,7 +1114,7 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     circuit->delete_node(node_to_merge);
 }
 
-void Controller::assign_net_name(Node* node_to_name, const std::string& new_name)
+void Controller::assign_net_name(Node* node_to_name, const string& new_name)
 {
     // if the node already had a name
     if (!node_to_name->net_name.empty())
