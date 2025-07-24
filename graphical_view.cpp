@@ -941,7 +941,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     if (start_rot == Rotation::Left && mid_x > start_pos.x)
                     {
                         c1.x = c2.x = min(start_pos.x, end_pos.x) - 20;
-                    } else if (start_rot == Rotation::Right && mid_x < start_pos.x) 
+                    } else if (start_rot == Rotation::Right && mid_x < start_pos.x)
                     {
                         c1.x = c2.x = max(start_pos.x, end_pos.x) + 20;
                     }
@@ -952,7 +952,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     c1 = { start_pos.x, mid_y };
                     c2 = { end_pos.x, mid_y };
 
-                    if (start_rot == Rotation::Up && mid_y > start_pos.y) 
+                    if (start_rot == Rotation::Up && mid_y > start_pos.y)
                     {
                         c1.y = c2.y = min(start_pos.y, end_pos.y) - 20;
                     } else if (start_rot == Rotation::Down && mid_y < start_pos.y)
@@ -972,14 +972,14 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     path_points.push_back(c2);
                 }
                 // add the end point if its not the same as the last point
-                if (end_pos.x != path_points.back().x || end_pos.y != path_points.back().y) 
+                if (end_pos.x != path_points.back().x || end_pos.y != path_points.back().y)
                 {
                     path_points.push_back(end_pos);
                 }
 
                 new_wire_points.clear();
                 for(const auto& p : path_points)
-                
+
                 {
                     new_wire_points.push_back({ p, nullptr, {} });
                 }
