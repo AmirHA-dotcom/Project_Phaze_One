@@ -13,6 +13,7 @@
 #include "Current_Source.h"
 #include "Real_Diode.h"
 #include "Zener_Diode.h"
+#include "Voltage_Source.h"
 
 
 // helpers
@@ -138,6 +139,17 @@ public:
 class Graphical_Zener_Diode : public Graphical_Element {
 public:
     Graphical_Zener_Diode(Zener_Diode* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer) override;
+
+    vector<Editable_Property> get_editable_properties() override;
+    vector<Connection_Point> get_connection_points() override;
+
+};
+
+class Graphical_Voltage_Source : public Graphical_Element {
+public:
+    Graphical_Voltage_Source(Voltage_Source* model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer) override;
 

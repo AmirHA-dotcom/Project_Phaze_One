@@ -453,6 +453,15 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 break;
             }
 
+            case SDLK_v:
+            {
+                SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+
+                cout << "V key was pressed." << endl;
+                C->add_Graphical_DC_Source(snapped_pos.x, snapped_pos.y);
+                break;
+            }
+
             case SDLK_p:
             {
                 cout << "P key was pressed." << endl;

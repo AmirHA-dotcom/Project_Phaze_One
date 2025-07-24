@@ -822,6 +822,27 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
     m_graphical_elements.push_back(move(gfx_sim_zener_diode));
 }
 
+void Controller::add_Graphical_DC_Source(int screenX, int screenY)
+{
+    m_node_count++;
+    string n1_name = "N" + to_string(m_node_count);
+    m_node_count++;
+    string n2_name = "N" + to_string(m_node_count);
+    m_voltage_source_count++;
+    string VS_name = "VS" + to_string(m_voltage_source_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    Voltage_Source* sim_voltage_source = new DC_Source(VS_name, n1, n2, 1e-6);
+
+    circuit->addElement(sim_voltage_source);
+
+    auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
+    gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
+    m_graphical_elements.push_back(move(gfx_sim_voltage_source));
+}
+
 
 vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements() 
 {

@@ -285,7 +285,7 @@ void Graphical_Current_Source::draw(SDL_Renderer* renderer)
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
 
     int half_length = max(bounding_box.w, bounding_box.h) / 2;
-    int radius = 15;
+    int radius = 20;
 
     // leads
     SDL_Point lead1_p1 = transform_point({-half_length, 0});
@@ -435,6 +435,94 @@ void Graphical_Zener_Diode::draw(SDL_Renderer* renderer)
     }
 }
 
+void Graphical_Voltage_Source::draw(SDL_Renderer* renderer)
+{
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
+    int radius = 20;
+
+    // leads
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
+
+    SDL_Point lead2_p1 = transform_point({radius, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+
+    // circle
+    vector<SDL_Point> circle_points;
+    for (int i = 0; i < 360; i += 10)
+    {
+        float angle_rad = (float)i * M_PI / 180.0f;
+        circle_points.push_back(transform_point({(int)(radius * cos(angle_rad)),(int)(radius * sin(angle_rad))}));
+    }
+    SDL_RenderDrawLines(renderer, circle_points.data(), circle_points.size());
+
+    // V
+    SDL_Point V_points[] = {
+            {0, +radius / 2}, {(int)(radius / 2) - 5, -(int)(radius / 2)},
+            {0, +radius / 2}, {-(int)(radius / 2) + 5, -(int)(radius / 2)},
+            {(int)(radius / 2) - 5, -(int)(radius / 2)}, {(int)(radius / 2) + 3, -(int)(radius / 2)},
+            {-(int)(radius / 2) + 5, -(int)(radius / 2)}, {-(int)(radius / 2) - 3, -(int)(radius / 2)}
+    };
+    for (size_t i = 0; i < 8; i+=2) {
+        SDL_Point p1 = transform_point(V_points[i]);
+        SDL_Point p2 = transform_point(V_points[i+1]);
+        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+    }
+
+    // text
+    if (model_element != nullptr)
+    {
+        int text_y_name = bounding_box.y - 20;
+        int text_y_value = bounding_box.y + bounding_box.h + 5;
+
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, text_y_name);
+
+        string to_be_printed = "";
+
+        if (dynamic_cast<DC_Source*>(model_element))
+        {
+            cout << "This is a DC Source." << endl;
+            double value = model_element->get_value();
+            to_be_printed = format_with_suffix(value, " V");
+        }
+        else if (dynamic_cast<Sine_Source*>(model_element))
+        {
+            std::cout << "This is a Sine Source." << std::endl;
+        }
+        else if (dynamic_cast<Pulse_Source*>(model_element))
+        {
+            std::cout << "This is a Pulse Source." << std::endl;
+        }
+        else if (dynamic_cast<Square_Source*>(model_element))
+        {
+            std::cout << "This is a Square Source." << std::endl;
+        }
+        else if (dynamic_cast<Triangular_Source*>(model_element))
+        {
+            std::cout << "This is a Triangular Source." << std::endl;
+        }
+        else if (dynamic_cast<Delta_Dirac*>(model_element))
+        {
+            std::cout << "This is a Delta Dirac Source." << std::endl;
+        }
+        else
+        {
+            std::cout << "This is another type of Voltage Source." << std::endl;
+        }
+
+
+        render_text(renderer, font, to_be_printed, bounding_box.x, text_y_value);
+    }
+}
+
+
 // get properties functions
 
 vector<Editable_Property> Graphical_Resistor::get_editable_properties()
@@ -488,6 +576,15 @@ vector<Editable_Property> Graphical_Zener_Diode::get_editable_properties()
 
     props.push_back({"Name", model_element->get_name()});
     props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
+    props.push_back({"Current (A)", to_string(model_element->get_value())});
     return props;
 }
 
@@ -714,6 +811,50 @@ vector<Connection_Point> Graphical_Real_Diode::get_connection_points()
 }
 
 vector<Connection_Point> Graphical_Zener_Diode::get_connection_points()
+{
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    SDL_Point local_start = {-half_length, 0};
+    SDL_Point local_end = {half_length, 0};
+
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
+    auto nodes = model_element->get_nodes();
+
+    return {
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
+    };
+}
+
+vector<Connection_Point> Graphical_Voltage_Source::get_connection_points()
 {
     int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
     SDL_Point local_start = {-half_length, 0};
