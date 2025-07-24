@@ -253,18 +253,21 @@ void graphical_view::draw_toolbar(SDL_Renderer* renderer, TTF_Font* font)
     SDL_SetRenderDrawColor(renderer, TOOLBAR_BG.r, TOOLBAR_BG.g, TOOLBAR_BG.b, TOOLBAR_BG.a);
     SDL_RenderFillRect(renderer, &toolbar_rect);
 
-    for (const auto& button : m_toolbar_buttons)
+    for (int i = 0; i < m_toolbar_buttons.size(); ++i)
     {
-        SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
-        SDL_RenderFillRect(renderer, &button.rect);
+        if (i == m_hovered_button_index)
+        {
+            SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
+            SDL_RenderFillRect(renderer, &m_toolbar_buttons[i].rect);
+        }
 
         int text_width, text_height;
-        TTF_SizeText(font, button.text_label.c_str(), &text_width, &text_height);
+        TTF_SizeText(font, m_toolbar_buttons[i].text_label.c_str(), &text_width, &text_height);
 
-        int text_x = button.rect.x + (button.rect.w - text_width) / 2;
-        int text_y = button.rect.y + (button.rect.h - text_height) / 2;
+        int text_x = m_toolbar_buttons[i].rect.x + (m_toolbar_buttons[i].rect.w - text_width) / 2;
+        int text_y = m_toolbar_buttons[i].rect.y + (m_toolbar_buttons[i].rect.h - text_height) / 2;
 
-        render_text(renderer, font, button.text_label, text_x, text_y, TEXT_COLOR);
+        render_text(renderer, font, m_toolbar_buttons[i].text_label, text_x, text_y, TEXT_COLOR);
     }
 }
 
@@ -330,6 +333,22 @@ bool graphical_view::run(Controller *C)
 
         while (SDL_PollEvent(&event) != 0)
         {
+            if (event.type == SDL_MOUSEMOTION)
+            {
+                SDL_Point mouse_pos = {event.motion.x, event.motion.y};
+
+                m_hovered_button_index = -1;
+
+                for (int i = 0; i < m_toolbar_buttons.size(); ++i)
+                {
+                    if (SDL_PointInRect(&mouse_pos, &m_toolbar_buttons[i].rect))
+                    {
+                        m_hovered_button_index = i;
+                        break;
+                    }
+                }
+            }
+
             bool event_was_handled = handle_toolbar_events(event);
 
             if (!event_was_handled)

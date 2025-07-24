@@ -80,6 +80,7 @@ private:
 
     // top menu
     vector<ToolbarButton> m_toolbar_buttons;
+    int m_hovered_button_index = -1;
 
     // helper functions
     void initialize_menu();
