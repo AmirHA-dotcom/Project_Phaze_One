@@ -14,13 +14,13 @@
 
 enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run};
 
-struct ToolbarButton {
+struct Toolbar_Button {
     SDL_Rect rect;
     string text_label;
     Tool_Bar_Action action;
 };
 
-struct MenuItem {
+struct Menu_Item {
     string name;
     Element_Type type;
     string subtype_tag;
@@ -49,11 +49,11 @@ private:
     SDL_Point m_drag_offset = {0, 0};
 
     // show grids
-    bool show_grids = true;
+    bool show_grids = false;
 
     // item menu
     bool elements_menu = false;
-    vector<MenuItem> menu_items;
+    vector<Menu_Item> menu_items;
     int selected_menu_item_index = -1;
 
     // editing
@@ -79,7 +79,7 @@ private:
     bool is_labeling = false;
 
     // top menu
-    vector<ToolbarButton> m_toolbar_buttons;
+    vector<Toolbar_Button> m_toolbar_buttons;
     int m_hovered_button_index = -1;
 
     // helper functions
