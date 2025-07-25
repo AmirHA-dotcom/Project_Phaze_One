@@ -1257,7 +1257,33 @@ bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
             is_grounding = false;
             return true;
         }
+
+        bool clicked_on_component = false;
+        for (auto& element : C->get_graphical_elements())
+        {
+            auto connection_points = element->get_connection_points();
+            for (auto& point : connection_points)
+            {
+                if (abs(snapped_pos.x - point.pos.x) < 10 && abs(snapped_pos.y - point.pos.y) < 10)
+                {
+                    clicked_on_component = true;
+
+                    Node* node = point.node;
+
+                    node->make_ground();
+
+                    C->add_Graphical_Ground(snapped_pos, node);
+
+                    cout << "made the node ground: " << node->get_name() << endl;
+                    is_grounding = false;
+                    return true;
+                    break;
+                }
+            }
+            if (clicked_on_component) break;
+        }
     }
+
     return true;
 }
 
@@ -1294,8 +1320,8 @@ bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
                 SDL_Point p1 = wire->path[i];
                 SDL_Point p2 = wire->path[i+1];
 
-                if (dist_to_segment(click_pos, p1, p2) < CLICK_TOLERANCE
-                ) {
+                if (dist_to_segment(click_pos, p1, p2) < CLICK_TOLERANCE)
+                {
                     index_of_clicked_wire = k;
                     if (p1.x == p2.x)
                     {
@@ -1327,6 +1353,40 @@ bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
             SDL_StartTextInput();
 
             cout << "Label placed. Enter name." << endl;
+        }
+
+        bool clicked_on_component = false;
+        for (auto& element : C->get_graphical_elements())
+        {
+            auto connection_points = element->get_connection_points();
+            for (auto& point : connection_points)
+            {
+                if (abs(snapped_pos.x - point.pos.x) < 10 && abs(snapped_pos.y - point.pos.y) < 10)
+                {
+                    clicked_on_component = true;
+
+                    Node* target_node = point.node;
+
+                    label_pos = point.pos;
+
+                    C->add_Graphical_Net_Label(label_pos, target_node);
+
+                    is_labeling = false;
+                    editing = true;
+
+                    edited_element_index = C->get_graphical_elements().size() - 1;
+
+                    cout << edited_element_index << endl;
+
+                    edit_buffers.assign(1, "");
+                    active_edit_box = 0;
+                    SDL_StartTextInput();
+
+                    cout << "Label placed. Enter name." << endl;
+                    break;
+                }
+            }
+            if (clicked_on_component) break;
         }
     }
 
