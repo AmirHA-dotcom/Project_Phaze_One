@@ -11,6 +11,7 @@
 #include <SDL.h>
 #include "elements_graphics.h"
 #include "Graphical_Wire.h"
+#include "Plot_View.h"
 
 enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe};
 
@@ -92,6 +93,7 @@ private:
     bool probe_mode = false;
 
     // helper functions
+    Node* find_node_at(SDL_Point pos, Controller* C);
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
     void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
@@ -116,6 +118,8 @@ private:
     bool handle_toolbar_events(SDL_Event& event, Controller* C);
 
     bool handle_configure_analysis_events(SDL_Event& event, Controller* C);
+
+    bool handle_probing_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);

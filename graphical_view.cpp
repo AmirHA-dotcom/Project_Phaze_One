@@ -6,6 +6,8 @@
 
 // helper functions
 
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+
 string rotation_to_string(Rotation r) 
 {
     switch (r) {
@@ -32,6 +34,41 @@ float dist_to_segment(SDL_Point p, SDL_Point v, SDL_Point w)
     t = max(0.0f, min(1.0f, t));
     SDL_Point projection = { int(v.x + t * (w.x - v.x)), int(v.y + t * (w.y - v.y)) };
     return sqrt((p.x - projection.x)*(p.x - projection.x) + (p.y - projection.y)*(p.y - projection.y));
+}
+
+Node* graphical_view::find_node_at(SDL_Point pos, Controller* C)
+{
+    const float CLICK_TOLERANCE = 10.0f;
+    auto& wires = C->get_graphical_wires();
+
+    for (const auto& wire : wires)
+    {
+        for (size_t i = 0; i < wire->path.size() - 1; ++i)
+        {
+            SDL_Point p1 = wire->path[i];
+            SDL_Point p2 = wire->path[i+1];
+
+            if (dist_to_segment(pos, p1, p2) < CLICK_TOLERANCE)
+            {
+                return wire->start_node;
+            }
+        }
+    }
+
+    auto& elements = C->get_graphical_elements();
+    for (const auto& element : elements)
+    {
+        auto connection_points = element->get_connection_points();
+        for (const auto& point : connection_points)
+        {
+            if (abs(pos.x - point.pos.x) < 5 && abs(pos.y - point.pos.y) < 5)
+            {
+                return point.node;
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 void graphical_view::draw_grid(SDL_Renderer* renderer)
@@ -444,6 +481,10 @@ bool graphical_view::run(Controller *C)
                 else if (is_configuring_analysis)
                 {
                     running = handle_configure_analysis_events(event, C);
+                }
+                else if (probe_mode)
+                {
+                    running = handle_probing_events(event, C);
                 }
                 else
                 {
@@ -1645,6 +1686,39 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
             case SDLK_RETURN:
                 save_and_exit();
                 break;
+        }
+    }
+    return true;
+}
+
+bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+    {
+        probe_mode = false;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        Node* target_node = find_node_at(mouse_pos, C);
+
+        if (target_node)
+        {
+            Plot_View plot_view;
+
+            // creating a signal
+            Signal node_signal;
+            node_signal.name = "V(" + target_node->get_name() + ")";
+            node_signal.data_points = target_node->get_all_voltages();
+            node_signal.color = {255, 255, 0, 255};
+
+            // add the signal and run the plot window
+            plot_view.add_signal(node_signal);
+            plot_view.run();
         }
     }
     return true;
