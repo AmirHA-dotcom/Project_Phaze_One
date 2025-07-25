@@ -216,7 +216,8 @@ void graphical_view::initialize_toolbar(TTF_Font* font)
             {"Components", Tool_Bar_Action::Components_Menu},
             {"File", Tool_Bar_Action::File},
             {"Analysis", Tool_Bar_Action::Configure_Analysis},
-            {"Run", Tool_Bar_Action::Run}
+            {"Run", Tool_Bar_Action::Run},
+            {"Probe", Tool_Bar_Action::Probe}
     };
 
     int current_x = 10;
@@ -1528,6 +1529,13 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             break;
                         case Tool_Bar_Action::Run:
                             C->do_transient();
+                            break;
+                        case Tool_Bar_Action::Probe:
+                            probe_mode = !probe_mode;
+                            m_is_wiring = false;
+                            is_labeling = false;
+                            elements_menu = false;
+                            is_grounding = false;
                             break;
                     }
                     return true;

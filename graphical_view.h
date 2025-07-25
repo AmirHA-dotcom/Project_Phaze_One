@@ -12,7 +12,7 @@
 #include "elements_graphics.h"
 #include "Graphical_Wire.h"
 
-enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run};
+enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe};
 
 struct Toolbar_Button {
     SDL_Rect rect;
@@ -87,6 +87,9 @@ private:
     bool is_transient = true;
     bool is_AC_sweep = false;
     bool is_phase_sweep = false;
+
+    // probe mode
+    bool probe_mode = false;
 
     // helper functions
     void initialize_menu();
