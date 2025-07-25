@@ -269,6 +269,8 @@ public:
 
     void get_tran_params(double& start, double& stop, double& step);
 
+    void do_transient();
+
 
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

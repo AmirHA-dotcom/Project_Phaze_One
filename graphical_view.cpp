@@ -1527,6 +1527,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             active_edit_box = -1;
                             break;
                         case Tool_Bar_Action::Run:
+                            C->do_transient();
                             break;
                     }
                     return true;
