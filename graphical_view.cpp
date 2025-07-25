@@ -1708,6 +1708,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
         if (target_node)
         {
+            cout << "node found" << endl;
+
             Plot_View plot_view;
 
             // creating a signal
