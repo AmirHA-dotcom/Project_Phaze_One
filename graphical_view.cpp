@@ -438,6 +438,14 @@ bool graphical_view::run(Controller *C)
 
         while (SDL_PollEvent(&event) != 0)
         {
+            if (m_plot_view)
+            {
+                if (!m_plot_view->handle_event(event))
+                {
+                    m_plot_view.reset();
+                }
+            }
+
             if (event.type == SDL_MOUSEMOTION)
             {
                 SDL_Point mouse_pos = {event.motion.x, event.motion.y};
@@ -577,6 +585,11 @@ bool graphical_view::run(Controller *C)
 
         SDL_RenderPresent(renderer);
 
+        // plot window
+        if (m_plot_view)
+        {
+            m_plot_view->render();
+        }
     }
 
     SDL_DestroyRenderer(renderer);
@@ -1702,28 +1715,23 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
-        SDL_Point mouse_pos = {event.button.x, event.button.y};
-
-        Node* target_node = find_node_at(mouse_pos, C);
-
+        Node* target_node = find_node_at({event.button.x, event.button.y}, C);
         if (target_node)
         {
-            cout << "node found" << endl;
+            if (!m_plot_view) {
+                m_plot_view = make_unique<Plot_View>();
+            }
 
-            Plot_View plot_view;
-
-            // creating a signal
+            // create and add the signal
             Signal node_signal;
             node_signal.name = "V(" + target_node->get_name() + ")";
             node_signal.data_points = target_node->get_all_voltages();
-            node_signal.color = {255, 255, 0, 255};
+            node_signal.color = default_colors[color_index % default_colors.size()];
+            color_index++;
 
-            cout << "Number of data points for this node: " << node_signal.data_points.size() << endl;
-
-            // add the signal and run the plot window
-            plot_view.add_signal(node_signal);
-            plot_view.run();
+            m_plot_view->add_signal(node_signal);
         }
     }
+
     return true;
 }

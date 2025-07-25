@@ -92,6 +92,16 @@ private:
     // probe mode
     bool probe_mode = false;
 
+    // plot window
+    unique_ptr<Plot_View> m_plot_view;
+    vector<SDL_Color> default_colors = {
+            {255, 255, 0, 255},
+            {0, 255, 255, 255},
+            {255, 0, 255, 255},
+            {0, 255, 0, 255},
+    };
+    int color_index = 0;
+
     // helper functions
     Node* find_node_at(SDL_Point pos, Controller* C);
     void initialize_menu();

@@ -26,17 +26,15 @@ private:
     double m_min_voltage = -1, m_max_voltage = 1;
 
     // helper functions
-    void draw_scene();
-    // Converts a data point (time, voltage) to a screen coordinate
     SDL_Point world_to_screen(double time, double voltage);
 
 public:
+    Plot_View();
     ~Plot_View();
 
     void add_signal(const Signal& new_signal);
-
-    void run();
-
+    bool handle_event(SDL_Event& event);
+    void render();
 };
 
 
