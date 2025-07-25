@@ -271,6 +271,75 @@ void graphical_view::draw_toolbar(SDL_Renderer* renderer, TTF_Font* font)
     }
 }
 
+void graphical_view::draw_configure_analysis(SDL_Renderer *renderer, TTF_Font *font, Controller* C)
+{
+    const SDL_Color PANEL_BG = {50, 58, 69, 255};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color TEXT_BOX_BG = {33, 37, 41, 255};
+    const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
+    const SDL_Color HIGHLIGHT_COLOR = {52, 152, 219, 255};
+
+    int menu_width = 400;
+    int menu_height = 420;
+    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
+    SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
+    SDL_RenderFillRect(renderer, &menu_panel);
+
+    vector<Editable_Property> props;
+
+    if (is_transient)
+    {
+        double start_t, stop_t, t_step;
+        C->get_tran_params(start_t, start_t, t_step);
+
+        props.push_back({"start time", to_string(start_t)});
+        props.push_back({"stop time", to_string(stop_t)});
+        props.push_back({"max time step", to_string(t_step)});
+    }
+    else if (is_phase_sweep)
+    {
+        props.push_back({"base frequency", "not coded"});
+        props.push_back({"start phase", "not coded"});
+        props.push_back({"stop phase", "not coded"});
+        props.push_back({"number of points", "not coded"});
+    }
+
+    property_rects.clear();
+
+    int start_y = menu_panel.y + 50;
+    int row_height = 40;
+    for (int i = 0; i < props.size(); ++i) {
+        render_text(renderer, font, props[i].label, menu_panel.x + 20, start_y + (i * row_height), TEXT_COLOR);
+
+        SDL_Rect textbox_rect = {menu_panel.x + 180, start_y + (i * row_height) - 5, 200, 30};
+        property_rects.push_back(textbox_rect);
+
+        SDL_SetRenderDrawColor(renderer, TEXT_BOX_BG.r, TEXT_BOX_BG.g, TEXT_BOX_BG.b, TEXT_BOX_BG.a);
+        SDL_RenderFillRect(renderer, &textbox_rect);
+
+        if (i == active_edit_box) {
+            SDL_SetRenderDrawColor(renderer, HIGHLIGHT_COLOR.r, HIGHLIGHT_COLOR.g, HIGHLIGHT_COLOR.b, HIGHLIGHT_COLOR.a);
+        } else {
+            SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+        }
+        SDL_RenderDrawRect(renderer, &textbox_rect);
+
+        if (i < edit_buffers.size()) {
+            render_text(renderer, font, edit_buffers[i], textbox_rect.x + 5, textbox_rect.y + 5, TEXT_COLOR);
+        }
+    }
+
+    ok_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 30};
+    cancel_button_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 30};
+
+    SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+    SDL_RenderFillRect(renderer, &ok_button_rect);
+    SDL_RenderFillRect(renderer, &cancel_button_rect);
+
+    render_text(renderer, font, "OK", ok_button_rect.x + 40, ok_button_rect.y + 5, TEXT_COLOR);
+    render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -349,7 +418,7 @@ bool graphical_view::run(Controller *C)
                 }
             }
 
-            bool event_was_handled = handle_toolbar_events(event);
+            bool event_was_handled = handle_toolbar_events(event, C);
 
             if (!event_was_handled)
             {
@@ -372,6 +441,10 @@ bool graphical_view::run(Controller *C)
                 else if (is_labeling)
                 {
                     running = handle_net_labeling_events(event, C);
+                }
+                else if (is_configuring_analysis)
+                {
+                    running = handle_configure_analysis_events(event, C);
                 }
                 else
                 {
@@ -428,7 +501,12 @@ bool graphical_view::run(Controller *C)
             draw_properties_menu(renderer, font, C);
         }
 
-        std::map<SDL_Point, int, Point_Comparator> endpoint_counts;
+        if (is_configuring_analysis)
+        {
+            draw_configure_analysis(renderer, font, C);
+        }
+
+        map<SDL_Point, int, Point_Comparator> endpoint_counts;
 
         for (const auto& wire : C->get_graphical_wires())
         {
@@ -1393,7 +1471,7 @@ bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
     return true;
 }
 
-bool graphical_view::handle_toolbar_events(SDL_Event& event)
+bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
 {
     if (event.type == SDL_MOUSEBUTTONDOWN) 
     {
@@ -1431,6 +1509,22 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event)
                         case Tool_Bar_Action::File:
                             break;
                         case Tool_Bar_Action::Configure_Analysis:
+                            is_configuring_analysis = !is_configuring_analysis;
+                            elements_menu = false;
+                            m_is_wiring = false;
+                            is_labeling = false;
+                            is_grounding = false;
+                            edit_buffers.clear();
+
+                            if (is_transient)
+                            {
+                                double start, stop, step;
+                                C->get_tran_params(start, stop, step);
+                                edit_buffers.push_back(std::to_string(start));
+                                edit_buffers.push_back(std::to_string(stop));
+                                edit_buffers.push_back(std::to_string(step));
+                            }
+                            active_edit_box = -1;
                             break;
                         case Tool_Bar_Action::Run:
                             break;
@@ -1441,4 +1535,110 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event)
         }
     }
     return false;
+}
+
+bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controller *C)
+{
+// helper
+    auto save_and_exit = [&]() {
+
+        if (is_transient)
+        {
+            if (edit_buffers.size() >= 3)
+            {
+                try
+                {
+                    double start_time = toValue(edit_buffers[0]);
+                    double stop_time = toValue(edit_buffers[1]);
+                    double time_step = toValue(edit_buffers[2]);
+
+                    C->set_transient_values(time_step, stop_time, start_time, time_step);
+
+                }
+                catch (const exception& e)
+                {
+                    cerr << "Error parsing transient values: " << e.what() << endl;
+                }
+            }
+        }
+        else if (is_AC_sweep)
+        {
+            // nothing :)
+        }
+        else if (is_phase_sweep)
+        {
+            // nothing :)
+        }
+
+        is_configuring_analysis = false;
+        SDL_StopTextInput();
+    };
+
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        // OK or Cancel
+        if (SDL_PointInRect(&mouse_pos, &ok_button_rect))
+        {
+            // OK
+            save_and_exit();
+        }
+        else if (SDL_PointInRect(&mouse_pos, &cancel_button_rect))
+        {
+            // Cancel
+            is_configuring_analysis = false;
+            SDL_StopTextInput();
+        }
+        else
+        {
+            // text box
+            bool an_edit_box_was_clicked = false;
+            for (int i = 0; i < property_rects.size(); ++i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &property_rects[i]))
+                {
+                    active_edit_box = i;
+                    SDL_StartTextInput();
+                    an_edit_box_was_clicked = true;
+                    break;
+                }
+            }
+            if (!an_edit_box_was_clicked)
+            {
+                active_edit_box = -1;
+                SDL_StopTextInput();
+            }
+        }
+    }
+
+    if (event.type == SDL_TEXTINPUT && active_edit_box != -1)
+    {
+        edit_buffers[active_edit_box] += event.text.text;
+    }
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
+        {
+            case SDLK_ESCAPE:
+                is_configuring_analysis = false;
+                SDL_StopTextInput();
+                break;
+
+            case SDLK_BACKSPACE:
+                if (active_edit_box != -1 && !edit_buffers[active_edit_box].empty())
+                {
+                    edit_buffers[active_edit_box].pop_back();
+                }
+                break;
+
+            case SDLK_RETURN:
+                save_and_exit();
+                break;
+        }
+    }
+    return true;
 }

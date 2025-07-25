@@ -1159,3 +1159,25 @@ void Controller::assign_net_name(Node* node_to_name, const string& new_name)
         m_named_nets[new_name] = node_to_name;
     }
 }
+
+void Controller::set_transient_values(double stepTime, double stopTime, double startTime, double maxTimeStep)
+{
+    time_step = stepTime;
+    start_time = startTime;
+    end_time = stopTime;
+    circuit->set_time_start(start_time);
+    circuit->set_time_end(end_time);
+    circuit->set_time_step(time_step);
+    cout << "time step: " << time_step << endl;
+    cout << "start_time: " << start_time << endl;
+    cout << "end_time: " << end_time << endl;
+//    circuit->analyse_data();
+//    circuit->transient();
+}
+
+void Controller::get_tran_params(double &start, double &stop, double &step)
+{
+    start = start_time;
+    stop = end_time;
+    step = time_step;
+}

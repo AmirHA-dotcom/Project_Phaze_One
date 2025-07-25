@@ -264,5 +264,11 @@ public:
     void connect_nodes(Node* node_to_keep, Node* node_to_merge);
 
     void assign_net_name(Node* node_to_name, const string& new_name);
+
+    void set_transient_values(double stepTime, double stopTime, double startTime, double maxTimeStep);
+
+    void get_tran_params(double& start, double& stop, double& step);
+
+
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

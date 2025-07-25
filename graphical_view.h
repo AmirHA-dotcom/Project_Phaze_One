@@ -82,6 +82,12 @@ private:
     vector<Toolbar_Button> m_toolbar_buttons;
     int m_hovered_button_index = -1;
 
+    // Configure Analysis
+    bool is_configuring_analysis = false;
+    bool is_transient = true;
+    bool is_AC_sweep = false;
+    bool is_phase_sweep = false;
+
     // helper functions
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
@@ -89,6 +95,7 @@ private:
     void draw_grid(SDL_Renderer* renderer);
     void initialize_toolbar(TTF_Font* font);
     void draw_toolbar(SDL_Renderer* renderer, TTF_Font* font);
+    void draw_configure_analysis(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
 
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
@@ -103,7 +110,9 @@ private:
 
     bool handle_net_labeling_events(SDL_Event& event, Controller* C);
 
-    bool handle_toolbar_events(SDL_Event& event);
+    bool handle_toolbar_events(SDL_Event& event, Controller* C);
+
+    bool handle_configure_analysis_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);
