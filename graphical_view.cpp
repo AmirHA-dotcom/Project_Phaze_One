@@ -6,8 +6,6 @@
 
 // helper functions
 
-const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-
 string rotation_to_string(Rotation r) 
 {
     switch (r) {

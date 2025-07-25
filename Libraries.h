@@ -24,6 +24,8 @@
 
 using namespace std;
 
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+
 struct Triplet
 {
     int Row;
