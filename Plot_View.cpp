@@ -86,33 +86,9 @@ SDL_Point Plot_View::world_to_screen(double time, double voltage)
 
 // main functions
 
-bool Plot_View::handle_event(SDL_Event& event)
+void Plot_View::auto_zoom()
 {
-    if (event.type == SDL_WINDOWEVENT && event.window.windowID == SDL_GetWindowID(m_window))
-    {
-        if (event.window.event == SDL_WINDOWEVENT_CLOSE)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-void Plot_View::render()
-{
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    SDL_RenderClear(m_renderer);
-
-    if (m_signals.empty())
-    {
-        SDL_RenderPresent(m_renderer);
-        return;
-    }
-
-    // plot area
-    int width, height;
-    SDL_GetWindowSize(m_window, &width, &height);
-    m_plot_area = {50, 50, width - 100, height - 100};
+    if (m_signals.empty()) return;
 
     // finding the min and the max to scale
     m_min_time = m_signals[0].data_points.front().second;
@@ -145,12 +121,47 @@ void Plot_View::render()
     if (time_range == 0) { time_range = 1.0; }
     m_min_time -= time_range * 0.1;
     m_max_time += time_range * 0.1;
+}
 
+bool Plot_View::handle_event(SDL_Event& event)
+{
+    if (event.type == SDL_WINDOWEVENT && event.window.windowID == SDL_GetWindowID(m_window))
+    {
+        if (event.window.event == SDL_WINDOWEVENT_CLOSE)
+        {
+            return false;
+        }
+
+        if (event.type == SDL_KEYDOWN)
+        {
+            switch (event.key.keysym.sym)
+            {
+                case SDLK_SPACE:
+                    auto_zoom();
+                    break;
+            }
+        }
+    }
+    return true;
+}
+
+void Plot_View::render()
+{
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    SDL_RenderClear(m_renderer);
+
+    if (m_signals.empty())
+    {
+        SDL_RenderPresent(m_renderer);
+        return;
+    }
 
     // plot area
-    SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
-    SDL_RenderDrawRect(m_renderer, &m_plot_area);
+    int width, height;
+    SDL_GetWindowSize(m_window, &width, &height);
+    m_plot_area = {50, 50, width - 100, height - 100};
 
+    // plot area
     SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
     SDL_RenderDrawRect(m_renderer, &m_plot_area);
 

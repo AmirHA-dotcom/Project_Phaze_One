@@ -37,6 +37,7 @@ public:
     void add_signal(const Signal& new_signal);
     void delete_all_signals();
     bool handle_event(SDL_Event& event);
+    void auto_zoom();
     void render();
 };
 
