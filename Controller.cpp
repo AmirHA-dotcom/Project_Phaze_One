@@ -1187,4 +1187,17 @@ void Controller::do_transient()
     cout << "end_time: " << end_time << endl;
     circuit->analyse_data();
     circuit->transient();
+
+    for (auto& element : circuit->get_Elements())
+    {
+        cout << "name: " << element->get_name() << endl;
+    }
+
+    for (auto& node : circuit->get_Nodes())
+    {
+        for (auto& data : node->get_all_voltages())
+        {
+            cout << "time: " << data.second << " V: " << data.first << endl;
+        }
+    }
 }
