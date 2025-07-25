@@ -19,9 +19,9 @@ void Plot_View::add_signal(const Signal &new_signal)
 
 SDL_Point Plot_View::world_to_screen(double time, double voltage)
 {
-    // Map time to the horizontal axis of the plot area
+    // mapping time in x axis
     int screen_x = m_plot_area.x + (int)(((time - m_min_time) / (m_max_time - m_min_time)) * m_plot_area.w);
-    // Map voltage to the vertical axis (inverted, since screen Y is 0 at the top)
+    // mapping voltage in y axis
     int screen_y = m_plot_area.y + m_plot_area.h - (int)(((voltage - m_min_voltage) / (m_max_voltage - m_min_voltage)) * m_plot_area.h);
     return {screen_x, screen_y};
 }
