@@ -6,6 +6,27 @@
 
 // helper functions
 
+inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const string& text, int x, int y, SDL_Color color = {0, 0, 0, 255})
+{
+    if (!font) return;
+
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+    if (!surface) return;
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        SDL_FreeSurface(surface);
+        return;
+    }
+
+    SDL_Rect dest_rect = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
+
+
 Plot_View::Plot_View()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -19,8 +40,8 @@ Plot_View::Plot_View()
         throw runtime_error("SDL_ttf could not initialize! TTF_Error: " + string(TTF_GetError()));
     }
 
-    TTF_Font* font = TTF_OpenFont(FONT , 16);
-    if (!font)
+    m_font = TTF_OpenFont(FONT , 16);
+    if (!m_font)
     {
         cerr << "Failed to load font: " << TTF_GetError() << endl;
     }
@@ -141,5 +162,40 @@ void Plot_View::render()
         }
     }
 
+    // legends!
+    if (!m_signals.empty() && FONT)
+    {
+        const int legend_y_offset = 15;
+        const int box_size = 15;
+        const int gap = 5;
+
+        double slot_width = (double)m_plot_area.w / m_signals.size();
+
+        for (int i = 0; i < m_signals.size(); ++i)
+        {
+            const auto& signal = m_signals[i];
+
+            // text size
+            int text_width, text_height;
+            TTF_SizeText(m_font, signal.name.c_str(), &text_width, &text_height);
+
+            // total width
+            int total_item_width = box_size + gap + text_width;
+
+            // x position to center
+            double slot_start_x = m_plot_area.x + (i * slot_width);
+            int item_start_x = slot_start_x + (slot_width - total_item_width) / 2;
+
+            // drawing the box
+            SDL_Rect color_box = {item_start_x, m_plot_area.y + legend_y_offset, box_size, box_size};
+            SDL_SetRenderDrawColor(m_renderer, signal.color.r, signal.color.g, signal.color.b, 255);
+            SDL_RenderFillRect(m_renderer, &color_box);
+
+            // displaying text
+            int text_x = item_start_x + box_size + gap;
+            int text_y = m_plot_area.y + legend_y_offset;
+            render_text(m_renderer, m_font, signal.name, text_x, text_y);
+        }
+    }
     SDL_RenderPresent(m_renderer);
 }

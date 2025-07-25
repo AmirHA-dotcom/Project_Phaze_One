@@ -25,6 +25,8 @@ private:
     double m_min_time = 0, m_max_time = 1;
     double m_min_voltage = -1, m_max_voltage = 1;
 
+    TTF_Font* m_font = nullptr;
+
     // helper functions
     SDL_Point world_to_screen(double time, double voltage);
 
