@@ -70,6 +70,11 @@ void Plot_View::add_signal(const Signal &new_signal)
     m_signals.push_back(new_signal);
 }
 
+void Plot_View::delete_all_signals()
+{
+    m_signals.clear();
+}
+
 SDL_Point Plot_View::world_to_screen(double time, double voltage)
 {
     // mapping time in x axis
@@ -146,6 +151,62 @@ void Plot_View::render()
     SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
     SDL_RenderDrawRect(m_renderer, &m_plot_area);
 
+    SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
+    SDL_RenderDrawRect(m_renderer, &m_plot_area);
+
+    // y axis
+    const int num_y_ticks = 11;
+    if (num_y_ticks > 1)
+    {
+        double y_tick_value_step = (m_max_voltage - m_min_voltage) / (num_y_ticks - 1);
+        for (int i = 0; i < num_y_ticks; ++i)
+        {
+            double tick_value = m_min_voltage + (i * y_tick_value_step);
+
+            int screen_y = m_plot_area.y + m_plot_area.h - (int)(((tick_value - m_min_voltage) / (m_max_voltage - m_min_voltage)) * m_plot_area.h);
+
+            // grid line
+            SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
+            SDL_RenderDrawLine(m_renderer, m_plot_area.x, screen_y, m_plot_area.x + m_plot_area.w, screen_y);
+
+
+            stringstream ss;
+            ss << fixed << setprecision(1) << tick_value;
+            string tick_text = ss.str();
+
+            // text label
+            int text_w, text_h;
+            TTF_SizeText(m_font, tick_text.c_str(), &text_w, &text_h);
+            render_text(m_renderer, m_font, tick_text, m_plot_area.x - text_w - 5, screen_y - text_h / 2);
+        }
+    }
+
+    // y axis
+    const int num_x_ticks = 11;
+    if (num_x_ticks > 1)
+    {
+        double x_tick_value_step = (m_max_time - m_min_time) / (num_x_ticks - 1);
+        for (int i = 0; i < num_x_ticks; ++i)
+        {
+            double tick_value = m_min_time + (i * x_tick_value_step);
+
+            int screen_x = m_plot_area.x + (int)(((tick_value - m_min_time) / (m_max_time - m_min_time)) * m_plot_area.w);
+
+            // grid line
+            SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
+            SDL_RenderDrawLine(m_renderer, screen_x, m_plot_area.y, screen_x, m_plot_area.y + m_plot_area.h);
+            stringstream ss;
+            ss << fixed << setprecision(1) << tick_value;
+            string tick_text = ss.str();
+
+            // text label
+            int text_w, text_h;
+            TTF_SizeText(m_font, tick_text.c_str(), &text_w, &text_h);
+            render_text(m_renderer, m_font, tick_text, screen_x - text_w / 2, m_plot_area.y + m_plot_area.h + 5);
+        }
+    }
+
+
     // drawing all signals
     for (const auto& signal : m_signals)
     {
@@ -197,5 +258,6 @@ void Plot_View::render()
             render_text(m_renderer, m_font, signal.name, text_x, text_y);
         }
     }
+
     SDL_RenderPresent(m_renderer);
 }
