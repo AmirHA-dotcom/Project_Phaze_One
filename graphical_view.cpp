@@ -1718,6 +1718,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
             node_signal.data_points = target_node->get_all_voltages();
             node_signal.color = {255, 255, 0, 255};
 
+            cout << "Number of data points for this node: " << node_signal.data_points.size() << endl;
+
             // add the signal and run the plot window
             plot_view.add_signal(node_signal);
             plot_view.run();
