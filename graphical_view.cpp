@@ -1581,6 +1581,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             break;
                         case Tool_Bar_Action::Run:
                             C->do_transient();
+                            m_plot_view->delete_all_signals();
                             break;
                         case Tool_Bar_Action::Probe:
                             probe_mode = !probe_mode;
