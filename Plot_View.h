@@ -27,6 +27,12 @@ private:
 
     TTF_Font* m_font = nullptr;
 
+    // panning
+    bool m_is_panning = false;
+    SDL_Point m_pan_start_pos;
+
+
+
     // helper functions
     SDL_Point world_to_screen(double time, double voltage);
 

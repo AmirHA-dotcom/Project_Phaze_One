@@ -142,6 +142,77 @@ bool Plot_View::handle_event(SDL_Event& event)
             }
         }
     }
+
+    // panning
+    const Uint8* keystates = SDL_GetKeyboardState(NULL);
+    bool ctrl_is_pressed = keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL];
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && ctrl_is_pressed)
+    {
+
+        m_is_panning = true;
+        m_pan_start_pos = { event.button.x, event.button.y };
+
+    }
+
+    if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+    {
+        m_is_panning = false;
+    }
+
+    if (event.type == SDL_MOUSEMOTION && m_is_panning)
+    {
+        // cursor movment
+        int dx = event.motion.x - m_pan_start_pos.x;
+        int dy = event.motion.y - m_pan_start_pos.y;
+
+        // convert that pixel delta to a world coordinate delta
+        double time_per_pixel = (m_max_time - m_min_time) / m_plot_area.w;
+        double voltage_per_pixel = (m_max_voltage - m_min_voltage) / m_plot_area.h;
+
+        // shifting the min and max
+        m_min_time -= dx * time_per_pixel;
+        m_max_time -= dx * time_per_pixel;
+        m_min_voltage += dy * voltage_per_pixel;
+        m_max_voltage += dy * voltage_per_pixel;
+
+        m_pan_start_pos = { event.motion.x, event.motion.y };
+    }
+
+    // zoom in and out
+    if (event.type == SDL_MOUSEWHEEL)
+    {
+        int mouse_x, mouse_y;
+        SDL_GetMouseState(&mouse_x, &mouse_y);
+
+        // mouse in the plot
+//        if (!SDL_PointInRect(&SDL_Point{mouse_x, mouse_y}, &m_plot_area))
+//        {
+//            return true;
+//        }
+
+        // world coordinates under the mouse
+        double time_before_zoom = m_min_time + ((double)(mouse_x - m_plot_area.x) / m_plot_area.w) * (m_max_time - m_min_time);
+        double voltage_before_zoom = m_min_voltage + ((double)(m_plot_area.y + m_plot_area.h - mouse_y) / m_plot_area.h) * (m_max_voltage - m_min_voltage);
+
+        // zoom factor
+        double zoom_factor = 1.1;
+        if (event.wheel.y > 0)
+        {
+            m_max_time = time_before_zoom + (m_max_time - time_before_zoom) / zoom_factor;
+            m_min_time = time_before_zoom - (time_before_zoom - m_min_time) / zoom_factor;
+            m_max_voltage = voltage_before_zoom + (m_max_voltage - voltage_before_zoom) / zoom_factor;
+            m_min_voltage = voltage_before_zoom - (voltage_before_zoom - m_min_voltage) / zoom_factor;
+        }
+        else if (event.wheel.y < 0)
+        {
+            m_max_time = time_before_zoom + (m_max_time - time_before_zoom) * zoom_factor;
+            m_min_time = time_before_zoom - (time_before_zoom - m_min_time) * zoom_factor;
+            m_max_voltage = voltage_before_zoom + (m_max_voltage - voltage_before_zoom) * zoom_factor;
+            m_min_voltage = voltage_before_zoom - (voltage_before_zoom - m_min_voltage) * zoom_factor;
+        }
+    }
+
     return true;
 }
 
@@ -192,7 +263,7 @@ void Plot_View::render()
         }
     }
 
-    // y axis
+    // x axis
     const int num_x_ticks = 11;
     if (num_x_ticks > 1)
     {
