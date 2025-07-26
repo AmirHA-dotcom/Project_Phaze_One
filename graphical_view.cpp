@@ -1566,7 +1566,7 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
                     double stop_time = toValue(edit_buffers[1]);
                     double time_step = toValue(edit_buffers[2]);
 
-                    C->set_transient_values(time_step, stop_time, start_time, time_step);
+                    C->set_transient_values(time_step, stop_time + time_step, start_time, time_step);
 
                 }
                 catch (const exception& e)
@@ -1671,16 +1671,22 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         Node* target_node = find_node_at({event.button.x, event.button.y}, C);
         if (target_node)
         {
-            if (!m_plot_view) {
+            if (!m_plot_view)
+            {
                 m_plot_view = make_unique<Plot_View>();
             }
 
             // create and add the signal
             Signal node_signal;
             node_signal.name = "V(" + target_node->get_name() + ")";
-            node_signal.data_points = target_node->get_all_voltages();
+
+            for (int i = 0; i < target_node->get_all_voltages().size(); i++)
+                node_signal.data_points.push_back({-1 * target_node->get_all_voltages()[i].first, target_node->get_all_voltages()[i].second});
+
             node_signal.color = default_colors[color_index % default_colors.size()];
             color_index++;
+            if (color_index == 15)
+                color_index = 0;
 
             m_plot_view->add_signal(node_signal);
         }
