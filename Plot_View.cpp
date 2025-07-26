@@ -26,6 +26,33 @@ inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const string& te
     SDL_FreeSurface(surface);
 }
 
+inline string format_with_suffix(double value, const string& unit) {
+    if (value == 0.0) return "0.00 " + unit;
+
+    static const struct { double threshold; const char* suffix; } suffixes[] = {
+            {1e12, "T"}, {1e9, "G"}, {1e6, "M"}, {1e3, "k"},
+            {1.0,  ""},
+            {1e-3, "m"}, {1e-6, "u"}, {1e-9, "n"}, {1e-12, "p"}, {1e-15, "f"}
+    };
+
+    double abs_value = abs(value);
+    string prefix = (value < 0) ? "-" : "";
+
+    for (const auto& s : suffixes)
+    {
+        if (abs_value >= s.threshold)
+        {
+            double scaled_value = value / s.threshold;
+            stringstream ss;
+            ss << fixed << setprecision(2) << scaled_value;
+            return prefix + ss.str() + s.suffix + unit;
+        }
+    }
+    // using scientific notation for very small numbers
+    stringstream ss;
+    ss << scientific << setprecision(2) << value;
+    return ss.str() + unit;
+}
 
 Plot_View::Plot_View()
 {
@@ -225,7 +252,7 @@ void Plot_View::render()
     // plot area
     int width, height;
     SDL_GetWindowSize(m_window, &width, &height);
-    m_plot_area = {50, 50, width - 100, height - 100};
+    m_plot_area = {100, 50, width - 100, height - 100};
 
     // plot area
     SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
@@ -246,10 +273,7 @@ void Plot_View::render()
             SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
             SDL_RenderDrawLine(m_renderer, m_plot_area.x, screen_y, m_plot_area.x + m_plot_area.w, screen_y);
 
-
-            stringstream ss;
-            ss << fixed << setprecision(1) << tick_value;
-            string tick_text = ss.str();
+            string tick_text = format_with_suffix(tick_value, " V");
 
             // text label
             int text_w, text_h;
@@ -272,9 +296,8 @@ void Plot_View::render()
             // grid line
             SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
             SDL_RenderDrawLine(m_renderer, screen_x, m_plot_area.y, screen_x, m_plot_area.y + m_plot_area.h);
-            stringstream ss;
-            ss << fixed << setprecision(1) << tick_value;
-            string tick_text = ss.str();
+
+            string tick_text = format_with_suffix(tick_value, " s");
 
             // text label
             int text_w, text_h;
