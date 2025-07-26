@@ -21,6 +21,7 @@
 #include <filesystem>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <optional>
 
 using namespace std;
 

@@ -41,7 +41,7 @@ inline string format_with_suffix(double value, const string& unit) {
     return ss.str() + unit;
 }
 
-void draw_circle(SDL_Renderer* renderer, int center_x, int center_y, int radius)
+inline void draw_circle(SDL_Renderer* renderer, int center_x, int center_y, int radius)
 {
     int x = radius - 1;
     int y = 0;

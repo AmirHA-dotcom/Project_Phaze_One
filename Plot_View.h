@@ -8,6 +8,12 @@
 #include "Libraries.h"
 #include "Node.h"
 
+struct Cursor {
+    double X;
+    double Y;
+    size_t data_point_index; // Index of the point it's snapped to
+};
+
 struct Signal {
     string name;
     vector<pair<double, double>> data_points;   // y, x
@@ -22,8 +28,8 @@ private:
     vector<Signal> m_signals;
 
     SDL_Rect m_plot_area;
-    double m_min_time = 0, m_max_time = 1;
-    double m_min_voltage = -1, m_max_voltage = 1;
+    double m_min_x = 0, m_max_x = 1;
+    double m_min_y = -1, m_max_y = 1;
 
     TTF_Font* m_font = nullptr;
 
@@ -31,7 +37,11 @@ private:
     bool m_is_panning = false;
     SDL_Point m_pan_start_pos;
 
-
+    // cursor
+    optional<Cursor> m_cursor1;
+    optional<Cursor> m_cursor2;
+    bool m_cursor_mode_active = false;
+    bool m_place_first_cursor_next = true;
 
     // helper functions
     SDL_Point world_to_screen(double time, double voltage);
