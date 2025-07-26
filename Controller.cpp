@@ -1182,9 +1182,13 @@ void Controller::get_tran_params(double &start, double &stop, double &step)
 
 void Controller::do_transient()
 {
-    cout << "time step: " << time_step << endl;
-    cout << "start_time: " << start_time << endl;
-    cout << "end_time: " << end_time << endl;
+    int i = 0;
+    for (auto& node : circuit->get_Nodes())
+    {
+        node->change_name("N" + to_string(++i));
+    }
+
+
     circuit->analyse_data();
     circuit->transient();
 
