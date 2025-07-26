@@ -131,15 +131,16 @@ bool Plot_View::handle_event(SDL_Event& event)
         {
             return false;
         }
+    }
 
-        if (event.type == SDL_KEYDOWN)
+    if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
         {
-            switch (event.key.keysym.sym)
-            {
-                case SDLK_SPACE:
-                    auto_zoom();
-                    break;
-            }
+            case SDLK_SPACE:
+                cout << "Auto Zoom!" << endl;
+                auto_zoom();
+                break;
         }
     }
 
@@ -162,7 +163,7 @@ bool Plot_View::handle_event(SDL_Event& event)
 
     if (event.type == SDL_MOUSEMOTION && m_is_panning)
     {
-        // cursor movment
+        // cursor movement
         int dx = event.motion.x - m_pan_start_pos.x;
         int dy = event.motion.y - m_pan_start_pos.y;
 
@@ -184,12 +185,6 @@ bool Plot_View::handle_event(SDL_Event& event)
     {
         int mouse_x, mouse_y;
         SDL_GetMouseState(&mouse_x, &mouse_y);
-
-        // mouse in the plot
-//        if (!SDL_PointInRect(&SDL_Point{mouse_x, mouse_y}, &m_plot_area))
-//        {
-//            return true;
-//        }
 
         // world coordinates under the mouse
         double time_before_zoom = m_min_time + ((double)(mouse_x - m_plot_area.x) / m_plot_area.w) * (m_max_time - m_min_time);
