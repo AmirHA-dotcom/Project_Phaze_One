@@ -7,6 +7,7 @@
 // helper functions
 
 const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+const char* PROBE = "D://Images//probe_cursor.png";
 
 string rotation_to_string(Rotation r) 
 {
@@ -428,12 +429,12 @@ bool graphical_view::run(Controller *C)
     m_default_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     m_crosshair_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
 
-//    SDL_Surface* probe_surface = IMG_Load("probe.png");
-//    if (probe_surface)
-//    {
-//        m_probe_cursor = SDL_CreateColorCursor(probe_surface, 0, 0);
-//        SDL_FreeSurface(probe_surface);
-//    }
+    SDL_Surface* probe_surface = IMG_Load(PROBE);
+    if (probe_surface)
+    {
+        m_probe_cursor = SDL_CreateColorCursor(probe_surface, 4, 60);
+        SDL_FreeSurface(probe_surface);
+    }
 
     bool running = true;
     SDL_Event event;
@@ -448,14 +449,15 @@ bool graphical_view::run(Controller *C)
 
         if (probe_mode)
         {
-            if (m_crosshair_cursor) SDL_SetCursor(m_crosshair_cursor);
+            if (m_probe_cursor) SDL_SetCursor(m_probe_cursor);
         }
         else if (m_is_wiring)
         {
-            if (m_crosshair_cursor) SDL_SetCursor(m_crosshair_cursor);
+            SDL_ShowCursor(SDL_DISABLE);
         }
         else
         {
+            SDL_ShowCursor(SDL_ENABLE);
             if (m_default_cursor) SDL_SetCursor(m_default_cursor);
         }
 
@@ -534,6 +536,21 @@ bool graphical_view::run(Controller *C)
 
         draw_toolbar(renderer, font);
 
+        if (m_is_wiring)
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+            SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
+
+            if (mouseY > 40)
+            {
+                SDL_RenderDrawLine(renderer, snapped_mouse.x, 40, snapped_mouse.x, m_window_height);
+                SDL_RenderDrawLine(renderer, 0, snapped_mouse.y, m_window_width, snapped_mouse.y);
+            }
+        }
+
+
         for (const auto& element : graphical_elements)
         {
             element->draw(renderer, show_grids);
@@ -570,20 +587,6 @@ bool graphical_view::run(Controller *C)
                         junction_size
                 };
                 SDL_RenderFillRect(renderer, &junction_rect);
-            }
-        }
-
-        if (m_is_wiring)
-        {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-            SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
-            SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
-
-            if (mouseY > 40)
-            {
-                SDL_RenderDrawLine(renderer, snapped_mouse.x, 40, snapped_mouse.x, m_window_height);
-                SDL_RenderDrawLine(renderer, 0, snapped_mouse.y, m_window_width, snapped_mouse.y);
             }
         }
 

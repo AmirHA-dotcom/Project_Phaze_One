@@ -22,10 +22,12 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <optional>
+#include <SDL_image.h>
 
 using namespace std;
 
 extern const char* FONT;
+extern const char* PROBE;
 
 struct Triplet
 {
