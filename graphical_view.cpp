@@ -990,12 +990,21 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
         if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_ESCAPE)
         {
             m_is_wiring = false;
-            cout << "Exiting wiring mode" << endl;
+            new_wire_points.clear();
+        }
+        if (event.key.keysym.sym == SDLK_g)
+        {
+            m_is_wiring = false;
+            is_grounding = true;
             new_wire_points.clear();
         }
     }
 
-
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
+    {
+        m_is_wiring = false;
+        new_wire_points.clear();
+    }
 
     // start wiring
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
@@ -1689,6 +1698,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 color_index = 0;
 
             m_plot_view->add_signal(node_signal);
+            probe_mode = false;
         }
     }
 
