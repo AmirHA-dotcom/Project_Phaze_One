@@ -425,6 +425,16 @@ bool graphical_view::run(Controller *C)
 
     SDL_GetWindowSize(window, &m_window_width, &m_window_height);
 
+    m_default_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    m_crosshair_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+
+//    SDL_Surface* probe_surface = IMG_Load("probe.png");
+//    if (probe_surface)
+//    {
+//        m_probe_cursor = SDL_CreateColorCursor(probe_surface, 0, 0);
+//        SDL_FreeSurface(probe_surface);
+//    }
+
     bool running = true;
     SDL_Event event;
 
@@ -435,6 +445,19 @@ bool graphical_view::run(Controller *C)
 
         auto& graphical_elements = C->get_graphical_elements();
         auto& graphical_wires = C->get_graphical_wires();
+
+        if (probe_mode)
+        {
+            if (m_crosshair_cursor) SDL_SetCursor(m_crosshair_cursor);
+        }
+        else if (m_is_wiring)
+        {
+            if (m_crosshair_cursor) SDL_SetCursor(m_crosshair_cursor);
+        }
+        else
+        {
+            if (m_default_cursor) SDL_SetCursor(m_default_cursor);
+        }
 
         while (SDL_PollEvent(&event) != 0)
         {
@@ -557,9 +580,11 @@ bool graphical_view::run(Controller *C)
             SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
             SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
 
-
-            SDL_RenderDrawLine(renderer, snapped_mouse.x, 40, snapped_mouse.x, m_window_height);
-            SDL_RenderDrawLine(renderer, 0, snapped_mouse.y, m_window_width, snapped_mouse.y);
+            if (mouseY > 40)
+            {
+                SDL_RenderDrawLine(renderer, snapped_mouse.x, 40, snapped_mouse.x, m_window_height);
+                SDL_RenderDrawLine(renderer, 0, snapped_mouse.y, m_window_width, snapped_mouse.y);
+            }
         }
 
         if (m_is_wiring && !new_wire_points.empty())
@@ -595,6 +620,9 @@ bool graphical_view::run(Controller *C)
         }
     }
 
+    SDL_FreeCursor(m_default_cursor);
+    SDL_FreeCursor(m_probe_cursor);
+    SDL_FreeCursor(m_crosshair_cursor);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_Quit();

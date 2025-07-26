@@ -64,7 +64,7 @@ private:
     int active_edit_box = -1;
     SDL_Rect ok_button_rect;
     SDL_Rect cancel_button_rect;
-    vector<SDL_Rect> property_rects;  // store text boxes
+    vector<SDL_Rect> property_rects;
 
     // griding the workspace
     const int GRID_SIZE = 10;
@@ -112,6 +112,11 @@ private:
             {75,  0,   130, 255}, // INDIGO
     };
     int color_index = 0;
+
+    // cursors
+    SDL_Cursor* m_default_cursor = nullptr;
+    SDL_Cursor* m_probe_cursor = nullptr;
+    SDL_Cursor* m_crosshair_cursor = nullptr;
 
     // helper functions
     Node* find_node_at(SDL_Point pos, Controller* C);
