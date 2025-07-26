@@ -521,39 +521,6 @@ bool graphical_view::run(Controller *C)
             wire->draw(renderer);
         }
 
-        if (m_is_wiring && !new_wire_points.empty())
-        {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-            SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
-
-            SDL_Point last_point = new_wire_points.back().pos;
-
-            //SDL_Point corner_point = {snapped_mouse.x, last_point.y};
-
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-
-            SDL_RenderDrawLine(renderer, mouseX, mouseY, new_wire_points.front().pos.x, new_wire_points.front().pos.y);
-
-//            SDL_RenderDrawLine(renderer, last_point.x, last_point.y, corner_point.x, corner_point.y);
-//            SDL_RenderDrawLine(renderer, corner_point.x, corner_point.y, snapped_mouse.x, snapped_mouse.y);
-        }
-
-        if (elements_menu)
-        {
-            draw_component_menu(renderer, font);
-        }
-
-        if (editing)
-        {
-            draw_properties_menu(renderer, font, C);
-        }
-
-        if (is_configuring_analysis)
-        {
-            draw_configure_analysis(renderer, font, C);
-        }
-
         map<SDL_Point, int, Point_Comparator> endpoint_counts;
 
         for (const auto& wire : C->get_graphical_wires())
@@ -581,6 +548,42 @@ bool graphical_view::run(Controller *C)
                 };
                 SDL_RenderFillRect(renderer, &junction_rect);
             }
+        }
+
+        if (m_is_wiring)
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point snapped_mouse = snap_to_grid(mouseX, mouseY, GRID_SIZE);
+            SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
+
+
+            SDL_RenderDrawLine(renderer, snapped_mouse.x, 40, snapped_mouse.x, m_window_height);
+            SDL_RenderDrawLine(renderer, 0, snapped_mouse.y, m_window_width, snapped_mouse.y);
+        }
+
+        if (m_is_wiring && !new_wire_points.empty())
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_RenderDrawLine(renderer, mouseX, mouseY, new_wire_points.front().pos.x, new_wire_points.front().pos.y);
+        }
+
+        if (elements_menu)
+        {
+            draw_component_menu(renderer, font);
+        }
+
+        if (editing)
+        {
+            draw_properties_menu(renderer, font, C);
+        }
+
+        if (is_configuring_analysis)
+        {
+            draw_configure_analysis(renderer, font, C);
         }
 
         SDL_RenderPresent(renderer);
