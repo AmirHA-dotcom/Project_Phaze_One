@@ -16,6 +16,7 @@ protected:
     Node* node1;
     Node* node2;
     double value;
+    int x, y;
 public:
     Element(string _name, Element_Type _type, Node* n1, Node* n2, double _value);
     string get_name() const;
@@ -30,6 +31,8 @@ public:
     virtual void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) = 0;
     virtual double get_current(double time, double time_step) = 0;
     void replace_node(Node* node_to_merge, Node* node_to_keep);
+
+    void set_coordinates(int x, int y) { this->x = x; this->y = y; }
 };
 
 

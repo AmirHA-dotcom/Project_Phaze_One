@@ -711,6 +711,7 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
     Resistor* sim_resistor = new Resistor(r_name, n1, n2, 1000.0);
 
     circuit->addElement(sim_resistor);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_resistor = make_unique<Graphical_Resistor>(sim_resistor);
 
@@ -733,6 +734,7 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
     Capacitor* sim_capacitor = new Capacitor(c_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_capacitor);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_capacitor = make_unique<Graphical_Capacitor>(sim_capacitor);
     gfx_capacitor->bounding_box = {screenX, screenY, 100, 40};
@@ -753,6 +755,7 @@ void Controller::add_Graphical_Inductor(int screenX, int screenY) {
     Inductor* sim_inductor = new Inductor(i_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_inductor);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_inductor = make_unique<Graphical_Inductor>(sim_inductor);
     gfx_inductor->bounding_box = {screenX, screenY, 100, 40};
@@ -774,6 +777,7 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
     Current_Source* sim_current_source = new Current_Source(cs_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_current_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_current_source = make_unique<Graphical_Current_Source>(sim_current_source);
     gfx_current_source->bounding_box = {screenX, screenY, 100, 40};
@@ -795,6 +799,7 @@ void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
     Real_Diode* sim_real_diode = new Real_Diode(RD_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_real_diode);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_real_diode = make_unique<Graphical_Real_Diode>(sim_real_diode);
     gfx_sim_real_diode->bounding_box = {screenX, screenY, 100, 40};
@@ -816,6 +821,7 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
     Zener_Diode* sim_zener_diode = new Zener_Diode(ZD_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_zener_diode);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_zener_diode = make_unique<Graphical_Zener_Diode>(sim_zener_diode);
     gfx_sim_zener_diode->bounding_box = {screenX, screenY, 100, 40};
@@ -837,6 +843,7 @@ void Controller::add_Graphical_DC_Source(int screenX, int screenY)
     Voltage_Source* sim_voltage_source = new DC_Source(VS_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_voltage_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
@@ -858,6 +865,7 @@ void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
     Voltage_Source* sim_voltage_source = new Sine_Source(VS_name, n1, n2, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
@@ -879,6 +887,7 @@ void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
     Voltage_Source* sim_voltage_source = new Pulse_Source(VS_name, n1, n2, 0, 0, 0, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
@@ -900,6 +909,7 @@ void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
     Voltage_Source* sim_voltage_source = new Delta_Dirac(VS_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_voltage_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
@@ -921,6 +931,7 @@ void Controller::add_Graphical_Square_Source(int screenX, int screenY)
     Voltage_Source* sim_voltage_source = new Square_Source(VS_name, n1, n2, 0, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
@@ -942,6 +953,7 @@ void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
     Voltage_Source* sim_voltage_source = new Triangular_Source(VS_name, n1, n2, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
