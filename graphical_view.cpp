@@ -1922,6 +1922,45 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
             probe_mode = false;
         }
     }
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
+    {
+        Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
+        if (target_element)
+        {
+            if (!m_plot_view)
+            {
+                m_plot_view = make_unique<Plot_View>();
+            }
 
-    return true;
+            // create and add the signal
+            Signal element_signal;
+            element_signal.name = "I(" + target_element->get_model()->get_name() + ")";
+
+            if (current_analysis_mode == Analysis_Mode::Transient)
+            {
+                double start_time, stop_time, time_step;
+                C->get_tran_params(start_time, stop_time, time_step);
+
+
+                if (time_step > 0)
+                {
+                    for (double time = start_time; time < stop_time; time += time_step)
+                    {
+                        double current = target_element->get_model()->get_current(time, time_step);
+                        element_signal.data_points.push_back({current, time});
+                    }
+                }
+            }
+
+            element_signal.color = default_colors[color_index % default_colors.size()];
+            color_index++;
+            if (color_index == 15)
+                color_index = 0;
+
+            m_plot_view->add_signal(element_signal);
+            probe_mode = false;
+        }
+    }
+
+        return true;
 }
