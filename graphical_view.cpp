@@ -1678,7 +1678,7 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
                 case Analysis_Mode::Transient:
                     if (edit_buffers.size() >= 3)
                     {
-                        C->set_transient_values(toValue(edit_buffers[2]), toValue(edit_buffers[1]), toValue(edit_buffers[0]), toValue(edit_buffers[2]));
+                        C->set_transient_values(toValue(edit_buffers[2]), toValue(edit_buffers[1]) + toValue(edit_buffers[2]), toValue(edit_buffers[0]), toValue(edit_buffers[2]));
                     }
                     break;
                 case Analysis_Mode::AC_Sweep:
@@ -1712,7 +1712,8 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
 
     if (event.type == SDL_QUIT) return false;
 
-    if (event.type == SDL_MOUSEBUTTONDOWN) {
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
 
         // handling tab clicks
