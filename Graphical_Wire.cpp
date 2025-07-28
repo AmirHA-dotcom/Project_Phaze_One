@@ -14,8 +14,3 @@ void Graphical_Wire::draw(SDL_Renderer* renderer)
         SDL_RenderDrawLine(renderer, path[i].x, path[i].y, path[i+1].x, path[i+1].y);
     }
 }
-
-//        if (path[i].y == path[i + 1].y)
-//            SDL_RenderDrawLine(renderer, path[i].x, path[i].y - 5, path[i+1].x, path[i+1].y - 5);
-//        else
-//            SDL_RenderDrawLine(renderer, path[i].x - 5, path[i].y, path[i+1].x - 5, path[i+1].y);

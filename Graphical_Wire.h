@@ -11,13 +11,11 @@
 class Graphical_Wire
 {
 public:
-    // A list of all the corner points of the wire
-    std::vector<SDL_Point> path;
+    vector<SDL_Point> path;
 
     Node* start_node;
     Node* end_node;
 
-    // The function to draw the wire
     void draw(SDL_Renderer* renderer);
 };
 
