@@ -141,6 +141,9 @@ private:
     SDL_Cursor* default_cursor = nullptr;
     SDL_Cursor* probe_cursor = nullptr;
     SDL_Cursor* crosshair_cursor = nullptr;
+    SDL_Cursor* grounding_cursor = nullptr;
+    SDL_Cursor* math_operation_cursor = nullptr;
+    SDL_Cursor* deleting_cursor = nullptr;
 
     // helper functions
     Node* find_node_at(SDL_Point pos, Controller* C);

@@ -670,6 +670,7 @@ bool graphical_view::run(Controller *C)
 
     default_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     crosshair_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+    math_operation_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
 
     SDL_Surface* probe_surface = IMG_Load(PROBE);
     if (probe_surface)
@@ -689,18 +690,31 @@ bool graphical_view::run(Controller *C)
         auto& graphical_elements = C->get_graphical_elements();
         auto& graphical_wires = C->get_graphical_wires();
 
-        if (probe_mode)
-        {
-            if (probe_cursor) SDL_SetCursor(probe_cursor);
-        }
-        else if (m_is_wiring)
-        {
-            SDL_ShowCursor(SDL_DISABLE);
-        }
-        else
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+
+        // if the mouse is in the toolbar
+        if (mouseY < 40)
         {
             SDL_ShowCursor(SDL_ENABLE);
             if (default_cursor) SDL_SetCursor(default_cursor);
+        }
+        else
+        {
+            if (probe_mode)
+            {
+                if (probe_cursor) SDL_SetCursor(probe_cursor);
+            } else if (m_is_wiring)
+            {
+                SDL_ShowCursor(SDL_DISABLE);
+            } else if (math_operation_mode)
+            {
+                if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
+            } else
+            {
+                SDL_ShowCursor(SDL_ENABLE);
+                if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+            }
         }
 
         while (SDL_PollEvent(&event) != 0)
