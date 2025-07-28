@@ -58,6 +58,8 @@ public:
     void set_y_unit(Unit u) { y_axis_unit = u; }
     void set_x_unit(Unit u) { x_axis_unit = u; }
 
+    vector<Signal> get_all_signals() { return m_signals; }
+
     void add_signal(const Signal& new_signal);
     void delete_all_signals();
     bool handle_event(SDL_Event& event);

@@ -454,6 +454,124 @@ void graphical_view::draw_configure_analysis(SDL_Renderer *renderer, TTF_Font *f
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
 
+void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
+{
+    if (!m_plot_view) return;
+
+    const SDL_Color PANEL_BG = {50, 58, 69, 255};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color DISPLAY_BG = {33, 37, 41, 255};
+    const SDL_Color BUTTON_BG = {80, 88, 99, 255};
+
+    int menu_width = 500;
+    int menu_height = 400;
+    SDL_Rect menu_panel = {400, 200, menu_width, menu_height};
+    SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
+    SDL_RenderFillRect(renderer, &menu_panel);
+
+    // expression display
+    SDL_Rect display_rect = {menu_panel.x + 10, menu_panel.y + 10, menu_width - 20, 40};
+    SDL_SetRenderDrawColor(renderer, DISPLAY_BG.r, DISPLAY_BG.g, DISPLAY_BG.b, DISPLAY_BG.a);
+    SDL_RenderFillRect(renderer, &display_rect);
+    render_text(renderer, font, m_math_expression_string, display_rect.x + 5, display_rect.y + 10, TEXT_COLOR);
+
+    // signal buttons
+    render_text(renderer, font, "Available Signals:", menu_panel.x + 10, menu_panel.y + 60);
+    m_math_signal_buttons.clear();
+    int current_x = menu_panel.x + 10;
+    int current_y = menu_panel.y + 80;
+    for (const auto& signal : m_plot_view->get_all_signals())
+    {
+        int text_w, text_h;
+        TTF_SizeText(font, signal.name.c_str(), &text_w, &text_h);
+        SDL_Rect button_rect = {current_x, current_y, text_w + 10, text_h + 10};
+
+        // wrap to next line
+        if (button_rect.x + button_rect.w > menu_panel.x + menu_width)
+        {
+            current_y += button_rect.h + 5;
+            current_x = menu_panel.x + 10;
+            button_rect.x = current_x;
+            button_rect.y = current_y;
+        }
+
+        m_math_signal_buttons.push_back(button_rect);
+        current_x += button_rect.w + 5;
+
+        SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
+        SDL_RenderFillRect(renderer, &button_rect);
+        render_text(renderer, font, signal.name, button_rect.x + 5, button_rect.y + 5, TEXT_COLOR);
+    }
+
+    // operator buttons
+    int op_y = menu_panel.y + menu_height - 50;
+    m_op_plus_button = {menu_panel.x + 10, op_y, 40, 40};
+    m_op_minus_button = {menu_panel.x + 60, op_y, 40, 40};
+    m_op_clear_button = {menu_panel.x + menu_width - 180, op_y, 80, 40};
+    m_op_execute_button = {menu_panel.x + menu_width - 90, op_y, 80, 40};
+
+    SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
+    SDL_RenderFillRect(renderer, &m_op_plus_button);
+    render_text(renderer, font, "+", m_op_plus_button.x + 15, m_op_plus_button.y + 10);
+    SDL_RenderFillRect(renderer, &m_op_minus_button);
+    render_text(renderer, font, "-", m_op_minus_button.x + 15, m_op_minus_button.y + 10);
+    SDL_RenderFillRect(renderer, &m_op_clear_button);
+    render_text(renderer, font, "Clear", m_op_clear_button.x + 15, m_op_clear_button.y + 10);
+    SDL_RenderFillRect(renderer, &m_op_execute_button);
+    render_text(renderer, font, "Execute", m_op_execute_button.x + 5, m_op_execute_button.y + 10);
+}
+
+void graphical_view::execute_math_operation()
+{
+    if (m_math_operands.empty() || m_math_operands.size() != m_math_operators.size() + 1)
+    {
+        m_math_expression_string = "Invalid Expression";
+        return;
+    }
+
+    // data from the first signal
+    Signal result_signal;
+    result_signal.name = m_math_expression_string;
+    result_signal.data_points = m_math_operands[0]->data_points;
+
+    // applying operations
+    for (size_t i = 0; i < m_math_operators.size(); ++i)
+    {
+        char op = m_math_operators[i];
+        const Signal* next_operand = m_math_operands[i + 1];
+
+        // checking data sizes
+        if (result_signal.data_points.size() != next_operand->data_points.size())
+        {
+            m_math_expression_string = "Mismatched data sizes";
+            return;
+        }
+
+        for (size_t j = 0; j < result_signal.data_points.size(); ++j)
+        {
+            double v1 = result_signal.data_points[j].first;
+            double v2 = next_operand->data_points[j].first;
+            if (op == '+')
+            {
+                result_signal.data_points[j].first = v1 + v2;
+            }
+            else if (op == '-')
+            {
+                result_signal.data_points[j].first = v1 - v2;
+            }
+        }
+    }
+
+    // adding the final result to the plot
+    result_signal.color = default_colors[color_index % 15];
+    color_index = (color_index + 1) % 15;
+    m_plot_view->add_signal(result_signal);
+
+    m_math_expression_string.clear();
+    m_math_operands.clear();
+    m_math_operators.clear();
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -596,6 +714,10 @@ bool graphical_view::run(Controller *C)
                 {
                     running = handle_probing_events(event, C);
                 }
+                else if (math_operation_mode)
+                {
+                    running = handle_math_operation_events(event, C);
+                }
                 else
                 {
                     running = handle_events(event, C);
@@ -689,6 +811,11 @@ bool graphical_view::run(Controller *C)
         if (is_configuring_analysis)
         {
             draw_configure_analysis(renderer, font, C);
+        }
+
+        if (math_operation_mode)
+        {
+            draw_math_operation_menu(renderer, font, C);
         }
 
 
@@ -2062,5 +2189,67 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         }
     }
 
+    return true;
+}
+
+bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+    {
+        m_math_expression_string.clear();
+        m_math_operands.clear();
+        m_math_operators.clear();
+        math_operation_mode = false;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        // click on signal buttons
+        for (size_t i = 0; i < m_math_signal_buttons.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &m_math_signal_buttons[i]))
+            {
+                const auto& signals = m_plot_view->get_all_signals();
+                // only add a signal if the last thing added was an operator or if its the first one
+                if (m_math_operands.size() == m_math_operators.size())
+                {
+                    m_math_expression_string += signals[i].name;
+                    m_math_operands.push_back(&signals[i]);
+                    return true;
+                }
+            }
+        }
+
+        // click on operator buttons
+        if (SDL_PointInRect(&mouse_pos, &m_op_plus_button) || SDL_PointInRect(&mouse_pos, &m_op_minus_button))
+        {
+            // only add an operator if the last thing added was a signal
+            if (m_math_operands.size() == m_math_operators.size() + 1) {
+                char op = SDL_PointInRect(&mouse_pos, &m_op_plus_button) ? '+' : '-';
+                m_math_expression_string += " " + std::string(1, op) + " ";
+                m_math_operators.push_back(op);
+                return true;
+            }
+        }
+
+        // clear and execute
+        if (SDL_PointInRect(&mouse_pos, &m_op_clear_button))
+        {
+            m_math_expression_string.clear();
+            m_math_operands.clear();
+            m_math_operators.clear();
+            return true;
+        }
+        if (SDL_PointInRect(&mouse_pos, &m_op_execute_button))
+        {
+            execute_math_operation();
+            math_operation_mode = false;
+            return true;
+        }
+    }
     return true;
 }
