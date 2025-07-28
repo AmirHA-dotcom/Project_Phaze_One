@@ -271,8 +271,9 @@ public:
 
     void do_transient();
 
-    void deleteElement(Graphical_Element* g_element_to_delete);
+    void delete_element(Graphical_Element* g_element_to_delete);
 
+    void delete_wire(Graphical_Wire* wire_to_delete);
 
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

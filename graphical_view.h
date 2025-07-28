@@ -138,13 +138,14 @@ private:
     int color_index = 0;
 
     // cursors
-    SDL_Cursor* m_default_cursor = nullptr;
-    SDL_Cursor* m_probe_cursor = nullptr;
-    SDL_Cursor* m_crosshair_cursor = nullptr;
+    SDL_Cursor* default_cursor = nullptr;
+    SDL_Cursor* probe_cursor = nullptr;
+    SDL_Cursor* crosshair_cursor = nullptr;
 
     // helper functions
     Node* find_node_at(SDL_Point pos, Controller* C);
     Graphical_Element* find_element_at(SDL_Point pos, Controller* C);
+    Graphical_Wire* find_wire_at(SDL_Point pos, Controller* C);
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
     void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);

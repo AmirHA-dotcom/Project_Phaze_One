@@ -115,6 +115,27 @@ Graphical_Element* graphical_view::find_element_at(SDL_Point pos, Controller *C)
     return nullptr;
 }
 
+Graphical_Wire* graphical_view::find_wire_at(SDL_Point pos, Controller *C)
+{
+    const float CLICK_TOLERANCE = 10.0f;
+    auto& wires = C->get_graphical_wires();
+
+    for (const auto& wire : wires)
+    {
+        for (size_t i = 0; i < wire->path.size() - 1; ++i)
+        {
+            SDL_Point p1 = wire->path[i];
+            SDL_Point p2 = wire->path[i+1];
+
+            if (dist_to_segment(pos, p1, p2) < CLICK_TOLERANCE)
+            {
+                return wire.get();
+            }
+        }
+    }
+    return nullptr;
+}
+
 vector<pair<double, double>> generate_data_for_element(Graphical_Element* element, Controller* C)
 {
     vector<std::pair<double, double>> data_points;
@@ -647,13 +668,13 @@ bool graphical_view::run(Controller *C)
 
     SDL_GetWindowSize(window, &m_window_width, &m_window_height);
 
-    m_default_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
-    m_crosshair_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+    default_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    crosshair_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
 
     SDL_Surface* probe_surface = IMG_Load(PROBE);
     if (probe_surface)
     {
-        m_probe_cursor = SDL_CreateColorCursor(probe_surface, 4, 60);
+        probe_cursor = SDL_CreateColorCursor(probe_surface, 4, 60);
         SDL_FreeSurface(probe_surface);
     }
 
@@ -670,7 +691,7 @@ bool graphical_view::run(Controller *C)
 
         if (probe_mode)
         {
-            if (m_probe_cursor) SDL_SetCursor(m_probe_cursor);
+            if (probe_cursor) SDL_SetCursor(probe_cursor);
         }
         else if (m_is_wiring)
         {
@@ -679,7 +700,7 @@ bool graphical_view::run(Controller *C)
         else
         {
             SDL_ShowCursor(SDL_ENABLE);
-            if (m_default_cursor) SDL_SetCursor(m_default_cursor);
+            if (default_cursor) SDL_SetCursor(default_cursor);
         }
 
         while (SDL_PollEvent(&event) != 0)
@@ -897,9 +918,9 @@ bool graphical_view::run(Controller *C)
 
     }
 
-    SDL_FreeCursor(m_default_cursor);
-    SDL_FreeCursor(m_probe_cursor);
-    SDL_FreeCursor(m_crosshair_cursor);
+    SDL_FreeCursor(default_cursor);
+    SDL_FreeCursor(probe_cursor);
+    SDL_FreeCursor(crosshair_cursor);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_Quit();
@@ -2491,7 +2512,13 @@ bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
         Graphical_Element* element = find_element_at(pos, C);
         if (element)
         {
-            C->deleteElement(element);
+            C->delete_element(element);
+            is_deleting = false;
+        }
+        Graphical_Wire* wire = find_wire_at(pos, C);
+        if (wire)
+        {
+            C->delete_wire(wire);
             is_deleting = false;
         }
     }

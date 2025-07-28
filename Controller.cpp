@@ -1259,11 +1259,11 @@ void Controller::do_transient()
     }
 }
 
-void Controller::deleteElement(Graphical_Element* element_to_delete)
+void Controller::delete_element(Graphical_Element* g_element_to_delete)
 {
-    if (!element_to_delete) return;
+    if (!g_element_to_delete) return;
 
-    vector<Connection_Point> terminals = element_to_delete->get_connection_points();
+    vector<Connection_Point> terminals = g_element_to_delete->get_connection_points();
 
     // removing any wire connected to the connection points
     auto& wires = get_graphical_wires();
@@ -1284,14 +1284,28 @@ void Controller::deleteElement(Graphical_Element* element_to_delete)
                            }),
             wires.end());
 
-    string name_to_delete = element_to_delete->get_model()->get_name();
+    string name_to_delete = g_element_to_delete->get_model()->get_name();
 
     circuit->delete_element(name_to_delete);
 
     auto& g_elements = get_graphical_elements();
 
     g_elements.erase(remove_if(g_elements.begin(), g_elements.end(),[&](const unique_ptr<Graphical_Element>& element) {
-                               return element.get() == element_to_delete;
+                               return element.get() == g_element_to_delete;
                            }),
             g_elements.end());
+}
+
+void Controller::delete_wire(Graphical_Wire *wire_to_delete)
+{
+    if (wire_to_delete->start_node->connected_elements_count() == 0)
+    {
+        circuit->delete_node(wire_to_delete->start_node);
+    }
+    m_graphical_wires.erase(remove_if(m_graphical_wires.begin(),m_graphical_wires.end(),[&](const std::unique_ptr<Graphical_Wire>& wire) {
+                        return wire.get() == wire_to_delete;
+                    }
+            ),
+            m_graphical_wires.end()
+    );
 }
