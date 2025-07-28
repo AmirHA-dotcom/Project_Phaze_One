@@ -1327,6 +1327,12 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
             is_grounding = true;
             new_wire_points.clear();
         }
+        if (event.key.keysym.sym == SDLK_BACKSPACE || event.key.keysym.sym == SDLK_DELETE)
+        {
+            m_is_wiring = false;
+            is_deleting = true;
+            new_wire_points.clear();
+        }
     }
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
