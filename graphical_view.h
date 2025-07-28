@@ -13,6 +13,10 @@
 #include "Graphical_Wire.h"
 #include "Plot_View.h"
 
+enum class Analysis_Mode { Transient, AC_Sweep, Phase_Sweep };
+
+enum class AC_Sweep_Type { Octave, Decade, Linear };
+
 enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe};
 
 struct Toolbar_Button {
@@ -83,11 +87,12 @@ private:
     vector<Toolbar_Button> m_toolbar_buttons;
     int m_hovered_button_index = -1;
 
-    // Configure Analysis
+    // configure analysis
     bool is_configuring_analysis = false;
-    bool is_transient = true;
-    bool is_AC_sweep = false;
-    bool is_phase_sweep = false;
+    Analysis_Mode current_analysis_mode = Analysis_Mode::Transient;
+    AC_Sweep_Type AC_sweep_type = AC_Sweep_Type::Linear;
+    SDL_Rect transient_tab_rect, ac_sweep_tab_rect, phase_sweep_tab_rect;
+    SDL_Rect octave_button_rect, decade_button_rect, linear_button_rect;
 
     // probe mode
     bool probe_mode = false;

@@ -344,64 +344,97 @@ void graphical_view::draw_configure_analysis(SDL_Renderer *renderer, TTF_Font *f
     const SDL_Color TEXT_BOX_BG = {33, 37, 41, 255};
     const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
     const SDL_Color HIGHLIGHT_COLOR = {52, 152, 219, 255};
+    const SDL_Color TAB_BG = {40, 45, 53, 255};
 
-    int menu_width = 400;
-    int menu_height = 420;
+    int menu_width = 450;
+    int menu_height = 300;
     SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
     SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
     SDL_RenderFillRect(renderer, &menu_panel);
 
-    vector<Editable_Property> props;
+    // main tab buttons
+    int tab_width = menu_width / 3;
+    transient_tab_rect = {menu_panel.x, menu_panel.y, tab_width, 40};
+    ac_sweep_tab_rect = {menu_panel.x + tab_width, menu_panel.y, tab_width, 40};
+    phase_sweep_tab_rect = {menu_panel.x + (2 * tab_width), menu_panel.y, tab_width, 40};
 
-    if (is_transient)
-    {
-        double start_t, stop_t, t_step;
-        C->get_tran_params(start_t, start_t, t_step);
+    // transient tab
+    SDL_SetRenderDrawColor(renderer, (current_analysis_mode == Analysis_Mode::Transient) ? HIGHLIGHT_COLOR.r : TAB_BG.r, (current_analysis_mode == Analysis_Mode::Transient) ? HIGHLIGHT_COLOR.g : TAB_BG.g, (current_analysis_mode == Analysis_Mode::Transient) ? HIGHLIGHT_COLOR.b : TAB_BG.b, 255);
+    SDL_RenderFillRect(renderer, &transient_tab_rect);
+    render_text(renderer, font, "Transient", transient_tab_rect.x + 25, transient_tab_rect.y + 10, TEXT_COLOR);
 
-        props.push_back({"start time", to_string(start_t)});
-        props.push_back({"stop time", to_string(stop_t)});
-        props.push_back({"max time step", to_string(t_step)});
-    }
-    else if (is_phase_sweep)
-    {
-        props.push_back({"base frequency", "not coded"});
-        props.push_back({"start phase", "not coded"});
-        props.push_back({"stop phase", "not coded"});
-        props.push_back({"number of points", "not coded"});
-    }
+    // AC sweep tab
+    SDL_SetRenderDrawColor(renderer, (current_analysis_mode == Analysis_Mode::AC_Sweep) ? HIGHLIGHT_COLOR.r : TAB_BG.r, (current_analysis_mode == Analysis_Mode::AC_Sweep) ? HIGHLIGHT_COLOR.g : TAB_BG.g, (current_analysis_mode == Analysis_Mode::AC_Sweep) ? HIGHLIGHT_COLOR.b : TAB_BG.b, 255);
+    SDL_RenderFillRect(renderer, &ac_sweep_tab_rect);
+    render_text(renderer, font, "AC Sweep", ac_sweep_tab_rect.x + 30, ac_sweep_tab_rect.y + 10, TEXT_COLOR);
 
+    // phase sweep tab
+    SDL_SetRenderDrawColor(renderer, (current_analysis_mode == Analysis_Mode::Phase_Sweep) ? HIGHLIGHT_COLOR.r : TAB_BG.r, (current_analysis_mode == Analysis_Mode::Phase_Sweep) ? HIGHLIGHT_COLOR.g : TAB_BG.g, (current_analysis_mode == Analysis_Mode::Phase_Sweep) ? HIGHLIGHT_COLOR.b : TAB_BG.b, 255);
+    SDL_RenderFillRect(renderer, &phase_sweep_tab_rect);
+    render_text(renderer, font, "Phase Sweep", phase_sweep_tab_rect.x + 20, phase_sweep_tab_rect.y + 10, TEXT_COLOR);
+
+    // options
+    vector<string> labels;
     property_rects.clear();
-
-    int start_y = menu_panel.y + 50;
+    int start_y = menu_panel.y + 60;
     int row_height = 40;
-    for (int i = 0; i < props.size(); ++i) {
-        render_text(renderer, font, props[i].label, menu_panel.x + 20, start_y + (i * row_height), TEXT_COLOR);
 
+    switch (current_analysis_mode)
+    {
+        case Analysis_Mode::Transient:
+            labels = {"Start Time", "Stop Time", "Max Time Step"};
+            break;
+        case Analysis_Mode::AC_Sweep:
+            labels = {"Start Frequency", "Stop Frequency", "Number of Points"};
+            // sweep type selection buttons
+            render_text(renderer, font, "Type of Sweep:", menu_panel.x + 20, start_y, TEXT_COLOR);
+            octave_button_rect = {menu_panel.x + 180, start_y, 80, 30};
+            decade_button_rect = {menu_panel.x + 270, start_y, 80, 30};
+            linear_button_rect = {menu_panel.x + 360, start_y, 80, 30};
+
+            SDL_SetRenderDrawColor(renderer, (AC_sweep_type == AC_Sweep_Type::Octave) ? HIGHLIGHT_COLOR.r : BORDER_COLOR.r, (AC_sweep_type == AC_Sweep_Type::Octave) ? HIGHLIGHT_COLOR.g : BORDER_COLOR.g, (AC_sweep_type == AC_Sweep_Type::Octave) ? HIGHLIGHT_COLOR.b : BORDER_COLOR.b, 255);
+            SDL_RenderFillRect(renderer, &octave_button_rect);
+            render_text(renderer, font, "Octave", octave_button_rect.x + 15, octave_button_rect.y + 5, TEXT_COLOR);
+
+            SDL_SetRenderDrawColor(renderer, (AC_sweep_type == AC_Sweep_Type::Decade) ? HIGHLIGHT_COLOR.r : BORDER_COLOR.r, (AC_sweep_type == AC_Sweep_Type::Decade) ? HIGHLIGHT_COLOR.g : BORDER_COLOR.g, (AC_sweep_type == AC_Sweep_Type::Decade) ? HIGHLIGHT_COLOR.b : BORDER_COLOR.b, 255);
+            SDL_RenderFillRect(renderer, &decade_button_rect);
+            render_text(renderer, font, "Decade", decade_button_rect.x + 15, decade_button_rect.y + 5, TEXT_COLOR);
+
+            SDL_SetRenderDrawColor(renderer, (AC_sweep_type == AC_Sweep_Type::Linear) ? HIGHLIGHT_COLOR.r : BORDER_COLOR.r, (AC_sweep_type == AC_Sweep_Type::Linear) ? HIGHLIGHT_COLOR.g : BORDER_COLOR.g, (AC_sweep_type == AC_Sweep_Type::Linear) ? HIGHLIGHT_COLOR.b : BORDER_COLOR.b, 255);
+            SDL_RenderFillRect(renderer, &linear_button_rect);
+            render_text(renderer, font, "Linear", linear_button_rect.x + 15, linear_button_rect.y + 5, TEXT_COLOR);
+
+            start_y += row_height;
+            break;
+        case Analysis_Mode::Phase_Sweep:
+            labels = {"Base Frequency", "Start Phase", "Stop Phase", "Number of Points"};
+            break;
+    }
+
+    // text input boxes
+    for (int i = 0; i < labels.size(); ++i)
+    {
+        render_text(renderer, font, labels[i], menu_panel.x + 20, start_y + (i * row_height), TEXT_COLOR);
         SDL_Rect textbox_rect = {menu_panel.x + 180, start_y + (i * row_height) - 5, 200, 30};
         property_rects.push_back(textbox_rect);
 
         SDL_SetRenderDrawColor(renderer, TEXT_BOX_BG.r, TEXT_BOX_BG.g, TEXT_BOX_BG.b, TEXT_BOX_BG.a);
         SDL_RenderFillRect(renderer, &textbox_rect);
-
-        if (i == active_edit_box) {
-            SDL_SetRenderDrawColor(renderer, HIGHLIGHT_COLOR.r, HIGHLIGHT_COLOR.g, HIGHLIGHT_COLOR.b, HIGHLIGHT_COLOR.a);
-        } else {
-            SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
-        }
+        SDL_SetRenderDrawColor(renderer, (i == active_edit_box) ? HIGHLIGHT_COLOR.r : BORDER_COLOR.r, (i == active_edit_box) ? HIGHLIGHT_COLOR.g : BORDER_COLOR.g, (i == active_edit_box) ? HIGHLIGHT_COLOR.b : BORDER_COLOR.b, 255);
         SDL_RenderDrawRect(renderer, &textbox_rect);
 
-        if (i < edit_buffers.size()) {
+        if (i < edit_buffers.size())
+        {
             render_text(renderer, font, edit_buffers[i], textbox_rect.x + 5, textbox_rect.y + 5, TEXT_COLOR);
         }
     }
 
+    // OK cancel
     ok_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 30};
     cancel_button_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 30};
-
     SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
     SDL_RenderFillRect(renderer, &ok_button_rect);
     SDL_RenderFillRect(renderer, &cancel_button_rect);
-
     render_text(renderer, font, "OK", ok_button_rect.x + 40, ok_button_rect.y + 5, TEXT_COLOR);
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
@@ -646,7 +679,7 @@ bool graphical_view::run(Controller *C)
 
         // showing the run
         {
-            if (is_transient)
+            if (current_analysis_mode == Analysis_Mode::Transient)
             {
                 int x = 10; int y = 50;
                 double t_step, start, stop;
@@ -1604,13 +1637,13 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_grounding = false;
                             edit_buffers.clear();
 
-                            if (is_transient)
+                            if (current_analysis_mode == Analysis_Mode::Transient)
                             {
                                 double start, stop, step;
                                 C->get_tran_params(start, stop, step);
-                                edit_buffers.push_back(std::to_string(start));
-                                edit_buffers.push_back(std::to_string(stop));
-                                edit_buffers.push_back(std::to_string(step));
+                                edit_buffers.push_back(to_string(start));
+                                edit_buffers.push_back(to_string(stop));
+                                edit_buffers.push_back(to_string(step));
                             }
                             active_edit_box = -1;
                             break;
@@ -1639,74 +1672,119 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controller *C)
 {
-// helper
     auto save_and_exit = [&]() {
-
-        if (is_transient)
-        {
-            if (edit_buffers.size() >= 3)
-            {
-                try
-                {
-                    double start_time = toValue(edit_buffers[0]);
-                    double stop_time = toValue(edit_buffers[1]);
-                    double time_step = toValue(edit_buffers[2]);
-
-                    C->set_transient_values(time_step, stop_time + time_step, start_time, time_step);
-
-                }
-                catch (const exception& e)
-                {
-                    cerr << "Error parsing transient values: " << e.what() << endl;
-                }
+        try {
+            switch (current_analysis_mode) {
+                case Analysis_Mode::Transient:
+                    if (edit_buffers.size() >= 3)
+                    {
+                        C->set_transient_values(toValue(edit_buffers[2]), toValue(edit_buffers[1]), toValue(edit_buffers[0]), toValue(edit_buffers[2]));
+                    }
+                    break;
+                case Analysis_Mode::AC_Sweep:
+                    if (edit_buffers.size() >= 3)
+                    {
+                        double start_freq = toValue(edit_buffers[0]);
+                        double stop_freq = toValue(edit_buffers[1]);
+                        int num_points = static_cast<int>(toValue(edit_buffers[2]));
+                        cout << "AC Sweep Values: Type=" << (int)AC_sweep_type << ", Start=" << start_freq << ", Stop=" << stop_freq << ", Points=" << num_points << endl;
+                    }
+                    break;
+                case Analysis_Mode::Phase_Sweep:
+                    if (edit_buffers.size() >= 4)
+                    {
+                        double base_freq = toValue(edit_buffers[0]);
+                        double start_phase = toValue(edit_buffers[1]);
+                        double stop_phase = toValue(edit_buffers[2]);
+                        int num_points = static_cast<int>(toValue(edit_buffers[3]));
+                        cout << "Phase Sweep Values: Base=" << base_freq << ", Start=" << start_phase << ", Stop=" << stop_phase << ", Points=" << num_points << endl;
+                    }
+                    break;
             }
         }
-        else if (is_AC_sweep)
+        catch (const exception& e)
         {
-            // nothing :)
+            cerr << "Error parsing values: " << e.what() << endl;
         }
-        else if (is_phase_sweep)
-        {
-            // nothing :)
-        }
-
         is_configuring_analysis = false;
         SDL_StopTextInput();
     };
 
     if (event.type == SDL_QUIT) return false;
 
-    if (event.type == SDL_MOUSEBUTTONDOWN)
-    {
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
 
-        // OK or Cancel
+        // handling tab clicks
+        auto switch_tab = [&](Analysis_Mode new_mode, int buffer_size) {
+            if (current_analysis_mode != new_mode)
+            {
+                current_analysis_mode = new_mode;
+                active_edit_box = -1;
+                edit_buffers.assign(buffer_size, "");
+            }
+        };
+
+        if (SDL_PointInRect(&mouse_pos, &transient_tab_rect))
+        {
+            switch_tab(Analysis_Mode::Transient, 3);
+            return true;
+        }
+        if (SDL_PointInRect(&mouse_pos, &ac_sweep_tab_rect))
+        {
+            switch_tab(Analysis_Mode::AC_Sweep, 3);
+            return true;
+        }
+        if (SDL_PointInRect(&mouse_pos, &phase_sweep_tab_rect))
+        {
+            switch_tab(Analysis_Mode::Phase_Sweep, 4);
+            return true;
+        }
+
+        // handling AC sweep type clicks
+        if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+        {
+            if (SDL_PointInRect(&mouse_pos, &octave_button_rect))
+            {
+                AC_sweep_type = AC_Sweep_Type::Octave;
+                return true;
+            }
+            if (SDL_PointInRect(&mouse_pos, &decade_button_rect))
+            {
+                AC_sweep_type = AC_Sweep_Type::Decade;
+                return true;
+            }
+            if (SDL_PointInRect(&mouse_pos, &linear_button_rect))
+            {
+                AC_sweep_type = AC_Sweep_Type::Linear;
+                return true;
+            }
+        }
+
+        // textbox OK cancel
         if (SDL_PointInRect(&mouse_pos, &ok_button_rect))
         {
-            // OK
             save_and_exit();
         }
         else if (SDL_PointInRect(&mouse_pos, &cancel_button_rect))
         {
-            // Cancel
             is_configuring_analysis = false;
             SDL_StopTextInput();
         }
         else
         {
-            // text box
-            bool an_edit_box_was_clicked = false;
+            bool box_clicked = false;
             for (int i = 0; i < property_rects.size(); ++i)
             {
                 if (SDL_PointInRect(&mouse_pos, &property_rects[i]))
                 {
                     active_edit_box = i;
                     SDL_StartTextInput();
-                    an_edit_box_was_clicked = true;
+                    box_clicked = true;
                     break;
                 }
             }
-            if (!an_edit_box_was_clicked)
+            if (!box_clicked)
             {
                 active_edit_box = -1;
                 SDL_StopTextInput();
@@ -1714,11 +1792,11 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
         }
     }
 
+    // keyboard input
     if (event.type == SDL_TEXTINPUT && active_edit_box != -1)
     {
         edit_buffers[active_edit_box] += event.text.text;
     }
-
     if (event.type == SDL_KEYDOWN)
     {
         switch (event.key.keysym.sym)
@@ -1727,14 +1805,12 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
                 is_configuring_analysis = false;
                 SDL_StopTextInput();
                 break;
-
             case SDLK_BACKSPACE:
                 if (active_edit_box != -1 && !edit_buffers[active_edit_box].empty())
                 {
                     edit_buffers[active_edit_box].pop_back();
                 }
                 break;
-
             case SDLK_RETURN:
                 save_and_exit();
                 break;
