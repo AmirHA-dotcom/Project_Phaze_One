@@ -129,7 +129,7 @@ Graphical_Wire* graphical_view::find_wire_at(SDL_Point pos, Controller *C)
 
 vector<pair<double, double>> generate_data_for_element(Graphical_Element* element, Controller* C)
 {
-    vector<std::pair<double, double>> data_points;
+    vector<pair<double, double>> data_points;
     double start_time, stop_time, time_step;
     C->get_tran_params(start_time, stop_time, time_step);
 
