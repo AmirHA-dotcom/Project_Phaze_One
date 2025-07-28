@@ -250,11 +250,6 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
     const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
     const SDL_Color HIGHLIGHT_COLOR = {52, 152, 219, 255};
 
-//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-//    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 180);
-//    SDL_RenderFillRect(renderer, NULL);
-//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
-
     int menu_width = 400;
     int menu_height = 420;
     SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
@@ -313,7 +308,8 @@ void graphical_view::initialize_toolbar(TTF_Font* font)
             {"Analysis", Tool_Bar_Action::Configure_Analysis},
             {"Run", Tool_Bar_Action::Run},
             {"Probe", Tool_Bar_Action::Probe},
-            {"M_Operation", Tool_Bar_Action::Math_Operation}
+            {"M_Operation", Tool_Bar_Action::Math_Operation},
+            {"Save", Tool_Bar_Action::Save}
     };
 
     int current_x = 10;
@@ -544,6 +540,63 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     render_text(renderer, font, "Execute", op_execute_button.x + 5, op_execute_button.y + 10);
 }
 
+void graphical_view::draw_save_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
+{
+    const SDL_Color PANEL_BG = {50, 58, 69, 255};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color TEXT_BOX_BG = {33, 37, 41, 255};
+    const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
+    const SDL_Color HIGHLIGHT_COLOR = {52, 152, 219, 255};
+
+    int menu_width = 400;
+    int menu_height = 420;
+    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
+    SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
+    SDL_RenderFillRect(renderer, &menu_panel);
+
+    vector<Editable_Property> props = {{"Name", current_file_name}, {"Address", current_file_address}};
+
+    property_rects.clear();
+
+    int start_y = menu_panel.y + 50;
+    int row_height = 40;
+    for (int i = 0; i < props.size(); ++i)
+    {
+        render_text(renderer, font, props[i].label, menu_panel.x + 20, start_y + (i * row_height), TEXT_COLOR);
+
+        SDL_Rect textbox_rect = {menu_panel.x + 180, start_y + (i * row_height) - 5, 200, 30};
+        property_rects.push_back(textbox_rect);
+
+        SDL_SetRenderDrawColor(renderer, TEXT_BOX_BG.r, TEXT_BOX_BG.g, TEXT_BOX_BG.b, TEXT_BOX_BG.a);
+        SDL_RenderFillRect(renderer, &textbox_rect);
+
+        if (i == active_edit_box)
+        {
+            SDL_SetRenderDrawColor(renderer, HIGHLIGHT_COLOR.r, HIGHLIGHT_COLOR.g, HIGHLIGHT_COLOR.b, HIGHLIGHT_COLOR.a);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+        }
+        SDL_RenderDrawRect(renderer, &textbox_rect);
+
+        if (i < edit_buffers.size())
+        {
+            render_text(renderer, font, edit_buffers[i], textbox_rect.x + 5, textbox_rect.y + 5, TEXT_COLOR);
+        }
+    }
+
+    ok_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 30};
+    cancel_button_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 30};
+
+    SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+    SDL_RenderFillRect(renderer, &ok_button_rect);
+    SDL_RenderFillRect(renderer, &cancel_button_rect);
+
+    render_text(renderer, font, "OK", ok_button_rect.x + 40, ok_button_rect.y + 5, TEXT_COLOR);
+    render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -690,6 +743,10 @@ bool graphical_view::run(Controller *C)
                 {
                     running = handle_math_operation_events(event, C);
                 }
+                else if (is_saving)
+                {
+                    running = handle_saving_events(event, C);
+                }
                 else
                 {
                     running = handle_events(event, C);
@@ -788,6 +845,11 @@ bool graphical_view::run(Controller *C)
         if (math_operation_mode)
         {
             draw_math_operation_menu(renderer, font, C);
+        }
+
+        if (is_saving)
+        {
+            draw_save_menu(renderer, font, C);
         }
 
 
@@ -1744,6 +1806,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_grounding = false;
                             math_operation_mode = false;
                             probe_mode = false;
+                            is_saving = false;
                             break;
                         case Tool_Bar_Action::Net_Label:
                             is_labeling = !is_labeling;
@@ -1752,6 +1815,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_grounding = false;
                             math_operation_mode = false;
                             probe_mode = false;
+                            is_saving = false;
                             break;
                         case Tool_Bar_Action::Grid:
                             show_grids = !show_grids;
@@ -1763,6 +1827,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_grounding = false;
                             math_operation_mode = false;
                             probe_mode = false;
+                            is_saving = false;
                             break;
                         case Tool_Bar_Action::File:
                             break;
@@ -1774,6 +1839,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             m_is_wiring = false;
                             is_labeling = false;
                             is_grounding = false;
+                            is_saving = false;
                             edit_buffers.clear();
 
                             if (current_analysis_mode == Analysis_Mode::Transient)
@@ -1824,6 +1890,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
+                            is_saving = false;
                             break;
                         case Tool_Bar_Action::Math_Operation:
                             math_operation_mode = !math_operation_mode;
@@ -1832,6 +1899,21 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
+                            is_saving = false;
+                            break;
+                        case Tool_Bar_Action::Save:
+                            is_saving = !is_saving;
+                            math_operation_mode = false;
+                            probe_mode = false;
+                            m_is_wiring = false;
+                            is_labeling = false;
+                            elements_menu = false;
+                            is_grounding = false;
+
+                            edit_buffers.clear();
+                            edit_buffers.resize(2);
+                            edit_buffers[0] = current_file_name;
+                            edit_buffers[1] = current_file_address;
                             break;
                     }
                     return true;
@@ -2281,5 +2363,85 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
             return true;
         }
     }
+    return true;
+}
+
+bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
+{
+    // helper
+    auto save_and_exit = [&]() {
+        current_file_name = edit_buffers[0];
+        current_file_address = edit_buffers[1];
+        is_saving = false;
+        SDL_StopTextInput();
+    };
+
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        // OK or Cancel
+        if (SDL_PointInRect(&mouse_pos, &ok_button_rect))
+        {
+            // OK
+            save_and_exit();
+        }
+        else if (SDL_PointInRect(&mouse_pos, &cancel_button_rect))
+        {
+            // Cancel
+            is_saving = false;
+            SDL_StopTextInput();
+        }
+        else
+        {
+            // text box
+            bool an_edit_box_was_clicked = false;
+            for (int i = 0; i < property_rects.size(); ++i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &property_rects[i]))
+                {
+                    active_edit_box = i;
+                    SDL_StartTextInput();
+                    an_edit_box_was_clicked = true;
+                    break;
+                }
+            }
+            if (!an_edit_box_was_clicked)
+            {
+                active_edit_box = -1;
+                SDL_StopTextInput();
+            }
+        }
+    }
+
+    if (event.type == SDL_TEXTINPUT && active_edit_box != -1)
+    {
+        edit_buffers[active_edit_box] += event.text.text;
+    }
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
+        {
+            case SDLK_ESCAPE:
+                is_saving = false;
+                SDL_StopTextInput();
+                break;
+
+            case SDLK_BACKSPACE:
+                if (active_edit_box != -1 && !edit_buffers[active_edit_box].empty())
+                {
+                    edit_buffers[active_edit_box].pop_back();
+                }
+                break;
+
+            case SDLK_RETURN:
+                save_and_exit();
+                break;
+        }
+    }
+
     return true;
 }

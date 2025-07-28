@@ -17,7 +17,7 @@ enum class Analysis_Mode { Transient, AC_Sweep, Phase_Sweep };
 
 enum class AC_Sweep_Type { Octave, Decade, Linear };
 
-enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation };
+enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation, Save };
 
 struct Toolbar_Button {
     SDL_Rect rect;
@@ -87,6 +87,11 @@ private:
     vector<Toolbar_Button> m_toolbar_buttons;
     int m_hovered_button_index = -1;
 
+    // saving circuit
+    bool is_saving = false;
+    string current_file_name;
+    string current_file_address;
+
     // configure analysis
     bool is_configuring_analysis = false;
     Analysis_Mode current_analysis_mode = Analysis_Mode::Transient;
@@ -142,6 +147,7 @@ private:
     void draw_toolbar(SDL_Renderer* renderer, TTF_Font* font);
     void draw_configure_analysis(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_math_operation_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
+    void draw_save_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
 
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
@@ -163,6 +169,9 @@ private:
     bool handle_probing_events(SDL_Event& event, Controller* C);
 
     bool handle_math_operation_events(SDL_Event& event, Controller* C);
+
+    bool handle_saving_events(SDL_Event& event, Controller* C);
+
 
 public:
     bool run (Controller* C);
