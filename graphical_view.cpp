@@ -1860,7 +1860,12 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         probe_mode = false;
     }
 
-    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    const Uint8* keystates = SDL_GetKeyboardState(NULL);
+
+    bool ctrl_is_pressed = keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL];
+
+    // show voltages
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && !ctrl_is_pressed)
     {
         Node* target_node = find_node_at({event.button.x, event.button.y}, C);
         if (target_node)
@@ -1922,6 +1927,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
             probe_mode = false;
         }
     }
+
+    // show currents
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
     {
         Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
@@ -1962,5 +1969,48 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         }
     }
 
-        return true;
+    // show power
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && ctrl_is_pressed)
+    {
+        Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
+        if (target_element)
+        {
+            if (!m_plot_view)
+            {
+                m_plot_view = make_unique<Plot_View>();
+            }
+
+            // create and add the signal
+            Signal element_signal;
+            element_signal.name = "Pow(" + target_element->get_model()->get_name() + ")";
+
+            if (current_analysis_mode == Analysis_Mode::Transient)
+            {
+                double start_time, stop_time, time_step;
+                C->get_tran_params(start_time, stop_time, time_step);
+
+
+                if (time_step > 0)
+                {
+                    for (double time = start_time; time < stop_time; time += time_step)
+                    {
+                        double voltage = target_element->get_model()->get_voltage_at_time(time);
+                        double current = target_element->get_model()->get_current(time, time_step);
+                        double power = voltage * current;
+                        element_signal.data_points.push_back({power, time});
+                    }
+                }
+            }
+
+            element_signal.color = default_colors[color_index % default_colors.size()];
+            color_index++;
+            if (color_index == 15)
+                color_index = 0;
+
+            m_plot_view->add_signal(element_signal);
+            probe_mode = false;
+        }
+    }
+
+    return true;
 }
