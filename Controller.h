@@ -275,5 +275,7 @@ public:
 
     void delete_wire(Graphical_Wire* wire_to_delete);
 
+    vector<string> get_file_names();
+
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

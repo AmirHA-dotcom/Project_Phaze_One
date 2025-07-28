@@ -90,6 +90,11 @@ private:
 
     // file menu
     bool is_file_menu_open = false;
+    int m_selected_file_index = -1;
+    int m_hovered_file_index = -1;
+    vector<SDL_Rect> m_file_button_rects;
+    SDL_Rect m_file_ok_button_rect;
+    SDL_Rect m_file_cancel_button_rect;
 
     // saving circuit
     bool is_saving = false;
@@ -156,8 +161,10 @@ private:
     void draw_configure_analysis(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_math_operation_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_save_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
+    void draw_file_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
 
     // main functions
+
     bool handle_events(SDL_Event& event, Controller* C);
 
     bool handle_menu_events(SDL_Event& event, Controller* C);
@@ -181,6 +188,9 @@ private:
     bool handle_saving_events(SDL_Event& event, Controller* C);
 
     bool handle_deleting_events(SDL_Event& event, Controller* C);
+
+    bool handle_file_menu_events(SDL_Event& event, Controller* C);
+
 public:
     bool run (Controller* C);
 };

@@ -1309,3 +1309,8 @@ void Controller::delete_wire(Graphical_Wire *wire_to_delete)
             m_graphical_wires.end()
     );
 }
+
+vector<string> Controller::get_file_names()
+{
+    return file_handler.get_file_names();
+}

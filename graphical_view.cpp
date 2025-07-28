@@ -621,6 +621,61 @@ void graphical_view::draw_save_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
 
+void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
+{
+    const SDL_Color PANEL_BG = {50, 58, 69, 255};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color ITEM_BG = {40, 45, 53, 255};
+    const SDL_Color HOVER_BG = {60, 68, 80, 255};
+    const SDL_Color SELECTED_BG = {52, 152, 219, 255};
+    const SDL_Color BUTTON_BG = {80, 88, 99, 255};
+
+    int menu_width = 400;
+    int menu_height = 500;
+    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
+    SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
+    SDL_RenderFillRect(renderer, &menu_panel);
+
+    // draw file list
+    render_text(renderer, font, "Open File", menu_panel.x + 10, menu_panel.y + 10, TEXT_COLOR);
+    m_file_button_rects.clear();
+    vector<string> file_names = C->get_file_names();
+
+    int start_y = menu_panel.y + 50;
+    int row_height = 35;
+    for (int i = 0; i < file_names.size(); ++i)
+    {
+        SDL_Rect item_rect = {menu_panel.x + 10, start_y + (i * row_height), menu_width - 20, 30};
+        m_file_button_rects.push_back(item_rect);
+
+        // background color based on state
+        if (i == m_selected_file_index)
+        {
+            SDL_SetRenderDrawColor(renderer, SELECTED_BG.r, SELECTED_BG.g, SELECTED_BG.b, SELECTED_BG.a);
+        }
+        else if (i == m_hovered_file_index)
+        {
+            SDL_SetRenderDrawColor(renderer, HOVER_BG.r, HOVER_BG.g, HOVER_BG.b, HOVER_BG.a);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, ITEM_BG.r, ITEM_BG.g, ITEM_BG.b, ITEM_BG.a);
+        }
+        SDL_RenderFillRect(renderer, &item_rect);
+
+        render_text(renderer, font, file_names[i], item_rect.x + 10, item_rect.y + 5, TEXT_COLOR);
+    }
+
+    // OK cancel
+    m_file_ok_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 40};
+    m_file_cancel_button_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 40};
+    SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
+    SDL_RenderFillRect(renderer, &m_file_ok_button_rect);
+    SDL_RenderFillRect(renderer, &m_file_cancel_button_rect);
+    render_text(renderer, font, "OK", m_file_ok_button_rect.x + 35, m_file_ok_button_rect.y + 10, TEXT_COLOR);
+    render_text(renderer, font, "Cancel", m_file_cancel_button_rect.x + 20, m_file_cancel_button_rect.y + 10, TEXT_COLOR);
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -723,7 +778,7 @@ bool graphical_view::run(Controller *C)
             {
                 SDL_ShowCursor(SDL_DISABLE);
             }
-            else if (math_operation_mode)
+            else if (math_operation_mode || is_file_menu_open)
             {
                 if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
             }
@@ -811,6 +866,10 @@ bool graphical_view::run(Controller *C)
                 else if (is_deleting)
                 {
                     running = handle_deleting_events(event, C);
+                }
+                else if (is_file_menu_open)
+                {
+                    running = handle_file_menu_events(event, C);
                 }
                 else
                 {
@@ -917,6 +976,10 @@ bool graphical_view::run(Controller *C)
             draw_save_menu(renderer, font, C);
         }
 
+        if (is_file_menu_open)
+        {
+            draw_file_menu(renderer, font, C);
+        }
 
         // showing the run
         if (current_analysis_mode == Analysis_Mode::Transient)
@@ -1907,6 +1970,16 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_deleting = false;
                             break;
                         case Tool_Bar_Action::File:
+                            is_file_menu_open = !is_file_menu_open;
+                            is_configuring_analysis = false;
+                            elements_menu = false;
+                            math_operation_mode = false;
+                            probe_mode = false;
+                            m_is_wiring = false;
+                            is_labeling = false;
+                            is_grounding = false;
+                            is_saving = false;
+                            is_deleting = false;
                             break;
                         case Tool_Bar_Action::Configure_Analysis:
                             is_configuring_analysis = !is_configuring_analysis;
@@ -2567,5 +2640,69 @@ bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
             is_deleting = false;
         }
     }
+    return true;
+}
+
+bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE))
+    {
+        is_file_menu_open = false;
+        return true;
+    }
+
+    // mouse hover effect
+    if (event.type == SDL_MOUSEMOTION)
+    {
+        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
+        m_hovered_file_index = -1;
+        for (int i = 0; i < m_file_button_rects.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &m_file_button_rects[i]))
+            {
+                m_hovered_file_index = i;
+                break;
+            }
+        }
+    }
+
+    // handle clicks
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        // click on file
+        for (int i = 0; i < m_file_button_rects.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &m_file_button_rects[i]))
+            {
+                m_selected_file_index = i;
+                return true;
+            }
+        }
+
+        if (SDL_PointInRect(&mouse_pos, &m_file_ok_button_rect))
+        {
+            if (m_selected_file_index != -1)
+            {
+                vector<string> file_names = C->get_file_names();
+                string selected_file = file_names[m_selected_file_index];
+
+                cout << "OK clicked! Opening file: " << selected_file << endl;
+
+                is_file_menu_open = false;
+            }
+            return true;
+        }
+
+        if (SDL_PointInRect(&mouse_pos, &m_file_cancel_button_rect))
+        {
+            is_file_menu_open = false;
+            return true;
+        }
+    }
+
     return true;
 }
