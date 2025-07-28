@@ -28,6 +28,8 @@ using namespace std;
 
 extern const char* FONT;
 extern const char* PROBE;
+extern const char* DELETE;
+extern const char* GROUND;
 
 struct Triplet
 {

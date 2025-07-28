@@ -8,6 +8,8 @@
 
 const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
 const char* PROBE = "D://Images//probe_cursor.png";
+const char* DELETE = "D://Images//sissors_cursor.png";
+const char* GROUND = "D://Images//grounding_cursor.png";
 
 string rotation_to_string(Rotation r) 
 {
@@ -678,6 +680,18 @@ bool graphical_view::run(Controller *C)
         probe_cursor = SDL_CreateColorCursor(probe_surface, 4, 60);
         SDL_FreeSurface(probe_surface);
     }
+    SDL_Surface* delete_surface = IMG_Load(DELETE);
+    if (delete_surface)
+    {
+        deleting_cursor = SDL_CreateColorCursor(delete_surface, 4, 60);
+        SDL_FreeSurface(delete_surface);
+    }
+    SDL_Surface* ground_surface = IMG_Load(GROUND);
+    if (ground_surface)
+    {
+        grounding_cursor = SDL_CreateColorCursor(ground_surface, 16, 0);
+        SDL_FreeSurface(ground_surface);
+    }
 
     bool running = true;
     SDL_Event event;
@@ -704,13 +718,24 @@ bool graphical_view::run(Controller *C)
             if (probe_mode)
             {
                 if (probe_cursor) SDL_SetCursor(probe_cursor);
-            } else if (m_is_wiring)
+            }
+            else if (m_is_wiring)
             {
                 SDL_ShowCursor(SDL_DISABLE);
-            } else if (math_operation_mode)
+            }
+            else if (math_operation_mode)
             {
                 if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
-            } else
+            }
+            else if (is_deleting)
+            {
+                if (deleting_cursor) SDL_SetCursor(deleting_cursor);
+            }
+            else if (is_grounding)
+            {
+                if (grounding_cursor) SDL_SetCursor(grounding_cursor);
+            }
+            else
             {
                 SDL_ShowCursor(SDL_ENABLE);
                 if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
