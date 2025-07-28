@@ -37,6 +37,35 @@ float dist_to_segment(SDL_Point p, SDL_Point v, SDL_Point w)
     return sqrt((p.x - projection.x)*(p.x - projection.x) + (p.y - projection.y)*(p.y - projection.y));
 }
 
+inline string format_with_suffix(double value, const string& unit)
+{
+    if (value == 0.0) return "0.00 " + unit;
+
+    static const struct { double threshold; const char* suffix; } suffixes[] = {
+            {1e12, "T"}, {1e9, "G"}, {1e6, "M"}, {1e3, "k"},
+            {1.0,  ""},
+            {1e-3, "m"}, {1e-6, "u"}, {1e-9, "n"}, {1e-12, "p"}, {1e-15, "f"}
+    };
+
+    double abs_value = abs(value);
+    string prefix = (value < 0) ? "-" : "";
+
+    for (const auto& s : suffixes)
+    {
+        if (abs_value >= s.threshold)
+        {
+            double scaled_value = value / s.threshold;
+            stringstream ss;
+            ss << fixed << setprecision(2) << scaled_value;
+            return prefix + ss.str() + s.suffix + unit;
+        }
+    }
+    // using scientific notation for very small numbers
+    stringstream ss;
+    ss << scientific << setprecision(2) << value;
+    return ss.str() + unit;
+}
+
 Node* graphical_view::find_node_at(SDL_Point pos, Controller* C)
 {
     const float CLICK_TOLERANCE = 10.0f;
@@ -614,6 +643,19 @@ bool graphical_view::run(Controller *C)
             draw_configure_analysis(renderer, font, C);
         }
 
+
+        // showing the run
+        {
+            if (is_transient)
+            {
+                int x = 10; int y = 50;
+                double t_step, start, stop;
+                C->get_tran_params(start, stop, t_step);
+                string text = ".tran(" + format_with_suffix(start, " ") + format_with_suffix(stop - t_step, " ") + format_with_suffix(t_step, ")");
+                render_text(renderer, font, text, x, y, {0, 0, 0, 255});
+            }
+        }
+
         SDL_RenderPresent(renderer);
 
         // plot window
@@ -621,6 +663,7 @@ bool graphical_view::run(Controller *C)
         {
             m_plot_view->render();
         }
+
     }
 
     SDL_FreeCursor(m_default_cursor);
