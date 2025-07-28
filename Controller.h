@@ -126,14 +126,14 @@ private:
     double start_time = 0;
     double end_time = 0;
 
-    int m_resistor_count = 0;
-    int m_capacitor_count = 0;
-    int m_inductor_count = 0;
-    int m_node_count = 0;
-    int m_current_source_count = 0;
-    int m_real_diode_count = 0;
-    int m_zener_diode_count = 0;
-    int m_voltage_source_count = 0;
+    int resistor_count = 0;
+    int capacitor_count = 0;
+    int inductor_count = 0;
+    int node_count = 0;
+    int current_source_count = 0;
+    int real_diode_count = 0;
+    int zener_diode_count = 0;
+    int voltage_source_count = 0;
 
     vector<unique_ptr<Graphical_Wire>> m_graphical_wires;
 
@@ -155,7 +155,7 @@ public:
     Node *findNode(string name);
     void addCircuit(string name);
     void addSubCircuit(string name, Node* inputNode, Node* outputNode);
-        void addR(string name, string Node1, string Node2, double value);
+    void addR(string name, string Node1, string Node2, double value);
 
     void addC(string name, string Node1, string Node2, double value);
 

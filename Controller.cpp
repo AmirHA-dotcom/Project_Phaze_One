@@ -698,12 +698,12 @@ bool Controller::is_files_empty()
 // GRAPHICS!!!
 
 void Controller::add_Graphical_Resistor(int screenX, int screenY) {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_resistor_count++;
-    string r_name = "R" + to_string(m_resistor_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    resistor_count++;
+    string r_name = "R" + to_string(resistor_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -721,12 +721,12 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
 }
 
 void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_capacitor_count++;
-    string c_name = "C" + to_string(m_capacitor_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    capacitor_count++;
+    string c_name = "C" + to_string(capacitor_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -742,12 +742,12 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
 }
 
 void Controller::add_Graphical_Inductor(int screenX, int screenY) {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_inductor_count++;
-    string i_name = "I" + to_string(m_inductor_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    inductor_count++;
+    string i_name = "I" + to_string(inductor_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -764,12 +764,12 @@ void Controller::add_Graphical_Inductor(int screenX, int screenY) {
 
 void Controller::add_Graphical_Current_Source(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_current_source_count++;
-    string cs_name = "CS" + to_string(m_current_source_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    current_source_count++;
+    string cs_name = "CS" + to_string(current_source_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -786,12 +786,12 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
 
 void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_real_diode_count++;
-    string RD_name = "RD" + to_string(m_real_diode_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    real_diode_count++;
+    string RD_name = "RD" + to_string(real_diode_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -808,12 +808,12 @@ void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
 
 void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_zener_diode_count++;
-    string ZD_name = "ZD" + to_string(m_zener_diode_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    zener_diode_count++;
+    string ZD_name = "ZD" + to_string(zener_diode_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -830,12 +830,12 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
 
 void Controller::add_Graphical_DC_Source(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_voltage_source_count++;
-    string VS_name = "VS" + to_string(m_voltage_source_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    voltage_source_count++;
+    string VS_name = "VS" + to_string(voltage_source_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -852,12 +852,12 @@ void Controller::add_Graphical_DC_Source(int screenX, int screenY)
 
 void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_voltage_source_count++;
-    string VS_name = "VS" + to_string(m_voltage_source_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    voltage_source_count++;
+    string VS_name = "VS" + to_string(voltage_source_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -874,12 +874,12 @@ void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
 
 void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_voltage_source_count++;
-    string VS_name = "VS" + to_string(m_voltage_source_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    voltage_source_count++;
+    string VS_name = "VS" + to_string(voltage_source_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -896,12 +896,12 @@ void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
 
 void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_voltage_source_count++;
-    string VS_name = "VS" + to_string(m_voltage_source_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    voltage_source_count++;
+    string VS_name = "VS" + to_string(voltage_source_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -918,12 +918,12 @@ void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
 
 void Controller::add_Graphical_Square_Source(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_voltage_source_count++;
-    string VS_name = "VS" + to_string(m_voltage_source_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    voltage_source_count++;
+    string VS_name = "VS" + to_string(voltage_source_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
@@ -940,12 +940,12 @@ void Controller::add_Graphical_Square_Source(int screenX, int screenY)
 
 void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
 {
-    m_node_count++;
-    string n1_name = "N" + to_string(m_node_count);
-    m_node_count++;
-    string n2_name = "N" + to_string(m_node_count);
-    m_voltage_source_count++;
-    string VS_name = "VS" + to_string(m_voltage_source_count);
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    voltage_source_count++;
+    string VS_name = "VS" + to_string(voltage_source_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
