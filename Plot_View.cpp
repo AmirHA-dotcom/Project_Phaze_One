@@ -212,21 +212,21 @@ bool Plot_View::handle_event(SDL_Event& event)
     }
 
     // colors menu
-    if (m_color_menu_active) {
+    if (color_menu_active) {
         if (event.type == SDL_MOUSEBUTTONDOWN) {
             SDL_Point mouse_pos = { event.button.x, event.button.y };
             bool clicked_in_menu = false;
-            for (int i = 0; i < m_color_picker_buttons.size(); ++i) {
-                if (SDL_PointInRect(&mouse_pos, &m_color_picker_buttons[i])) {
+            for (int i = 0; i < color_picker_buttons.size(); ++i) {
+                if (SDL_PointInRect(&mouse_pos, &color_picker_buttons[i])) {
                     // A color was clicked! Apply it to the signal and close the menu.
-                    m_signals[m_signal_to_edit_index].color = default_colors[i];
-                    m_color_menu_active = false;
+                    m_signals[signal_to_edit_index].color = default_colors[i];
+                    color_menu_active = false;
                     clicked_in_menu = true;
                     break;
                 }
             }
             // If the user clicks anywhere, close the menu
-            m_color_menu_active = false;
+            color_menu_active = false;
         }
         return true; // Consume all events while the menu is open
     }
@@ -300,11 +300,11 @@ bool Plot_View::handle_event(SDL_Event& event)
         if (!cursor_mode_active)
         {
             SDL_Point mouse_pos = { event.button.x, event.button.y };
-            for (int i = 0; i < m_legend_rects.size(); ++i) {
-                if (SDL_PointInRect(&mouse_pos, &m_legend_rects[i])) {
-                    m_color_menu_active = true;
-                    m_signal_to_edit_index = i;
-                    m_color_menu_pos = { event.button.x, event.button.y };
+            for (int i = 0; i < legend_rects.size(); ++i) {
+                if (SDL_PointInRect(&mouse_pos, &legend_rects[i])) {
+                    color_menu_active = true;
+                    signal_to_edit_index = i;
+                    color_menu_pos = {event.button.x, event.button.y };
                     return true; // Event handled, don't place a cursor
                 }
             }
@@ -477,7 +477,7 @@ void Plot_View::render()
 
             // saving the rects to click
             SDL_Rect legend_item_rect = { item_start_x, text_y, total_item_width, text_height };
-            m_legend_rects.push_back(legend_item_rect);
+            legend_rects.push_back(legend_item_rect);
         }
     }
 
@@ -545,7 +545,7 @@ void Plot_View::render()
         }
     }
 
-    if (m_color_menu_active)
+    if (color_menu_active)
     {
         draw_color_picker_menu();
     }
@@ -563,13 +563,13 @@ void Plot_View::draw_color_picker_menu()
     int menu_width = (swatch_size * items_per_row) + (padding * (items_per_row + 1));
     int menu_height = (swatch_size * num_rows) + (padding * (num_rows + 1));
 
-    SDL_Rect panel = { m_color_menu_pos.x, m_color_menu_pos.y, menu_width, menu_height };
+    SDL_Rect panel = {color_menu_pos.x, color_menu_pos.y, menu_width, menu_height };
 
     // background
     SDL_SetRenderDrawColor(m_renderer, 50, 58, 69, 255);
     SDL_RenderFillRect(m_renderer, &panel);
 
-    m_color_picker_buttons.clear();
+    color_picker_buttons.clear();
     for (int i = 0; i < default_colors.size(); ++i)
     {
         int row = i / items_per_row;
@@ -581,7 +581,7 @@ void Plot_View::draw_color_picker_menu()
                 swatch_size,
                 swatch_size
         };
-        m_color_picker_buttons.push_back(swatch_rect);
+        color_picker_buttons.push_back(swatch_rect);
 
         // draw the color swatch
         const auto& color = default_colors[i];

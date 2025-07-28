@@ -49,13 +49,12 @@ private:
     bool place_first_cursor_next = true;
 
     // color menu
-    bool m_color_menu_active = false;
-    int m_signal_to_edit_index = -1; // Which signal are we changing the color of?
-    SDL_Point m_color_menu_pos;      // Where to draw the pop-up menu
+    bool color_menu_active = false;
+    int signal_to_edit_index = -1;
+    SDL_Point color_menu_pos;
 
-    // Rects for UI interaction
-    std::vector<SDL_Rect> m_legend_rects;
-    std::vector<SDL_Rect> m_color_picker_buttons;
+    vector<SDL_Rect> legend_rects;
+    vector<SDL_Rect> color_picker_buttons;
 
     vector<SDL_Color> default_colors = {
             {0,   255, 0,   255}, // GREEN
@@ -74,7 +73,6 @@ private:
             {255, 215, 0,   255}, // GOLD
             {75,  0,   130, 255}, // INDIGO
     };
-    int color_index = 0;
 
     // helper functions
     SDL_Point world_to_screen(double time, double voltage);
