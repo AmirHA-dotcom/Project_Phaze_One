@@ -137,9 +137,9 @@ void Plot_View::delete_all_signals()
 SDL_Point Plot_View::world_to_screen(double x, double y)
 {
     // mapping in x axis
-    int screen_x = m_plot_area.x + (int)(((x - m_min_x) / (m_max_x - m_min_x)) * m_plot_area.w);
+    int screen_x = plot_area.x + (int)(((x - min_x) / (max_x - min_x)) * plot_area.w);
     // mapping in y axis
-    int screen_y = m_plot_area.y + m_plot_area.h - (int)(((y - m_min_y) / (m_max_y - m_min_y)) * m_plot_area.h);
+    int screen_y = plot_area.y + plot_area.h - (int)(((y - min_y) / (max_y - min_y)) * plot_area.h);
     return {screen_x, screen_y};
 }
 
@@ -150,36 +150,36 @@ void Plot_View::auto_zoom()
     if (m_signals.empty()) return;
 
     // finding the min and the max to scale
-    m_min_x = m_signals[0].data_points.front().second;
-    m_max_x = m_signals[0].data_points.front().second;
-    m_min_y = m_signals[0].data_points.front().first;
-    m_max_y = m_signals[0].data_points.front().first;
+    min_x = m_signals[0].data_points.front().second;
+    max_x = m_signals[0].data_points.front().second;
+    min_y = m_signals[0].data_points.front().first;
+    max_y = m_signals[0].data_points.front().first;
 
     for (const auto& signal : m_signals)
     {
         for (const auto& point : signal.data_points)
         {
-            if (point.second < m_min_x) m_min_x = point.second;
-            if (point.second > m_max_x) m_max_x = point.second;
-            if (point.first < m_min_y) m_min_y = point.first;
-            if (point.first > m_max_y) m_max_y = point.first;
+            if (point.second < min_x) min_x = point.second;
+            if (point.second > max_x) max_x = point.second;
+            if (point.first < min_y) min_y = point.first;
+            if (point.first > max_y) max_y = point.first;
         }
     }
 
     // symmetrize and add margin
-    if (m_max_y == m_min_y)
+    if (max_y == min_y)
     {
-        m_max_y += 0.5;
-        m_min_y -= 0.5;
+        max_y += 0.5;
+        min_y -= 0.5;
     }
-    double voltage_range = m_max_y - m_min_y;
-    m_min_y -= voltage_range * 0.1;
-    m_max_y += voltage_range * 0.1;
+    double voltage_range = max_y - min_y;
+    min_y -= voltage_range * 0.1;
+    max_y += voltage_range * 0.1;
 
-    double time_range = m_max_x - m_min_x;
+    double time_range = max_x - min_x;
     if (time_range == 0) { time_range = 1.0; }
-    m_min_x -= time_range * 0.1;
-    m_max_x += time_range * 0.1;
+    min_x -= time_range * 0.1;
+    max_x += time_range * 0.1;
 }
 
 bool Plot_View::handle_event(SDL_Event& event)
@@ -201,11 +201,11 @@ bool Plot_View::handle_event(SDL_Event& event)
                 break;
 
             case SDLK_c:
-                m_cursor_mode_active = !m_cursor_mode_active;
-                if (!m_cursor_mode_active)
+                cursor_mode_active = !cursor_mode_active;
+                if (!cursor_mode_active)
                 {
-                    m_cursor1.reset();
-                    m_cursor2.reset();
+                    cursor1.reset();
+                    cursor2.reset();
                 }
                 break;
         }
@@ -218,33 +218,33 @@ bool Plot_View::handle_event(SDL_Event& event)
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && ctrl_is_pressed)
     {
 
-        m_is_panning = true;
-        m_pan_start_pos = { event.button.x, event.button.y };
+        is_panning = true;
+        pan_start_pos = {event.button.x, event.button.y };
 
     }
 
     if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
     {
-        m_is_panning = false;
+        is_panning = false;
     }
 
-    if (event.type == SDL_MOUSEMOTION && m_is_panning)
+    if (event.type == SDL_MOUSEMOTION && is_panning)
     {
         // cursor movement
-        int dx = event.motion.x - m_pan_start_pos.x;
-        int dy = event.motion.y - m_pan_start_pos.y;
+        int dx = event.motion.x - pan_start_pos.x;
+        int dy = event.motion.y - pan_start_pos.y;
 
         // convert that pixel delta to a world coordinate delta
-        double time_per_pixel = (m_max_x - m_min_x) / m_plot_area.w;
-        double voltage_per_pixel = (m_max_y - m_min_y) / m_plot_area.h;
+        double time_per_pixel = (max_x - min_x) / plot_area.w;
+        double voltage_per_pixel = (max_y - min_y) / plot_area.h;
 
         // shifting the min and max
-        m_min_x -= dx * time_per_pixel;
-        m_max_x -= dx * time_per_pixel;
-        m_min_y += dy * voltage_per_pixel;
-        m_max_y += dy * voltage_per_pixel;
+        min_x -= dx * time_per_pixel;
+        max_x -= dx * time_per_pixel;
+        min_y += dy * voltage_per_pixel;
+        max_y += dy * voltage_per_pixel;
 
-        m_pan_start_pos = { event.motion.x, event.motion.y };
+        pan_start_pos = {event.motion.x, event.motion.y };
     }
 
     // zoom in and out
@@ -254,34 +254,34 @@ bool Plot_View::handle_event(SDL_Event& event)
         SDL_GetMouseState(&mouse_x, &mouse_y);
 
         // world coordinates under the mouse
-        double time_before_zoom = m_min_x + ((double)(mouse_x - m_plot_area.x) / m_plot_area.w) * (m_max_x - m_min_x);
-        double voltage_before_zoom = m_min_y + ((double)(m_plot_area.y + m_plot_area.h - mouse_y) / m_plot_area.h) * (m_max_y - m_min_y);
+        double time_before_zoom = min_x + ((double)(mouse_x - plot_area.x) / plot_area.w) * (max_x - min_x);
+        double voltage_before_zoom = min_y + ((double)(plot_area.y + plot_area.h - mouse_y) / plot_area.h) * (max_y - min_y);
 
         // zoom factor
         double zoom_factor = 1.1;
         if (event.wheel.y > 0)
         {
-            m_max_x = time_before_zoom + (m_max_x - time_before_zoom) / zoom_factor;
-            m_min_x = time_before_zoom - (time_before_zoom - m_min_x) / zoom_factor;
-            m_max_y = voltage_before_zoom + (m_max_y - voltage_before_zoom) / zoom_factor;
-            m_min_y = voltage_before_zoom - (voltage_before_zoom - m_min_y) / zoom_factor;
+            max_x = time_before_zoom + (max_x - time_before_zoom) / zoom_factor;
+            min_x = time_before_zoom - (time_before_zoom - min_x) / zoom_factor;
+            max_y = voltage_before_zoom + (max_y - voltage_before_zoom) / zoom_factor;
+            min_y = voltage_before_zoom - (voltage_before_zoom - min_y) / zoom_factor;
         }
         else if (event.wheel.y < 0)
         {
-            m_max_x = time_before_zoom + (m_max_x - time_before_zoom) * zoom_factor;
-            m_min_x = time_before_zoom - (time_before_zoom - m_min_x) * zoom_factor;
-            m_max_y = voltage_before_zoom + (m_max_y - voltage_before_zoom) * zoom_factor;
-            m_min_y = voltage_before_zoom - (voltage_before_zoom - m_min_y) * zoom_factor;
+            max_x = time_before_zoom + (max_x - time_before_zoom) * zoom_factor;
+            min_x = time_before_zoom - (time_before_zoom - min_x) * zoom_factor;
+            max_y = voltage_before_zoom + (max_y - voltage_before_zoom) * zoom_factor;
+            min_y = voltage_before_zoom - (voltage_before_zoom - min_y) * zoom_factor;
         }
     }
 
     // place cursor
-    if (m_cursor_mode_active && event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
+    if (cursor_mode_active && event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
     {
         if (m_signals.empty() || m_signals[0].data_points.empty()) return true;
 
         // convert screen X coordinate to world x
-        double time_at_click = m_min_x + ((double)(event.button.x - m_plot_area.x) / m_plot_area.w) * (m_max_x - m_min_x);
+        double time_at_click = min_x + ((double)(event.button.x - plot_area.x) / plot_area.w) * (max_x - min_x);
 
         // finding the closest data point on the first signal
         const auto& data = m_signals[0].data_points;
@@ -303,15 +303,15 @@ bool Plot_View::handle_event(SDL_Event& event)
         new_cursor.Y = data[closest_index].first;
         new_cursor.data_point_index = closest_index;
 
-        if (m_place_first_cursor_next)
+        if (place_first_cursor_next)
         {
-            m_cursor1 = new_cursor;
+            cursor1 = new_cursor;
         }
         else
         {
-            m_cursor2 = new_cursor;
+            cursor2 = new_cursor;
         }
-        m_place_first_cursor_next = !m_place_first_cursor_next;
+        place_first_cursor_next = !place_first_cursor_next;
     }
 
     return true;
@@ -331,26 +331,26 @@ void Plot_View::render()
     // plot area
     int width, height;
     SDL_GetWindowSize(m_window, &width, &height);
-    m_plot_area = {100, 50, width - 100, height - 100};
+    plot_area = {100, 50, width - 100, height - 100};
 
     // plot area
     SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
-    SDL_RenderDrawRect(m_renderer, &m_plot_area);
+    SDL_RenderDrawRect(m_renderer, &plot_area);
 
     // y axis
     const int num_y_ticks = 11;
     if (num_y_ticks > 1)
     {
-        double y_tick_value_step = (m_max_y - m_min_y) / (num_y_ticks - 1);
+        double y_tick_value_step = (max_y - min_y) / (num_y_ticks - 1);
         for (int i = 0; i < num_y_ticks; ++i)
         {
-            double tick_value = m_min_y + (i * y_tick_value_step);
+            double tick_value = min_y + (i * y_tick_value_step);
 
-            int screen_y = m_plot_area.y + m_plot_area.h - (int)(((tick_value - m_min_y) / (m_max_y - m_min_y)) * m_plot_area.h);
+            int screen_y = plot_area.y + plot_area.h - (int)(((tick_value - min_y) / (max_y - min_y)) * plot_area.h);
 
             // grid line
             SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
-            SDL_RenderDrawLine(m_renderer, m_plot_area.x, screen_y, m_plot_area.x + m_plot_area.w, screen_y);
+            SDL_RenderDrawLine(m_renderer, plot_area.x, screen_y, plot_area.x + plot_area.w, screen_y);
             string unit = " ";
             if (y_axis_unit == Unit::V) {unit += "V"; }
             else if (y_axis_unit == Unit::A) {unit += "A"; }
@@ -361,7 +361,7 @@ void Plot_View::render()
             // text label
             int text_w, text_h;
             TTF_SizeText(m_font, tick_text.c_str(), &text_w, &text_h);
-            render_text(m_renderer, m_font, tick_text, m_plot_area.x - text_w - 5, screen_y - text_h / 2);
+            render_text(m_renderer, m_font, tick_text, plot_area.x - text_w - 5, screen_y - text_h / 2);
         }
     }
 
@@ -369,16 +369,16 @@ void Plot_View::render()
     const int num_x_ticks = 11;
     if (num_x_ticks > 1)
     {
-        double x_tick_value_step = (m_max_x - m_min_x) / (num_x_ticks - 1);
+        double x_tick_value_step = (max_x - min_x) / (num_x_ticks - 1);
         for (int i = 0; i < num_x_ticks; ++i)
         {
-            double tick_value = m_min_x + (i * x_tick_value_step);
+            double tick_value = min_x + (i * x_tick_value_step);
 
-            int screen_x = m_plot_area.x + (int)(((tick_value - m_min_x) / (m_max_x - m_min_x)) * m_plot_area.w);
+            int screen_x = plot_area.x + (int)(((tick_value - min_x) / (max_x - min_x)) * plot_area.w);
 
             // grid line
             SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
-            SDL_RenderDrawLine(m_renderer, screen_x, m_plot_area.y, screen_x, m_plot_area.y + m_plot_area.h);
+            SDL_RenderDrawLine(m_renderer, screen_x, plot_area.y, screen_x, plot_area.y + plot_area.h);
 
             string unit = " ";
             if (y_axis_unit == Unit::s) {unit += "s"; }
@@ -388,7 +388,7 @@ void Plot_View::render()
             // text label
             int text_w, text_h;
             TTF_SizeText(m_font, tick_text.c_str(), &text_w, &text_h);
-            render_text(m_renderer, m_font, tick_text, screen_x - text_w / 2, m_plot_area.y + m_plot_area.h + 5);
+            render_text(m_renderer, m_font, tick_text, screen_x - text_w / 2, plot_area.y + plot_area.h + 5);
         }
     }
 
@@ -416,7 +416,7 @@ void Plot_View::render()
         const int box_size = 15;
         const int gap = 5;
 
-        double slot_width = (double)m_plot_area.w / m_signals.size();
+        double slot_width = (double)plot_area.w / m_signals.size();
 
         for (int i = 0; i < m_signals.size(); ++i)
         {
@@ -430,23 +430,23 @@ void Plot_View::render()
             int total_item_width = box_size + gap + text_width;
 
             // x position to center
-            double slot_start_x = m_plot_area.x + (i * slot_width);
+            double slot_start_x = plot_area.x + (i * slot_width);
             int item_start_x = slot_start_x + (slot_width - total_item_width) / 2;
 
             // drawing the box
-            SDL_Rect color_box = {item_start_x, m_plot_area.y + legend_y_offset, box_size, box_size};
+            SDL_Rect color_box = {item_start_x, plot_area.y + legend_y_offset, box_size, box_size};
             SDL_SetRenderDrawColor(m_renderer, signal.color.r, signal.color.g, signal.color.b, 255);
             SDL_RenderFillRect(m_renderer, &color_box);
 
             // displaying text
             int text_x = item_start_x + box_size + gap;
-            int text_y = m_plot_area.y + legend_y_offset;
+            int text_y = plot_area.y + legend_y_offset;
             render_text(m_renderer, m_font, signal.name, text_x, text_y);
         }
     }
 
     // cursors
-    if (m_cursor_mode_active)
+    if (cursor_mode_active)
     {
         auto draw_cursor = [&](const Cursor& cursor){
             // convert cursor x to screen x
@@ -459,24 +459,24 @@ void Plot_View::render()
 
             // drawing dashes
             SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-            for (int y = m_plot_area.y; y < m_plot_area.y + m_plot_area.h; y += 10)
+            for (int y = plot_area.y; y < plot_area.y + plot_area.h; y += 10)
             {
                 SDL_RenderDrawLine(m_renderer, screen_x, y, screen_x, y + 5);
             }
-            for (int x = m_plot_area.x; x < m_plot_area.x + m_plot_area.w; x += 10)
+            for (int x = plot_area.x; x < plot_area.x + plot_area.w; x += 10)
             {
                 SDL_RenderDrawLine(m_renderer, x, screen_y, x + 5, screen_y);
             }
         };
 
-        if (m_cursor1) draw_cursor(*m_cursor1);
-        if (m_cursor2) draw_cursor(*m_cursor2);
+        if (cursor1) draw_cursor(*cursor1);
+        if (cursor2) draw_cursor(*cursor2);
 
         // info box
-        if (m_cursor1 && m_cursor2)
+        if (cursor1 && cursor2)
         {
-            double delta_y = m_cursor2->Y - m_cursor1->Y;
-            double delta_x = m_cursor2->X - m_cursor1->X;
+            double delta_y = cursor2->Y - cursor1->Y;
+            double delta_x = cursor2->X - cursor1->X;
             double slope = (delta_x == 0) ? 0 : (delta_y / delta_x);
 
             string y_unit = "";
@@ -496,7 +496,7 @@ void Plot_View::render()
             string slope_str = ss.str();
 
             // box
-            SDL_Rect info_box = {m_plot_area.x + 10, m_plot_area.y + 10, 200, 70};
+            SDL_Rect info_box = {plot_area.x + 10, plot_area.y + 10, 200, 70};
             SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 220);
             SDL_RenderFillRect(m_renderer, &info_box);
             SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);

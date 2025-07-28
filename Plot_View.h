@@ -32,21 +32,21 @@ private:
     Unit y_axis_unit = Unit::V;
     Unit x_axis_unit = Unit::s;
 
-    SDL_Rect m_plot_area;
-    double m_min_x = 0, m_max_x = 1;
-    double m_min_y = -1, m_max_y = 1;
+    SDL_Rect plot_area;
+    double min_x = 0, max_x = 1;
+    double min_y = -1, max_y = 1;
 
     TTF_Font* m_font = nullptr;
 
     // panning
-    bool m_is_panning = false;
-    SDL_Point m_pan_start_pos;
+    bool is_panning = false;
+    SDL_Point pan_start_pos;
 
     // cursor
-    optional<Cursor> m_cursor1;
-    optional<Cursor> m_cursor2;
-    bool m_cursor_mode_active = false;
-    bool m_place_first_cursor_next = true;
+    optional<Cursor> cursor1;
+    optional<Cursor> cursor2;
+    bool cursor_mode_active = false;
+    bool place_first_cursor_next = true;
 
     // helper functions
     SDL_Point world_to_screen(double time, double voltage);
