@@ -99,11 +99,11 @@ private:
 
     // doing math on signals
     bool math_operation_mode = false;
-    string m_math_expression_string;
-    optional<Signal> m_math_result_signal;
-    char m_math_next_operator = ' ';
-    vector<SDL_Rect> m_math_element_buttons;
-    SDL_Rect m_op_plus_button, m_op_minus_button, m_op_clear_button, m_op_execute_button;
+    string math_expression_string;
+    optional<Signal> math_result_signal;
+    char math_next_operator = ' ';
+    vector<SDL_Rect> math_element_buttons;
+    SDL_Rect op_plus_button, op_minus_button, op_product_button, op_clear_button, op_execute_button;
 
     // plot window
     unique_ptr<Plot_View> m_plot_view;
