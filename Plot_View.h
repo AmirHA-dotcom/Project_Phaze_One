@@ -8,6 +8,8 @@
 #include "Libraries.h"
 #include "Node.h"
 
+enum class Unit{V, A, W, s};
+
 struct Cursor {
     double X;
     double Y;
@@ -26,6 +28,9 @@ private:
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
     vector<Signal> m_signals;
+
+    Unit y_axis_unit = Unit::V;
+    Unit x_axis_unit = Unit::s;
 
     SDL_Rect m_plot_area;
     double m_min_x = 0, m_max_x = 1;
@@ -49,6 +54,9 @@ private:
 public:
     Plot_View();
     ~Plot_View();
+
+    void set_y_unit(Unit u) { y_axis_unit = u; }
+    void set_x_unit(Unit u) { x_axis_unit = u; }
 
     void add_signal(const Signal& new_signal);
     void delete_all_signals();

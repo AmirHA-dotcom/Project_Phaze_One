@@ -351,8 +351,12 @@ void Plot_View::render()
             // grid line
             SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
             SDL_RenderDrawLine(m_renderer, m_plot_area.x, screen_y, m_plot_area.x + m_plot_area.w, screen_y);
+            string unit = " ";
+            if (y_axis_unit == Unit::V) {unit += "V"; }
+            else if (y_axis_unit == Unit::A) {unit += "A"; }
+            else if (y_axis_unit == Unit::W) {unit += "W"; }
 
-            string tick_text = format_with_suffix(tick_value, " V");
+            string tick_text = format_with_suffix(tick_value, unit);
 
             // text label
             int text_w, text_h;
@@ -376,7 +380,10 @@ void Plot_View::render()
             SDL_SetRenderDrawColor(m_renderer, 220, 220, 220, 255);
             SDL_RenderDrawLine(m_renderer, screen_x, m_plot_area.y, screen_x, m_plot_area.y + m_plot_area.h);
 
-            string tick_text = format_with_suffix(tick_value, " s");
+            string unit = " ";
+            if (y_axis_unit == Unit::s) {unit += "s"; }
+
+            string tick_text = format_with_suffix(tick_value, unit);
 
             // text label
             int text_w, text_h;
@@ -472,12 +479,20 @@ void Plot_View::render()
             double delta_x = m_cursor2->X - m_cursor1->X;
             double slope = (delta_x == 0) ? 0 : (delta_y / delta_x);
 
+            string y_unit = "";
+            if (y_axis_unit == Unit::V) { y_unit += "V"; }
+            else if (y_axis_unit == Unit::A) { y_unit += "A"; }
+            else if (y_axis_unit == Unit::W) {y_unit += "W"; }
+
+            string x_unit = "";
+            if (x_axis_unit == Unit::s) { x_unit += "s"; }
+
             stringstream ss;
-            ss << "H-Diff: " << format_with_suffix(delta_x, " s");
+            ss << "H-Diff: " << format_with_suffix(delta_x, " " + x_unit);
             string h_diff_str = ss.str(); ss.str("");
-            ss << "V-Diff: " << format_with_suffix(delta_y, " V");
+            ss << "V-Diff: " << format_with_suffix(delta_y, " " + y_unit);
             string v_diff_str = ss.str(); ss.str("");
-            ss << "Slope: " << format_with_suffix(slope, " V/s");
+            ss << "Slope: " << format_with_suffix(slope, " " + y_unit + "/" + x_unit);
             string slope_str = ss.str();
 
             // box

@@ -1888,6 +1888,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 color_index = 0;
 
             m_plot_view->add_signal(node_signal);
+            m_plot_view->set_y_unit(Unit::V);
+            m_plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
         Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
@@ -1924,6 +1926,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 color_index = 0;
 
             m_plot_view->add_signal(element_signal);
+            m_plot_view->set_y_unit(Unit::V);
+            m_plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
     }
@@ -1965,6 +1969,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 color_index = 0;
 
             m_plot_view->add_signal(element_signal);
+            m_plot_view->set_y_unit(Unit::A);
+            m_plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
     }
@@ -2008,6 +2014,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 color_index = 0;
 
             m_plot_view->add_signal(element_signal);
+            m_plot_view->set_y_unit(Unit::W);
+            m_plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
     }
