@@ -114,10 +114,14 @@ private:
     // doing math on signals
     bool math_operation_mode = false;
     string math_expression_string;
-    optional<Signal> math_result_signal;
+    vector<Signal> m_math_terms;
+    int m_math_selected_element_index = -1;
+    bool m_is_editing_constant = false;
+    string m_math_constant_buffer = "1.0";
     char math_next_operator = ' ';
-    vector<SDL_Rect> math_element_buttons;
-    SDL_Rect op_plus_button, op_minus_button, op_product_button, op_clear_button, op_execute_button;
+    vector<SDL_Rect> m_math_element_buttons;
+    SDL_Rect m_constant_textbox_rect;
+    SDL_Rect op_plus_button, op_minus_button, op_clear_button, op_execute_button;
 
     // plot window
     unique_ptr<Plot_View> m_plot_view;
@@ -162,6 +166,9 @@ private:
     void draw_math_operation_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_save_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_file_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
+
+    void add_math_term(bool is_subtraction, Controller* C);
+    void execute_math_operation();
 
     // main functions
 

@@ -11,17 +11,6 @@ const char* PROBE = "D://Images//probe_cursor.png";
 const char* DELETE = "D://Images//sissors_cursor.png";
 const char* GROUND = "D://Images//grounding_cursor.png";
 
-string rotation_to_string(Rotation r) 
-{
-    switch (r) {
-        case Rotation::Right: return "Right";
-        case Rotation::Left:  return "Left";
-        case Rotation::Up:    return "Up";
-        case Rotation::Down:  return "Down";
-        default:              return "Unknown/Error";
-    }
-}
-
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
 {
     int snapped_x = round((float)x / grid_size) * grid_size;
@@ -492,76 +481,138 @@ void graphical_view::draw_configure_analysis(SDL_Renderer *renderer, TTF_Font *f
 
 void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
 {
-    const SDL_Color PANEL_BG = {50, 58, 69, 255};
-    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
-    const SDL_Color DISPLAY_BG = {33, 37, 41, 255};
-    const SDL_Color BUTTON_BG = {80, 88, 99, 255};
+    const SDL_Color PANEL_BG = {50, 58, 69, 255}, TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color DISPLAY_BG = {33, 37, 41, 255}, BUTTON_BG = {80, 88, 99, 255};
+    const SDL_Color SELECTED_BG = {52, 152, 219, 255}, DISABLED_BG = {60, 68, 80, 255};
 
-    int menu_width = 500;
-    int menu_height = 400;
-    SDL_Rect menu_panel = {400, 200, menu_width, menu_height};
+    int menu_width = 600;
+    int menu_height = 450;
+    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
     SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
     SDL_RenderFillRect(renderer, &menu_panel);
 
-    // expression display
+    // expression display box
     SDL_Rect display_rect = {menu_panel.x + 10, menu_panel.y + 10, menu_width - 20, 40};
     SDL_SetRenderDrawColor(renderer, DISPLAY_BG.r, DISPLAY_BG.g, DISPLAY_BG.b, DISPLAY_BG.a);
     SDL_RenderFillRect(renderer, &display_rect);
     render_text(renderer, font, math_expression_string, display_rect.x + 5, display_rect.y + 10, TEXT_COLOR);
 
-    // signal buttons
-    render_text(renderer, font, "Available Elements:", menu_panel.x + 10, menu_panel.y + 60);
-    math_element_buttons.clear();
-    int current_x = menu_panel.x + 10;
-    int current_y = menu_panel.y + 80;
+    int builder_y = menu_panel.y + 60;
+    render_text(renderer, font, "Build a Term:", menu_panel.x + 10, builder_y, TEXT_COLOR);
 
-    for (const auto& element : C->get_graphical_elements())
+    // constant input box
+    render_text(renderer, font, "Constant (K):", menu_panel.x + 20, builder_y + 30, TEXT_COLOR);
+    m_constant_textbox_rect = {menu_panel.x + 150, builder_y + 25, 100, 30};
+    SDL_SetRenderDrawColor(renderer, DISPLAY_BG.r, DISPLAY_BG.g, DISPLAY_BG.b, DISPLAY_BG.a);
+    SDL_RenderFillRect(renderer, &m_constant_textbox_rect);
+    SDL_SetRenderDrawColor(renderer, m_is_editing_constant ? SELECTED_BG.r : BUTTON_BG.r, m_is_editing_constant ? SELECTED_BG.g : BUTTON_BG.g, m_is_editing_constant ? SELECTED_BG.b : BUTTON_BG.b, 255);
+    SDL_RenderDrawRect(renderer, &m_constant_textbox_rect);
+    render_text(renderer, font, m_math_constant_buffer, m_constant_textbox_rect.x + 5, m_constant_textbox_rect.y + 5, TEXT_COLOR);
+
+    // list of elements
+    render_text(renderer, font, "Element (V):", menu_panel.x + 20, builder_y + 70, TEXT_COLOR);
+    m_math_element_buttons.clear();
+    int list_y = builder_y + 95;
+    for (int i = 0; i < C->get_graphical_elements().size(); ++i)
     {
-        if (dynamic_cast<Graphical_Ground*>(element.get()))
-        {
-            continue;
-        }
+        const auto& element = C->get_graphical_elements()[i];
+        if (dynamic_cast<Graphical_Ground*>(element.get())) continue;
 
-        int text_w, text_h;
-        TTF_SizeText(font, element->get_model()->get_name().c_str(), &text_w, &text_h);
-        SDL_Rect button_rect = {current_x, current_y, text_w + 10, text_h + 10};
+        SDL_Rect item_rect = {menu_panel.x + 20, list_y + (i * 35), 230, 30};
+        m_math_element_buttons.push_back(item_rect);
 
-        // wrap to next line
-        if (button_rect.x + button_rect.w > menu_panel.x + menu_width)
-        {
-            current_y += button_rect.h + 5;
-            current_x = menu_panel.x + 10;
-            button_rect.x = current_x;
-            button_rect.y = current_y;
-        }
-
-        math_element_buttons.push_back(button_rect);
-        current_x += button_rect.w + 5;
-
-        SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
-        SDL_RenderFillRect(renderer, &button_rect);
-        render_text(renderer, font, element->get_model()->get_name(), button_rect.x + 5, button_rect.y + 5, TEXT_COLOR);
+        SDL_SetRenderDrawColor(renderer, (i == m_math_selected_element_index) ? SELECTED_BG.r : BUTTON_BG.r, (i == m_math_selected_element_index) ? SELECTED_BG.g : BUTTON_BG.g, (i == m_math_selected_element_index) ? SELECTED_BG.b : BUTTON_BG.b, 255);
+        SDL_RenderFillRect(renderer, &item_rect);
+        render_text(renderer, font, element->get_model()->get_name(), item_rect.x + 5, item_rect.y + 5, TEXT_COLOR);
     }
 
-    // operator buttons
-    int op_y = menu_panel.y + menu_height - 50;
-    op_plus_button = {menu_panel.x + 10, op_y, 40, 40};
-    op_minus_button = {menu_panel.x + 60, op_y, 40, 40};
-    op_product_button = {menu_panel.x + 110, op_y, 40, 40};
-    op_clear_button = {menu_panel.x + menu_width - 180, op_y, 80, 40};
-    op_execute_button = {menu_panel.x + menu_width - 90, op_y, 80, 40};
-
-    SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
+    // add and subtract buttons
+    int add_term_y = menu_panel.y + 200;
+    op_plus_button = {menu_panel.x + 300, add_term_y, 140, 40};
+    op_minus_button = {menu_panel.x + 450, add_term_y, 140, 40};
+    bool term_ready = m_math_selected_element_index != -1;
+    SDL_SetRenderDrawColor(renderer, term_ready ? BUTTON_BG.r : DISABLED_BG.r, term_ready ? BUTTON_BG.g : DISABLED_BG.g, term_ready ? BUTTON_BG.b : DISABLED_BG.b, 255);
     SDL_RenderFillRect(renderer, &op_plus_button);
-    render_text(renderer, font, "+", op_plus_button.x + 15, op_plus_button.y + 10);
     SDL_RenderFillRect(renderer, &op_minus_button);
-    render_text(renderer, font, "-", op_minus_button.x + 15, op_minus_button.y + 10);
-    SDL_RenderFillRect(renderer, &op_product_button);
-    render_text(renderer, font, "x", op_product_button.x + 15, op_product_button.y + 10);
+    render_text(renderer, font, "Add Term (+)", op_plus_button.x + 10, op_plus_button.y + 10, TEXT_COLOR);
+    render_text(renderer, font, "Subtract Term (-)", op_minus_button.x + 5, op_minus_button.y + 10, TEXT_COLOR);
+
+    // action buttons
+    int bottom_y = menu_panel.y + menu_height - 50;
+    op_clear_button = {menu_panel.x + menu_width - 220, bottom_y, 100, 40};
+    op_execute_button = {menu_panel.x + menu_width - 110, bottom_y, 100, 40};
+    bool can_execute = !m_math_terms.empty();
+    SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
     SDL_RenderFillRect(renderer, &op_clear_button);
-    render_text(renderer, font, "Clear", op_clear_button.x + 15, op_clear_button.y + 10);
+    SDL_SetRenderDrawColor(renderer, can_execute ? BUTTON_BG.r : DISABLED_BG.r, can_execute ? BUTTON_BG.g : DISABLED_BG.g, can_execute ? BUTTON_BG.b : DISABLED_BG.b, 255);
     SDL_RenderFillRect(renderer, &op_execute_button);
-    render_text(renderer, font, "Execute", op_execute_button.x + 5, op_execute_button.y + 10);
+    render_text(renderer, font, "Clear", op_clear_button.x + 25, op_clear_button.y + 10, TEXT_COLOR);
+    render_text(renderer, font, "Execute", op_execute_button.x + 15, op_execute_button.y + 10, TEXT_COLOR);
+}
+
+void graphical_view::add_math_term(bool is_subtraction, Controller* C)
+{
+    if (m_math_selected_element_index == -1) return;
+
+    double k = 1.0;
+    k = toValue(m_math_constant_buffer);
+
+
+    if (is_subtraction)
+    {
+        k *= -1.0;
+    }
+
+    auto& elements = C->get_graphical_elements();
+    Graphical_Element* selected_element = elements[m_math_selected_element_index].get();
+
+    // editing data
+    Signal new_term;
+    new_term.name = to_string(k) + " * " + selected_element->get_model()->get_name();
+    auto element_data = generate_data_for_element(selected_element, C);
+
+    for (const auto& point : element_data)
+    {
+        new_term.data_points.push_back({point.first * k, point.second});
+    }
+
+    m_math_terms.push_back(new_term);
+
+    // updating expression string
+    if (!math_expression_string.empty())
+    {
+        math_expression_string += (is_subtraction) ? " - " : " + ";
+    }
+    math_expression_string += m_math_constant_buffer + " * " + selected_element->get_model()->get_name();
+
+    m_math_constant_buffer = "1.0";
+    m_math_selected_element_index = -1;
+}
+
+void graphical_view::execute_math_operation()
+{
+    if (m_math_terms.empty()) return;
+
+    Signal final_signal = m_math_terms[0];
+    final_signal.name = math_expression_string;
+
+    // adding all terms
+    for (int i = 1; i < m_math_terms.size(); ++i)
+    {
+        for (int j = 0; j < final_signal.data_points.size(); ++j)
+        {
+            final_signal.data_points[j].first += m_math_terms[i].data_points[j].first;
+        }
+    }
+
+    // adding the signal
+    if (!m_plot_view) { m_plot_view = make_unique<Plot_View>(); }
+    m_plot_view->add_signal(final_signal);
+    m_plot_view->auto_zoom();
+
+    m_math_terms.clear();
+    math_expression_string.clear();
+    math_operation_mode = false;
 }
 
 void graphical_view::draw_save_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
@@ -2425,113 +2476,84 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
     {
-        math_result_signal.reset();
-        math_expression_string.clear();
-        math_next_operator = ' ';
         math_operation_mode = false;
+    }
+
+    if (m_is_editing_constant)
+    {
+        if (event.type == SDL_TEXTINPUT && (isdigit(event.text.text[0]) || event.text.text[0] == '-'))
+        {
+            m_math_constant_buffer += event.text.text;
+        }
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE && !m_math_constant_buffer.empty())
+        {
+            m_math_constant_buffer.pop_back();
+        }
     }
 
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
+        bool control_was_clicked = false;
 
-        // click element button
-        for (size_t i = 0; i < math_element_buttons.size(); ++i)
+        // click on constant box
+        if (SDL_PointInRect(&mouse_pos, &m_constant_textbox_rect))
         {
-            if (SDL_PointInRect(&mouse_pos, &math_element_buttons[i]))
+            m_is_editing_constant = true;
+            SDL_StartTextInput();
+            control_was_clicked = true;
+        }
+
+        // click on element list
+        for (int i = 0; i < m_math_element_buttons.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &m_math_element_buttons[i]))
             {
-                auto& elements = C->get_graphical_elements();
-                Graphical_Element* clicked_element = elements[i].get();
-
-                math_expression_string += clicked_element->get_model()->get_name();
-                auto new_data = generate_data_for_element(clicked_element, C);
-
-                if (!math_result_signal.has_value())
-                {
-                    // first element
-                    math_result_signal = Signal();
-                    math_result_signal->data_points = new_data;
-                }
-                else
-                {
-                    if (math_result_signal->data_points.size() == new_data.size())
-                    {
-                        for (size_t j = 0; j < new_data.size(); ++j)
-                        {
-                            if (math_next_operator == '+')
-                            {
-                                math_result_signal->data_points[j].first += new_data[j].first;
-                            }
-                            else if (math_next_operator == '-')
-                            {
-                                math_result_signal->data_points[j].first -= new_data[j].first;
-                            }
-                            else if (math_next_operator == 'x')
-                            {
-                                math_result_signal->data_points[j].first *= new_data[j].first;
-                            }
-                        }
-                    }
-                    math_next_operator = ' ';
-                }
-                return true;
+                m_math_selected_element_index = i;
+                control_was_clicked = true;
+                break;
             }
         }
 
-        // click on operator button
-        if (math_result_signal.has_value() && math_next_operator == ' ')
-        {
+        // click on add or subtract
+        bool term_ready = m_math_selected_element_index != -1;
+        if (term_ready) {
             if (SDL_PointInRect(&mouse_pos, &op_plus_button))
             {
-                math_next_operator = '+';
-                math_expression_string += " + ";
-                return true;
-            }
-            if (SDL_PointInRect(&mouse_pos, &op_minus_button))
+                add_math_term(false, C);
+                control_was_clicked = true;
+            } else if (SDL_PointInRect(&mouse_pos, &op_minus_button))
             {
-                math_next_operator = '-';
-                math_expression_string += " - ";
-                return true;
-            }
-            if (SDL_PointInRect(&mouse_pos, &op_product_button))
-            {
-                math_next_operator = 'x';
-                math_expression_string += " x ";
-                return true;
+                add_math_term(true, C);
+                control_was_clicked = true;
             }
         }
 
-        // click on clear and execute
+        // clear
         if (SDL_PointInRect(&mouse_pos, &op_clear_button))
         {
-            math_result_signal.reset();
+            m_math_terms.clear();
             math_expression_string.clear();
-            math_next_operator = ' ';
-            return true;
+            m_math_constant_buffer = "1.0";
+            m_math_selected_element_index = -1;
+            control_was_clicked = true;
         }
-        if (SDL_PointInRect(&mouse_pos, &op_execute_button))
+
+        // execute
+        if (SDL_PointInRect(&mouse_pos, &op_execute_button) && !m_math_terms.empty())
         {
-            if (math_result_signal.has_value())
-            {
-                if (!m_plot_view)
-                {
-                    m_plot_view = make_unique<Plot_View>();
-                }
-                math_result_signal->name = math_expression_string;
-                math_result_signal->color = default_colors[color_index % 15];
-                color_index = (color_index + 1) % 15;
+            execute_math_operation();
+            control_was_clicked = true;
+        }
 
-                m_plot_view->add_signal(*math_result_signal);
-                m_plot_view->auto_zoom();
-
-                math_result_signal.reset();
-                math_expression_string.clear();
-                math_next_operator = ' ';
-                math_operation_mode = false;
-            }
-            return true;
+        // click out of active control box
+        if (!control_was_clicked)
+        {
+            m_is_editing_constant = false;
+            SDL_StopTextInput();
         }
     }
+
     return true;
 }
 
