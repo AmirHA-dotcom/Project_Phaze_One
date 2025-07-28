@@ -708,6 +708,9 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
+    n1->connect_element();
+    n2->connect_element();
+
     Resistor* sim_resistor = new Resistor(r_name, n1, n2, 1000.0);
 
     circuit->addElement(sim_resistor);
@@ -731,6 +734,9 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
+    n1->connect_element();
+    n2->connect_element();
+
     Capacitor* sim_capacitor = new Capacitor(c_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_capacitor);
@@ -751,6 +757,9 @@ void Controller::add_Graphical_Inductor(int screenX, int screenY) {
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
 
     Inductor* sim_inductor = new Inductor(i_name, n1, n2, 1e-6);
 
@@ -774,6 +783,9 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
+    n1->connect_element();
+    n2->connect_element();
+
     Current_Source* sim_current_source = new Current_Source(cs_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_current_source);
@@ -795,6 +807,9 @@ void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
 
     Real_Diode* sim_real_diode = new Real_Diode(RD_name, n1, n2, 1e-6);
 
@@ -818,6 +833,9 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
+    n1->connect_element();
+    n2->connect_element();
+
     Zener_Diode* sim_zener_diode = new Zener_Diode(ZD_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_zener_diode);
@@ -839,6 +857,9 @@ void Controller::add_Graphical_DC_Source(int screenX, int screenY)
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
 
     Voltage_Source* sim_voltage_source = new DC_Source(VS_name, n1, n2, 1e-6);
 
@@ -862,6 +883,9 @@ void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
+    n1->connect_element();
+    n2->connect_element();
+
     Voltage_Source* sim_voltage_source = new Sine_Source(VS_name, n1, n2, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
@@ -883,6 +907,9 @@ void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
 
     Voltage_Source* sim_voltage_source = new Pulse_Source(VS_name, n1, n2, 0, 0, 0, 0, 0, 0, 0);
 
@@ -906,6 +933,9 @@ void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
+    n1->connect_element();
+    n2->connect_element();
+
     Voltage_Source* sim_voltage_source = new Delta_Dirac(VS_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_voltage_source);
@@ -928,6 +958,9 @@ void Controller::add_Graphical_Square_Source(int screenX, int screenY)
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
 
+    n1->connect_element();
+    n2->connect_element();
+
     Voltage_Source* sim_voltage_source = new Square_Source(VS_name, n1, n2, 0, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
@@ -949,6 +982,9 @@ void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
 
     Node* n1 = circuit->create_new_node(n1_name);
     Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
 
     Voltage_Source* sim_voltage_source = new Triangular_Source(VS_name, n1, n2, 0, 0, 0, 0);
 
@@ -1118,6 +1154,11 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
         node_to_keep->make_ground();
     }
 
+    for (int i = 0; i < node_to_merge->connected_elements_count(); i++)
+    {
+        node_to_keep->connect_element();
+    }
+
     // for label naming
     if (!node_to_merge->net_name.empty())
     {
@@ -1216,4 +1257,25 @@ void Controller::do_transient()
             cout << "time: " << data.second << " V: " << data.first << endl;
         }
     }
+}
+
+void Controller::deleteElement(Graphical_Element* element_to_delete)
+{
+    if (!element_to_delete) return;
+
+    string name_to_delete = element_to_delete->get_model()->get_name();
+
+    circuit->delete_element(name_to_delete);
+
+    auto& g_elements = get_graphical_elements();
+
+    g_elements.erase(
+            remove_if(g_elements.begin(), g_elements.end(),
+                           [&](const unique_ptr<Graphical_Element>& element) {
+                               return element.get() == element_to_delete;
+                           }),
+            g_elements.end());
+
+    // 4. (Important!) You also need to delete any wires connected to the element.
+    // This requires another function to find and remove wires by their connection points.
 }

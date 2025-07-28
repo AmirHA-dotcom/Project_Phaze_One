@@ -301,6 +301,7 @@ void graphical_view::initialize_toolbar(TTF_Font* font)
 
     const vector<pair<string, Tool_Bar_Action>> button_data = {
             {"Grid", Tool_Bar_Action::Grid},
+            {"Delete", Tool_Bar_Action::Delete},
             {"Wire", Tool_Bar_Action::Wire},
             {"Net Label", Tool_Bar_Action::Net_Label},
             {"Components", Tool_Bar_Action::Components_Menu},
@@ -746,6 +747,10 @@ bool graphical_view::run(Controller *C)
                 else if (is_saving)
                 {
                     running = handle_saving_events(event, C);
+                }
+                else if (is_deleting)
+                {
+                    running = handle_deleting_events(event, C);
                 }
                 else
                 {
@@ -1807,6 +1812,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             math_operation_mode = false;
                             probe_mode = false;
                             is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
                             break;
                         case Tool_Bar_Action::Net_Label:
                             is_labeling = !is_labeling;
@@ -1816,6 +1823,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             math_operation_mode = false;
                             probe_mode = false;
                             is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
                             break;
                         case Tool_Bar_Action::Grid:
                             show_grids = !show_grids;
@@ -1828,6 +1837,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             math_operation_mode = false;
                             probe_mode = false;
                             is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
                             break;
                         case Tool_Bar_Action::File:
                             break;
@@ -1840,6 +1851,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_labeling = false;
                             is_grounding = false;
                             is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
                             edit_buffers.clear();
 
                             if (current_analysis_mode == Analysis_Mode::Transient)
@@ -1891,6 +1904,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             elements_menu = false;
                             is_grounding = false;
                             is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
                             break;
                         case Tool_Bar_Action::Math_Operation:
                             math_operation_mode = !math_operation_mode;
@@ -1900,6 +1915,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             elements_menu = false;
                             is_grounding = false;
                             is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
                             break;
                         case Tool_Bar_Action::Save:
                             is_saving = !is_saving;
@@ -1909,11 +1926,24 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
 
                             edit_buffers.clear();
                             edit_buffers.resize(2);
                             edit_buffers[0] = current_file_name;
                             edit_buffers[1] = current_file_address;
+                            break;
+                        case Tool_Bar_Action::Delete:
+                            is_deleting = !is_deleting;
+                            math_operation_mode = false;
+                            probe_mode = false;
+                            m_is_wiring = false;
+                            is_labeling = false;
+                            elements_menu = false;
+                            is_grounding = false;
+                            is_saving = false;
+                            is_file_menu_open = false;
                             break;
                     }
                     return true;
@@ -2443,5 +2473,27 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         }
     }
 
+    return true;
+}
+
+bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+    {
+        is_deleting = false;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        SDL_Point pos = {event.button.x, event.button.y};
+        Graphical_Element* element = find_element_at(pos, C);
+        if (element)
+        {
+            C->deleteElement(element);
+            is_deleting = false;
+        }
+    }
     return true;
 }

@@ -403,41 +403,51 @@ void Circuit::delete_element(string name)
             break;
         }
     }
+
     if (element_index == -1)
     {
         cerr << "Element '" << name << "' NOT found!" << endl;
         return;
     }
-    auto delete_node_if_unused = [this](Node* node){
+
+    auto delete_node_if_unused = [this](Node* node) {
         if (node->connected_elements_count() == 0)
         {
-            auto it = find(Nodes.begin(), Nodes.end(), node);
+            auto it = std::find(Nodes.begin(), Nodes.end(), node);
             if (it != Nodes.end())
             {
-                delete *it;
                 Nodes.erase(it);
+                delete node;
             }
         }
     };
+
     Element* element_to_delete = Elements[element_index];
+
     pair<Node*, Node*> nodes_pair = element_to_delete->get_nodes();
     Node* node1 = nodes_pair.first;
     Node* node2 = nodes_pair.second;
 
     node1->disconnect_element();
-    node2->disconnect_element();
+    if (node1 != node2)
+    {
+        node2->disconnect_element();
+    }
+
+    Elements.erase(Elements.begin() + element_index);
+
+    delete element_to_delete;
 
     delete_node_if_unused(node1);
-
-    // dont delete twice.
     if (node1 != node2)
     {
         delete_node_if_unused(node2);
     }
-    Elements.erase(Elements.begin() + element_index);
+//    for (auto& element : get_Elements())
+//        cout << element->get_name() << endl;
 }
 
-vector<pair<double, double>> Circuit::get_node_voltages(std::string name)
+vector<pair<double, double>> Circuit::get_node_voltages(string name)
 {
     return Nodes[node_index_finder_by_name(name)]->get_all_voltages();
 }

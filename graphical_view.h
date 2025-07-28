@@ -17,7 +17,7 @@ enum class Analysis_Mode { Transient, AC_Sweep, Phase_Sweep };
 
 enum class AC_Sweep_Type { Octave, Decade, Linear };
 
-enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation, Save };
+enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation, Save, Delete };
 
 struct Toolbar_Button {
     SDL_Rect rect;
@@ -86,6 +86,12 @@ private:
     // top menu
     vector<Toolbar_Button> m_toolbar_buttons;
     int m_hovered_button_index = -1;
+
+    // deleting element or wire
+    bool is_deleting = false;
+
+    // file menu
+    bool is_file_menu_open = false;
 
     // saving circuit
     bool is_saving = false;
@@ -172,7 +178,7 @@ private:
 
     bool handle_saving_events(SDL_Event& event, Controller* C);
 
-
+    bool handle_deleting_events(SDL_Event& event, Controller* C);
 public:
     bool run (Controller* C);
 };
