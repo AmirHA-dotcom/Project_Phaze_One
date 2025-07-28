@@ -1263,19 +1263,35 @@ void Controller::deleteElement(Graphical_Element* element_to_delete)
 {
     if (!element_to_delete) return;
 
+    vector<Connection_Point> terminals = element_to_delete->get_connection_points();
+
+    // removing any wire connected to the connection points
+    auto& wires = get_graphical_wires();
+    wires.erase(
+            remove_if(wires.begin(), wires.end(),[&](const unique_ptr<Graphical_Wire>& wire) {
+                               if (wire->path.empty()) return false;
+
+                               const SDL_Point& start_point = wire->path.front();
+                               const SDL_Point& end_point = wire->path.back();
+
+                               for (const auto& terminal : terminals) {
+                                   if ((start_point.x == terminal.pos.x && start_point.y == terminal.pos.y) || (end_point.x == terminal.pos.x && end_point.y == terminal.pos.y))
+                                   {
+                                       return true;
+                                   }
+                               }
+                               return false;
+                           }),
+            wires.end());
+
     string name_to_delete = element_to_delete->get_model()->get_name();
 
     circuit->delete_element(name_to_delete);
 
     auto& g_elements = get_graphical_elements();
 
-    g_elements.erase(
-            remove_if(g_elements.begin(), g_elements.end(),
-                           [&](const unique_ptr<Graphical_Element>& element) {
+    g_elements.erase(remove_if(g_elements.begin(), g_elements.end(),[&](const unique_ptr<Graphical_Element>& element) {
                                return element.get() == element_to_delete;
                            }),
             g_elements.end());
-
-    // 4. (Important!) You also need to delete any wires connected to the element.
-    // This requires another function to find and remove wires by their connection points.
 }

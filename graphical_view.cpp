@@ -942,7 +942,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 {
                     if (m_is_dragging)
                     {
-                        cout << "Ctrl+R was pressed while dragging!" << endl;
                         auto& graphical_elements = C->get_graphical_elements();
                         auto& element_to_rotate = graphical_elements[m_dragged_element_index];
                         element_to_rotate->change_rotation();
@@ -952,7 +951,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                 {
                     SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-                    cout << "R key was pressed." << endl;
                     C->add_Graphical_Resistor(snapped_pos.x, snapped_pos.y);
                 }
                 break;
@@ -962,7 +960,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-                cout << "C key was pressed." << endl;
                 C->add_Graphical_Capacitor(snapped_pos.x, snapped_pos.y);
                 break;
             }
@@ -971,7 +968,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-                cout << "L key was pressed." << endl;
                 C->add_Graphical_Inductor(snapped_pos.x, snapped_pos.y);
                 break;
             }
@@ -980,7 +976,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-                cout << "S key was pressed." << endl;
                 C->add_Graphical_Current_Source(snapped_pos.x, snapped_pos.y);
                 break;
             }
@@ -989,7 +984,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-                cout << "D key was pressed." << endl;
                 C->add_Graphical_Real_Diode(snapped_pos.x, snapped_pos.y);
                 break;
             }
@@ -998,7 +992,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-                cout << "Z key was pressed." << endl;
                 C->add_Graphical_Zener_Diode(snapped_pos.x, snapped_pos.y);
                 break;
             }
@@ -1007,28 +1000,24 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-                cout << "V key was pressed." << endl;
                 C->add_Graphical_DC_Source(snapped_pos.x, snapped_pos.y);
                 break;
             }
 
             case SDLK_p:
             {
-                cout << "P key was pressed." << endl;
                 elements_menu = !elements_menu;
                 break;
             }
 
             case SDLK_g:
             {
-                cout << "G key was pressed." << endl;
                 is_grounding = !is_grounding;
                 break;
             }
 
             case SDLK_w:
             {
-                cout << "W key was pressed." << endl;
                 m_is_wiring = !m_is_wiring;
                 new_wire_points.clear();
                 break;
@@ -1036,8 +1025,19 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_n:
             {
-                cout << "N key was pressed." << endl;
                 is_labeling = !is_labeling;
+                break;
+            }
+
+            case SDLK_BACKSPACE:
+            {
+                is_deleting = !is_deleting;
+                break;
+            }
+
+            case SDLK_DELETE:
+            {
+                is_deleting = !is_deleting;
                 break;
             }
 
