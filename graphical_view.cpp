@@ -1978,7 +1978,7 @@ bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_MOUSEBUTTONDOWN) 
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
 
