@@ -100,9 +100,9 @@ private:
     // doing math on signals
     bool math_operation_mode = false;
     string m_math_expression_string;
-    vector<const Signal*> m_math_operands;
-    vector<char> m_math_operators;
-    vector<SDL_Rect> m_math_signal_buttons;
+    optional<Signal> m_math_result_signal;
+    char m_math_next_operator = ' ';
+    vector<SDL_Rect> m_math_element_buttons;
     SDL_Rect m_op_plus_button, m_op_minus_button, m_op_clear_button, m_op_execute_button;
 
     // plot window
@@ -142,7 +142,6 @@ private:
     void draw_toolbar(SDL_Renderer* renderer, TTF_Font* font);
     void draw_configure_analysis(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_math_operation_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
-    void execute_math_operation();
 
     // main functions
     bool handle_events(SDL_Event& event, Controller* C);
