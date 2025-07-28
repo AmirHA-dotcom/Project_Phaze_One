@@ -309,7 +309,7 @@ void graphical_view::draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font
 
 void graphical_view::initialize_toolbar(TTF_Font* font)
 {
-    m_toolbar_buttons.clear();
+    toolbar_buttons.clear();
 
     const vector<pair<string, Tool_Bar_Action>> button_data = {
             {"Grid", Tool_Bar_Action::Grid},
@@ -338,7 +338,7 @@ void graphical_view::initialize_toolbar(TTF_Font* font)
 
         int button_width = text_width + (2 * internal_padding);
 
-        m_toolbar_buttons.push_back({
+        toolbar_buttons.push_back({
             {current_x, y_pos, button_width, button_height},
             data.first,
             data.second
@@ -359,21 +359,21 @@ void graphical_view::draw_toolbar(SDL_Renderer* renderer, TTF_Font* font)
     SDL_SetRenderDrawColor(renderer, TOOLBAR_BG.r, TOOLBAR_BG.g, TOOLBAR_BG.b, TOOLBAR_BG.a);
     SDL_RenderFillRect(renderer, &toolbar_rect);
 
-    for (int i = 0; i < m_toolbar_buttons.size(); ++i)
+    for (int i = 0; i < toolbar_buttons.size(); ++i)
     {
-        if (i == m_hovered_button_index)
+        if (i == hovered_button_index)
         {
             SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
-            SDL_RenderFillRect(renderer, &m_toolbar_buttons[i].rect);
+            SDL_RenderFillRect(renderer, &toolbar_buttons[i].rect);
         }
 
         int text_width, text_height;
-        TTF_SizeText(font, m_toolbar_buttons[i].text_label.c_str(), &text_width, &text_height);
+        TTF_SizeText(font, toolbar_buttons[i].text_label.c_str(), &text_width, &text_height);
 
-        int text_x = m_toolbar_buttons[i].rect.x + (m_toolbar_buttons[i].rect.w - text_width) / 2;
-        int text_y = m_toolbar_buttons[i].rect.y + (m_toolbar_buttons[i].rect.h - text_height) / 2;
+        int text_x = toolbar_buttons[i].rect.x + (toolbar_buttons[i].rect.w - text_width) / 2;
+        int text_y = toolbar_buttons[i].rect.y + (toolbar_buttons[i].rect.h - text_height) / 2;
 
-        render_text(renderer, font, m_toolbar_buttons[i].text_label, text_x, text_y, TEXT_COLOR);
+        render_text(renderer, font, toolbar_buttons[i].text_label, text_x, text_y, TEXT_COLOR);
     }
 }
 
@@ -502,16 +502,16 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
 
     // constant input box
     render_text(renderer, font, "Constant (K):", menu_panel.x + 20, builder_y + 30, TEXT_COLOR);
-    m_constant_textbox_rect = {menu_panel.x + 150, builder_y + 25, 100, 30};
+    constant_textbox_rect = {menu_panel.x + 150, builder_y + 25, 100, 30};
     SDL_SetRenderDrawColor(renderer, DISPLAY_BG.r, DISPLAY_BG.g, DISPLAY_BG.b, DISPLAY_BG.a);
-    SDL_RenderFillRect(renderer, &m_constant_textbox_rect);
-    SDL_SetRenderDrawColor(renderer, m_is_editing_constant ? SELECTED_BG.r : BUTTON_BG.r, m_is_editing_constant ? SELECTED_BG.g : BUTTON_BG.g, m_is_editing_constant ? SELECTED_BG.b : BUTTON_BG.b, 255);
-    SDL_RenderDrawRect(renderer, &m_constant_textbox_rect);
-    render_text(renderer, font, m_math_constant_buffer, m_constant_textbox_rect.x + 5, m_constant_textbox_rect.y + 5, TEXT_COLOR);
+    SDL_RenderFillRect(renderer, &constant_textbox_rect);
+    SDL_SetRenderDrawColor(renderer, is_editing_constant ? SELECTED_BG.r : BUTTON_BG.r, is_editing_constant ? SELECTED_BG.g : BUTTON_BG.g, is_editing_constant ? SELECTED_BG.b : BUTTON_BG.b, 255);
+    SDL_RenderDrawRect(renderer, &constant_textbox_rect);
+    render_text(renderer, font, math_constant_buffer, constant_textbox_rect.x + 5, constant_textbox_rect.y + 5, TEXT_COLOR);
 
     // list of elements
     render_text(renderer, font, "Element (V):", menu_panel.x + 20, builder_y + 70, TEXT_COLOR);
-    m_math_element_buttons.clear();
+    math_element_buttons.clear();
     int list_y = builder_y + 95;
     for (int i = 0; i < C->get_graphical_elements().size(); ++i)
     {
@@ -519,9 +519,9 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
         if (dynamic_cast<Graphical_Ground*>(element.get())) continue;
 
         SDL_Rect item_rect = {menu_panel.x + 20, list_y + (i * 35), 230, 30};
-        m_math_element_buttons.push_back(item_rect);
+        math_element_buttons.push_back(item_rect);
 
-        SDL_SetRenderDrawColor(renderer, (i == m_math_selected_element_index) ? SELECTED_BG.r : BUTTON_BG.r, (i == m_math_selected_element_index) ? SELECTED_BG.g : BUTTON_BG.g, (i == m_math_selected_element_index) ? SELECTED_BG.b : BUTTON_BG.b, 255);
+        SDL_SetRenderDrawColor(renderer, (i == math_selected_element_index) ? SELECTED_BG.r : BUTTON_BG.r, (i == math_selected_element_index) ? SELECTED_BG.g : BUTTON_BG.g, (i == math_selected_element_index) ? SELECTED_BG.b : BUTTON_BG.b, 255);
         SDL_RenderFillRect(renderer, &item_rect);
         render_text(renderer, font, element->get_model()->get_name(), item_rect.x + 5, item_rect.y + 5, TEXT_COLOR);
     }
@@ -530,7 +530,7 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     int add_term_y = menu_panel.y + 200;
     op_plus_button = {menu_panel.x + 300, add_term_y, 140, 40};
     op_minus_button = {menu_panel.x + 450, add_term_y, 140, 40};
-    bool term_ready = m_math_selected_element_index != -1;
+    bool term_ready = math_selected_element_index != -1;
     SDL_SetRenderDrawColor(renderer, term_ready ? BUTTON_BG.r : DISABLED_BG.r, term_ready ? BUTTON_BG.g : DISABLED_BG.g, term_ready ? BUTTON_BG.b : DISABLED_BG.b, 255);
     SDL_RenderFillRect(renderer, &op_plus_button);
     SDL_RenderFillRect(renderer, &op_minus_button);
@@ -541,7 +541,7 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     int bottom_y = menu_panel.y + menu_height - 50;
     op_clear_button = {menu_panel.x + menu_width - 220, bottom_y, 100, 40};
     op_execute_button = {menu_panel.x + menu_width - 110, bottom_y, 100, 40};
-    bool can_execute = !m_math_terms.empty();
+    bool can_execute = !math_terms.empty();
     SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
     SDL_RenderFillRect(renderer, &op_clear_button);
     SDL_SetRenderDrawColor(renderer, can_execute ? BUTTON_BG.r : DISABLED_BG.r, can_execute ? BUTTON_BG.g : DISABLED_BG.g, can_execute ? BUTTON_BG.b : DISABLED_BG.b, 255);
@@ -552,10 +552,10 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
 
 void graphical_view::add_math_term(bool is_subtraction, Controller* C)
 {
-    if (m_math_selected_element_index == -1) return;
+    if (math_selected_element_index == -1) return;
 
     double k = 1.0;
-    k = toValue(m_math_constant_buffer);
+    k = toValue(math_constant_buffer);
 
 
     if (is_subtraction)
@@ -564,7 +564,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
     }
 
     auto& elements = C->get_graphical_elements();
-    Graphical_Element* selected_element = elements[m_math_selected_element_index].get();
+    Graphical_Element* selected_element = elements[math_selected_element_index].get();
 
     // editing data
     Signal new_term;
@@ -576,41 +576,47 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
         new_term.data_points.push_back({point.first * k, point.second});
     }
 
-    m_math_terms.push_back(new_term);
+    math_terms.push_back(new_term);
 
     // updating expression string
     if (!math_expression_string.empty())
     {
         math_expression_string += (is_subtraction) ? " - " : " + ";
     }
-    math_expression_string += m_math_constant_buffer + " * " + selected_element->get_model()->get_name();
+    math_expression_string += math_constant_buffer + " * " + selected_element->get_model()->get_name();
 
-    m_math_constant_buffer = "1.0";
-    m_math_selected_element_index = -1;
+    math_constant_buffer = "1.0";
+    math_selected_element_index = -1;
 }
 
 void graphical_view::execute_math_operation()
 {
-    if (m_math_terms.empty()) return;
+    if (math_terms.empty()) return;
 
-    Signal final_signal = m_math_terms[0];
+    Signal final_signal = math_terms[0];
     final_signal.name = math_expression_string;
 
     // adding all terms
-    for (int i = 1; i < m_math_terms.size(); ++i)
+    for (int i = 1; i < math_terms.size(); ++i)
     {
         for (int j = 0; j < final_signal.data_points.size(); ++j)
         {
-            final_signal.data_points[j].first += m_math_terms[i].data_points[j].first;
+            final_signal.data_points[j].first += math_terms[i].data_points[j].first;
         }
     }
 
     // adding the signal
-    if (!m_plot_view) { m_plot_view = make_unique<Plot_View>(); }
-    m_plot_view->add_signal(final_signal);
-    m_plot_view->auto_zoom();
+    if (!plot_view) { plot_view = make_unique<Plot_View>(); }
+    final_signal.color = default_colors[color_index % default_colors.size()];
+    color_index++;
+    if (color_index == 15)
+        color_index = 0;
+    plot_view->add_signal(final_signal);
+    plot_view->auto_zoom();
+    plot_view->set_y_unit(Unit::V);
+    plot_view->set_x_unit(Unit::s);
 
-    m_math_terms.clear();
+    math_terms.clear();
     math_expression_string.clear();
     math_operation_mode = false;
 }
@@ -689,7 +695,7 @@ void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
 
     // draw file list
     render_text(renderer, font, "Open File", menu_panel.x + 10, menu_panel.y + 10, TEXT_COLOR);
-    m_file_button_rects.clear();
+    file_button_rects.clear();
     vector<string> file_names = C->get_file_names();
 
     int start_y = menu_panel.y + 50;
@@ -697,14 +703,14 @@ void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     for (int i = 0; i < file_names.size(); ++i)
     {
         SDL_Rect item_rect = {menu_panel.x + 10, start_y + (i * row_height), menu_width - 20, 30};
-        m_file_button_rects.push_back(item_rect);
+        file_button_rects.push_back(item_rect);
 
         // background color based on state
-        if (i == m_selected_file_index)
+        if (i == selected_file_index)
         {
             SDL_SetRenderDrawColor(renderer, SELECTED_BG.r, SELECTED_BG.g, SELECTED_BG.b, SELECTED_BG.a);
         }
-        else if (i == m_hovered_file_index)
+        else if (i == hovered_file_index)
         {
             SDL_SetRenderDrawColor(renderer, HOVER_BG.r, HOVER_BG.g, HOVER_BG.b, HOVER_BG.a);
         }
@@ -718,13 +724,13 @@ void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     }
 
     // OK cancel
-    m_file_ok_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 40};
-    m_file_cancel_button_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 40};
+    file_ok_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 40};
+    file_cancel_button_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 40};
     SDL_SetRenderDrawColor(renderer, BUTTON_BG.r, BUTTON_BG.g, BUTTON_BG.b, BUTTON_BG.a);
-    SDL_RenderFillRect(renderer, &m_file_ok_button_rect);
-    SDL_RenderFillRect(renderer, &m_file_cancel_button_rect);
-    render_text(renderer, font, "OK", m_file_ok_button_rect.x + 35, m_file_ok_button_rect.y + 10, TEXT_COLOR);
-    render_text(renderer, font, "Cancel", m_file_cancel_button_rect.x + 20, m_file_cancel_button_rect.y + 10, TEXT_COLOR);
+    SDL_RenderFillRect(renderer, &file_ok_button_rect);
+    SDL_RenderFillRect(renderer, &file_cancel_button_rect);
+    render_text(renderer, font, "OK", file_ok_button_rect.x + 35, file_ok_button_rect.y + 10, TEXT_COLOR);
+    render_text(renderer, font, "Cancel", file_cancel_button_rect.x + 20, file_cancel_button_rect.y + 10, TEXT_COLOR);
 }
 
 // main functions
@@ -850,11 +856,11 @@ bool graphical_view::run(Controller *C)
 
         while (SDL_PollEvent(&event) != 0)
         {
-            if (m_plot_view)
+            if (plot_view)
             {
-                if (!m_plot_view->handle_event(event))
+                if (!plot_view->handle_event(event))
                 {
-                    m_plot_view.reset();
+                    plot_view.reset();
                 }
             }
 
@@ -862,13 +868,13 @@ bool graphical_view::run(Controller *C)
             {
                 SDL_Point mouse_pos = {event.motion.x, event.motion.y};
 
-                m_hovered_button_index = -1;
+                hovered_button_index = -1;
 
-                for (int i = 0; i < m_toolbar_buttons.size(); ++i)
+                for (int i = 0; i < toolbar_buttons.size(); ++i)
                 {
-                    if (SDL_PointInRect(&mouse_pos, &m_toolbar_buttons[i].rect))
+                    if (SDL_PointInRect(&mouse_pos, &toolbar_buttons[i].rect))
                     {
-                        m_hovered_button_index = i;
+                        hovered_button_index = i;
                         break;
                     }
                 }
@@ -1064,9 +1070,9 @@ bool graphical_view::run(Controller *C)
         SDL_RenderPresent(renderer);
 
         // plot window
-        if (m_plot_view)
+        if (plot_view)
         {
-            m_plot_view->render();
+            plot_view->render();
         }
 
     }
@@ -1114,10 +1120,10 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 if (modState & KMOD_CTRL)
                 {
-                    if (m_is_dragging)
+                    if (is_dragging)
                     {
                         auto& graphical_elements = C->get_graphical_elements();
-                        auto& element_to_rotate = graphical_elements[m_dragged_element_index];
+                        auto& element_to_rotate = graphical_elements[dragged_element_index];
                         element_to_rotate->change_rotation();
                     }
                 }
@@ -1241,10 +1247,10 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
                 {
-                    m_is_dragging = true;
-                    m_dragged_element_index = i;
-                    m_drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
-                    m_drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
+                    is_dragging = true;
+                    dragged_element_index = i;
+                    drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
+                    drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
                     break;
                 }
             }
@@ -1278,25 +1284,25 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
     if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
     {
-        m_is_dragging = false;
-        m_dragged_element_index = -1;
+        is_dragging = false;
+        dragged_element_index = -1;
     }
 
-    if (event.type == SDL_MOUSEMOTION && m_is_dragging)
+    if (event.type == SDL_MOUSEMOTION && is_dragging)
     {
 //        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-//        graphical_elements[m_dragged_element_index]->bounding_box.x = mouse_pos.x - m_drag_offset.x;
-//        graphical_elements[m_dragged_element_index]->bounding_box.y = mouse_pos.y - m_drag_offset.y;
+//        graphical_elements[dragged_element_index]->bounding_box.x = mouse_pos.x - drag_offset.x;
+//        graphical_elements[dragged_element_index]->bounding_box.y = mouse_pos.y - drag_offset.y;
 
         SDL_Point mouse_pos = {event.motion.x, event.motion.y};
 
-        int new_x = mouse_pos.x - m_drag_offset.x;
-        int new_y = mouse_pos.y - m_drag_offset.y;
+        int new_x = mouse_pos.x - drag_offset.x;
+        int new_y = mouse_pos.y - drag_offset.y;
 
         SDL_Point snapped_pos = snap_to_grid(new_x, new_y, GRID_SIZE);
 
-        graphical_elements[m_dragged_element_index]->bounding_box.x = snapped_pos.x;
-        graphical_elements[m_dragged_element_index]->bounding_box.y = snapped_pos.y;
+        graphical_elements[dragged_element_index]->bounding_box.x = snapped_pos.x;
+        graphical_elements[dragged_element_index]->bounding_box.y = snapped_pos.y;
     }
 
     return true;
@@ -1978,7 +1984,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
 
         if (mouse_pos.y < 40) 
         { 
-            for (const auto& button : m_toolbar_buttons) 
+            for (const auto& button : toolbar_buttons)
             {
                 if (SDL_PointInRect(&mouse_pos, &button.rect))
                 {
@@ -2081,9 +2087,9 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                                 // not coded
                             }
 
-                            if (m_plot_view)
+                            if (plot_view)
                             {
-                                m_plot_view->delete_all_signals();
+                                plot_view->delete_all_signals();
                             }
                             break;
                         case Tool_Bar_Action::Probe:
@@ -2313,9 +2319,9 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         Node* target_node = find_node_at({event.button.x, event.button.y}, C);
         if (target_node)
         {
-            if (!m_plot_view)
+            if (!plot_view)
             {
-                m_plot_view = make_unique<Plot_View>();
+                plot_view = make_unique<Plot_View>();
             }
 
             // create and add the signal
@@ -2330,18 +2336,18 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
             if (color_index == 15)
                 color_index = 0;
 
-            m_plot_view->add_signal(node_signal);
-            m_plot_view->auto_zoom();
-            m_plot_view->set_y_unit(Unit::V);
-            m_plot_view->set_x_unit(Unit::s);
+            plot_view->add_signal(node_signal);
+            plot_view->auto_zoom();
+            plot_view->set_y_unit(Unit::V);
+            plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
         Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
         if (target_element)
         {
-            if (!m_plot_view)
+            if (!plot_view)
             {
-                m_plot_view = make_unique<Plot_View>();
+                plot_view = make_unique<Plot_View>();
             }
 
             // create and add the signal
@@ -2369,10 +2375,10 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
             if (color_index == 15)
                 color_index = 0;
 
-            m_plot_view->add_signal(element_signal);
-            m_plot_view->auto_zoom();
-            m_plot_view->set_y_unit(Unit::V);
-            m_plot_view->set_x_unit(Unit::s);
+            plot_view->add_signal(element_signal);
+            plot_view->auto_zoom();
+            plot_view->set_y_unit(Unit::V);
+            plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
     }
@@ -2383,9 +2389,9 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
         if (target_element)
         {
-            if (!m_plot_view)
+            if (!plot_view)
             {
-                m_plot_view = make_unique<Plot_View>();
+                plot_view = make_unique<Plot_View>();
             }
 
             // create and add the signal
@@ -2413,10 +2419,10 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
             if (color_index == 15)
                 color_index = 0;
 
-            m_plot_view->add_signal(element_signal);
-            m_plot_view->auto_zoom();
-            m_plot_view->set_y_unit(Unit::A);
-            m_plot_view->set_x_unit(Unit::s);
+            plot_view->add_signal(element_signal);
+            plot_view->auto_zoom();
+            plot_view->set_y_unit(Unit::A);
+            plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
     }
@@ -2427,9 +2433,9 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
         if (target_element)
         {
-            if (!m_plot_view)
+            if (!plot_view)
             {
-                m_plot_view = make_unique<Plot_View>();
+                plot_view = make_unique<Plot_View>();
             }
 
             // create and add the signal
@@ -2459,10 +2465,10 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
             if (color_index == 15)
                 color_index = 0;
 
-            m_plot_view->add_signal(element_signal);
-            m_plot_view->auto_zoom();
-            m_plot_view->set_y_unit(Unit::W);
-            m_plot_view->set_x_unit(Unit::s);
+            plot_view->add_signal(element_signal);
+            plot_view->auto_zoom();
+            plot_view->set_y_unit(Unit::W);
+            plot_view->set_x_unit(Unit::s);
             probe_mode = false;
         }
     }
@@ -2479,15 +2485,15 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
         math_operation_mode = false;
     }
 
-    if (m_is_editing_constant)
+    if (is_editing_constant)
     {
         if (event.type == SDL_TEXTINPUT && (isdigit(event.text.text[0]) || event.text.text[0] == '-'))
         {
-            m_math_constant_buffer += event.text.text;
+            math_constant_buffer += event.text.text;
         }
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE && !m_math_constant_buffer.empty())
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE && !math_constant_buffer.empty())
         {
-            m_math_constant_buffer.pop_back();
+            math_constant_buffer.pop_back();
         }
     }
 
@@ -2497,26 +2503,26 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
         bool control_was_clicked = false;
 
         // click on constant box
-        if (SDL_PointInRect(&mouse_pos, &m_constant_textbox_rect))
+        if (SDL_PointInRect(&mouse_pos, &constant_textbox_rect))
         {
-            m_is_editing_constant = true;
+            is_editing_constant = true;
             SDL_StartTextInput();
             control_was_clicked = true;
         }
 
         // click on element list
-        for (int i = 0; i < m_math_element_buttons.size(); ++i)
+        for (int i = 0; i < math_element_buttons.size(); ++i)
         {
-            if (SDL_PointInRect(&mouse_pos, &m_math_element_buttons[i]))
+            if (SDL_PointInRect(&mouse_pos, &math_element_buttons[i]))
             {
-                m_math_selected_element_index = i;
+                math_selected_element_index = i;
                 control_was_clicked = true;
                 break;
             }
         }
 
         // click on add or subtract
-        bool term_ready = m_math_selected_element_index != -1;
+        bool term_ready = math_selected_element_index != -1;
         if (term_ready) {
             if (SDL_PointInRect(&mouse_pos, &op_plus_button))
             {
@@ -2532,15 +2538,15 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
         // clear
         if (SDL_PointInRect(&mouse_pos, &op_clear_button))
         {
-            m_math_terms.clear();
+            math_terms.clear();
             math_expression_string.clear();
-            m_math_constant_buffer = "1.0";
-            m_math_selected_element_index = -1;
+            math_constant_buffer = "1.0";
+            math_selected_element_index = -1;
             control_was_clicked = true;
         }
 
         // execute
-        if (SDL_PointInRect(&mouse_pos, &op_execute_button) && !m_math_terms.empty())
+        if (SDL_PointInRect(&mouse_pos, &op_execute_button) && !math_terms.empty())
         {
             execute_math_operation();
             control_was_clicked = true;
@@ -2549,7 +2555,7 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
         // click out of active control box
         if (!control_was_clicked)
         {
-            m_is_editing_constant = false;
+            is_editing_constant = false;
             SDL_StopTextInput();
         }
     }
@@ -2680,12 +2686,12 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
     if (event.type == SDL_MOUSEMOTION)
     {
         SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-        m_hovered_file_index = -1;
-        for (int i = 0; i < m_file_button_rects.size(); ++i)
+        hovered_file_index = -1;
+        for (int i = 0; i < file_button_rects.size(); ++i)
         {
-            if (SDL_PointInRect(&mouse_pos, &m_file_button_rects[i]))
+            if (SDL_PointInRect(&mouse_pos, &file_button_rects[i]))
             {
-                m_hovered_file_index = i;
+                hovered_file_index = i;
                 break;
             }
         }
@@ -2697,21 +2703,21 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
         SDL_Point mouse_pos = {event.button.x, event.button.y};
 
         // click on file
-        for (int i = 0; i < m_file_button_rects.size(); ++i)
+        for (int i = 0; i < file_button_rects.size(); ++i)
         {
-            if (SDL_PointInRect(&mouse_pos, &m_file_button_rects[i]))
+            if (SDL_PointInRect(&mouse_pos, &file_button_rects[i]))
             {
-                m_selected_file_index = i;
+                selected_file_index = i;
                 return true;
             }
         }
 
-        if (SDL_PointInRect(&mouse_pos, &m_file_ok_button_rect))
+        if (SDL_PointInRect(&mouse_pos, &file_ok_button_rect))
         {
-            if (m_selected_file_index != -1)
+            if (selected_file_index != -1)
             {
                 vector<string> file_names = C->get_file_names();
-                string selected_file = file_names[m_selected_file_index];
+                string selected_file = file_names[selected_file_index];
 
                 cout << "OK clicked! Opening file: " << selected_file << endl;
 
@@ -2720,7 +2726,7 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
             return true;
         }
 
-        if (SDL_PointInRect(&mouse_pos, &m_file_cancel_button_rect))
+        if (SDL_PointInRect(&mouse_pos, &file_cancel_button_rect))
         {
             is_file_menu_open = false;
             return true;

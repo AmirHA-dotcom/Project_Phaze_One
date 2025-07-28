@@ -47,9 +47,9 @@ private:
     int m_window_height;
 
     // dragging
-    bool m_is_dragging = false;
-    int m_dragged_element_index = -1;
-    SDL_Point m_drag_offset = {0, 0};
+    bool is_dragging = false;
+    int dragged_element_index = -1;
+    SDL_Point drag_offset = {0, 0};
 
     // show grids
     bool show_grids = false;
@@ -82,19 +82,19 @@ private:
     bool is_labeling = false;
 
     // top menu
-    vector<Toolbar_Button> m_toolbar_buttons;
-    int m_hovered_button_index = -1;
+    vector<Toolbar_Button> toolbar_buttons;
+    int hovered_button_index = -1;
 
     // deleting element or wire
     bool is_deleting = false;
 
     // file menu
     bool is_file_menu_open = false;
-    int m_selected_file_index = -1;
-    int m_hovered_file_index = -1;
-    vector<SDL_Rect> m_file_button_rects;
-    SDL_Rect m_file_ok_button_rect;
-    SDL_Rect m_file_cancel_button_rect;
+    int selected_file_index = -1;
+    int hovered_file_index = -1;
+    vector<SDL_Rect> file_button_rects;
+    SDL_Rect file_ok_button_rect;
+    SDL_Rect file_cancel_button_rect;
 
     // saving circuit
     bool is_saving = false;
@@ -114,17 +114,16 @@ private:
     // doing math on signals
     bool math_operation_mode = false;
     string math_expression_string;
-    vector<Signal> m_math_terms;
-    int m_math_selected_element_index = -1;
-    bool m_is_editing_constant = false;
-    string m_math_constant_buffer = "1.0";
-    char math_next_operator = ' ';
-    vector<SDL_Rect> m_math_element_buttons;
-    SDL_Rect m_constant_textbox_rect;
+    vector<Signal> math_terms;
+    int math_selected_element_index = -1;
+    bool is_editing_constant = false;
+    string math_constant_buffer = "1.0";
+    vector<SDL_Rect> math_element_buttons;
+    SDL_Rect constant_textbox_rect;
     SDL_Rect op_plus_button, op_minus_button, op_clear_button, op_execute_button;
 
     // plot window
-    unique_ptr<Plot_View> m_plot_view;
+    unique_ptr<Plot_View> plot_view;
     vector<SDL_Color> default_colors = {
             {0,   255, 0,   255}, // GREEN
             {0,   0,   255, 255}, // BLUE
