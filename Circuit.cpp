@@ -176,6 +176,7 @@ void Circuit::create_new_capacitor(string name, string node1_name, string node2_
     Nodes[node2_index]->connect_element();
     Elements.push_back(new Capacitor(name, Nodes[node1_index], Nodes[node2_index], capacitance));
 }
+
 void Circuit::create_new_inductor(string name, string node1_name, string node2_name, double inductance)
 {
     int node1_index = node_index_finder_by_name(node1_name);
@@ -785,8 +786,8 @@ void Circuit::delete_node(Node *node_to_delete)
     }
 }
 
-    Node* SubCircuit::getInput() const { return input; }
-    Node* SubCircuit::getOutput() const { return output; }
-    void SubCircuit::setInput(Node* newInput) { input = newInput; }
-    void SubCircuit::setOutput(Node* newOutput) { output = newOutput; }
+Node* SubCircuit::getInput() const { return input; }
+Node* SubCircuit::getOutput() const { return output; }
+void SubCircuit::setInput(Node* newInput) { input = newInput; }
+void SubCircuit::setOutput(Node* newOutput) { output = newOutput; }
 

@@ -2541,6 +2541,7 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
     auto save_and_exit = [&]() {
         current_file_name = edit_buffers[0];
         current_file_address = edit_buffers[1];
+
         is_saving = false;
         SDL_StopTextInput();
     };
