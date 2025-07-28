@@ -296,7 +296,8 @@ void graphical_view::initialize_toolbar(TTF_Font* font)
             {"File", Tool_Bar_Action::File},
             {"Analysis", Tool_Bar_Action::Configure_Analysis},
             {"Run", Tool_Bar_Action::Run},
-            {"Probe", Tool_Bar_Action::Probe}
+            {"Probe", Tool_Bar_Action::Probe},
+            {"M_Operation", Tool_Bar_Action::Math_Operation}
     };
 
     int current_x = 10;
@@ -1642,12 +1643,16 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
+                            math_operation_mode = false;
+                            probe_mode = false;
                             break;
                         case Tool_Bar_Action::Net_Label:
                             is_labeling = !is_labeling;
                             m_is_wiring = false;
                             elements_menu = false;
                             is_grounding = false;
+                            math_operation_mode = false;
+                            probe_mode = false;
                             break;
                         case Tool_Bar_Action::Grid:
                             show_grids = !show_grids;
@@ -1657,12 +1662,16 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             m_is_wiring = false;
                             is_labeling = false;
                             is_grounding = false;
+                            math_operation_mode = false;
+                            probe_mode = false;
                             break;
                         case Tool_Bar_Action::File:
                             break;
                         case Tool_Bar_Action::Configure_Analysis:
                             is_configuring_analysis = !is_configuring_analysis;
                             elements_menu = false;
+                            math_operation_mode = false;
+                            probe_mode = false;
                             m_is_wiring = false;
                             is_labeling = false;
                             is_grounding = false;
@@ -1676,10 +1685,34 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                                 edit_buffers.push_back(to_string(stop));
                                 edit_buffers.push_back(to_string(step));
                             }
+                            else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+                            {
+                                edit_buffers.push_back(to_string(0));
+                                edit_buffers.push_back(to_string(0));
+                                edit_buffers.push_back(to_string(0));
+                            }
+                            else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+                            {
+                                edit_buffers.push_back(to_string(0));
+                                edit_buffers.push_back(to_string(0));
+                                edit_buffers.push_back(to_string(0));
+                            }
                             active_edit_box = -1;
                             break;
                         case Tool_Bar_Action::Run:
-                            C->do_transient();
+                            if (current_analysis_mode == Analysis_Mode::Transient)
+                            {
+                                C->do_transient();
+                            }
+                            else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+                            {
+                                // not coded
+                            }
+                            else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+                            {
+                                // not coded
+                            }
+
                             if (m_plot_view)
                             {
                                 m_plot_view->delete_all_signals();
@@ -1687,6 +1720,15 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             break;
                         case Tool_Bar_Action::Probe:
                             probe_mode = !probe_mode;
+                            math_operation_mode = false;
+                            m_is_wiring = false;
+                            is_labeling = false;
+                            elements_menu = false;
+                            is_grounding = false;
+                            break;
+                        case Tool_Bar_Action::Math_Operation:
+                            math_operation_mode = !math_operation_mode;
+                            probe_mode = false;
                             m_is_wiring = false;
                             is_labeling = false;
                             elements_menu = false;

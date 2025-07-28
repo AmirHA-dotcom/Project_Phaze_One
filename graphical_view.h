@@ -17,7 +17,7 @@ enum class Analysis_Mode { Transient, AC_Sweep, Phase_Sweep };
 
 enum class AC_Sweep_Type { Octave, Decade, Linear };
 
-enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe};
+enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation };
 
 struct Toolbar_Button {
     SDL_Rect rect;
@@ -96,6 +96,9 @@ private:
 
     // probe mode
     bool probe_mode = false;
+
+    // doing math on signals
+    bool math_operation_mode = false;
 
     // plot window
     unique_ptr<Plot_View> m_plot_view;
