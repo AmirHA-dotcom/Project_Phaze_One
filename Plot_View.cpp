@@ -333,7 +333,6 @@ void Plot_View::render()
     SDL_GetWindowSize(m_window, &width, &height);
     plot_area = {100, 50, width - 100, height - 100};
 
-    // plot area
     SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
     SDL_RenderDrawRect(m_renderer, &plot_area);
 
@@ -412,7 +411,7 @@ void Plot_View::render()
     // legends!
     if (!m_signals.empty() && FONT)
     {
-        const int legend_y_offset = 15;
+        const int legend_y_offset = 45;
         const int box_size = 15;
         const int gap = 5;
 
@@ -434,13 +433,13 @@ void Plot_View::render()
             int item_start_x = slot_start_x + (slot_width - total_item_width) / 2;
 
             // drawing the box
-            SDL_Rect color_box = {item_start_x, plot_area.y + legend_y_offset, box_size, box_size};
+            SDL_Rect color_box = {item_start_x, plot_area.y - legend_y_offset, box_size, box_size};
             SDL_SetRenderDrawColor(m_renderer, signal.color.r, signal.color.g, signal.color.b, 255);
             SDL_RenderFillRect(m_renderer, &color_box);
 
             // displaying text
             int text_x = item_start_x + box_size + gap;
-            int text_y = plot_area.y + legend_y_offset;
+            int text_y = plot_area.y - legend_y_offset;
             render_text(m_renderer, m_font, signal.name, text_x, text_y);
         }
     }
