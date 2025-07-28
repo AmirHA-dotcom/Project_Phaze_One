@@ -678,16 +678,33 @@ bool graphical_view::run(Controller *C)
 
 
         // showing the run
+        if (current_analysis_mode == Analysis_Mode::Transient)
         {
-            if (current_analysis_mode == Analysis_Mode::Transient)
-            {
-                int x = 10; int y = 50;
-                double t_step, start, stop;
-                C->get_tran_params(start, stop, t_step);
-                string text = ".tran(" + format_with_suffix(start, " ") + format_with_suffix(stop - t_step, " ") + format_with_suffix(t_step, ")");
-                render_text(renderer, font, text, x, y, {0, 0, 0, 255});
-            }
+            int x = 10; int y = 50;
+            double t_step = 0; double start = 0; double stop = 0;
+            C->get_tran_params(start, stop, t_step);
+            string text = ".tran(" + format_with_suffix(start, " ") + format_with_suffix(stop - t_step, " ") + format_with_suffix(t_step, ")");
+            render_text(renderer, font, text, x, y, {0, 0, 0, 255});
         }
+        else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+        {
+            int x = 10; int y = 50;
+            double start_f = 0; double stop_f = 0; double num_of_points = 0;
+            string text = ".AC(" + format_with_suffix(start_f, " ") + format_with_suffix(stop_f, " ") + format_with_suffix(num_of_points, " ");
+            if (AC_sweep_type == AC_Sweep_Type::Linear) { text += "Linear"; }
+            else if (AC_sweep_type == AC_Sweep_Type::Octave) { text += "Octave"; }
+            else if (AC_sweep_type == AC_Sweep_Type::Decade) { text += "Decade"; }
+            text += ")";
+            render_text(renderer, font, text, x, y, {0, 0, 0, 255});
+        }
+        else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+        {
+            int x = 10; int y = 50;
+            double base_ph = 0; double start_ph = 0; double stop_ph = 0; double num_of_points = 0;
+            string text = ".Phase(" + format_with_suffix(base_ph, " ") + format_with_suffix(start_ph, " ") + format_with_suffix(stop_ph, " ") + format_with_suffix(num_of_points, ")");
+            render_text(renderer, font, text, x, y, {0, 0, 0, 255});
+        }
+
 
         SDL_RenderPresent(renderer);
 
