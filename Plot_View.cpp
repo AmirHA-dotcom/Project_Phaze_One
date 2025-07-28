@@ -211,6 +211,26 @@ bool Plot_View::handle_event(SDL_Event& event)
         }
     }
 
+    // colors menu
+    if (m_color_menu_active) {
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            SDL_Point mouse_pos = { event.button.x, event.button.y };
+            bool clicked_in_menu = false;
+            for (int i = 0; i < m_color_picker_buttons.size(); ++i) {
+                if (SDL_PointInRect(&mouse_pos, &m_color_picker_buttons[i])) {
+                    // A color was clicked! Apply it to the signal and close the menu.
+                    m_signals[m_signal_to_edit_index].color = default_colors[i];
+                    m_color_menu_active = false;
+                    clicked_in_menu = true;
+                    break;
+                }
+            }
+            // If the user clicks anywhere, close the menu
+            m_color_menu_active = false;
+        }
+        return true; // Consume all events while the menu is open
+    }
+
     // panning
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     bool ctrl_is_pressed = keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL];
@@ -275,9 +295,22 @@ bool Plot_View::handle_event(SDL_Event& event)
         }
     }
 
-    // place cursor
-    if (cursor_mode_active && event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
     {
+        if (!cursor_mode_active)
+        {
+            SDL_Point mouse_pos = { event.button.x, event.button.y };
+            for (int i = 0; i < m_legend_rects.size(); ++i) {
+                if (SDL_PointInRect(&mouse_pos, &m_legend_rects[i])) {
+                    m_color_menu_active = true;
+                    m_signal_to_edit_index = i;
+                    m_color_menu_pos = { event.button.x, event.button.y };
+                    return true; // Event handled, don't place a cursor
+                }
+            }
+        }
+
+        // place cursor
         if (m_signals.empty() || m_signals[0].data_points.empty()) return true;
 
         // convert screen X coordinate to world x
@@ -441,6 +474,10 @@ void Plot_View::render()
             int text_x = item_start_x + box_size + gap;
             int text_y = plot_area.y - legend_y_offset;
             render_text(m_renderer, m_font, signal.name, text_x, text_y);
+
+            // saving the rects to click
+            SDL_Rect legend_item_rect = { item_start_x, text_y, total_item_width, text_height };
+            m_legend_rects.push_back(legend_item_rect);
         }
     }
 
@@ -508,5 +545,47 @@ void Plot_View::render()
         }
     }
 
+    if (m_color_menu_active)
+    {
+        draw_color_picker_menu();
+    }
+
     SDL_RenderPresent(m_renderer);
+}
+
+void Plot_View::draw_color_picker_menu()
+{
+    const int swatch_size = 20;
+    const int padding = 5;
+    const int items_per_row = 5;
+    const int num_rows = (default_colors.size() + items_per_row - 1) / items_per_row;
+
+    int menu_width = (swatch_size * items_per_row) + (padding * (items_per_row + 1));
+    int menu_height = (swatch_size * num_rows) + (padding * (num_rows + 1));
+
+    SDL_Rect panel = { m_color_menu_pos.x, m_color_menu_pos.y, menu_width, menu_height };
+
+    // background
+    SDL_SetRenderDrawColor(m_renderer, 50, 58, 69, 255);
+    SDL_RenderFillRect(m_renderer, &panel);
+
+    m_color_picker_buttons.clear();
+    for (int i = 0; i < default_colors.size(); ++i)
+    {
+        int row = i / items_per_row;
+        int col = i % items_per_row;
+
+        SDL_Rect swatch_rect ={
+                panel.x + padding + col * (swatch_size + padding),
+                panel.y + padding + row * (swatch_size + padding),
+                swatch_size,
+                swatch_size
+        };
+        m_color_picker_buttons.push_back(swatch_rect);
+
+        // draw the color swatch
+        const auto& color = default_colors[i];
+        SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+        SDL_RenderFillRect(m_renderer, &swatch_rect);
+    }
 }

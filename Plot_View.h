@@ -48,9 +48,37 @@ private:
     bool cursor_mode_active = false;
     bool place_first_cursor_next = true;
 
+    // color menu
+    bool m_color_menu_active = false;
+    int m_signal_to_edit_index = -1; // Which signal are we changing the color of?
+    SDL_Point m_color_menu_pos;      // Where to draw the pop-up menu
+
+    // Rects for UI interaction
+    std::vector<SDL_Rect> m_legend_rects;
+    std::vector<SDL_Rect> m_color_picker_buttons;
+
+    vector<SDL_Color> default_colors = {
+            {0,   255, 0,   255}, // GREEN
+            {0,   0,   255, 255}, // BLUE
+            {0,   255, 255, 255}, // CYAN
+            {255, 0,   0,   255}, // RED
+            {255, 0,   255, 255}, // MAGENTA
+            {255, 255, 0,   255}, // YELLOW
+            {255, 165, 0,   255}, // ORANGE
+            {128, 0,   128, 255}, // PURPLE
+            {0,   128, 0,   255}, // DARK GREEN
+            {255, 105, 180, 255}, // HOT PINK
+            {0,   128, 128, 255}, // TEAL
+            {165, 42,  42,  255}, // BROWN
+            {128, 128, 128, 255}, // GRAY
+            {255, 215, 0,   255}, // GOLD
+            {75,  0,   130, 255}, // INDIGO
+    };
+    int color_index = 0;
+
     // helper functions
     SDL_Point world_to_screen(double time, double voltage);
-
+    void draw_color_picker_menu();
 public:
     Plot_View();
     ~Plot_View();
