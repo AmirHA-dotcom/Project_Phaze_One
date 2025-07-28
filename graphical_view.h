@@ -43,8 +43,6 @@ struct Point_Comparator {
 class graphical_view
 {
 private:
-    TTF_Font* m_font = nullptr;
-
     int m_window_width;
     int m_window_height;
 
