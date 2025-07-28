@@ -101,6 +101,20 @@ Node* graphical_view::find_node_at(SDL_Point pos, Controller* C)
     return nullptr;
 }
 
+Graphical_Element* graphical_view::find_element_at(SDL_Point pos, Controller *C)
+{
+    auto& elements = C->get_graphical_elements();
+
+    for (int i = elements.size() - 1; i >= 0; --i)
+    {
+        if (SDL_PointInRect(&pos, &elements[i]->bounding_box))
+        {
+            return elements[i].get();
+        }
+    }
+    return nullptr;
+}
+
 void graphical_view::draw_grid(SDL_Renderer* renderer)
 {
     SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
@@ -1869,6 +1883,42 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 color_index = 0;
 
             m_plot_view->add_signal(node_signal);
+            probe_mode = false;
+        }
+        Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
+        if (target_element)
+        {
+            if (!m_plot_view)
+            {
+                m_plot_view = make_unique<Plot_View>();
+            }
+
+            // create and add the signal
+            Signal element_signal;
+            element_signal.name = "V(" + target_element->get_model()->get_name() + ")";
+
+            if (current_analysis_mode == Analysis_Mode::Transient)
+            {
+                double start_time, stop_time, time_step;
+                C->get_tran_params(start_time, stop_time, time_step);
+
+
+                if (time_step > 0)
+                {
+                    for (double time = start_time; time < stop_time; time += time_step)
+                    {
+                        double voltage = target_element->get_model()->get_voltage_at_time(time);
+                        element_signal.data_points.push_back({voltage, time});
+                    }
+                }
+            }
+
+            element_signal.color = default_colors[color_index % default_colors.size()];
+            color_index++;
+            if (color_index == 15)
+                color_index = 0;
+
+            m_plot_view->add_signal(element_signal);
             probe_mode = false;
         }
     }

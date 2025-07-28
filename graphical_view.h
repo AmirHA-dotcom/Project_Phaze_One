@@ -125,6 +125,7 @@ private:
 
     // helper functions
     Node* find_node_at(SDL_Point pos, Controller* C);
+    Graphical_Element* find_element_at(SDL_Point pos, Controller* C);
     void initialize_menu();
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
     void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
