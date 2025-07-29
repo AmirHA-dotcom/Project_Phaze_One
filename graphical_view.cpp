@@ -972,6 +972,18 @@ bool graphical_view::run(Controller *C)
                 SDL_ShowCursor(SDL_ENABLE);
                 if (default_cursor) SDL_SetCursor(default_cursor);
             }
+            else if (create_SubC_mode)
+            {
+                if (node1 == nullptr)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                }
+                else
+                {
+                    SDL_ShowCursor(SDL_DISABLE);
+                }
+            }
             else
             {
                 SDL_ShowCursor(SDL_ENABLE);
@@ -1183,6 +1195,13 @@ bool graphical_view::run(Controller *C)
         if (naming_SubC_menu_active)
         {
             draw_text_input_menu(renderer, font);
+        }
+
+        if (create_SubC_mode && node1 != nullptr)
+        {
+            SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255);
+            SDL_RenderDrawLine(renderer, mouseX - 10, mouseY, mouseX + 10, mouseY);
+            SDL_RenderDrawLine(renderer, mouseX, mouseY - 10, mouseX, mouseY + 10);
         }
 
         // showing the run
