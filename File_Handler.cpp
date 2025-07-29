@@ -86,8 +86,7 @@ void File_Handler::add_file(const string& file_path)
     {
         if (f.second == file_path)
         {
-            cerr << "Error: This file already added to list" << endl;
-            return;
+            std::remove(files.begin(), files.end(),f);
         }
     }
     files.push_back({file_name, file_path});

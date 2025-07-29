@@ -2,39 +2,58 @@
 #include "view.h"
 #include "Controller.h"
 #include "graphical_view.h"
+#include <memory>
+#include <iostream>
+#include <limits>
 
-int main(int argc, char* argv[]) {
-    cout << "Select a view to run:" << endl;
-    cout << "1: Graphical View " << endl;
-    cout << "2: Text-Based View " << endl;
-    cout << "Enter choice: ";
+bool validInput (string line){
+    if (line == "2" || line == "1" || line == "end") {
+        return true;
+    }
+    return false;
+}
+string getInput () {
+    cout << "Select a view:\n1: Graphical View\n2: Text-Based View\nEnter choice: ";
+    string input;
+    getline(cin, input);
+    return input;
+}
 
-    int choice = 0;
-    cin >> choice;
-    cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
 
-    Controller* C = new Controller;
-
-    try {
-        if (choice == 1) {  // graphical view
-            auto* gv = new graphical_view;
-            gv->run(C);
-            delete gv;
-        } else if (choice == 2) {   // old view
-            View* V = new View;
-            bool running = true;
-            while (running) {
-                running = V->inputHandler(C);
+int main() {
+    View* view = new View();
+    auto* graphicalView = new graphical_view();
+    auto* controller = new Controller();
+    bool continueRunning = true;
+    bool check = false;
+    string input;
+    while (continueRunning) {
+        try {
+            while (!check) {
+            input = getInput();
+            if (validInput(input))
+                check = true;
+            else
+            cerr << "Invalid input. Please enter 1 or 2.\n";
             }
-            delete V;
-
-        } else {
-            cout << "Invalid choice. Exiting." << endl;
+            if (input == "1") {
+                continueRunning = graphicalView->run(controller);
+            }
+            if (input == "2") {
+                continueRunning = view->inputHandler(controller);
+            }
+            if (input == "end") {
+                continueRunning = false;
+            }
+        } catch (const exception& e) {
+            cerr << e.what() << endl;
         }
-    } catch (const std::exception& e) {
-        cerr << "An error occurred: " << e.what() << endl;
     }
 
-    delete C;
+    // Clean up memory
+    delete view;
+    delete graphicalView;
+    delete controller;
+
     return 0;
 }

@@ -317,7 +317,6 @@ bool View::handleCircuitMenu (Controller* C) {
     if (line.empty()) {
         return true;
     }
-
     if (i.size() == 3 && i[0] == "add" && i[1] == "circuit") {
         // add circuit <Name>
         if (C->findCircuit(i[2])) {
@@ -343,6 +342,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (i.size() == 3 && i[0] == "rename") {
+        //  Example: rename <oldName> <newName>
         auto c = C->findCircuit(i[1]);
         if (!C->findCircuit(i[1])) {
             throw circuitNotFind(i[1]);
@@ -351,6 +351,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (i.size() == 6 && i[0] == "save" && i[2] == "as" && i[3] == "file" && i[4] == "to"){
+        // Example: save <name> as file to <path>
         if (!C->findCircuit(i[1]))
             throw circuitNotFind(i[1]);
         C->saveCircuit(C->findCircuit(i[1]),i[5]);
@@ -358,6 +359,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (i.size() == 7 && i[0] == "add" && i[2] == "to" && i[3] == "subCircuits" && i[4] == "by"){
+        // Example: add <name> to subCircuits by <inputNode> <outputNode>
         if (!C->findCircuit(i[1]))
             throw circuitNotFind(i[1]);
         if (!C->findNode(i[5]))
@@ -615,6 +617,7 @@ bool View::handleFileMenu (Controller* C) {
         return true;
     }
     if (i.size() == 4 && i[0] == "add" && i[2] == "to" && i[3] == "circuits") {
+        // Example: add <index> to circuits
         if (!C->validSchematicChoice(i[1]))
             throw invalidSchematicChoice();
         C->addFileToCircuits(stoi(i[1]));
@@ -651,16 +654,15 @@ bool View::handleAnalysisMenu (Controller* C) {
     if (line.empty()) {
         return true;
     }
-    if (i.size() == 2 && i[0] == "circuit"){
-        if (!C->findCircuit(i[1])){
-
-            return true;
-        }
-        C->circuit = C->findCircuit(i[1]);
-        return true;
-    }
+//    if (i.size() == 2 && i[0] == "circuit"){
+//        if (!C->findCircuit(i[1])){
+//            return true;
+//        }
+//        C->circuit = C->findCircuit(i[1]);
+//        return true;
+//    }
     if (i.size() == 3 && i[0] == "switch" && i[1] == "to") {
-        // add circuit <Name>
+        // Exaample: switch to <circuitName>
         if (!C->findCircuit(i[2])) {
             throw circuitNotFind(i[2]);
         }

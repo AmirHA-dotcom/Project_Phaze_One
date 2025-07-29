@@ -355,11 +355,6 @@ void Controller::tranAnalysisOrders(vector<string> orders){
 
 
 
-#include <fstream>
-#include <iostream>
-#include <filesystem>
-#include <string>
-#include <vector>
 
 void Controller::saveCircuit(Circuit* circuit, string path) {
     if (!circuit) {
@@ -531,7 +526,7 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
         string element_name = type.substr(1); // Remove type prefix (e.g., R1 → 1)
 
         try {
-            if(tokens == lines[0] && tokens[0][tokens.size()-1] == '.' && tokens.size() == 1) {
+            if (tokens == lines[0] && tokens[0][tokens[0].size()-1] == ':' && tokens.size() == 1) {
                 circuit->change_name(tokens[0].substr(0,tokens[0].size()-1));
             }
             else if (prefix == 'R' && tokens.size() >= 4) {
@@ -632,6 +627,7 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
                 circuit->create_new_zener_diode(element_name, n1, n2, dummy);
             }
             else if (prefix == 'G' && tokens.size() >= 3 && tokens[1] == "GND") {
+                // Example
                 circuit->make_node_ground("GND");
                 circuit->ground(true);
             }
@@ -640,7 +636,7 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
             }
             else {
                 cerr << "Unsupported or malformed element: ";
-                for (const string& t : tokens) cerr << t << " ";
+                for (const string& t : tokens) cout << t << " ";
                 cerr << endl;
             }
         }
