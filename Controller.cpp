@@ -1282,7 +1282,7 @@ void Controller::delete_element(Graphical_Element* g_element_to_delete)
 
     string name_to_delete = g_element_to_delete->get_model()->get_name();
 
-    circuit->delete_element(name_to_delete);
+    if (g_element_to_delete->get_model() != nullptr) circuit->delete_element(name_to_delete);
 
     auto& g_elements = get_graphical_elements();
 

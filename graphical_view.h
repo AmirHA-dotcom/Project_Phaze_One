@@ -17,7 +17,7 @@ enum class Analysis_Mode { Transient, AC_Sweep, Phase_Sweep };
 
 enum class AC_Sweep_Type { Octave, Decade, Linear };
 
-enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation, Save, Delete };
+enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation, Save, Delete , Sub_Circuit };
 
 struct Toolbar_Button {
     SDL_Rect rect;
@@ -29,6 +29,11 @@ struct Menu_Item {
     string name;
     Element_Type type;
     string subtype_tag;
+    SDL_Rect rect;
+};
+
+struct SubC_Menu_Item {
+    string name;
     SDL_Rect rect;
 };
 
@@ -58,6 +63,11 @@ private:
     bool elements_menu = false;
     vector<Menu_Item> menu_items;
     int selected_menu_item_index = -1;
+
+    // sub_circuits menu
+    bool sub_circuit_menu = false;
+    vector<SubC_Menu_Item> SubC_menu_items;
+    int selected_SubC_menu_item_index = -1;
 
     // editing
     bool editing = false;
@@ -156,6 +166,7 @@ private:
     Graphical_Element* find_element_at(SDL_Point pos, Controller* C);
     Graphical_Wire* find_wire_at(SDL_Point pos, Controller* C);
     void initialize_menu();
+    void initialize_SubC_menu(Controller* C);
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
     void draw_properties_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_grid(SDL_Renderer* renderer);
@@ -165,7 +176,7 @@ private:
     void draw_math_operation_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_save_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_file_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
-
+    void draw_SubC_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void add_math_term(bool is_subtraction, Controller* C);
     void execute_math_operation();
 
@@ -196,6 +207,8 @@ private:
     bool handle_deleting_events(SDL_Event& event, Controller* C);
 
     bool handle_file_menu_events(SDL_Event& event, Controller* C);
+
+    bool handle_SubC_menu_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);

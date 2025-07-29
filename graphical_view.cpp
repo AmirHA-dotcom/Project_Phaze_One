@@ -173,6 +173,13 @@ void graphical_view::initialize_menu()
     menu_items.push_back({"Triangular Source", Element_Type::Voltage_Source, "Triangular"});
 }
 
+void graphical_view::initialize_SubC_menu(Controller* C)
+{
+    SubC_menu_items.clear();
+    for (const auto& sub_c : C->subCircuits)
+        SubC_menu_items.push_back({sub_c->get_name()});
+}
+
 void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font) {
     // fade
 //    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -317,6 +324,7 @@ void graphical_view::initialize_toolbar(TTF_Font* font)
             {"Wire", Tool_Bar_Action::Wire},
             {"Net Label", Tool_Bar_Action::Net_Label},
             {"Components", Tool_Bar_Action::Components_Menu},
+            {"Sub_Circuits", Tool_Bar_Action::Sub_Circuit},
             {"File", Tool_Bar_Action::File},
             {"Analysis", Tool_Bar_Action::Configure_Analysis},
             {"Run", Tool_Bar_Action::Run},
@@ -735,6 +743,34 @@ void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     render_text(renderer, font, "Cancel", file_cancel_button_rect.x + 20, file_cancel_button_rect.y + 10, TEXT_COLOR);
 }
 
+void graphical_view::draw_SubC_menu(SDL_Renderer *renderer, TTF_Font *font, Controller* C)
+{
+    SDL_Rect menu_panel = {200, 100, 800, 500};
+    SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
+
+    // panels
+    SDL_SetRenderDrawColor(renderer, 50, 58, 69, 255);
+    SDL_RenderFillRect(renderer, &menu_panel);
+    SDL_SetRenderDrawColor(renderer, 236, 239, 244, 255);
+    SDL_RenderFillRect(renderer, &preview_panel);
+
+    // items
+    int start_y = menu_panel.y + 60;
+    for (int i = 0; i < SubC_menu_items.size(); ++i)
+    {
+        SubC_menu_items[i].rect = {menu_panel.x + 20, start_y + (i * 30), 200, 25};
+        render_text(renderer, font, SubC_menu_items[i].name, SubC_menu_items[i].rect.x, SubC_menu_items[i].rect.y, {200, 200, 200, 255});
+    }
+
+    // preview
+    if (selected_SubC_menu_item_index != -1)
+    {
+        Graphical_SubCircuit preview(nullptr, "");
+        preview.bounding_box = preview_panel;
+        preview.draw(renderer, false);
+    }
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -759,6 +795,7 @@ bool graphical_view::run(Controller *C)
 
     initialize_menu();
     initialize_toolbar(font);
+    initialize_SubC_menu(C);
 
     SDL_Window* window = SDL_CreateWindow(
             "AHA & AS",
@@ -831,22 +868,26 @@ bool graphical_view::run(Controller *C)
         {
             if (probe_mode)
             {
+                SDL_ShowCursor(SDL_ENABLE);
                 if (probe_cursor) SDL_SetCursor(probe_cursor);
             }
             else if (m_is_wiring)
             {
                 SDL_ShowCursor(SDL_DISABLE);
             }
-            else if (math_operation_mode || is_file_menu_open)
+            else if (math_operation_mode || is_file_menu_open || sub_circuit_menu)
             {
+                SDL_ShowCursor(SDL_ENABLE);
                 if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
             }
             else if (is_deleting)
             {
+                SDL_ShowCursor(SDL_ENABLE);
                 if (deleting_cursor) SDL_SetCursor(deleting_cursor);
             }
             else if (is_grounding)
             {
+                SDL_ShowCursor(SDL_ENABLE);
                 if (grounding_cursor) SDL_SetCursor(grounding_cursor);
             }
             else
@@ -929,6 +970,10 @@ bool graphical_view::run(Controller *C)
                 else if (is_file_menu_open)
                 {
                     running = handle_file_menu_events(event, C);
+                }
+                else if (sub_circuit_menu)
+                {
+                    running = handle_SubC_menu_events(event, C);
                 }
                 else
                 {
@@ -1038,6 +1083,11 @@ bool graphical_view::run(Controller *C)
         if (is_file_menu_open)
         {
             draw_file_menu(renderer, font, C);
+        }
+
+        if (sub_circuit_menu)
+        {
+            draw_SubC_menu(renderer, font, C);
         }
 
         // showing the run
@@ -2002,6 +2052,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = false;
                             is_file_menu_open = false;
                             is_deleting = false;
+                            sub_circuit_menu = false;
                             break;
                         case Tool_Bar_Action::Net_Label:
                             is_labeling = !is_labeling;
@@ -2013,6 +2064,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = false;
                             is_file_menu_open = false;
                             is_deleting = false;
+                            sub_circuit_menu = false;
                             break;
                         case Tool_Bar_Action::Grid:
                             show_grids = !show_grids;
@@ -2027,6 +2079,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = false;
                             is_file_menu_open = false;
                             is_deleting = false;
+                            sub_circuit_menu = false;
                             break;
                         case Tool_Bar_Action::File:
                             is_file_menu_open = !is_file_menu_open;
@@ -2038,6 +2091,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_labeling = false;
                             is_grounding = false;
                             is_saving = false;
+                            sub_circuit_menu = false;
                             is_deleting = false;
                             break;
                         case Tool_Bar_Action::Configure_Analysis:
@@ -2051,6 +2105,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = false;
                             is_file_menu_open = false;
                             is_deleting = false;
+                            sub_circuit_menu = false;
                             edit_buffers.clear();
 
                             if (current_analysis_mode == Analysis_Mode::Transient)
@@ -2104,6 +2159,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = false;
                             is_file_menu_open = false;
                             is_deleting = false;
+                            sub_circuit_menu = false;
                             break;
                         case Tool_Bar_Action::Math_Operation:
                             math_operation_mode = !math_operation_mode;
@@ -2115,6 +2171,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = false;
                             is_file_menu_open = false;
                             is_deleting = false;
+                            sub_circuit_menu = false;
                             break;
                         case Tool_Bar_Action::Save:
                             is_saving = !is_saving;
@@ -2142,6 +2199,19 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_grounding = false;
                             is_saving = false;
                             is_file_menu_open = false;
+                            sub_circuit_menu = false;
+                            break;
+                        case Tool_Bar_Action::Sub_Circuit:
+                            sub_circuit_menu = !sub_circuit_menu;
+                            is_labeling = false;
+                            elements_menu = false;
+                            m_is_wiring = false;
+                            is_grounding = false;
+                            math_operation_mode = false;
+                            probe_mode = false;
+                            is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
                             break;
                     }
                     return true;
@@ -2665,6 +2735,7 @@ bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
         Graphical_Element* element = find_element_at(pos, C);
         if (element)
         {
+            if (dynamic_cast<Graphical_Ground*>(element)) dynamic_cast<Graphical_Ground*>(element)->get_node()->return_to_normal();
             C->delete_element(element);
             is_deleting = false;
         }
@@ -2739,5 +2810,53 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
         }
     }
 
+    return true;
+}
+
+bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
+{
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_p || event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            sub_circuit_menu = false;
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        bool clicked_on_item = false;
+        for (int i = 0; i < SubC_menu_items.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &SubC_menu_items[i].rect))
+            {
+                clicked_on_item = true;
+
+                // click
+                if (event.button.clicks == 1)
+                {
+                    selected_SubC_menu_item_index = i;
+                }
+                // double click
+                else if (event.button.clicks == 2)
+                {
+                    int mouseX, mouseY;
+                    SDL_GetMouseState(&mouseX, &mouseY);
+
+                    // adding the component
+
+                    // not coded yet
+
+                    sub_circuit_menu = false;
+                    selected_SubC_menu_item_index = -1;
+                }
+                break;
+            }
+        }
+    }
     return true;
 }

@@ -615,6 +615,26 @@ void Graphical_Net_Label::draw(SDL_Renderer *renderer, bool show_grid)
     }
 }
 
+void Graphical_SubCircuit::draw(SDL_Renderer* renderer, bool show_grids)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderDrawRect(renderer, &bounding_box);
+
+    render_text(renderer, font, m_subcircuit_model->get_name(), bounding_box.x + 5, bounding_box.y + 5);
+    render_text(renderer, font, m_type_name, bounding_box.x + 5, bounding_box.y + 25);
+
+    // leads
+    int half_length = max(bounding_box.w, bounding_box.h) / 2;
+    int radius = 20;
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
+
+    SDL_Point lead2_p1 = transform_point({radius, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+}
+
 // get properties functions
 
 vector<Editable_Property> Graphical_Resistor::get_editable_properties()
@@ -728,6 +748,13 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         props.push_back({"Time (s)", to_string(time)});
     }
 
+    return props;
+}
+
+vector<Editable_Property> Graphical_SubCircuit::get_editable_properties()
+{
+    vector<Editable_Property> props;
+    props.push_back({"Name", m_type_name});
     return props;
 }
 
@@ -1004,6 +1031,49 @@ vector<Connection_Point> Graphical_Voltage_Source::get_connection_points()
     SDL_Point local_end = {half_length, 0};
 
     // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
+    auto nodes = model_element->get_nodes();
+
+    return {
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
+    };
+}
+
+vector<Connection_Point> Graphical_SubCircuit::get_connection_points()
+{
+    int half_width = bounding_box.w / 2;
+    SDL_Point local_start = {-half_width, 0};
+    SDL_Point local_end = {half_width, 0};
+
     SDL_Point raw_screen_start = transform_point(local_start);
     SDL_Point raw_screen_end = transform_point(local_end);
 
