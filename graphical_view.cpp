@@ -948,7 +948,6 @@ bool graphical_view::run(Controller *C)
             else
             {
                 if (default_cursor) SDL_SetCursor(default_cursor);
-
             }
         }
         else
@@ -967,7 +966,7 @@ bool graphical_view::run(Controller *C)
             {
                 SDL_ShowCursor(SDL_DISABLE);
             }
-            else if (math_operation_mode || is_file_menu_open || sub_circuit_menu)
+            else if (math_operation_mode || is_file_menu_open || sub_circuit_menu || elements_menu)
             {
                 SDL_ShowCursor(SDL_ENABLE);
                 if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
