@@ -69,6 +69,12 @@ private:
     vector<SubC_Menu_Item> SubC_menu_items;
     int selected_SubC_menu_item_index = -1;
 
+    // sub_circuit creation handling
+    bool create_SubC_mode = false;
+    SDL_Rect create_new_SubC_button_rect;
+    Node* node1 = nullptr;
+    Node* node2 = nullptr;
+
     // editing
     bool editing = false;
     int edited_element_index = -1;
@@ -165,6 +171,7 @@ private:
     Node* find_node_at(SDL_Point pos, Controller* C);
     Graphical_Element* find_element_at(SDL_Point pos, Controller* C);
     Graphical_Wire* find_wire_at(SDL_Point pos, Controller* C);
+    int find_connection_point_at(Graphical_Element* element, SDL_Point click_pos);
     void initialize_menu();
     void initialize_SubC_menu(Controller* C);
     void draw_component_menu(SDL_Renderer* renderer, TTF_Font* font);
@@ -209,6 +216,8 @@ private:
     bool handle_file_menu_events(SDL_Event& event, Controller* C);
 
     bool handle_SubC_menu_events(SDL_Event& event, Controller* C);
+
+    bool handle_SubC_creation_events(SDL_Event& event, Controller* C);
 
 public:
     bool run (Controller* C);

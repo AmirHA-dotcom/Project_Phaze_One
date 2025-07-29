@@ -127,6 +127,38 @@ Graphical_Wire* graphical_view::find_wire_at(SDL_Point pos, Controller *C)
     return nullptr;
 }
 
+int graphical_view::find_connection_point_at(Graphical_Element* element, SDL_Point click_pos)
+{
+    if (!element)
+    {
+        return -1;
+    }
+
+    vector<Connection_Point> connection_points = element->get_connection_points();
+
+    const int CLICK_RADIUS = 5;
+
+    for (int i = 0; i < connection_points.size(); ++i)
+    {
+        const SDL_Point& point_pos = connection_points[i].pos;
+
+        // a small rectangle around the connection point
+        SDL_Rect target_rect = {
+                point_pos.x - CLICK_RADIUS,
+                point_pos.y - CLICK_RADIUS,
+                CLICK_RADIUS * 2,
+                CLICK_RADIUS * 2
+        };
+
+        if (SDL_PointInRect(&click_pos, &target_rect))
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 vector<pair<double, double>> generate_data_for_element(Graphical_Element* element, Controller* C)
 {
     vector<pair<double, double>> data_points;
@@ -745,7 +777,12 @@ void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
 
 void graphical_view::draw_SubC_menu(SDL_Renderer *renderer, TTF_Font *font, Controller* C)
 {
-    SDL_Rect menu_panel = {200, 100, 800, 500};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
+
+    int menu_width = 800;
+    int menu_height = 500;
+    SDL_Rect menu_panel = {200, 100, menu_width, menu_height};
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
 
     // panels
@@ -769,6 +806,10 @@ void graphical_view::draw_SubC_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
         preview.bounding_box = preview_panel;
         preview.draw(renderer, false);
     }
+    create_new_SubC_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 160, 30};
+    SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+    SDL_RenderFillRect(renderer, &create_new_SubC_button_rect);
+    render_text(renderer, font, "Create New", create_new_SubC_button_rect.x + 40, create_new_SubC_button_rect.y + 5, TEXT_COLOR);
 }
 
 // main functions
@@ -974,6 +1015,10 @@ bool graphical_view::run(Controller *C)
                 else if (sub_circuit_menu)
                 {
                     running = handle_SubC_menu_events(event, C);
+                }
+                else if (create_SubC_mode)
+                {
+                    running = handle_SubC_creation_events(event, C);
                 }
                 else
                 {
@@ -2829,6 +2874,12 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
     {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
 
+        if (SDL_PointInRect(&mouse_pos, &create_new_SubC_button_rect))
+        {
+            create_SubC_mode = true;
+            sub_circuit_menu = false;
+        }
+
         bool clicked_on_item = false;
         for (int i = 0; i < SubC_menu_items.size(); ++i)
         {
@@ -2858,5 +2909,57 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
             }
         }
     }
+    return true;
+}
+
+bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C)
+{
+    cout << "entered sub creation mode" << endl;
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_p || event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            sub_circuit_menu = false;
+            node1 = nullptr;
+            node2 = nullptr;
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        SDL_Point pos = {event.button.x, event.button.y};
+
+        Graphical_Element* element = find_element_at(pos, C);
+        if (element)
+        {
+            int CP_index = find_connection_point_at(element, pos);
+            if (node1 == nullptr) node1 = element->get_connection_points()[CP_index].node;
+            else node2 = element->get_connection_points()[CP_index].node;
+        }
+        else
+        {
+            Graphical_Wire* wire = find_wire_at(pos, C);
+            if (wire)
+            {
+                if (node1 == nullptr) node1 = wire->start_node;
+                else node2 = wire->start_node;
+            }
+        }
+    }
+
+    if (node1 == node2)
+        node2 = nullptr;
+
+    if (node1 != nullptr && node2 != nullptr)
+    {
+        cout << "selected 2 points" << endl;
+        C->addSubCircuit("", node1, node2);
+        node1 = nullptr;
+        node2 = nullptr;
+        create_SubC_mode = false;
+    }
+
     return true;
 }
