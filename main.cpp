@@ -20,7 +20,7 @@ string getInput () {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
     View* view = new View();
     auto* graphicalView = new graphical_view();
     auto* controller = new Controller();
