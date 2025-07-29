@@ -136,7 +136,7 @@ int graphical_view::find_connection_point_at(Graphical_Element* element, SDL_Poi
 
     vector<Connection_Point> connection_points = element->get_connection_points();
 
-    const int CLICK_RADIUS = 5;
+    const int CLICK_RADIUS = 20;
 
     for (int i = 0; i < connection_points.size(); ++i)
     {
@@ -806,6 +806,7 @@ void graphical_view::draw_SubC_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
         preview.bounding_box = preview_panel;
         preview.draw(renderer, false);
     }
+
     create_new_SubC_button_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 160, 30};
     SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
     SDL_RenderFillRect(renderer, &create_new_SubC_button_rect);
@@ -871,6 +872,7 @@ bool graphical_view::run(Controller *C)
 
     initialize_menu();
     initialize_toolbar(font);
+    initialize_SubC_menu(C);
 
     SDL_Window* window = SDL_CreateWindow(
             "AHA & AS",
@@ -929,7 +931,6 @@ bool graphical_view::run(Controller *C)
 
         auto& graphical_elements = C->get_graphical_elements();
         auto& graphical_wires = C->get_graphical_wires();
-        initialize_SubC_menu(C);
 
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -1656,7 +1657,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
             SDL_Point click_pos = {mouseX, mouseY};
             SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
 
-            // if the click is on a components connecction point
+            // if the click is on a components connection point
             bool started_on_component = false;
             for (auto& element : C->get_graphical_elements())
             {
@@ -1665,7 +1666,6 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 {
                     if (abs(snapped_pos.x - point.pos.x) < 20 && abs(snapped_pos.y - point.pos.y) < 20)
                     {
-                        cout << element.get()->get_model()->get_name() << " is selected" << endl;
                         new_wire_points.push_back(point);
                         started_on_component = true;
                         break;
@@ -1771,7 +1771,6 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     if (abs(snapped_pos.x - point.pos.x) < 20 && abs(snapped_pos.y - point.pos.y) < 20)
                     {
                         target_point = &point;
-                        cout << element.get()->get_model()->get_name() << " is selected" << endl;
                         break;
                     }
                 }
@@ -2306,6 +2305,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = false;
                             is_file_menu_open = false;
                             is_deleting = false;
+
+                            initialize_SubC_menu(C);
                             break;
                     }
                     return true;
@@ -2934,6 +2935,7 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
         {
             if (SDL_PointInRect(&mouse_pos, &SubC_menu_items[i].rect))
             {
+                cout << "detected click on item" << endl;
                 clicked_on_item = true;
 
                 // click
@@ -2944,12 +2946,14 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
                 // double click
                 else if (event.button.clicks == 2)
                 {
+                    selected_SubC_menu_item_index = i;
+                    cout << "detected double click" << endl;
                     int mouseX, mouseY;
                     SDL_GetMouseState(&mouseX, &mouseY);
 
                     // adding the component
 
-                    // not coded yet
+                    C->add_Graphical_Sub_Circuit(mouseX, mouseY, SubC_menu_items[i].name);
 
                     sub_circuit_menu = false;
                     selected_SubC_menu_item_index = -1;

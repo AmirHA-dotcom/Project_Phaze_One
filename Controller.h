@@ -135,11 +135,11 @@ private:
     int zener_diode_count = 0;
     int voltage_source_count = 0;
 
-    vector<unique_ptr<Graphical_Wire>> m_graphical_wires;
+    vector<unique_ptr<Graphical_Wire>> graphical_wires;
 
-    vector<unique_ptr<Graphical_Element>> m_graphical_elements;
+    vector<unique_ptr<Graphical_Element>> graphical_elements;
 
-    map<string, Node*> m_named_nets;
+    map<string, Node*> named_nets;
 public:
     Controller();
     vector<Circuit *> circuits;
@@ -250,6 +250,8 @@ public:
     void add_Graphical_Triangular_Source(int screenX, int screenY);
 
     void add_Graphical_Ground(SDL_Point pos, Node* node);
+
+    void add_Graphical_Sub_Circuit(int screenX, int screenY, string name);
 
     Graphical_Net_Label* add_Graphical_Net_Label(SDL_Point pos, Node* node);
 

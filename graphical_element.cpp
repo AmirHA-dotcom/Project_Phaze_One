@@ -615,24 +615,45 @@ void Graphical_Net_Label::draw(SDL_Renderer *renderer, bool show_grid)
     }
 }
 
-void Graphical_SubCircuit::draw(SDL_Renderer* renderer, bool show_grids)
+void Graphical_SubCircuit::draw(SDL_Renderer* renderer, bool show_grid)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    // bounding box
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+
     SDL_RenderDrawRect(renderer, &bounding_box);
 
-    render_text(renderer, font, m_subcircuit_model->get_name(), bounding_box.x + 5, bounding_box.y + 5);
-    render_text(renderer, font, m_type_name, bounding_box.x + 5, bounding_box.y + 25);
+    vector<Connection_Point> points = get_connection_points();
 
-    // leads
-    int half_length = max(bounding_box.w, bounding_box.h) / 2;
-    int radius = 20;
-    SDL_Point lead1_p1 = transform_point({-half_length, 0});
-    SDL_Point lead1_p2 = transform_point({-radius, 0});
-    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
+    for (const auto& point : points)
+    {
+        SDL_Rect square = {
+                point.pos.x - 5,
+                point.pos.y - 5,
+                10,
+                10
+        };
 
-    SDL_Point lead2_p1 = transform_point({radius, 0});
-    SDL_Point lead2_p2 = transform_point({half_length, 0});
-    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+        SDL_RenderFillRect(renderer, &square);
+    }
+
+    // text
+    if (m_subcircuit_model != nullptr)
+    {
+        int text_width, text_height;
+        TTF_SizeText(font, m_type_name.c_str(), &text_width, &text_height);
+
+        int text_x = bounding_box.x + (bounding_box.w - text_width) / 2;
+        int text_y = bounding_box.y + (bounding_box.h - text_height) / 2;
+
+        render_text(renderer, font, m_type_name, text_x, text_y);
+    }
 }
 
 // get properties functions
@@ -1070,10 +1091,11 @@ vector<Connection_Point> Graphical_Voltage_Source::get_connection_points()
 
 vector<Connection_Point> Graphical_SubCircuit::get_connection_points()
 {
-    int half_width = bounding_box.w / 2;
-    SDL_Point local_start = {-half_width, 0};
-    SDL_Point local_end = {half_width, 0};
+    int half_length = std::max(bounding_box.w, bounding_box.h) / 2;
+    SDL_Point local_start = {-half_length, 0};
+    SDL_Point local_end = {half_length, 0};
 
+    // transforming points
     SDL_Point raw_screen_start = transform_point(local_start);
     SDL_Point raw_screen_end = transform_point(local_end);
 
@@ -1102,11 +1124,10 @@ vector<Connection_Point> Graphical_SubCircuit::get_connection_points()
             end_port_orientation = Rotation::Up;
             break;
     }
-
-    auto nodes = model_element->get_nodes();
-
+    auto* model = get_subcircuit_model();
     return {
-            {final_screen_start, nodes.first, start_port_orientation},
-            {final_screen_end, nodes.second, end_port_orientation}
+            {final_screen_start, model ? model->getInput() : nullptr, start_port_orientation},
+            {final_screen_end, model ? model->getOutput() : nullptr, end_port_orientation}
     };
 }
+

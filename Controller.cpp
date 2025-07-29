@@ -716,7 +716,7 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
 
     gfx_resistor->bounding_box = {screenX, screenY, 100, 40};
 
-    m_graphical_elements.push_back(move(gfx_resistor));
+    graphical_elements.push_back(move(gfx_resistor));
 }
 
 void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
@@ -740,7 +740,7 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
 
     auto gfx_capacitor = make_unique<Graphical_Capacitor>(sim_capacitor);
     gfx_capacitor->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_capacitor));
+    graphical_elements.push_back(move(gfx_capacitor));
 }
 
 void Controller::add_Graphical_Inductor(int screenX, int screenY) {
@@ -764,7 +764,7 @@ void Controller::add_Graphical_Inductor(int screenX, int screenY) {
 
     auto gfx_inductor = make_unique<Graphical_Inductor>(sim_inductor);
     gfx_inductor->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_inductor));
+    graphical_elements.push_back(move(gfx_inductor));
 }
 
 void Controller::add_Graphical_Current_Source(int screenX, int screenY)
@@ -789,7 +789,7 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
 
     auto gfx_current_source = make_unique<Graphical_Current_Source>(sim_current_source);
     gfx_current_source->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_current_source));
+    graphical_elements.push_back(move(gfx_current_source));
 }
 
 void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
@@ -814,7 +814,7 @@ void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
 
     auto gfx_sim_real_diode = make_unique<Graphical_Real_Diode>(sim_real_diode);
     gfx_sim_real_diode->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_real_diode));
+    graphical_elements.push_back(move(gfx_sim_real_diode));
 }
 
 void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
@@ -839,7 +839,7 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
 
     auto gfx_sim_zener_diode = make_unique<Graphical_Zener_Diode>(sim_zener_diode);
     gfx_sim_zener_diode->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_zener_diode));
+    graphical_elements.push_back(move(gfx_sim_zener_diode));
 }
 
 void Controller::add_Graphical_DC_Source(int screenX, int screenY)
@@ -864,7 +864,7 @@ void Controller::add_Graphical_DC_Source(int screenX, int screenY)
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_voltage_source));
+    graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
 void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
@@ -889,7 +889,7 @@ void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_voltage_source));
+    graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
 void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
@@ -914,7 +914,7 @@ void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_voltage_source));
+    graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
 void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
@@ -939,7 +939,7 @@ void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_voltage_source));
+    graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
 void Controller::add_Graphical_Square_Source(int screenX, int screenY)
@@ -964,7 +964,7 @@ void Controller::add_Graphical_Square_Source(int screenX, int screenY)
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_voltage_source));
+    graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
 void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
@@ -989,33 +989,68 @@ void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
 
     auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_voltage_source);
     gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
-    m_graphical_elements.push_back(move(gfx_sim_voltage_source));
+    graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
 void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
 {
     auto ground_symbol = make_unique<Graphical_Ground>(pos, node);
-    m_graphical_elements.push_back(move(ground_symbol));
+    graphical_elements.push_back(move(ground_symbol));
+}
+
+void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name)
+{
+    cout << "called add graphical sub circuit" << endl;
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
+
+    SubCircuit* sim_Sub_C = nullptr;
+
+    for (const auto& SubC : subCircuits)
+    {
+        if (SubC->get_name() == name)
+        {
+            sim_Sub_C = SubC;
+            break;
+        }
+    }
+
+    if (sim_Sub_C != nullptr)
+    {
+        auto gfx_Sub_C = make_unique<Graphical_SubCircuit>(sim_Sub_C, name);
+
+        gfx_Sub_C->bounding_box = {screenX, screenY, 150, 60};
+
+        graphical_elements.push_back(move(gfx_Sub_C));
+        cout << "added subcircuit, so the bug is not from controller not being called" << endl;
+    }
 }
 
 Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, Node* node)
 {
     auto new_label = make_unique<Graphical_Net_Label>(pos, node);
     Graphical_Net_Label* ptr = new_label.get();
-    m_graphical_elements.push_back(move(new_label));
+    graphical_elements.push_back(move(new_label));
     return ptr;
 }
 
 vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements()
 {
-    return m_graphical_elements;
+    return graphical_elements;
 }
 
 void Controller::update_element_properties(int element_index, const vector<string>& new_values)
 {
-    if (element_index < 0 || element_index >= m_graphical_elements.size()) return;
+    if (element_index < 0 || element_index >= graphical_elements.size()) return;
 
-    Element* element_model = m_graphical_elements[element_index]->get_model();
+    Element* element_model = graphical_elements[element_index]->get_model();
     if (!element_model) return;
 
     if (new_values.size() < 2) return;
@@ -1124,7 +1159,7 @@ void Controller::update_element_properties(int element_index, const vector<strin
 
 vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()
 {
-    return m_graphical_wires;
+    return graphical_wires;
 }
 
 void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end) {
@@ -1135,7 +1170,7 @@ void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node
 
     new_wire->start_node = start;
     new_wire->end_node = end;
-    m_graphical_wires.push_back(std::move(new_wire));
+    graphical_wires.push_back(std::move(new_wire));
 }
 
 void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
@@ -1158,7 +1193,7 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     // for label naming
     if (!node_to_merge->net_name.empty())
     {
-        m_named_nets[node_to_merge->net_name] = node_to_keep;
+        named_nets[node_to_merge->net_name] = node_to_keep;
         if (node_to_keep->net_name.empty())
         {
             node_to_keep->net_name = node_to_merge->net_name;
@@ -1170,7 +1205,7 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
         element->replace_node(node_to_merge, node_to_keep);
     }
 
-    for (const auto& wire : m_graphical_wires)
+    for (const auto& wire : graphical_wires)
     {
         if (wire->start_node == node_to_merge) {
             wire->start_node = node_to_keep;
@@ -1188,14 +1223,14 @@ void Controller::assign_net_name(Node* node_to_name, const string& new_name)
     // if the node already had a name
     if (!node_to_name->net_name.empty())
     {
-        m_named_nets.erase(node_to_name->net_name);
+        named_nets.erase(node_to_name->net_name);
     }
 
     node_to_name->net_name = new_name;
 
     // finding if another node has this name too
-    auto it = m_named_nets.find(new_name);
-    if (it != m_named_nets.end())
+    auto it = named_nets.find(new_name);
+    if (it != named_nets.end())
     {
         Node* existing_node = it->second;
         if (existing_node != node_to_name)
@@ -1205,7 +1240,7 @@ void Controller::assign_net_name(Node* node_to_name, const string& new_name)
     }
     else
     {
-        m_named_nets[new_name] = node_to_name;
+        named_nets[new_name] = node_to_name;
     }
 }
 
@@ -1298,11 +1333,11 @@ void Controller::delete_wire(Graphical_Wire *wire_to_delete)
     {
         circuit->delete_node(wire_to_delete->start_node);
     }
-    m_graphical_wires.erase(remove_if(m_graphical_wires.begin(),m_graphical_wires.end(),[&](const std::unique_ptr<Graphical_Wire>& wire) {
+    graphical_wires.erase(remove_if(graphical_wires.begin(), graphical_wires.end(), [&](const std::unique_ptr<Graphical_Wire>& wire) {
                         return wire.get() == wire_to_delete;
                     }
             ),
-            m_graphical_wires.end()
+                          graphical_wires.end()
     );
 }
 
