@@ -871,7 +871,6 @@ bool graphical_view::run(Controller *C)
 
     initialize_menu();
     initialize_toolbar(font);
-    initialize_SubC_menu(C);
 
     SDL_Window* window = SDL_CreateWindow(
             "AHA & AS",
@@ -930,6 +929,7 @@ bool graphical_view::run(Controller *C)
 
         auto& graphical_elements = C->get_graphical_elements();
         auto& graphical_wires = C->get_graphical_wires();
+        initialize_SubC_menu(C);
 
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -2963,7 +2963,6 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C)
 {
-    cout << "entered sub creation mode" << endl;
     if (event.type == SDL_QUIT) return false;
 
     if (event.type == SDL_KEYDOWN)
