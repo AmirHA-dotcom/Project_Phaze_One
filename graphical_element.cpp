@@ -1130,4 +1130,3 @@ vector<Connection_Point> Graphical_SubCircuit::get_connection_points()
             {final_screen_end, model ? model->getOutput() : nullptr, end_port_orientation}
     };
 }
-
