@@ -19,11 +19,11 @@
 #include <unordered_set>
 #include <fstream>
 #include <filesystem>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <memory>
-#include <SDL2/SDL_ttf.h>
+#include <SDL_ttf.h>
 #include <optional>
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <limits>
 
 using namespace std;

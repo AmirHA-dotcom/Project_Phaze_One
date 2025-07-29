@@ -75,6 +75,14 @@ private:
     Node* node1 = nullptr;
     Node* node2 = nullptr;
 
+    // getting the name of the sub_circuit
+    string new_SubC_name;
+    bool naming_SubC_menu_active = false;
+    string text_input_buffer;
+    SDL_Rect text_input_box_rect;
+    SDL_Rect text_input_ok_rect;
+    SDL_Rect text_input_cancel_rect;
+
     // editing
     bool editing = false;
     int edited_element_index = -1;
@@ -184,6 +192,7 @@ private:
     void draw_save_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_file_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_SubC_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
+    void draw_text_input_menu(SDL_Renderer* renderer, TTF_Font* font);
     void add_math_term(bool is_subtraction, Controller* C);
     void execute_math_operation();
 
@@ -218,6 +227,8 @@ private:
     bool handle_SubC_menu_events(SDL_Event& event, Controller* C);
 
     bool handle_SubC_creation_events(SDL_Event& event, Controller* C);
+
+    bool handle_text_input_menu_events(SDL_Event& event);
 
 public:
     bool run (Controller* C);

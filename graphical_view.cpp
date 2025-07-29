@@ -812,6 +812,41 @@ void graphical_view::draw_SubC_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     render_text(renderer, font, "Create New", create_new_SubC_button_rect.x + 40, create_new_SubC_button_rect.y + 5, TEXT_COLOR);
 }
 
+void graphical_view::draw_text_input_menu(SDL_Renderer* renderer, TTF_Font* font)
+{
+    const SDL_Color PANEL_BG = {50, 58, 69, 255};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color TEXT_BOX_BG = {33, 37, 41, 255};
+    const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
+    const SDL_Color HIGHLIGHT_COLOR = {52, 152, 219, 255};
+
+    int menu_width = 400;
+    int menu_height = 150;
+    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
+
+    // background
+    SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
+    SDL_RenderFillRect(renderer, &menu_panel);
+    render_text(renderer, font, "Name of the Sub_Circuit:", menu_panel.x + 10, menu_panel.y + 10, TEXT_COLOR);
+
+    // text box
+    text_input_box_rect = {menu_panel.x + 10, menu_panel.y + 40, menu_width - 20, 40};
+    SDL_SetRenderDrawColor(renderer, TEXT_BOX_BG.r, TEXT_BOX_BG.g, TEXT_BOX_BG.b, TEXT_BOX_BG.a);
+    SDL_RenderFillRect(renderer, &text_input_box_rect);
+    SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+    SDL_RenderDrawRect(renderer, &text_input_box_rect);
+    render_text(renderer, font, text_input_buffer, text_input_box_rect.x + 5, text_input_box_rect.y + 10, TEXT_COLOR);
+
+    // OK cancel buttons
+    text_input_ok_rect = {menu_panel.x + menu_width - 220, menu_panel.y + menu_height - 50, 100, 40};
+    text_input_cancel_rect = {menu_panel.x + menu_width - 110, menu_panel.y + menu_height - 50, 100, 40};
+    SDL_SetRenderDrawColor(renderer, BORDER_COLOR.r, BORDER_COLOR.g, BORDER_COLOR.b, BORDER_COLOR.a);
+    SDL_RenderFillRect(renderer, &text_input_ok_rect);
+    SDL_RenderFillRect(renderer, &text_input_cancel_rect);
+    render_text(renderer, font, "OK", text_input_ok_rect.x + 35, text_input_ok_rect.y + 10, TEXT_COLOR);
+    render_text(renderer, font, "Cancel", text_input_cancel_rect.x + 20, text_input_cancel_rect.y + 10, TEXT_COLOR);
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -931,6 +966,11 @@ bool graphical_view::run(Controller *C)
                 SDL_ShowCursor(SDL_ENABLE);
                 if (grounding_cursor) SDL_SetCursor(grounding_cursor);
             }
+            else if (naming_SubC_menu_active)
+            {
+                SDL_ShowCursor(SDL_ENABLE);
+                if (default_cursor) SDL_SetCursor(default_cursor);
+            }
             else
             {
                 SDL_ShowCursor(SDL_ENABLE);
@@ -1019,6 +1059,10 @@ bool graphical_view::run(Controller *C)
                 else if (create_SubC_mode)
                 {
                     running = handle_SubC_creation_events(event, C);
+                }
+                else if (naming_SubC_menu_active)
+                {
+                    running = handle_text_input_menu_events(event);
                 }
                 else
                 {
@@ -1133,6 +1177,11 @@ bool graphical_view::run(Controller *C)
         if (sub_circuit_menu)
         {
             draw_SubC_menu(renderer, font, C);
+        }
+
+        if (naming_SubC_menu_active)
+        {
+            draw_text_input_menu(renderer, font);
         }
 
         // showing the run
@@ -2876,7 +2925,7 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
 
         if (SDL_PointInRect(&mouse_pos, &create_new_SubC_button_rect))
         {
-            create_SubC_mode = true;
+            naming_SubC_menu_active = true;
             sub_circuit_menu = false;
         }
 
@@ -2955,11 +3004,76 @@ bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C
     if (node1 != nullptr && node2 != nullptr)
     {
         cout << "selected 2 points" << endl;
-        C->addSubCircuit("", node1, node2);
+        C->addSubCircuit(new_SubC_name, node1, node2);
+        new_SubC_name = "";
         node1 = nullptr;
         node2 = nullptr;
         create_SubC_mode = false;
     }
 
+    return true;
+}
+
+bool graphical_view::handle_text_input_menu_events(SDL_Event& event)
+{
+    auto process_and_exit = [&]() {
+        cout << "Text entered: " << text_input_buffer << endl;
+        new_SubC_name = text_input_buffer;
+        naming_SubC_menu_active = false;
+        SDL_StopTextInput();
+    };
+
+    if (event.type == SDL_QUIT) return false;
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        SDL_Point mouse_pos = {event.button.x, event.button.y};
+
+        if (SDL_PointInRect(&mouse_pos, &text_input_box_rect))
+        {
+            SDL_StartTextInput();
+        }
+        else if (SDL_PointInRect(&mouse_pos, &text_input_ok_rect))
+        {
+            create_SubC_mode = true;
+            process_and_exit();
+        }
+        else if (SDL_PointInRect(&mouse_pos, &text_input_cancel_rect))
+        {
+            naming_SubC_menu_active = false;
+            SDL_StopTextInput();
+        }
+        else
+        {
+            SDL_StopTextInput();
+        }
+    }
+
+    // handle text entry
+    if (event.type == SDL_TEXTINPUT)
+    {
+        text_input_buffer += event.text.text;
+    }
+
+    if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
+        {
+            case SDLK_ESCAPE:
+                naming_SubC_menu_active = false;
+                SDL_StopTextInput();
+                break;
+            case SDLK_BACKSPACE:
+                if (!text_input_buffer.empty())
+                {
+                    text_input_buffer.pop_back();
+                }
+                break;
+            case SDLK_RETURN:
+                create_SubC_mode = true;
+                process_and_exit();
+                break;
+        }
+    }
     return true;
 }
