@@ -901,6 +901,8 @@ bool graphical_view::run(Controller *C)
     default_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     crosshair_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
     math_operation_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+    dragging_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
+    not_valid_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO);
 
     SDL_Surface* probe_surface = IMG_Load(PROBE);
     if (probe_surface)
@@ -939,11 +941,24 @@ bool graphical_view::run(Controller *C)
         if (mouseY < 40)
         {
             SDL_ShowCursor(SDL_ENABLE);
-            if (default_cursor) SDL_SetCursor(default_cursor);
+            if (is_dragging)
+            {
+                if (not_valid_cursor) SDL_SetCursor(not_valid_cursor);
+            }
+            else
+            {
+                if (default_cursor) SDL_SetCursor(default_cursor);
+
+            }
         }
         else
         {
-            if (probe_mode)
+            if (is_dragging)
+            {
+                SDL_ShowCursor(SDL_ENABLE);
+                if (dragging_cursor) SDL_SetCursor(dragging_cursor);
+            }
+            else if (probe_mode)
             {
                 SDL_ShowCursor(SDL_ENABLE);
                 if (probe_cursor) SDL_SetCursor(probe_cursor);

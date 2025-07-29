@@ -174,6 +174,8 @@ private:
     SDL_Cursor* grounding_cursor = nullptr;
     SDL_Cursor* math_operation_cursor = nullptr;
     SDL_Cursor* deleting_cursor = nullptr;
+    SDL_Cursor* dragging_cursor = nullptr;
+    SDL_Cursor* not_valid_cursor = nullptr;
 
     // helper functions
     Node* find_node_at(SDL_Point pos, Controller* C);
