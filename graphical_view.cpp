@@ -213,10 +213,7 @@ void graphical_view::initialize_SubC_menu(Controller* C)
 }
 
 void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font) {
-    // fade
-//    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-//    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 180);
-//    SDL_RenderFillRect(renderer, NULL);
+
 
     SDL_Rect menu_panel = {200, 100, 800, 500};
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
@@ -231,8 +228,26 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
     int start_y = menu_panel.y + 60;
     for (int i = 0; i < menu_items.size(); ++i)
     {
+        if (i == selected_menu_item_index)
+        {
+            SDL_SetRenderDrawColor(renderer, 80, 88, 99, 255);
+            SDL_RenderFillRect(renderer, &menu_items[i].rect);
+        }
         menu_items[i].rect = {menu_panel.x + 20, start_y + (i * 30), 200, 25};
         render_text(renderer, font, menu_items[i].name, menu_items[i].rect.x, menu_items[i].rect.y, {200, 200, 200, 255});
+    }
+
+    int column2_x = menu_panel.x + 250;
+    render_text(renderer, font, "Sub_Circuits:", column2_x, menu_panel.y + 30, {200, 200, 200, 255});
+    for (int i = 0; i < SubC_menu_items.size(); ++i)
+    {
+        if (i == selected_SubC_menu_item_index)
+        {
+            SDL_SetRenderDrawColor(renderer, 80, 88, 99, 255);
+            SDL_RenderFillRect(renderer, &SubC_menu_items[i].rect);
+        }
+        SubC_menu_items[i].rect = {column2_x, start_y + (i * 30), 200, 25};
+        render_text(renderer, font, SubC_menu_items[i].name, SubC_menu_items[i].rect.x + 5, SubC_menu_items[i].rect.y + 3, {200, 200, 200, 255});
     }
 
     // preview
@@ -290,6 +305,12 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
                 break;
             }
         }
+    }
+    else if (selected_SubC_menu_item_index != -1)
+    {
+        Graphical_SubCircuit preview(nullptr, "");
+        preview.bounding_box = preview_panel;
+        preview.draw(renderer, false);
     }
 }
 
@@ -1433,6 +1454,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             case SDLK_p:
             {
                 elements_menu = !elements_menu;
+                initialize_menu();
+                initialize_SubC_menu(C);
                 break;
             }
 
@@ -1587,6 +1610,7 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
                 if (event.button.clicks == 1)
                 {
                     selected_menu_item_index = i;
+                    selected_SubC_menu_item_index = -1;
                 }
                 // double click
                 else if (event.button.clicks == 2)
@@ -1623,8 +1647,31 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
 
                     elements_menu = false;
                     selected_menu_item_index = -1;
+                    selected_SubC_menu_item_index = -1;
                 }
                 break;
+            }
+        }
+        if (!clicked_on_item)
+        {
+            for (int i = 0; i < SubC_menu_items.size(); ++i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &SubC_menu_items[i].rect))
+                {
+                    selected_SubC_menu_item_index = i;
+                    selected_menu_item_index = -1;
+
+                    if (event.button.clicks == 2)
+                    {
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        C->add_Graphical_Sub_Circuit(mouseX, mouseY, SubC_menu_items[i].name);
+                        elements_menu = false;
+                        selected_menu_item_index = -1;
+                        selected_SubC_menu_item_index = -1;
+                    }
+                    break;
+                }
             }
         }
     }
@@ -2278,6 +2325,12 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_file_menu_open = false;
                             is_deleting = false;
                             sub_circuit_menu = false;
+
+                            if (elements_menu)
+                            {
+                                initialize_menu();
+                                initialize_SubC_menu(C);
+                            }
                             break;
                         case Tool_Bar_Action::File:
                             is_file_menu_open = !is_file_menu_open;
