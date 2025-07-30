@@ -1025,6 +1025,34 @@ bool graphical_view::run(Controller *C)
         {
             info_bar_text = "Click on a component to delete.";
         }
+        else if (probe_mode)
+        {
+            info_bar_text = "Click on a Valid point to show the signal.";
+        }
+        else if (elements_menu)
+        {
+            info_bar_text = "Single Click to see preview, Double click to Select.";
+        }
+        else if (sub_circuit_menu)
+        {
+            info_bar_text = "Single Click to see preview, Double click to Select. Click on new to create a new one.";
+        }
+        else if (is_grounding)
+        {
+            info_bar_text = "Click on a Component Terminal or a Wire to make it Ground.";
+        }
+        else if (is_file_menu_open)
+        {
+            info_bar_text = "Select a File to Open.";
+        }
+        else if (is_labeling)
+        {
+            info_bar_text = "Select a Valid point to Label.";
+        }
+        else if (is_saving)
+        {
+            info_bar_text = "Enter Name and Address.";
+        }
         else if (hovered_element)
         {
             info_bar_text = hovered_element->get_info_text();
