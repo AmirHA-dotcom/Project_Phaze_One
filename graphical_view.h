@@ -66,11 +66,13 @@ private:
     bool elements_menu = false;
     vector<Menu_Item> menu_items;
     int selected_menu_item_index = -1;
+    int hovered_menu_item_index = -1;
 
     // sub_circuits menu
     bool sub_circuit_menu = false;
     vector<SubC_Menu_Item> SubC_menu_items;
     int selected_SubC_menu_item_index = -1;
+    int hovered_SubC_item_index = -1;
 
     // sub_circuit creation handling
     bool create_SubC_mode = false;

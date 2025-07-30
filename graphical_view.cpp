@@ -212,8 +212,11 @@ void graphical_view::initialize_SubC_menu(Controller* C)
         SubC_menu_items.push_back({sub_c->get_name()});
 }
 
-void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font) {
-
+void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
+{
+    const SDL_Color SELECTED = {80, 88, 99, 255};
+    const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
+    const SDL_Color HOVERED = {60, 68, 80, 255};
 
     SDL_Rect menu_panel = {200, 100, 800, 500};
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
@@ -226,28 +229,39 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
 
     // items
     int start_y = menu_panel.y + 60;
+    render_text(renderer, font, "Components:", menu_panel.x + 20, menu_panel.y + 30, TEXT_COLOR);
     for (int i = 0; i < menu_items.size(); ++i)
     {
         if (i == selected_menu_item_index)
         {
-            SDL_SetRenderDrawColor(renderer, 80, 88, 99, 255);
+            SDL_SetRenderDrawColor(renderer, SELECTED.r, SELECTED.g, SELECTED.b, SELECTED.a);
+            SDL_RenderFillRect(renderer, &menu_items[i].rect);
+        }
+        else if (i == hovered_menu_item_index)
+        {
+            SDL_SetRenderDrawColor(renderer, HOVERED.r, HOVERED.g, HOVERED.b, HOVERED.a);
             SDL_RenderFillRect(renderer, &menu_items[i].rect);
         }
         menu_items[i].rect = {menu_panel.x + 20, start_y + (i * 30), 200, 25};
-        render_text(renderer, font, menu_items[i].name, menu_items[i].rect.x, menu_items[i].rect.y, {200, 200, 200, 255});
+        render_text(renderer, font, menu_items[i].name, menu_items[i].rect.x, menu_items[i].rect.y, TEXT_COLOR);
     }
 
     int column2_x = menu_panel.x + 250;
-    render_text(renderer, font, "Sub_Circuits:", column2_x, menu_panel.y + 30, {200, 200, 200, 255});
+    render_text(renderer, font, "Sub_Circuits:", column2_x, menu_panel.y + 30, TEXT_COLOR);
     for (int i = 0; i < SubC_menu_items.size(); ++i)
     {
         if (i == selected_SubC_menu_item_index)
         {
-            SDL_SetRenderDrawColor(renderer, 80, 88, 99, 255);
+            SDL_SetRenderDrawColor(renderer, SELECTED.r, SELECTED.g, SELECTED.b, SELECTED.a);
+            SDL_RenderFillRect(renderer, &SubC_menu_items[i].rect);
+        }
+        else if (i == hovered_SubC_item_index)
+        {
+            SDL_SetRenderDrawColor(renderer, HOVERED.r, HOVERED.g, HOVERED.b, HOVERED.a);
             SDL_RenderFillRect(renderer, &SubC_menu_items[i].rect);
         }
         SubC_menu_items[i].rect = {column2_x, start_y + (i * 30), 200, 25};
-        render_text(renderer, font, SubC_menu_items[i].name, SubC_menu_items[i].rect.x + 5, SubC_menu_items[i].rect.y + 3, {200, 200, 200, 255});
+        render_text(renderer, font, SubC_menu_items[i].name, SubC_menu_items[i].rect.x + 5, SubC_menu_items[i].rect.y + 3, TEXT_COLOR);
     }
 
     // preview
@@ -800,6 +814,8 @@ void graphical_view::draw_SubC_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
 {
     const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
     const SDL_Color BORDER_COLOR = {80, 88, 99, 255};
+    const SDL_Color SELECTED = {80, 88, 99, 255};
+    const SDL_Color HOVERED = {60, 68, 80, 255};
 
     int menu_width = 800;
     int menu_height = 500;
@@ -814,8 +830,19 @@ void graphical_view::draw_SubC_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
 
     // items
     int start_y = menu_panel.y + 60;
+    render_text(renderer, font, "Sub_Circuits:", menu_panel.x + 20, menu_panel.y + 30, TEXT_COLOR);
     for (int i = 0; i < SubC_menu_items.size(); ++i)
     {
+        if (i == selected_SubC_menu_item_index)
+        {
+            SDL_SetRenderDrawColor(renderer, SELECTED.r, SELECTED.g, SELECTED.b, SELECTED.a);
+            SDL_RenderFillRect(renderer, &SubC_menu_items[i].rect);
+        }
+        else if (i == hovered_SubC_item_index)
+        {
+            SDL_SetRenderDrawColor(renderer, HOVERED.r, HOVERED.g, HOVERED.b, HOVERED.a);
+            SDL_RenderFillRect(renderer, &SubC_menu_items[i].rect);
+        }
         SubC_menu_items[i].rect = {menu_panel.x + 20, start_y + (i * 30), 200, 25};
         render_text(renderer, font, SubC_menu_items[i].name, SubC_menu_items[i].rect.x, SubC_menu_items[i].rect.y, {200, 200, 200, 255});
     }
@@ -1594,6 +1621,36 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
             elements_menu = false;
         }
     }
+
+    if (event.type == SDL_MOUSEMOTION)
+    {
+        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
+        hovered_menu_item_index = -1;
+        hovered_SubC_item_index = -1;
+        bool hover_found = false;
+
+        for (int i = 0; i < menu_items.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &menu_items[i].rect))
+            {
+                hovered_menu_item_index = i;
+                hover_found = true;
+                break;
+            }
+        }
+        if (!hover_found)
+        {
+            for (int i = 0; i < SubC_menu_items.size(); ++i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &SubC_menu_items[i].rect))
+                {
+                    hovered_SubC_item_index = i;
+                    break;
+                }
+            }
+        }
+    }
+
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
@@ -3077,6 +3134,22 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
             sub_circuit_menu = false;
         }
     }
+
+    if (event.type == SDL_MOUSEMOTION)
+    {
+        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
+        hovered_SubC_item_index = -1;
+
+        for (int i = 0; i < SubC_menu_items.size(); ++i)
+        {
+            if (SDL_PointInRect(&mouse_pos, &SubC_menu_items[i].rect))
+            {
+                hovered_SubC_item_index = i;
+                break;
+            }
+        }
+    }
+
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
