@@ -279,5 +279,7 @@ public:
 
     vector<string> get_file_names();
 
+    void New_File();
+
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

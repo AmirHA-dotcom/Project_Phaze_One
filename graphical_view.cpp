@@ -386,6 +386,7 @@ void graphical_view::initialize_toolbar(TTF_Font* font)
     toolbar_buttons.clear();
 
     const vector<pair<string, Tool_Bar_Action>> button_data = {
+            {"New", Tool_Bar_Action::New_File},
             {"Grid", Tool_Bar_Action::Grid},
             {"Delete", Tool_Bar_Action::Delete},
             {"Wire", Tool_Bar_Action::Wire},
@@ -2344,6 +2345,26 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                 {
                     switch (button.action) 
                     {
+                        case Tool_Bar_Action::New_File:
+                            new_file = true;
+                            is_labeling = false;
+                            is_wiring = false;
+                            elements_menu = false;
+                            is_grounding = false;
+                            math_operation_mode = false;
+                            probe_mode = false;
+                            is_saving = false;
+                            is_file_menu_open = false;
+                            is_deleting = false;
+                            sub_circuit_menu = false;
+
+                            if (current_file_name != "" && current_file_address != "")
+                            {
+                                C->circuit->change_name(current_file_name);
+                                C->saveCircuit(C->circuit, current_file_address);
+                            }
+                            C->New_File();
+                            break;
                         case Tool_Bar_Action::Wire:
                             is_wiring = !is_wiring;
                             is_labeling = false;

@@ -6,10 +6,8 @@
 #include "Libraries.h"
 
 Controller::Controller() {
-    // Initialize the circuit member pointer
-    circuit = nullptr; // Start it as null just in case
+    circuit = nullptr;
 
-    // Create a new default circuit and make it the active one
     circuit = new Circuit("default_circuit");
     circuits.push_back(circuit);
 }
@@ -1344,4 +1342,16 @@ void Controller::delete_wire(Graphical_Wire *wire_to_delete)
 vector<string> Controller::get_file_names()
 {
     return file_handler.get_file_names();
+}
+
+void Controller::New_File()
+{
+    graphical_elements.clear();
+    graphical_wires.clear();
+    named_nets.clear();
+
+    circuit = nullptr;
+
+    circuit = new Circuit("default_circuit");
+    circuits.push_back(circuit);
 }
