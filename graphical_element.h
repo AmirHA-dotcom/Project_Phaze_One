@@ -39,7 +39,6 @@ inline void render_text(SDL_Renderer* renderer, TTF_Font* font, const string& te
     SDL_FreeSurface(surface);
 }
 
-enum class Rotation{Right, Left, Up, Down};
 
 struct Editable_Property {
     string label;
@@ -75,6 +74,8 @@ public:
     SDL_Rect bounding_box;
 
     void change_rotation();
+
+    Rotation get_rotation() { return rotation; }
 
     Element* get_model();
 

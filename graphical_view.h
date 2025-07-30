@@ -51,6 +51,9 @@ private:
     int m_window_width;
     int m_window_height;
 
+    // guid lines on the actions
+    string info_bar_text;
+
     // dragging
     bool is_dragging = false;
     int dragged_element_index = -1;
@@ -96,7 +99,7 @@ private:
     const int GRID_SIZE = 10;
 
     // wiring mode
-    bool m_is_wiring = false;
+    bool is_wiring = false;
     vector<Connection_Point> new_wire_points;
 
     // grounding
@@ -195,6 +198,7 @@ private:
     void draw_file_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_SubC_menu(SDL_Renderer* renderer, TTF_Font* font, Controller* C);
     void draw_text_input_menu(SDL_Renderer* renderer, TTF_Font* font);
+    void draw_status_bar(SDL_Renderer* renderer, TTF_Font* font);
     void add_math_term(bool is_subtraction, Controller* C);
     void execute_math_operation();
 

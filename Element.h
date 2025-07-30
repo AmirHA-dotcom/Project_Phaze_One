@@ -8,6 +8,8 @@
 #include "Libraries.h"
 #include "Node.h"
 
+enum class Rotation{Right, Left, Up, Down};
+
 class Element
 {
 protected:
@@ -17,6 +19,7 @@ protected:
     Node* node2;
     double value;
     int x, y;
+    Rotation rotation;
 public:
     Element(string _name, Element_Type _type, Node* n1, Node* n2, double _value);
     string get_name() const;
@@ -33,6 +36,7 @@ public:
     void replace_node(Node* node_to_merge, Node* node_to_keep);
 
     void set_coordinates(int x, int y) { this->x = x; this->y = y; }
+    void set_rotation(Rotation r) { rotation = r; }
 };
 
 

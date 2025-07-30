@@ -848,6 +848,17 @@ void graphical_view::draw_text_input_menu(SDL_Renderer* renderer, TTF_Font* font
     render_text(renderer, font, "Cancel", text_input_cancel_rect.x + 20, text_input_cancel_rect.y + 10, TEXT_COLOR);
 }
 
+void graphical_view::draw_status_bar(SDL_Renderer* renderer, TTF_Font* font)
+{
+    // background
+    SDL_Rect bar_rect = {0, m_window_height - 25, m_window_width, 25};
+    SDL_SetRenderDrawColor(renderer, 50, 58, 69, 255);
+    SDL_RenderFillRect(renderer, &bar_rect);
+
+    // text
+    render_text(renderer, font, info_bar_text, 5, bar_rect.y + 3, {211, 211, 211, 255});
+}
+
 // main functions
 
 bool graphical_view::run(Controller *C)
@@ -962,7 +973,7 @@ bool graphical_view::run(Controller *C)
                 SDL_ShowCursor(SDL_ENABLE);
                 if (probe_cursor) SDL_SetCursor(probe_cursor);
             }
-            else if (m_is_wiring)
+            else if (is_wiring)
             {
                 SDL_ShowCursor(SDL_DISABLE);
             }
@@ -1005,6 +1016,24 @@ bool graphical_view::run(Controller *C)
             }
         }
 
+        Graphical_Element* hovered_element = find_element_at({mouseX, mouseY}, C);
+        if (is_wiring)
+        {
+            info_bar_text = "";
+        }
+        else if (is_deleting)
+        {
+            info_bar_text = "";
+        }
+        else if (hovered_element)
+        {
+            //info_bar_text = "Component: " + hovered_element->();
+        }
+        else
+        {
+            info_bar_text = "";
+        }
+
         while (SDL_PollEvent(&event) != 0)
         {
             if (plot_view)
@@ -1043,7 +1072,7 @@ bool graphical_view::run(Controller *C)
                 {
                     running = handle_edit_properties_menu(event, C);
                 }
-                else if (m_is_wiring)
+                else if (is_wiring)
                 {
                     running = handle_wiring_events(event, C);
                 }
@@ -1107,8 +1136,9 @@ bool graphical_view::run(Controller *C)
         }
 
         draw_toolbar(renderer, font);
+        draw_status_bar(renderer, font);
 
-        if (m_is_wiring)
+        if (is_wiring)
         {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
@@ -1162,7 +1192,7 @@ bool graphical_view::run(Controller *C)
             }
         }
 
-        if (m_is_wiring && !new_wire_points.empty())
+        if (is_wiring && !new_wire_points.empty())
         {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
@@ -1305,6 +1335,14 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
                         auto& graphical_elements = C->get_graphical_elements();
                         auto& element_to_rotate = graphical_elements[dragged_element_index];
                         element_to_rotate->change_rotation();
+                        if (element_to_rotate->get_model() != nullptr)
+                        {
+                            element_to_rotate->get_model()->set_rotation(element_to_rotate->get_rotation());
+                        }
+                        else if (dynamic_cast<Graphical_SubCircuit*>(element_to_rotate.get()))
+                        {
+                            dynamic_cast<Graphical_SubCircuit*>(element_to_rotate.get())->get_subcircuit_model()->set_rotation(element_to_rotate->get_rotation());
+                        }
                     }
                 }
                 else
@@ -1378,7 +1416,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
             case SDLK_w:
             {
-                m_is_wiring = !m_is_wiring;
+                is_wiring = !is_wiring;
                 new_wire_points.clear();
                 break;
             }
@@ -1481,6 +1519,14 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
         graphical_elements[dragged_element_index]->bounding_box.x = snapped_pos.x;
         graphical_elements[dragged_element_index]->bounding_box.y = snapped_pos.y;
+        if (graphical_elements[dragged_element_index]->get_model() != nullptr)
+        {
+            graphical_elements[dragged_element_index]->get_model()->set_coordinates(snapped_pos.x, snapped_pos.y);
+        }
+        else if (dynamic_cast<Graphical_SubCircuit*>(graphical_elements[dragged_element_index].get()))
+        {
+            dynamic_cast<Graphical_SubCircuit*>(graphical_elements[dragged_element_index].get())->get_subcircuit_model()->set_coordinates(snapped_pos.x, snapped_pos.y);
+        }
     }
 
     return true;
@@ -1655,18 +1701,18 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
     {
         if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_ESCAPE)
         {
-            m_is_wiring = false;
+            is_wiring = false;
             new_wire_points.clear();
         }
         if (event.key.keysym.sym == SDLK_g)
         {
-            m_is_wiring = false;
+            is_wiring = false;
             is_grounding = true;
             new_wire_points.clear();
         }
         if (event.key.keysym.sym == SDLK_BACKSPACE || event.key.keysym.sym == SDLK_DELETE)
         {
-            m_is_wiring = false;
+            is_wiring = false;
             is_deleting = true;
             new_wire_points.clear();
         }
@@ -1674,7 +1720,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
     {
-        m_is_wiring = false;
+        is_wiring = false;
         new_wire_points.clear();
     }
 
@@ -2167,7 +2213,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                     switch (button.action) 
                     {
                         case Tool_Bar_Action::Wire:
-                            m_is_wiring = !m_is_wiring;
+                            is_wiring = !is_wiring;
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
@@ -2180,7 +2226,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             break;
                         case Tool_Bar_Action::Net_Label:
                             is_labeling = !is_labeling;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             elements_menu = false;
                             is_grounding = false;
                             math_operation_mode = false;
@@ -2195,7 +2241,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             break;
                         case Tool_Bar_Action::Components_Menu:
                             elements_menu = !elements_menu;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_labeling = false;
                             is_grounding = false;
                             math_operation_mode = false;
@@ -2211,7 +2257,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             elements_menu = false;
                             math_operation_mode = false;
                             probe_mode = false;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_labeling = false;
                             is_grounding = false;
                             is_saving = false;
@@ -2223,7 +2269,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             elements_menu = false;
                             math_operation_mode = false;
                             probe_mode = false;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_labeling = false;
                             is_grounding = false;
                             is_saving = false;
@@ -2276,7 +2322,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                         case Tool_Bar_Action::Probe:
                             probe_mode = !probe_mode;
                             math_operation_mode = false;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
@@ -2288,7 +2334,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                         case Tool_Bar_Action::Math_Operation:
                             math_operation_mode = !math_operation_mode;
                             probe_mode = false;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
@@ -2301,7 +2347,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_saving = !is_saving;
                             math_operation_mode = false;
                             probe_mode = false;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
@@ -2317,7 +2363,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_deleting = !is_deleting;
                             math_operation_mode = false;
                             probe_mode = false;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_labeling = false;
                             elements_menu = false;
                             is_grounding = false;
@@ -2329,7 +2375,7 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             sub_circuit_menu = !sub_circuit_menu;
                             is_labeling = false;
                             elements_menu = false;
-                            m_is_wiring = false;
+                            is_wiring = false;
                             is_grounding = false;
                             math_operation_mode = false;
                             probe_mode = false;

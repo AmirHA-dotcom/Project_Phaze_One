@@ -11,6 +11,7 @@ Element::Element(string _name, Element_Type _type, Node *n1, Node *n2, double _v
     node1 = n1;
     node2 = n2;
     value = _value;
+    rotation = Rotation::Right;
 }
 
 string Element::get_name() const

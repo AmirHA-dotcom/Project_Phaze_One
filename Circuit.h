@@ -90,13 +90,17 @@ class SubCircuit : public Circuit
 private:
     Node* input;
     Node* output;
+    int x, y;
+    Rotation rotation;
 public:
-    SubCircuit(string _name, Node* _input, Node* _output) : Circuit(_name), input(_input), output(_output) {}
+    SubCircuit(string _name, Node* _input, Node* _output) : Circuit(_name), input(_input), output(_output) { rotation = Rotation::Right; }
     Node* getInput() const;
     Node* getOutput() const;
     void setInput(Node* newInput);
     void setOutput(Node* newOutput);
 
+    void set_coordinates(int x_, int y_) { x = x_; y = y_; }
+    void set_rotation(Rotation r) { rotation = r; }
 };
 
 #endif //PROJECT_PHAZE_ONE_CIRCUIT_H
