@@ -63,6 +63,8 @@ protected:
     Rotation rotation;
 
     SDL_Point transform_point(SDL_Point point_to_rotate);
+
+    string info_text;
 public:
     Graphical_Element(Element* element_model) : model_element(element_model) { rotation = Rotation::Right; }
     virtual ~Graphical_Element() = default;
@@ -82,6 +84,8 @@ public:
     virtual vector<Editable_Property> get_editable_properties() = 0;
 
     virtual vector<Connection_Point> get_connection_points() = 0;
+
+    virtual string get_info_text() = 0;
 };
 
 class Graphical_Resistor : public Graphical_Element {
@@ -92,6 +96,8 @@ public:
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
+
+    string get_info_text()  override;
 };
 
 class Graphical_Capacitor : public Graphical_Element {
@@ -102,6 +108,7 @@ public:
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
 
 };
 
@@ -113,6 +120,7 @@ public:
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
 
 };
 
@@ -124,6 +132,7 @@ public:
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
 
 };
 
@@ -135,6 +144,7 @@ public:
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
 
 };
 
@@ -146,6 +156,7 @@ public:
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
 
 };
 
@@ -157,6 +168,7 @@ public:
 
     vector<Editable_Property> get_editable_properties() override;
     vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
 
 };
 
@@ -176,13 +188,14 @@ public:
     vector<Editable_Property> get_editable_properties() override { return {}; }
 
     Node* get_node() { return m_node; }
+    string get_info_text()  override;
 };
 
 class Graphical_Net_Label : public Graphical_Element
 {
 private:
     SDL_Point m_position;
-    std::string m_label_text;
+    string m_label_text;
     Node* m_node;
 
 public:
@@ -195,6 +208,8 @@ public:
 
     vector<Connection_Point> get_connection_points() override { return {}; }
     vector<Editable_Property> get_editable_properties() override { return { {"Name", m_label_text} }; }
+    string get_info_text()  override;
+
 };
 
 class Graphical_SubCircuit : public Graphical_Element{
@@ -202,13 +217,15 @@ private:
     string m_type_name;
     SubCircuit* m_subcircuit_model;
 public:
-    Graphical_SubCircuit(SubCircuit* subcircuit_model, const std::string& type_name) : Graphical_Element(nullptr), m_type_name(type_name), m_subcircuit_model(subcircuit_model)
+    Graphical_SubCircuit(SubCircuit* subcircuit_model, const string& type_name) : Graphical_Element(nullptr), m_type_name(type_name), m_subcircuit_model(subcircuit_model)
     { rotation = Rotation::Right; }
 
     void draw(SDL_Renderer* renderer, bool show_grids) override;
     vector<Connection_Point> get_connection_points() override;
     vector<Editable_Property> get_editable_properties() override;
     SubCircuit* get_subcircuit_model() { return m_subcircuit_model; }
+    string get_info_text()  override;
+
 };
 
 #endif //PROJECT_PHAZE_ONE_GRAPHICAL_ELEMENT_H

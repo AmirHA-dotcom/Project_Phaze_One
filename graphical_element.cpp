@@ -1130,3 +1130,117 @@ vector<Connection_Point> Graphical_SubCircuit::get_connection_points()
             {final_screen_end, model ? model->getOutput() : nullptr, end_port_orientation}
     };
 }
+
+// get info text
+
+string Graphical_Resistor::get_info_text()
+{
+    info_text = model_element->get_name() + " " + format_with_suffix(model_element->get_value(), " Ohms");
+    return info_text;
+}
+
+string Graphical_Capacitor::get_info_text()
+{
+    info_text = model_element->get_name() + " " + format_with_suffix(model_element->get_value(), " F");
+    return info_text;
+}
+
+string Graphical_Inductor::get_info_text()
+{
+    info_text = model_element->get_name() + " " + format_with_suffix(model_element->get_value(), " H");
+    return info_text;
+}
+
+string Graphical_Current_Source::get_info_text()
+{
+    info_text = model_element->get_name() + " " + format_with_suffix(model_element->get_value(), " A");
+    return info_text;
+}
+
+string Graphical_Real_Diode::get_info_text()
+{
+    info_text = model_element->get_name();
+    return info_text;
+}
+
+string Graphical_Zener_Diode::get_info_text()
+{
+    info_text = model_element->get_name();
+    return info_text;
+}
+
+string Graphical_Voltage_Source::get_info_text()
+{
+    if (auto* dc = dynamic_cast<DC_Source*>(model_element))
+    {
+        info_text = format_with_suffix(model_element->get_value(), " V");
+    }
+    else if (auto* sine = dynamic_cast<Sine_Source*>(model_element))
+    {
+        double off, amp, freq, phase;
+        sine->get_parameters(off, amp, freq, phase);
+
+        info_text = "Offset=" + format_with_suffix(off, "V") +
+                    ", Ampl=" + format_with_suffix(amp, "V") +
+                    ", Freq=" + format_with_suffix(freq, "Hz");
+    }
+    else if (auto* pulse = dynamic_cast<Pulse_Source*>(model_element))
+    {
+        double v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period;
+        pulse->get_parameters(v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period);
+
+        info_text = "V1=" + format_with_suffix(v_initial, "V") +
+                    ", V2=" + format_with_suffix(v_pulsed, "V") +
+                    ", Td=" + format_with_suffix(time_delay, "s") +
+                    ", PW=" + format_with_suffix(pulse_width, "s") +
+                    ", Per=" + format_with_suffix(period, "s");
+    }
+    else if (auto* square = dynamic_cast<Square_Source*>(model_element))
+    {
+        double v_down, v_up, time_delay, square_width, period;
+        square->get_parameters(v_down, v_up, time_delay, square_width, period);
+
+        info_text = "V1=" + format_with_suffix(v_down, "V") +
+                    ", V2=" + format_with_suffix(v_up, "V") +
+                    ", Td=" + format_with_suffix(time_delay, "s") +
+                    ", PW=" + format_with_suffix(square_width, "s") +
+                    ", Per=" + format_with_suffix(period, "s");
+    }
+    else if (auto* tri = dynamic_cast<Triangular_Source*>(model_element))
+    {
+        double v_initial, v_peak, time_delay, period;
+        tri->get_parameters(v_initial, v_peak, time_delay, period);
+
+        info_text = "V1=" + format_with_suffix(v_initial, "V") +
+                    ", V2=" + format_with_suffix(v_peak, "V") +
+                    ", Td=" + format_with_suffix(time_delay, "s") +
+                    ", Per=" + format_with_suffix(period, "s");
+    }
+    else if (auto* delta = dynamic_cast<Delta_Dirac*>(model_element))
+    {
+        double delta_value, not_delta_value, time_of_delta;
+        delta->get_parameters(delta_value, not_delta_value, time_of_delta);
+
+        info_text = "Time=" + format_with_suffix(time_of_delta, "s");
+    }
+
+    return info_text;
+}
+
+string Graphical_Ground::get_info_text()
+{
+    info_text = "Is Ground, Node Name = " + m_node->get_name();
+    return info_text;
+}
+
+string Graphical_Net_Label::get_info_text()
+{
+    info_text = "Net Name = " + m_label_text;
+    return info_text;
+}
+
+string Graphical_SubCircuit::get_info_text()
+{
+    info_text = "Black Box Name = " + m_subcircuit_model->get_name();
+    return info_text;
+}

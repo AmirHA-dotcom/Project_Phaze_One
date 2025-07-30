@@ -1019,15 +1019,15 @@ bool graphical_view::run(Controller *C)
         Graphical_Element* hovered_element = find_element_at({mouseX, mouseY}, C);
         if (is_wiring)
         {
-            info_bar_text = "";
+            info_bar_text = "Press and hold the left mouse button to start wiring.";
         }
         else if (is_deleting)
         {
-            info_bar_text = "";
+            info_bar_text = "Click on a component to delete.";
         }
         else if (hovered_element)
         {
-            //info_bar_text = "Component: " + hovered_element->();
+            info_bar_text = hovered_element->get_info_text();
         }
         else
         {
