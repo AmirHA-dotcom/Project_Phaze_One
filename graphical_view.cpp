@@ -943,6 +943,8 @@ bool graphical_view::run(Controller *C)
             SDL_WINDOW_RESIZABLE
     );
 
+    m_main_window_id = SDL_GetWindowID(window);
+
     if (!window)
     {
         SDL_Quit();
@@ -1113,93 +1115,118 @@ bool graphical_view::run(Controller *C)
 
         while (SDL_PollEvent(&event) != 0)
         {
-            if (plot_view)
+            if (event.type == SDL_QUIT)
             {
-                if (!plot_view->handle_event(event))
+                running = false;
+                continue;
+            }
+
+            // window ID from the event
+            Uint32 event_window_id = 0;
+            switch (event.type)
+            {
+                case SDL_MOUSEMOTION:       event_window_id = event.motion.windowID; break;
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:     event_window_id = event.button.windowID; break;
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:             event_window_id = event.key.windowID;    break;
+                case SDL_WINDOWEVENT:       event_window_id = event.window.windowID; break;
+                case SDL_TEXTINPUT:         event_window_id = event.text.windowID;   break;
+                case SDL_MOUSEWHEEL:        event_window_id = event.wheel.windowID;  break;
+            }
+
+            // handling the event
+            if (plot_view && event_window_id == plot_view->get_window_id())
+            {
+                Plot_Event_Status status = plot_view->handle_event(event);
+                if (status == Plot_Event_Status::Close_Request)
                 {
                     plot_view.reset();
                 }
             }
 
-            if (event.type == SDL_MOUSEMOTION)
+            else if (event_window_id == m_main_window_id)
             {
-                SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-
-                hovered_button_index = -1;
-
-                for (int i = 0; i < toolbar_buttons.size(); ++i)
+                if (event.type == SDL_MOUSEMOTION)
                 {
-                    if (SDL_PointInRect(&mouse_pos, &toolbar_buttons[i].rect))
+                    SDL_Point mouse_pos = {event.motion.x, event.motion.y};
+
+                    hovered_button_index = -1;
+
+                    for (int i = 0; i < toolbar_buttons.size(); ++i)
                     {
-                        hovered_button_index = i;
-                        break;
+                        if (SDL_PointInRect(&mouse_pos, &toolbar_buttons[i].rect))
+                        {
+                            hovered_button_index = i;
+                            break;
+                        }
                     }
                 }
-            }
 
-            bool event_was_handled = handle_toolbar_events(event, C);
+                bool event_was_handled = handle_toolbar_events(event, C);
 
-            if (!event_was_handled)
-            {
-                if (elements_menu)
+                if (!event_was_handled)
                 {
-                    running = handle_menu_events(event, C);
-                }
-                else if (editing)
-                {
-                    running = handle_edit_properties_menu(event, C);
-                }
-                else if (is_wiring)
-                {
-                    running = handle_wiring_events(event, C);
-                }
-                else if (is_grounding)
-                {
-                    running = handle_grounding_events(event, C);
-                }
-                else if (is_labeling)
-                {
-                    running = handle_net_labeling_events(event, C);
-                }
-                else if (is_configuring_analysis)
-                {
-                    running = handle_configure_analysis_events(event, C);
-                }
-                else if (probe_mode)
-                {
-                    running = handle_probing_events(event, C);
-                }
-                else if (math_operation_mode)
-                {
-                    running = handle_math_operation_events(event, C);
-                }
-                else if (is_saving)
-                {
-                    running = handle_saving_events(event, C);
-                }
-                else if (is_deleting)
-                {
-                    running = handle_deleting_events(event, C);
-                }
-                else if (is_file_menu_open)
-                {
-                    running = handle_file_menu_events(event, C);
-                }
-                else if (sub_circuit_menu)
-                {
-                    running = handle_SubC_menu_events(event, C);
-                }
-                else if (create_SubC_mode)
-                {
-                    running = handle_SubC_creation_events(event, C);
-                }
-                else if (naming_SubC_menu_active)
-                {
-                    running = handle_text_input_menu_events(event);
-                }
-                else
-                {
-                    running = handle_events(event, C);
+                    if (elements_menu)
+                    {
+                        running = handle_menu_events(event, C);
+                    }
+                    else if (editing)
+                    {
+                        running = handle_edit_properties_menu(event, C);
+                    }
+                    else if (is_wiring)
+                    {
+                        running = handle_wiring_events(event, C);
+                    }
+                    else if (is_grounding)
+                    {
+                        running = handle_grounding_events(event, C);
+                    }
+                    else if (is_labeling)
+                    {
+                        running = handle_net_labeling_events(event, C);
+                    }
+                    else if (is_configuring_analysis)
+                    {
+                        running = handle_configure_analysis_events(event, C);
+                    }
+                    else if (probe_mode)
+                    {
+                        running = handle_probing_events(event, C);
+                    }
+                    else if (math_operation_mode)
+                    {
+                        running = handle_math_operation_events(event, C);
+                    }
+                    else if (is_saving)
+                    {
+                        running = handle_saving_events(event, C);
+                    }
+                    else if (is_deleting)
+                    {
+                        running = handle_deleting_events(event, C);
+                    }
+                    else if (is_file_menu_open)
+                    {
+                        running = handle_file_menu_events(event, C);
+                    }
+                    else if (sub_circuit_menu)
+                    {
+                        running = handle_SubC_menu_events(event, C);
+                    }
+                    else if (create_SubC_mode)
+                    {
+                        running = handle_SubC_creation_events(event, C);
+                    }
+                    else if (naming_SubC_menu_active)
+                    {
+                        running = handle_text_input_menu_events(event);
+                    }
+                    else
+                    {
+                        running = handle_events(event, C);
+                    }
                 }
             }
         }

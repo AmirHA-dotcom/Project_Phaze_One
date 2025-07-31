@@ -185,13 +185,13 @@ void Plot_View::auto_zoom()
 //    }
 }
 
-bool Plot_View::handle_event(SDL_Event& event)
+Plot_Event_Status  Plot_View::handle_event(SDL_Event& event)
 {
     if (event.type == SDL_WINDOWEVENT && event.window.windowID == SDL_GetWindowID(m_window))
     {
         if (event.window.event == SDL_WINDOWEVENT_CLOSE)
         {
-            return false;
+            return Plot_Event_Status::Close_Request;
         }
     }
 
@@ -201,15 +201,17 @@ bool Plot_View::handle_event(SDL_Event& event)
         {
             case SDLK_SPACE:
                 auto_zoom();
+                return Plot_Event_Status::Handled;
                 break;
 
-            case SDLK_q:
+            case SDLK_c:
                 cursor_mode_active = !cursor_mode_active;
                 if (!cursor_mode_active)
                 {
                     cursor1.reset();
                     cursor2.reset();
                 }
+                return Plot_Event_Status::Handled;
                 break;
         }
     }
@@ -233,14 +235,11 @@ bool Plot_View::handle_event(SDL_Event& event)
             }
             color_menu_active = false;
         }
-        return true;
+        return Plot_Event_Status::Handled;
     }
 
     // panning
-    const Uint8* keystates = SDL_GetKeyboardState(NULL);
-    bool ctrl_is_pressed = keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL];
-
-    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && ctrl_is_pressed)
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT )
     {
 
         is_panning = true;
@@ -298,6 +297,7 @@ bool Plot_View::handle_event(SDL_Event& event)
             max_y = voltage_before_zoom + (max_y - voltage_before_zoom) * zoom_factor;
             min_y = voltage_before_zoom - (voltage_before_zoom - min_y) * zoom_factor;
         }
+        return Plot_Event_Status::Handled;
     }
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
@@ -305,18 +305,20 @@ bool Plot_View::handle_event(SDL_Event& event)
         if (!cursor_mode_active)
         {
             SDL_Point mouse_pos = { event.button.x, event.button.y };
-            for (int i = 0; i < legend_rects.size(); ++i) {
-                if (SDL_PointInRect(&mouse_pos, &legend_rects[i])) {
+            for (int i = 0; i < legend_rects.size(); ++i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &legend_rects[i]))
+                {
                     color_menu_active = true;
                     signal_to_edit_index = i;
                     color_menu_pos = {event.button.x, event.button.y };
-                    return true; // Event handled, don't place a cursor
+                    return Plot_Event_Status::Handled; // Consume the event
                 }
             }
         }
 
         // place cursor
-        if (m_signals.empty() || m_signals[0].data_points.empty()) return true;
+        if (m_signals.empty() || m_signals[0].data_points.empty()) return Plot_Event_Status::Handled;
 
         // convert screen X coordinate to world x
         double time_at_click = min_x + ((double)(event.button.x - plot_area.x) / plot_area.w) * (max_x - min_x);
@@ -352,7 +354,7 @@ bool Plot_View::handle_event(SDL_Event& event)
         place_first_cursor_next = !place_first_cursor_next;
     }
 
-    return true;
+    return Plot_Event_Status::Not_Handled;
 }
 
 void Plot_View::render()

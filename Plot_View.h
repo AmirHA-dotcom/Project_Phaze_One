@@ -8,12 +8,14 @@
 #include "Libraries.h"
 #include "Node.h"
 
+enum class Plot_Event_Status{ Handled, Not_Handled, Close_Request };
+
 enum class Unit{V, A, W, s};
 
 struct Cursor {
     double X;
     double Y;
-    size_t data_point_index; // Index of the point it's snapped to
+    size_t data_point_index;
 };
 
 struct Signal {
@@ -81,6 +83,8 @@ public:
     Plot_View();
     ~Plot_View();
 
+    Uint32 get_window_id() const { return SDL_GetWindowID(m_window); }
+
     void set_y_unit(Unit u) { y_axis_unit = u; }
     void set_x_unit(Unit u) { x_axis_unit = u; }
 
@@ -88,7 +92,7 @@ public:
 
     void add_signal(const Signal& new_signal);
     void delete_all_signals();
-    bool handle_event(SDL_Event& event);
+    Plot_Event_Status  handle_event(SDL_Event& event);
     void auto_zoom();
     void render();
 };

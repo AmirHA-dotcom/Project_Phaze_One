@@ -48,6 +48,9 @@ struct Point_Comparator {
 class graphical_view
 {
 private:
+    // window handling
+    Uint32 m_main_window_id;
+
     int m_window_width;
     int m_window_height;
 
