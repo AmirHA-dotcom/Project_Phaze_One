@@ -1315,7 +1315,20 @@ void Controller::delete_element(Graphical_Element* g_element_to_delete)
 
     string name_to_delete = g_element_to_delete->get_model()->get_name();
 
-    if (g_element_to_delete->get_model() != nullptr) circuit->delete_element(name_to_delete);
+    if (g_element_to_delete->get_model() != nullptr)
+    {
+        circuit->delete_element(name_to_delete);
+//        switch (g_element_to_delete->get_model()->get_element_type())
+//        {
+//            case Element_Type::Resistor: resistor_count--;
+//            case Element_Type::Capacitor: capacitor_count--;
+//            case Element_Type::Inductor: inductor_count--;
+//            case Element_Type::Current_Source: current_source_count--;
+//            case Element_Type::Voltage_Source: voltage_source_count--;
+//            case Element_Type::Real_Diode: real_diode_count--;
+//            case Element_Type::Zener_Diode: zener_diode_count--;
+//        }
+    }
 
     auto& g_elements = get_graphical_elements();
 
@@ -1330,6 +1343,7 @@ void Controller::delete_wire(Graphical_Wire *wire_to_delete)
     if (wire_to_delete->start_node->connected_elements_count() == 0)
     {
         circuit->delete_node(wire_to_delete->start_node);
+        node_count--;
     }
     graphical_wires.erase(remove_if(graphical_wires.begin(), graphical_wires.end(), [&](const std::unique_ptr<Graphical_Wire>& wire) {
                         return wire.get() == wire_to_delete;

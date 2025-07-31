@@ -943,7 +943,7 @@ bool graphical_view::run(Controller *C)
             SDL_WINDOW_RESIZABLE
     );
 
-    m_main_window_id = SDL_GetWindowID(window);
+    main_window_id = SDL_GetWindowID(window);
 
     if (!window)
     {
@@ -1145,7 +1145,7 @@ bool graphical_view::run(Controller *C)
                 }
             }
 
-            else if (event_window_id == m_main_window_id)
+            else if (event_window_id == main_window_id)
             {
                 if (event.type == SDL_MOUSEMOTION)
                 {
