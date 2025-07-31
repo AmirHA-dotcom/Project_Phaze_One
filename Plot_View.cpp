@@ -456,6 +456,8 @@ void Plot_View::render()
 
         double slot_width = (double)plot_area.w / m_signals.size();
 
+        legend_rects.clear();
+
         for (int i = 0; i < m_signals.size(); ++i)
         {
             const auto& signal = m_signals[i];
