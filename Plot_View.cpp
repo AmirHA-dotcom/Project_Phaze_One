@@ -172,14 +172,17 @@ void Plot_View::auto_zoom()
         max_y += 0.5;
         min_y -= 0.5;
     }
-    double voltage_range = max_y - min_y;
-    min_y -= voltage_range * 0.1;
-    max_y += voltage_range * 0.1;
+//    double voltage_range = max_y - min_y;
+//    min_y -= voltage_range * 0.1;
+//    max_y += voltage_range * 0.1;
 
-    double time_range = max_x - min_x;
-    if (time_range == 0) { time_range = 1.0; }
-    min_x -= time_range * 0.1;
-    max_x += time_range * 0.1;
+//    double time_range = max_x - min_x;
+//    if (time_range == 0)
+//    {
+//        time_range = 1.0;
+//        min_x -= time_range * 0.1;
+//        max_x += time_range * 0.1;
+//    }
 }
 
 bool Plot_View::handle_event(SDL_Event& event)
@@ -200,7 +203,7 @@ bool Plot_View::handle_event(SDL_Event& event)
                 auto_zoom();
                 break;
 
-            case SDLK_c:
+            case SDLK_q:
                 cursor_mode_active = !cursor_mode_active;
                 if (!cursor_mode_active)
                 {
@@ -212,23 +215,25 @@ bool Plot_View::handle_event(SDL_Event& event)
     }
 
     // colors menu
-    if (color_menu_active) {
-        if (event.type == SDL_MOUSEBUTTONDOWN) {
+    if (color_menu_active)
+    {
+        if (event.type == SDL_MOUSEBUTTONDOWN)
+        {
             SDL_Point mouse_pos = { event.button.x, event.button.y };
             bool clicked_in_menu = false;
-            for (int i = 0; i < color_picker_buttons.size(); ++i) {
-                if (SDL_PointInRect(&mouse_pos, &color_picker_buttons[i])) {
-                    // A color was clicked! Apply it to the signal and close the menu.
+            for (int i = 0; i < color_picker_buttons.size(); ++i)
+            {
+                if (SDL_PointInRect(&mouse_pos, &color_picker_buttons[i]))
+                {
                     m_signals[signal_to_edit_index].color = default_colors[i];
                     color_menu_active = false;
                     clicked_in_menu = true;
                     break;
                 }
             }
-            // If the user clicks anywhere, close the menu
             color_menu_active = false;
         }
-        return true; // Consume all events while the menu is open
+        return true;
     }
 
     // panning
@@ -424,7 +429,6 @@ void Plot_View::render()
         }
     }
 
-
     // drawing all signals
     for (const auto& signal : m_signals)
     {
@@ -508,40 +512,49 @@ void Plot_View::render()
         if (cursor1) draw_cursor(*cursor1);
         if (cursor2) draw_cursor(*cursor2);
 
-        // info box
+
+        string y_unit = (y_axis_unit == Unit::V) ? "V" : (y_axis_unit == Unit::A) ? "A" : "W";
+        string x_unit = (x_axis_unit == Unit::s) ? "s" : "";
+
         if (cursor1 && cursor2)
         {
             double delta_y = cursor2->Y - cursor1->Y;
             double delta_x = cursor2->X - cursor1->X;
             double slope = (delta_x == 0) ? 0 : (delta_y / delta_x);
 
-            string y_unit = "";
-            if (y_axis_unit == Unit::V) { y_unit += "V"; }
-            else if (y_axis_unit == Unit::A) { y_unit += "A"; }
-            else if (y_axis_unit == Unit::W) {y_unit += "W"; }
+            string c1_str = "C1: " + format_with_suffix(cursor1->X, x_unit) + ", " + format_with_suffix(cursor1->Y, y_unit);
+            string c2_str = "C2: " + format_with_suffix(cursor2->X, x_unit) + ", " + format_with_suffix(cursor2->Y, y_unit);
+            string h_diff_str = "H-Diff: " + format_with_suffix(delta_x, x_unit);
+            string v_diff_str = "V-Diff: " + format_with_suffix(delta_y, y_unit);
+            string slope_str = "Slope: " + format_with_suffix(slope, y_unit + "/" + x_unit);
 
-            string x_unit = "";
-            if (x_axis_unit == Unit::s) { x_unit += "s"; }
-
-            stringstream ss;
-            ss << "H-Diff: " << format_with_suffix(delta_x, " " + x_unit);
-            string h_diff_str = ss.str(); ss.str("");
-            ss << "V-Diff: " << format_with_suffix(delta_y, " " + y_unit);
-            string v_diff_str = ss.str(); ss.str("");
-            ss << "Slope: " << format_with_suffix(slope, " " + y_unit + "/" + x_unit);
-            string slope_str = ss.str();
-
-            // box
-            SDL_Rect info_box = {plot_area.x + 10, plot_area.y + 10, 200, 70};
+            // info box
+            SDL_Rect info_box = {plot_area.x + 10, plot_area.y + 10, 250, 110};
             SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 220);
             SDL_RenderFillRect(m_renderer, &info_box);
             SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
             SDL_RenderDrawRect(m_renderer, &info_box);
 
-            // text
-            render_text(m_renderer, m_font, h_diff_str, info_box.x + 5, info_box.y + 5);
-            render_text(m_renderer, m_font, v_diff_str, info_box.x + 5, info_box.y + 25);
-            render_text(m_renderer, m_font, slope_str, info_box.x + 5, info_box.y + 45);
+            render_text(m_renderer, m_font, c1_str, info_box.x + 5, info_box.y + 5);
+            render_text(m_renderer, m_font, c2_str, info_box.x + 5, info_box.y + 25);
+            render_text(m_renderer, m_font, h_diff_str, info_box.x + 5, info_box.y + 45);
+            render_text(m_renderer, m_font, v_diff_str, info_box.x + 5, info_box.y + 65);
+            render_text(m_renderer, m_font, slope_str, info_box.x + 5, info_box.y + 85);
+        }
+        else if (cursor1 || cursor2)
+        {
+            const Cursor& active_cursor = cursor1 ? *cursor1 : *cursor2;
+
+            string c_str = "Cursor: " + format_with_suffix(active_cursor.X, x_unit) + ", " + format_with_suffix(active_cursor.Y, y_unit);
+
+            // info box
+            SDL_Rect info_box = {plot_area.x + 10, plot_area.y + 10, 250, 30};
+            SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 220);
+            SDL_RenderFillRect(m_renderer, &info_box);
+            SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+            SDL_RenderDrawRect(m_renderer, &info_box);
+
+            render_text(m_renderer, m_font, c_str, info_box.x + 5, info_box.y + 5);
         }
     }
 
