@@ -77,6 +77,9 @@ public:
     void delete_node(Node* node_to_delete);
     ~Circuit();
     Element* findElement (string name);
+    Node* findNode (string name);
+    void checkHaveGround();
+
     Node* create_new_node(const string& name);
     void addElement(Element* new_element);
 
@@ -94,8 +97,8 @@ private:
     Rotation rotation;
 public:
     SubCircuit(string _name, Node* _input, Node* _output) : Circuit(_name), input(_input), output(_output) { rotation = Rotation::Right; }
-    Node* getInput() const;
-    Node* getOutput() const;
+    Node* getInput() ;
+    Node* getOutput() ;
     void setInput(Node* newInput);
     void setOutput(Node* newOutput);
 

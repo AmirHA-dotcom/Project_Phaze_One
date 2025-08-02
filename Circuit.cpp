@@ -129,15 +129,34 @@ void Circuit::make_node_ground(string name)
     Nodes[node_index]->make_ground();
     haveGround = true;
 }
+void Circuit::checkHaveGround() {
+    for (auto node : Nodes)
+    {
+        if (node->is_the_node_ground())
+        {
+            haveGround = true;
+            return;
+        }
+    }
+}
 
 Element* Circuit::findElement (string name){
-    for (auto& e : Elements)
+    for (auto& e : get_Elements())
     {
         if (e->get_name() == name)
             return e;
     }
     return nullptr;
 }
+Node* Circuit::findNode (string name){
+    for (auto& n : get_Nodes())
+    {
+        if (n->get_name() == name)
+            return n;
+    }
+    return nullptr;
+}
+
 void Circuit::make_node_NOT_ground(string name)
 {
     int node_index = node_index_finder_by_name(name);

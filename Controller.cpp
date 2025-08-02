@@ -20,6 +20,40 @@ void Controller::addSubCircuit(string name, Node* inputNode, Node* outputNode) {
     auto* sc = new SubCircuit(name,inputNode,outputNode);
     subCircuits.push_back(sc);
 }
+
+void changeSubCircuitAllNodeNames (SubCircuit* subCircuit){
+    for (auto node : subCircuit->get_Nodes())
+        if (node->get_name() != subCircuit->getInput()->get_name() && node->get_name() != subCircuit->getOutput()->get_name())
+            node->change_name(node->get_name()+"_sub");
+
+}
+
+void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, string inputNode, string outputNode) {
+    auto input = findNode(inputNode);
+    if (!input) {
+        cerr << "Input node not found!" << endl;
+        return;
+    }
+    auto output = findNode(outputNode);
+    if (!output) {
+        cerr << "Output node not found!" << endl;
+        return;
+    }
+    subCircuit->getInput()->change_name(inputNode);
+    subCircuit->getOutput()->change_name(outputNode);
+    changeSubCircuitAllNodeNames(subCircuit);
+
+    for (auto node : subCircuit->get_Nodes()) {
+        if (node->get_name() != inputNode && node->get_name() != outputNode) {
+            circuit->create_new_node(node->get_name());
+        }
+    }
+    for (auto element : subCircuit->get_Elements()) {
+        circuit->addElement(element);
+    }
+    circuit->checkHaveGround();
+}
+
 Circuit* Controller::findCircuit(string name){
     for (auto i : circuits) {
         if(i->get_name() == name)
@@ -44,7 +78,6 @@ Element* Controller::findElement (string name){
     }
     return nullptr;
 }
-
 
 Node* Controller::findNode (string name){
     for (auto& n : circuit->get_Nodes())
@@ -351,8 +384,6 @@ void Controller::tranAnalysisOrders(vector<string> orders){
             cout << endl;
     }
 }
-
-
 
 
 void Controller::saveCircuit(Circuit* circuit, string path) {
@@ -1613,9 +1644,4 @@ void Controller::New_File()
 
     circuit = new Circuit("default_circuit");
     circuits.push_back(circuit);
-}
-
-void Controller::load_file(string name)
-{
-
 }
