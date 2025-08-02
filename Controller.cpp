@@ -376,11 +376,8 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
         cerr << "Error: could not create file at " << fullPath << endl;
         return;
     }
-
-    // Write circuit name
     file << circuit->get_name() << ": " << "\n";
 
-    // Helper function to format numerical values with appropriate suffixes
     auto formatValue = [](double value) -> string {
         const vector<pair<string, double>> suffixes = {
                 {"t", 1e12}, {"g", 1e9}, {"meg", 1e6}, {"k", 1e3},
@@ -398,7 +395,6 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
         return to_string(value);
     };
 
-    // Iterate through circuit components
     for (auto* component : circuit->get_Elements()) {
         string line;
         Element_Type type = component->get_type();
@@ -450,16 +446,14 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
         }
         file << line << "\n";
     }
-
     // Write ground directive if present
     if (circuit->isGround()) {
         file << "GND GND\n";
     }
-
     // End of circuit
     file << ".END\n";
-
     file.close();
+    handleNewFile(path + circuit->get_name() + ".txt" );
 }
 
 double Value(const string& inputRaw) {
