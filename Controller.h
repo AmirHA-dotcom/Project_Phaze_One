@@ -155,6 +155,7 @@ public:
     Node *findNode(string name);
     void addCircuit(string name);
     void addSubCircuit(string name, Node* inputNode, Node* outputNode);
+    void addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, string inputNode, string outputNode);
     void addR(string name, string Node1, string Node2, double value);
 
     void addC(string name, string Node1, string Node2, double value);
