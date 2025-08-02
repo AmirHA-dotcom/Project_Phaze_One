@@ -778,8 +778,8 @@ void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     render_text(renderer, font, "Open File", menu_panel.x + 10, menu_panel.y + 10, TEXT_COLOR);
     file_button_rects.clear();
     vector<string> file_names = C->get_file_names();
-    for (string name : C->get_file_names())
-        cout << name << endl;
+//    for (string name : C->get_file_names())
+//        cout << name << endl;
 
     int start_y = menu_panel.y + 50;
     int row_height = 35;

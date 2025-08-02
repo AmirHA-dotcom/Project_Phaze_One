@@ -1437,14 +1437,14 @@ vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()
 }
 
 void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end) {
-    auto new_wire = std::make_unique<Graphical_Wire>();
+    auto new_wire = make_unique<Graphical_Wire>();
     for (const auto& p : points) {
         new_wire->path.push_back(p.pos);
     }
 
     new_wire->start_node = start;
     new_wire->end_node = end;
-    graphical_wires.push_back(std::move(new_wire));
+    graphical_wires.push_back(move(new_wire));
 }
 
 void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
@@ -1621,7 +1621,7 @@ void Controller::delete_wire(Graphical_Wire *wire_to_delete)
         circuit->delete_node(wire_to_delete->start_node);
         node_count--;
     }
-    graphical_wires.erase(remove_if(graphical_wires.begin(), graphical_wires.end(), [&](const std::unique_ptr<Graphical_Wire>& wire) {
+    graphical_wires.erase(remove_if(graphical_wires.begin(), graphical_wires.end(), [&](const unique_ptr<Graphical_Wire>& wire) {
                         return wire.get() == wire_to_delete;
                     }
             ),
@@ -1659,57 +1659,122 @@ void Controller::build_graphical_elements_from_circuit()
     {
         if (auto* resistor = dynamic_cast<Resistor*>(model))
         {
-            auto gfx = std::make_unique<Graphical_Resistor>(resistor);
+            auto gfx = make_unique<Graphical_Resistor>(resistor);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(std::move(gfx));
+            graphical_elements.push_back(move(gfx));
         }
         else if (auto* capacitor = dynamic_cast<Capacitor*>(model))
         {
-            auto gfx = std::make_unique<Graphical_Capacitor>(capacitor);
+            auto gfx = make_unique<Graphical_Capacitor>(capacitor);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(std::move(gfx));
+            graphical_elements.push_back(move(gfx));
         }
         else if (auto* inductor = dynamic_cast<Inductor*>(model))
         {
-            auto gfx = std::make_unique<Graphical_Inductor>(inductor);
+            auto gfx = make_unique<Graphical_Inductor>(inductor);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(std::move(gfx));
+            graphical_elements.push_back(move(gfx));
         }
         else if (auto* current_source = dynamic_cast<Current_Source*>(model))
         {
-            auto gfx = std::make_unique<Graphical_Current_Source>(current_source);
+            auto gfx = make_unique<Graphical_Current_Source>(current_source);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(std::move(gfx));
+            graphical_elements.push_back(move(gfx));
         }
         else if (auto* real_diode = dynamic_cast<Real_Diode*>(model))
         {
-            auto gfx = std::make_unique<Graphical_Real_Diode>(real_diode);
+            auto gfx = make_unique<Graphical_Real_Diode>(real_diode);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(std::move(gfx));
+            graphical_elements.push_back(move(gfx));
         }
         else if (auto* zener_diode = dynamic_cast<Zener_Diode*>(model))
         {
-            auto gfx = std::make_unique<Graphical_Zener_Diode>(zener_diode);
+            auto gfx = make_unique<Graphical_Zener_Diode>(zener_diode);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(std::move(gfx));
+            graphical_elements.push_back(move(gfx));
         }
         else if (auto* voltage_source = dynamic_cast<Voltage_Source*>(model))
         {
-            auto gfx = std::make_unique<Graphical_Voltage_Source>(voltage_source);
+            auto gfx = make_unique<Graphical_Voltage_Source>(voltage_source);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(std::move(gfx));
+            graphical_elements.push_back(move(gfx));
         }
     }
-    // You will also need a similar loop here to create Graphical_Wire objects
-    // based on how wires are stored in your save file.
+    
+    // grouping all connection points by their shared node
+    map<Node*, vector<Connection_Point>> node_to_points_map;
+    for (const auto& element : graphical_elements)
+    {
+        for (const auto& point : element->get_connection_points())
+        {
+            if (point.node != nullptr) 
+            {
+                node_to_points_map[point.node].push_back(point);
+            }
+        }
+    }
+
+    // create wire for each group
+    for (const auto& pair : node_to_points_map)
+    {
+        Node* common_node = pair.first;
+        const vector<Connection_Point>& points = pair.second;
+
+        if (points.size() < 2) 
+        {
+            continue;
+        }
+
+        // a central junction point for the node
+        SDL_Point junction_pos = {0, 0};
+        for (const auto& p : points)
+        {
+            junction_pos.x += p.pos.x;
+            junction_pos.y += p.pos.y;
+        }
+        junction_pos.x /= points.size();
+        junction_pos.y /= points.size();
+         //junction_pos = snap_to_grid(junction_pos.x, junction_pos.y, 10);
+
+        //  connecting each terminal to the central junction point
+        for (const auto& start_cp : points) 
+        {
+            vector<SDL_Point> path_points;
+            path_points.push_back(start_cp.pos);
+
+            SDL_Point corner_pos;
+            bool is_start_horizontal = (start_cp.rotation == Rotation::Left || start_cp.rotation == Rotation::Right);
+
+            if (is_start_horizontal) {
+                corner_pos = { junction_pos.x, start_cp.pos.y };
+            } else {
+                corner_pos = { start_cp.pos.x, junction_pos.y };
+            }
+
+            if ((corner_pos.x != start_cp.pos.x || corner_pos.y != start_cp.pos.y) &&
+                (corner_pos.x != junction_pos.x || corner_pos.y != junction_pos.y)) {
+                path_points.push_back(corner_pos);
+            }
+            path_points.push_back(junction_pos);
+
+            // final wire points vector
+            vector<Connection_Point> final_wire_points;
+            for(const auto& p : path_points) {
+                final_wire_points.push_back({ p, nullptr, {} });
+            }
+
+            add_Graphical_Wire(final_wire_points, common_node, common_node);
+        }
+    }
 }
+
 
 void Controller::load_file(string name)
 {
