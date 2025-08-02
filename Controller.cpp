@@ -44,14 +44,7 @@ Element* Controller::findElement (string name){
     }
     return nullptr;
 }
-Element* Controller::findElement (string name){
-    for (auto& e : circuit->get_Elements())
-    {
-        if (e->get_name() == name)
-            return e;
-    }
-    return nullptr;
-}
+
 
 Node* Controller::findNode (string name){
     for (auto& n : circuit->get_Nodes())
@@ -1620,4 +1613,9 @@ void Controller::New_File()
 
     circuit = new Circuit("default_circuit");
     circuits.push_back(circuit);
+}
+
+void Controller::load_file(string name)
+{
+
 }

@@ -129,8 +129,9 @@ void Circuit::make_node_ground(string name)
     Nodes[node_index]->make_ground();
     haveGround = true;
 }
+
 Element* Circuit::findElement (string name){
-    for (auto& e : circuit->get_Elements())
+    for (auto& e : Elements)
     {
         if (e->get_name() == name)
             return e;

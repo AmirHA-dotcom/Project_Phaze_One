@@ -283,5 +283,7 @@ public:
 
     void New_File();
 
+    void load_file(string name);
+
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

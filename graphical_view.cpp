@@ -6,15 +6,15 @@
 
 // helper functions
 
-//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-//const char* PROBE = "D://Images//probe_cursor.png";
-//const char* DELETE = "D://Images//sissors_cursor.png";
-//const char* GROUND = "D://Images//grounding_cursor.png";
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+const char* PROBE = "D://Images//probe_cursor.png";
+const char* DELETE = "D://Images//sissors_cursor.png";
+const char* GROUND = "D://Images//grounding_cursor.png";
 
-const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
-const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
-const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
-const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
+//const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
+//const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
+//const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
+//const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
 {
@@ -3006,7 +3006,7 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         current_file_address = edit_buffers[1];
 
         C->circuit->change_name(current_file_name);
-        C->saveCircuit(C->circuit, current_file_address);
+        C->saveGraphicalCircuit(C->circuit, current_file_address);
 
 
         is_saving = false;
