@@ -456,6 +456,108 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
     handleNewFile(path + circuit->get_name() + ".txt" );
 }
 
+void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
+    if (!circuit) {
+        cerr << "Error: Null circuit pointer provided" << endl;
+        return;
+    }
+
+    // Ensure path ends with appropriate separator
+    if (!path.empty() && path.back() != '/' && path.back() != '\\') {
+#ifdef _WIN32
+        path += "\\";
+#else
+        path += "/";
+#endif
+    }
+    string fullPath = path + circuit->get_name() + ".txt";
+    filesystem::create_directories(path);
+
+    ofstream file(fullPath);
+    if (!file.is_open()) {
+        cerr << "Error: could not create file at " << fullPath << endl;
+        return;
+    }
+    file << circuit->get_name() << ": " << "\n";
+
+    auto formatValue = [](double value) -> string {
+        const vector<pair<string, double>> suffixes = {
+                {"t", 1e12}, {"g", 1e9}, {"meg", 1e6}, {"k", 1e3},
+                {"", 1.0}, {"m", 1e-3}, {"u", 1e-6}, {"n", 1e-9}, {"p", 1e-12}, {"f", 1e-15}
+        };
+        for (const auto& suffix : suffixes) {
+            if (abs(value) >= suffix.second || suffix.second == 1.0) {
+                double scaled = value / suffix.second;
+                string result = to_string(scaled);
+                result.erase(result.find_last_not_of('0') + 1);
+                if (result.back() == '.') result.pop_back();
+                return result + suffix.first;
+            }
+        }
+        return to_string(value);
+    };
+
+    for (auto* component : circuit->get_Elements()) {
+        string line;
+        Element_Type type = component->get_type();
+        string element_name = component->get_name();
+        const pair<Node*, Node*> nodes = component->get_nodes();
+        string node1 = nodes.first ? nodes.first->get_name() : "0";
+        string node2 = nodes.second ? nodes.second->get_name() : "0";
+        double value = component->get_value();
+
+        switch (type) {
+            case Element_Type::Resistor:
+                line = "R" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + component.get;
+                break;
+            case Element_Type::Capacitor:
+                line = "C" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Inductor:
+                line = "L" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Current_Source:
+                line = "I" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Voltage_Source:
+                // Assume DC voltage source, as Element doesn't store sourceType
+                line = "V" + element_name + " " + node1 + " " + node2 + " DC " + formatValue(value);
+                break;
+            case Element_Type::VC_Voltage_Source:
+                // Control nodes not in Element; assume "0 0" or handle via derived class if available
+                line = "E" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::CC_Current_source:
+                line = "F" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::VC_Current_Source:
+                line = "G" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::CC_Voltage_Source:
+                line = "H" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                break;
+            case Element_Type::Real_Diode:
+                line = "D" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            case Element_Type::Zener_Diode:
+                line = "Z" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                break;
+            default:
+                cerr << "Unsupported component type: " << static_cast<int>(type) << endl;
+                continue;
+        }
+        file << line << "\n";
+    }
+    // Write ground directive if present
+    if (circuit->isGround()) {
+        file << "GND GND\n";
+    }
+    // End of circuit
+    file << ".END\n";
+    file.close();
+    handleNewFile(path + circuit->get_name() + ".txt" );
+}
+
 double Value(const string& inputRaw) {
     string input;
     for (char c : inputRaw) {

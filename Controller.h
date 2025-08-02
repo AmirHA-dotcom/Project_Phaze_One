@@ -209,6 +209,8 @@ public:
 
     void saveCircuit(Circuit* circuit, string path);
 
+    void saveGraphicalCircuit(Circuit* circuit, string path);
+
     void addFileToCircuits(int fileIndex);
 
     void delElement(Element *element);

@@ -36,6 +36,8 @@ public:
     void replace_node(Node* node_to_merge, Node* node_to_keep);
 
     void set_coordinates(int x, int y) { this->x = x; this->y = y; }
+    int get_x() const { return x; }
+    int get_y() const { return y; }
     void set_rotation(Rotation r) { rotation = r; }
 };
 

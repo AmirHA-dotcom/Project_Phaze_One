@@ -1,21 +1,15 @@
-# Set the minimum required version of CMake
 cmake_minimum_required(VERSION 3.20)
-
-# Name the project
 project(Project_Phaze_One)
 
-# Set the C++ standard
+# Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# اگر با Homebrew نصب کردی SDL2 رو:
+include_directories(/opt/homebrew/include /opt/homebrew/include/SDL2)
+link_directories(/opt/homebrew/lib)
 
-set(SDL2_DEV_ARCH_DIR "E:/newest_SDL/SDL2-2.32.8/x86_64-w64-mingw32")
-
-include_directories(
-        ${SDL2_DEV_ARCH_DIR}/include
-        ${SDL2_DEV_ARCH_DIR}/include/SDL2
-)
-
+# تعریف فایل‌های پروژه
 add_executable(Project_Phaze_One
         Node.cpp
         Element.cpp
@@ -37,27 +31,10 @@ add_executable(Project_Phaze_One
         Real_Diode.cpp
         Zener_Diode.cpp
         File_Handler.cpp
-        graphical_view.h
-        graphical_view.cpp
-        elements_graphics.cpp
-        graphical_element.cpp
-        graphical_element.h
+        plot_view.cpp
+        Graphical_element.cpp
+        Graphical_view.cpp
         Graphical_Wire.cpp
-        Graphical_Wire.h
 )
 
-target_link_libraries(Project_Phaze_One
-        -L${SDL2_DEV_ARCH_DIR}/lib
-
-        -lmingw32
-        #-lconio
-
-        -lSDL2main
-        -lSDL2
-
-        # SDL2 Extension libraries (ensure you have downloaded these development libs for your architecture
-        # and placed them within E:/newest_SDL/SDL2-2.32.8/x86_64-w64-mingw32/lib)
-#        -lSDL2_image
-        -lSDL2_ttf
-#        -lSDL2_mixer
-)
+target_link_libraries(Project_Phaze_One SDL2 SDL2_ttf SDL2_image)
