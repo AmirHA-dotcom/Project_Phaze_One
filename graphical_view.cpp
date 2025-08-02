@@ -3114,11 +3114,17 @@ bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
 {
+    // helper
+    auto execute_and_exit = [&]() {
+        if (selected_file_index != -1)
+            C->load_file(C->get_file_names()[selected_file_index]);
+        is_file_menu_open = false;
+    };
+
     if (event.type == SDL_QUIT) return false;
 
     if (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE))
     {
-        is_file_menu_open = false;
         return true;
     }
 
@@ -3158,6 +3164,8 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
             {
                 vector<string> file_names = C->get_file_names();
                 string selected_file = file_names[selected_file_index];
+
+                execute_and_exit();
 
                 cout << "OK clicked! Opening file: " << selected_file << endl;
 

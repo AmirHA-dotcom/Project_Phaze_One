@@ -1645,3 +1645,89 @@ void Controller::New_File()
     circuit = new Circuit("default_circuit");
     circuits.push_back(circuit);
 }
+
+void Controller::build_graphical_elements_from_circuit()
+{
+    if (!circuit) return;
+
+    graphical_elements.clear();
+    graphical_wires.clear();
+
+    const auto& logical_elements = circuit->get_Elements();
+
+    for (Element* model : logical_elements)
+    {
+        if (auto* resistor = dynamic_cast<Resistor*>(model))
+        {
+            auto gfx = std::make_unique<Graphical_Resistor>(resistor);
+            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            gfx->set_rotation_by_int(model->get_rotation_as_int());
+            graphical_elements.push_back(std::move(gfx));
+        }
+        else if (auto* capacitor = dynamic_cast<Capacitor*>(model))
+        {
+            auto gfx = std::make_unique<Graphical_Capacitor>(capacitor);
+            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            gfx->set_rotation_by_int(model->get_rotation_as_int());
+            graphical_elements.push_back(std::move(gfx));
+        }
+        else if (auto* inductor = dynamic_cast<Inductor*>(model))
+        {
+            auto gfx = std::make_unique<Graphical_Inductor>(inductor);
+            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            gfx->set_rotation_by_int(model->get_rotation_as_int());
+            graphical_elements.push_back(std::move(gfx));
+        }
+        else if (auto* current_source = dynamic_cast<Current_Source*>(model))
+        {
+            auto gfx = std::make_unique<Graphical_Current_Source>(current_source);
+            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            gfx->set_rotation_by_int(model->get_rotation_as_int());
+            graphical_elements.push_back(std::move(gfx));
+        }
+        else if (auto* real_diode = dynamic_cast<Real_Diode*>(model))
+        {
+            auto gfx = std::make_unique<Graphical_Real_Diode>(real_diode);
+            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            gfx->set_rotation_by_int(model->get_rotation_as_int());
+            graphical_elements.push_back(std::move(gfx));
+        }
+        else if (auto* zener_diode = dynamic_cast<Zener_Diode*>(model))
+        {
+            auto gfx = std::make_unique<Graphical_Zener_Diode>(zener_diode);
+            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            gfx->set_rotation_by_int(model->get_rotation_as_int());
+            graphical_elements.push_back(std::move(gfx));
+        }
+        else if (auto* voltage_source = dynamic_cast<Voltage_Source*>(model))
+        {
+            auto gfx = std::make_unique<Graphical_Voltage_Source>(voltage_source);
+            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            gfx->set_rotation_by_int(model->get_rotation_as_int());
+            graphical_elements.push_back(std::move(gfx));
+        }
+    }
+    // You will also need a similar loop here to create Graphical_Wire objects
+    // based on how wires are stored in your save file.
+}
+
+void Controller::load_file(string name)
+{
+    int file_index = -1;
+    for (int i = 0; i < file_handler.get_file_names().size(); i++)
+    {
+        if (name == file_handler.get_file_names()[i])
+        {
+            file_index = i;
+            break;
+        }
+    }
+    if (file_index == -1)
+    {
+        cout << "file not found" << endl;
+        return;
+    }
+    circuit = textToGraphicalCircuit(name, file_handler.showText(file_index));
+
+    build_graphical_elements_from_circuit();
+}

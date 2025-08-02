@@ -813,8 +813,8 @@ void Circuit::delete_node(Node *node_to_delete)
     }
 }
 
-Node* SubCircuit::getInput() const { return input; }
-Node* SubCircuit::getOutput() const { return output; }
+Node* SubCircuit::getInput() { return input; }
+Node* SubCircuit::getOutput() { return output; }
 void SubCircuit::setInput(Node* newInput) { input = newInput; }
 void SubCircuit::setOutput(Node* newOutput) { output = newOutput; }
 

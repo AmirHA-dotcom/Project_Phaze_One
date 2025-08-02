@@ -284,6 +284,8 @@ public:
 
     void New_File();
 
+    void build_graphical_elements_from_circuit();
+
     void load_file(string name);
 
 };
