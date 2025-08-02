@@ -38,6 +38,8 @@ public:
     void set_coordinates(int x, int y) { this->x = x; this->y = y; }
     int get_x() const { return x; }
     int get_y() const { return y; }
+    int get_rotation_as_int ();
+    void set_rotation_by_int (int r);
     void set_rotation(Rotation r) { rotation = r; }
 };
 

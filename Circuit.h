@@ -76,7 +76,7 @@ public:
     void delete_element(string name);
     void delete_node(Node* node_to_delete);
     ~Circuit();
-
+    Element* findElement (string name);
     Node* create_new_node(const string& name);
     void addElement(Element* new_element);
 

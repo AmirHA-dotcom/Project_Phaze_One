@@ -44,6 +44,14 @@ Element* Controller::findElement (string name){
     }
     return nullptr;
 }
+Element* Controller::findElement (string name){
+    for (auto& e : circuit->get_Elements())
+    {
+        if (e->get_name() == name)
+            return e;
+    }
+    return nullptr;
+}
 
 Node* Controller::findNode (string name){
     for (auto& n : circuit->get_Nodes())
@@ -448,7 +456,11 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
     }
     // Write ground directive if present
     if (circuit->isGround()) {
-        file << "GND GND\n";
+        for ( auto node : circuit->get_Nodes()) {
+            if (node->is_the_node_ground()) {
+                file << ".GND " << node->get_name() << "\n";
+            }
+        }
     }
     // End of circuit
     file << ".END\n";
@@ -508,40 +520,39 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
 
         switch (type) {
             case Element_Type::Resistor:
-                line = "R" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + component.get;
+                line = "R" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::Capacitor:
-                line = "C" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                line = "C" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::Inductor:
-                line = "L" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                line = "L" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::Current_Source:
-                line = "I" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                line = "I" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::Voltage_Source:
                 // Assume DC voltage source, as Element doesn't store sourceType
-                line = "V" + element_name + " " + node1 + " " + node2 + " DC " + formatValue(value);
+                line = "V" + element_name + " " + node1 + " " + node2 + " DC " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::VC_Voltage_Source:
                 // Control nodes not in Element; assume "0 0" or handle via derived class if available
-                line = "E" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                line = "E" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::CC_Current_source:
-                line = "F" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                line = "F" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::VC_Current_Source:
-                line = "G" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                line = "G" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::CC_Voltage_Source:
-                line = "H" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value);
+                line = "H" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::Real_Diode:
-                line = "D" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
+                line = "D" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
             case Element_Type::Zener_Diode:
-                line = "Z" + element_name + " " + node1 + " " + node2 + " " + formatValue(value);
-                break;
+                line = "Z" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
             default:
                 cerr << "Unsupported component type: " << static_cast<int>(type) << endl;
                 continue;
@@ -550,7 +561,11 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
     }
     // Write ground directive if present
     if (circuit->isGround()) {
-        file << "GND GND\n";
+        for ( auto node : circuit->get_Nodes()) {
+            if (node->is_the_node_ground()) {
+                file << ".GND " << node->get_name() << "\n";
+            }
+        }
     }
     // End of circuit
     file << ".END\n";
@@ -606,12 +621,6 @@ double Value(const string& inputRaw) {
 Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
     Circuit* circuit = new Circuit(Name);
 
-    auto groundCheck = [&](const string& node) {
-        if (node == "0" || node == "GND") {
-            circuit->make_node_ground(node);
-        }
-    };
-
     for (const auto& tokens : lines) {
         if (tokens.empty()) continue;
 
@@ -626,30 +635,25 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
             else if (prefix == 'R' && tokens.size() >= 4) {
                 string n1 = tokens[1], n2 = tokens[2];
                 double val = Value(tokens[3]);
-                groundCheck(n1); groundCheck(n2);
                 circuit->create_new_resistor(element_name, n1, n2, val);
             }
             else if (prefix == 'C' && tokens.size() >= 4 && type != "CCVS" && type != "CCCS") {
                 string n1 = tokens[1], n2 = tokens[2];
                 double val = Value(tokens[3]);
-                groundCheck(n1); groundCheck(n2);
                 circuit->create_new_capacitor(element_name, n1, n2, val);
             }
             else if (prefix == 'L' && tokens.size() >= 4) {
                 string n1 = tokens[1], n2 = tokens[2];
                 double val = Value(tokens[3]);
-                groundCheck(n1); groundCheck(n2);
                 circuit->create_new_inductor(element_name, n1, n2, val);
             }
             else if (prefix == 'I' && tokens.size() >= 4) {
                 string n1 = tokens[1], n2 = tokens[2];
                 double val = Value(tokens[3]);
-                groundCheck(n1); groundCheck(n2);
                 circuit->create_new_current_source(element_name, n1, n2, val);
             }
             else if (prefix == 'V' && tokens.size() >= 4) {
                 string n1 = tokens[1], n2 = tokens[2];
-                groundCheck(n1); groundCheck(n2);
                 if (tokens[3] == "DC" && tokens.size() >= 5) {
                     double val = Value(tokens[4]);
                     circuit->create_new_DC_voltage_source(element_name, n1, n2, val);
@@ -687,42 +691,194 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
             else if (prefix == 'E' && tokens.size() >= 6) {
                 string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
                 double gain = Value(tokens[5]);
-                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
                 circuit->create_new_VCVS(element_name, n1, n2, ctrl1, ctrl2, gain);
             }
             else if (prefix == 'F' && tokens.size() >= 6) {
                 string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
                 double gain = Value(tokens[5]);
-                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
                 circuit->create_new_CCCS(element_name, n1, n2, ctrl1, ctrl2, gain);
             }
             else if (prefix == 'G' && tokens.size() >= 6) {
                 string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
                 double gain = Value(tokens[5]);
-                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
                 circuit->create_new_VCCS(element_name, n1, n2, ctrl1, ctrl2, gain);
             }
             else if (prefix == 'H' && tokens.size() >= 6) {
                 string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
                 double gain = Value(tokens[5]);
-                groundCheck(n1); groundCheck(n2); groundCheck(ctrl1); groundCheck(ctrl2);
                 circuit->create_new_CCVS(element_name, n1, n2, ctrl1, ctrl2, gain);
             }
             else if (prefix == 'D' && tokens.size() >= 4) {
                 string n1 = tokens[1], n2 = tokens[2];
                 double dummy = Value(tokens[3]);
-                groundCheck(n1); groundCheck(n2);
                 circuit->create_new_real_diode(element_name, n1, n2, dummy);
             }
             else if (prefix == 'Z' && tokens.size() >= 4) {
+                // Example .Z1 N1 N2 5.0
                 string n1 = tokens[1], n2 = tokens[2];
                 double dummy = Value(tokens[3]);
-                groundCheck(n1); groundCheck(n2);
                 circuit->create_new_zener_diode(element_name, n1, n2, dummy);
             }
-            else if (prefix == 'G' && tokens.size() >= 3 && tokens[1] == "GND") {
-                // Example
-                circuit->make_node_ground("GND");
+            else if (prefix == 'G' && tokens.size() == 2 && tokens[0] == "GND") {
+                // Example .GND a
+                circuit->make_node_ground(tokens[1]);
+                circuit->ground(true);
+            }
+            else if (type == ".END") {
+                break;
+            }
+            else {
+                cerr << "Unsupported or malformed element: ";
+                for (const string& t : tokens) cout << t << " ";
+                cerr << endl;
+            }
+        }
+        catch (const exception& e) {
+            cerr << "Error processing element " << type << ": " << e.what() << endl;
+        }
+    }
+
+    return circuit;
+}
+
+Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines) {
+    Circuit* circuit = new Circuit(Name);
+
+    for (const auto& tokens : lines) {
+        if (tokens.empty()) continue;
+
+        string type = tokens[0];
+        char prefix = toupper(type[0]);
+        string element_name = type.substr(1); // Remove type prefix (e.g., R1 → 1)
+
+        try {
+            if (tokens == lines[0] && tokens[0][tokens[0].size()-1] == ':' && tokens.size() == 1) {
+                circuit->change_name(tokens[0].substr(0,tokens[0].size()-1));
+            }
+            else if (prefix == 'R' && tokens.size() >= 7) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                circuit->create_new_resistor(element_name, n1, n2, val);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
+            }
+            else if (prefix == 'C' && tokens.size() >= 7 && type != "CCVS" && type != "CCCS") {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                circuit->create_new_capacitor(element_name, n1, n2, val);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
+            }
+            else if (prefix == 'L' && tokens.size() >= 7) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                circuit->create_new_inductor(element_name, n1, n2, val);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
+            }
+            else if (prefix == 'I' && tokens.size() >= 7) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double val = Value(tokens[3]);
+                circuit->create_new_current_source(element_name, n1, n2, val);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
+            }
+            else if (prefix == 'V' && tokens.size() >= 7) {
+                string n1 = tokens[1], n2 = tokens[2];
+                if (tokens[3] == "DC" && tokens.size() >= 8) {
+                    double val = Value(tokens[4]);
+                    circuit->create_new_DC_voltage_source(element_name, n1, n2, val);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[5]),stoi(tokens[6]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[7]));
+                }
+                else if (tokens[3] == "SIN" && tokens.size() >= 10) {
+                    double offset = Value(tokens[4]);
+                    double amp = Value(tokens[5]);
+                    double freq = Value(tokens[6]);
+                    circuit->create_new_Sin_voltage_source(element_name, n1, n2, offset, amp, freq);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[7]),stoi(tokens[8]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[9]));
+                }
+                else if (tokens[3] == "PULSE" && tokens.size() >= 9) {
+                    double period = Value(tokens[4]);
+                    double val = Value(tokens[5]);
+                    circuit->create_new_Pulse_voltage_source(element_name, n1, n2, period, val);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+                }
+                else if (tokens[3] == "SQUARE" && tokens.size() >= 9) {
+                    double period = Value(tokens[4]);
+                    double val = Value(tokens[5]);
+                    circuit->create_new_Square_voltage_source(element_name, n1, n2, period, val);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+                }
+                else if (tokens[3] == "TRIANGLE" && tokens.size() >= 9) {
+                    double period = Value(tokens[4]);
+                    double val = Value(tokens[5]);
+                    circuit->create_new_Triangle_voltage_source(element_name, n1, n2, period, val);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+                }
+                else if (tokens[3] == "DELTA" && tokens.size() >= 8) {
+                    double time = Value(tokens[4]);
+                    circuit->create_new_Delta_voltage_source(element_name, n1, n2, time);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+                }
+                else {
+                    double val = stod(tokens[3]);
+                    circuit->create_new_DC_voltage_source(element_name, n1, n2, val);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
+                }
+            }
+            else if (prefix == 'E' && tokens.size() >= 9) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                circuit->create_new_VCVS(element_name, n1, n2, ctrl1, ctrl2, gain);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+            }
+            else if (prefix == 'F' && tokens.size() >= 9) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                circuit->create_new_CCCS(element_name, n1, n2, ctrl1, ctrl2, gain);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+            }
+            else if (prefix == 'G' && tokens.size() >= 9) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                circuit->create_new_VCCS(element_name, n1, n2, ctrl1, ctrl2, gain);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+            }
+            else if (prefix == 'H' && tokens.size() >= 9) {
+                string n1 = tokens[1], n2 = tokens[2], ctrl1 = tokens[3], ctrl2 = tokens[4];
+                double gain = Value(tokens[5]);
+                circuit->create_new_CCVS(element_name, n1, n2, ctrl1, ctrl2, gain);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+            }
+            else if (prefix == 'D' && tokens.size() >= 7) {
+                string n1 = tokens[1], n2 = tokens[2];
+                double dummy = Value(tokens[3]);
+                circuit->create_new_real_diode(element_name, n1, n2, dummy);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
+            }
+            else if (prefix == 'Z' && tokens.size() >= 7) {
+                // Example .Z1 N1 N2 5.0
+                string n1 = tokens[1], n2 = tokens[2];
+                double dummy = Value(tokens[3]);
+                circuit->create_new_zener_diode(element_name, n1, n2, dummy);
+                circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
+                circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
+            }
+            else if (prefix == 'G' && tokens.size() == 2 && tokens[0] == "GND") {
+                // Example .GND a
+                circuit->make_node_ground(tokens[1]);
                 circuit->ground(true);
             }
             else if (type == ".END") {

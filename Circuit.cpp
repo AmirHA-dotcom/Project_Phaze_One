@@ -129,7 +129,14 @@ void Circuit::make_node_ground(string name)
     Nodes[node_index]->make_ground();
     haveGround = true;
 }
-
+Element* Circuit::findElement (string name){
+    for (auto& e : circuit->get_Elements())
+    {
+        if (e->get_name() == name)
+            return e;
+    }
+    return nullptr;
+}
 void Circuit::make_node_NOT_ground(string name)
 {
     int node_index = node_index_finder_by_name(name);

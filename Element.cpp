@@ -19,6 +19,39 @@ string Element::get_name() const
     return name;
 }
 
+int Element::get_rotation_as_int (){
+    switch (rotation) {
+        case Rotation::Right:
+            return 0;
+        case Rotation::Left:
+            return 1;
+        case Rotation::Up:
+            return 2;
+        case Rotation::Down:
+            return 3;
+    }
+    return -1; // Should never reach here if rotation is set correctly
+}
+
+void Element::set_rotation_by_int (int r){
+    switch (r) {
+        case 0:
+            rotation = Rotation::Right;
+            break;
+        case 1:
+            rotation = Rotation::Left;
+            break;
+        case 2:
+            rotation = Rotation::Up;
+            break;
+        case 3:
+            rotation = Rotation::Down;
+            break;
+        default:
+            throw invalid_argument("Invalid rotation value");
+    }
+}
+
 Element_Type Element::get_element_type()
 {
     return type;
