@@ -367,7 +367,6 @@ bool View::handleCircuitMenu (Controller* C) {
         if (!C->findNode(i[6]))
             throw elementNotFind("Node " + i[6]);
         C->addSubCircuit(i[1],C->findNode(i[5]),C->findNode(i[6]));
-        //C->handleNewFile(i[5] + C->findCircuit(i[1])->get_name() + ".txt" );
         return true;
     }
     if (line == "show circuits") {

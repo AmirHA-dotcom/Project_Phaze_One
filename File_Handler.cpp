@@ -119,3 +119,54 @@ vector<vector<string>> File_Handler::showText (int file_index) {
     return file_content;
 }
 
+void File_Handler::saveFiles() {
+    string outputPath = mainFolderPath + "/files_info.txt";
+    ofstream out_file(outputPath);
+    if (!out_file.is_open()) {
+        cerr << "Error: Could not open file for writing: " << outputPath << endl;
+        return;
+    }
+
+    // ذخیره اطلاعات همه فایل‌ها
+    for (const auto &file : files) {
+        out_file << "File Name: " << file.first << "\n";
+        out_file << "File Path: " << file.second << "\n";
+        out_file << "----------------------------------------\n";
+    }
+
+    out_file.close();
+    cout << "Files info saved to: " << outputPath << endl;
+}
+
+void File_Handler::loadFiles() {
+    string inputPath = mainFolderPath + "/files_info.txt";
+    ifstream in_file(inputPath);
+    if (!in_file.is_open()) {
+        cerr << "Error: Could not open file for reading: " << inputPath << endl;
+        return;
+    }
+    files.clear(); // پاک کردن لیست قبلی
+    string line, fileName, filePath;
+    while (getline(in_file, line)) {
+        if (line.find("File Name: ") == 0) {
+            fileName = line.substr(11); // طول "File Name: " = 11
+        } else if (line.find("File Path: ") == 0) {
+            filePath = line.substr(11); // طول "File Path: " = 11
+        } else if (line.find("---") == 0) {
+            // وقتی جداکننده رسیدیم یعنی یک فایل کامل شده
+            if (!fileName.empty() && !filePath.empty()) {
+                files.emplace_back(fileName, filePath);
+            }
+            fileName.clear();
+            filePath.clear();
+        }
+    }
+    // در صورتی که آخرین ورودی جداکننده نداشت
+    if (!fileName.empty() && !filePath.empty()) {
+        files.emplace_back(fileName, filePath);
+    }
+    in_file.close();
+    cout << "Files info loaded from: " << inputPath << endl;
+}
+
+

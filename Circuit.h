@@ -69,6 +69,8 @@ public:
     void analyse_data();
     const vector<Element*> get_Elements();
     const vector<Node*> get_Nodes();
+    void setNodes (vector<Node*> new_nodes) { Nodes = std::move(new_nodes); }
+    void setElements (vector<Element*> new_elements) { Elements = std::move(new_elements); }
     const vector<Element*> get_Elements_of_type(Element_Type type);
     void transient();
     void transient_linear();
@@ -97,6 +99,13 @@ private:
     Rotation rotation;
 public:
     SubCircuit(string _name, Node* _input, Node* _output) : Circuit(_name), input(_input), output(_output) { rotation = Rotation::Right; }
+    SubCircuit(string _name, Circuit* circuit, Node* _input, Node* _output)
+            : Circuit(_name), input(_input), output(_output)
+    {
+        rotation = Rotation::Right;
+        this->setNodes(circuit->get_Nodes());
+        this->setElements(circuit->get_Elements());
+    }
     Node* getInput() ;
     Node* getOutput() ;
     void setInput(Node* newInput);

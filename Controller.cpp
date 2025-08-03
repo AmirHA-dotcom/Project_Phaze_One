@@ -16,7 +16,7 @@ void Controller::addCircuit(string name){
     auto* c = new Circuit(name);
     circuits.push_back(c);
 }
-void Controller::addSubCircuit(string name, Node* inputNode, Node* outputNode) {
+void Controller::addSubCircuit(string name, Circuit* circuit, Node* inputNode, Node* outputNode) {
     auto* sc = new SubCircuit(name,inputNode,outputNode);
     subCircuits.push_back(sc);
 }
@@ -26,6 +26,11 @@ void changeSubCircuitAllNodeNames (SubCircuit* subCircuit){
         if (node->get_name() != subCircuit->getInput()->get_name() && node->get_name() != subCircuit->getOutput()->get_name())
             node->change_name(node->get_name()+"_sub");
 
+}
+void changeSubCircuitAllElementNames (SubCircuit* subCircuit){
+    for (auto element : subCircuit->get_Elements())
+        if (element->get_name() != subCircuit->getInput()->get_name() && element->get_name() != subCircuit->getOutput()->get_name())
+            element->change_name(element->get_name()+"_sub");
 }
 
 void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, string inputNode, string outputNode) {
@@ -42,6 +47,7 @@ void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit
     subCircuit->getInput()->change_name(inputNode);
     subCircuit->getOutput()->change_name(outputNode);
     changeSubCircuitAllNodeNames(subCircuit);
+    changeSubCircuitAllElementNames(subCircuit);
 
     for (auto node : subCircuit->get_Nodes()) {
         if (node->get_name() != inputNode && node->get_name() != outputNode) {
