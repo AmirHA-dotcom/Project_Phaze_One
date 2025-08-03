@@ -497,9 +497,77 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
     file.close();
     handleNewFile(path + circuit->get_name() + ".txt" );
 }
-void Controller::saveSubCircuit(Circuit* circuit, string path) {
 
+void Controller::saveSubCircuit(SubCircuit* subCircuit, string path) {
+
+    if (!subCircuit) {
+        cerr << "Error: Null or invalid subcircuit pointer provided" << endl;
+        return;
+    }
+
+    // Prepare path
+    string fullPath = path;
+    if (!path.empty() && path.back() != '/' && path.back() != '\\') {
+#ifdef _WIN32
+        fullPath += "\\";
+#else
+        fullPath += "/";
+#endif
+    }
+    fullPath += subCircuit->get_name() + ".txt";
+    filesystem::create_directories(path);
+
+    // Write SubCircuit-specific lines first
+    ofstream tempFile(fullPath);
+    if (!tempFile.is_open()) {
+        cerr << "Error: could not create file at " << fullPath << endl;
+        return;
+    }
+    tempFile << subCircuit->get_name() << ":\n";
+    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
+    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    tempFile.close();
+
+    // Call saveCircuit to append circuit components and ground
+    saveCircuit(subCircuit, path);
+
+    // Reorder file to match desired format
+    string tempPath = path + subCircuit->get_name() + "_temp.txt";
+    ofstream outFile(tempPath);
+    ifstream inFile(fullPath);
+    if (!outFile.is_open() || !inFile.is_open()) {
+        cerr << "Error: could not process files for " << fullPath << endl;
+        inFile.close();
+        outFile.close();
+        return;
+    }
+
+    // Copy SubCircuit-specific lines
+    outFile << subCircuit->get_name() << ":\n";
+    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
+    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+
+    // Skip the circuit name line from saveCircuit output
+    string line;
+    bool firstLineSkipped = false;
+    while (getline(inFile, line)) {
+        if (!firstLineSkipped && line.find(subCircuit->get_name() + ":") == 0) {
+            firstLineSkipped = true;
+            continue;
+        }
+        outFile << line << "\n";
+    }
+
+    inFile.close();
+    outFile.close();
+
+    // Replace original file
+    filesystem::remove(fullPath);
+    filesystem::rename(tempPath, fullPath);
+
+    handleNewFile(fullPath);
 }
+
 void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
     if (!circuit) {
         cerr << "Error: Null circuit pointer provided" << endl;
@@ -604,78 +672,88 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
     file.close();
     handleNewFile(path + circuit->get_name() + ".txt" );
 }
-void Controller::saveGraphicalSubCircuit(Circuit* circuit, string path){
 
+void Controller::saveGraphicalSubCircuit(SubCircuit* subCircuit, string path) {
+    if (!subCircuit) {
+        cerr << "Error: Null or invalid subcircuit pointer provided" << endl;
+        return;
+    }
+
+    // Prepare path
+    string fullPath = path;
+    if (!path.empty() && path.back() != '/' && path.back() != '\\') {
+#ifdef _WIN32
+        fullPath += "\\";
+#else
+        fullPath += "/";
+#endif
+    }
+    fullPath += subCircuit->get_name() + ".txt";
+    filesystem::create_directories(path);
+
+    // Write SubCircuit-specific lines first
+    ofstream tempFile(fullPath);
+    if (!tempFile.is_open()) {
+        cerr << "Error: could not create file at " << fullPath << endl;
+        return;
+    }
+    tempFile << subCircuit->get_name() << ":\n";
+    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
+    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    tempFile << "Rotation: " << subCircuit->get_rotation_as_int() << "\n";
+    tempFile.close();
+
+    // Call saveCircuit to append circuit components and ground
+    saveGraphicalCircuit(subCircuit, path);
+
+    // Reorder file to match desired format
+    string tempPath = path + subCircuit->get_name() + "_temp.txt";
+    ofstream outFile(tempPath);
+    ifstream inFile(fullPath);
+    if (!outFile.is_open() || !inFile.is_open()) {
+        cerr << "Error: could not process files for " << fullPath << endl;
+        inFile.close();
+        outFile.close();
+        return;
+    }
+
+    // Copy SubCircuit-specific lines
+    outFile << subCircuit->get_name() << ":\n";
+    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
+    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    outFile << "Rotation: " << subCircuit->get_rotation_as_int() << "\n";
+
+    // Skip the circuit name line from saveCircuit output
+    string line;
+    bool firstLineSkipped = false;
+    while (getline(inFile, line)) {
+        if (!firstLineSkipped && line.find(subCircuit->get_name() + ":") == 0) {
+            firstLineSkipped = true;
+            continue;
+        }
+        outFile << line << "\n";
+    }
+
+    inFile.close();
+    outFile.close();
+
+    // Replace original file
+    filesystem::remove(fullPath);
+    filesystem::rename(tempPath, fullPath);
+
+    handleNewFile(fullPath);
 }
 
 void Controller::saveSubCircuits () {
     string path = file_handler.getMainFolderPath() + "subcircuits/";
     for (const auto& subCircuit : subCircuits) {
-        saveCircuit(subCircuit,path);
+        saveSubCircuit(subCircuit,path);
     }
 }
 void Controller::saveGraphicalSubCircuits () {
     string path = file_handler.getMainFolderPath() + "subcircuits/";
     for (const auto& subCircuit : subCircuits) {
-        saveGraphicalCircuit(subCircuit,path);
-    }
-}
-
-void Controller::loadSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "subcircuits/";
-    vector<string> files = file_handler.getFilesInDirectory(path);
-    for (const auto& file : files) {
-        if (file.substr(file.find_last_of(".") + 1) == "txt") {
-            ifstream inFile(path + file);
-            if (!inFile.is_open()) {
-                cerr << "Error opening file: " << path + file << endl;
-                continue;
-            }
-            string line;
-            vector<vector<string>> lines;
-            while (getline(inFile, line)) {
-                istringstream iss(line);
-                vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
-                lines.push_back(tokens);
-            }
-            inFile.close();
-            if (!lines.empty()) {
-                string name = lines[0][0].substr(0, lines[0][0].size() - 1);
-                Circuit *circuit = textToCircuit(name, lines);
-                Node *inputNode = circuit->findNode(lines[1][1]);
-                Node *outputNode = circuit->findNode(lines[2][1]);
-                addSubCircuit(name, circuit, inputNode, outputNode);
-            }
-        }
-    }
-}
-
-void Controller::loadGraphicalSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "subcircuits/";
-    vector<string> files = file_handler.getFilesInDirectory(path);
-    for (const auto& file : files) {
-        if (file.substr(file.find_last_of(".") + 1) == "txt") {
-            ifstream inFile(path + file);
-            if (!inFile.is_open()) {
-                cerr << "Error opening file: " << path + file << endl;
-                continue;
-            }
-            string line;
-            vector<vector<string>> lines;
-            while (getline(inFile, line)) {
-                istringstream iss(line);
-                vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
-                lines.push_back(tokens);
-            }
-            inFile.close();
-            if (!lines.empty()) {
-                string name = lines[0][0].substr(0, lines[0][0].size() - 1);
-                Circuit *circuit = textToCircuit(name, lines);
-                Node *inputNode = circuit->findNode(lines[1][1]);
-                Node *outputNode = circuit->findNode(lines[2][1]);
-                addSubCircuit(name, circuit, inputNode, outputNode);
-            }
-        }
+        saveGraphicalSubCircuit(subCircuit,path);
     }
 }
 
@@ -847,6 +925,62 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
     return circuit;
 }
 
+SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
+    // Use textToCircuit to create the base Circuit
+    Circuit* baseCircuit = textToCircuit(Name, lines);
+
+    // If textToCircuit didn't return a SubCircuit, create one
+    SubCircuit* subCircuit = new SubCircuit();
+    subCircuit->change_name(Name);
+    // Copy elements and nodes from baseCircuit if necessary
+    for (auto* element : baseCircuit->get_Elements()) {
+        subCircuit->addElement(element);
+    }
+    for (auto* node : baseCircuit->get_Nodes()) {
+        subCircuit->addNode(node);
+    }
+    delete baseCircuit; // Clean up if baseCircuit is not a SubCircuit
+
+    // Map to store nodes by name for reuse
+    unordered_map<string, Node*> nodeMap;
+    for (auto* node : subCircuit->get_Nodes()) {
+        nodeMap[node->get_name()] = node;
+    }
+
+    // Process SubCircuit-specific lines (Input, Output)
+    for (const auto& line : lines) {
+        if (line.empty()) continue;
+
+        // Handle Input line
+        if (line[0] == "Input:") {
+            if (line.size() < 2) {
+                cerr << "Error: Invalid Input line format" << endl;
+                continue;
+            }
+            string nodeName = line[1];
+            if (nodeMap.find(nodeName) == nodeMap.end()) {
+                nodeMap[nodeName] = new Node(nodeName);
+                subCircuit->addNode(nodeMap[nodeName]);
+            }
+            subCircuit->setInput(nodeMap[nodeName]); // Set input node
+        }
+            // Handle Output line
+        else if (line[0] == "Output:") {
+            if (line.size() < 2) {
+                cerr << "Error: Invalid Output line format" << endl;
+                continue;
+            }
+            string nodeName = line[1];
+            if (nodeMap.find(nodeName) == nodeMap.end()) {
+                nodeMap[nodeName] = new Node(nodeName);
+                subCircuit->addNode(nodeMap[nodeName]);
+            }
+            subCircuit->setOutput(nodeMap[nodeName]); // Set output node
+        }
+    }
+
+    return subCircuit;
+}
 Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines) {
     Circuit* circuit = new Circuit(Name);
 
@@ -1004,6 +1138,142 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
     return circuit;
 }
 
+SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>& lines) {
+    // Use textToCircuit to create the base Circuit
+    Circuit* baseCircuit = textToCircuit(Name, lines);
+
+        SubCircuit* subCircuit = new SubCircuit();
+        subCircuit->change_name(Name);
+        // Copy elements and nodes from baseCircuit
+        for (auto* element : baseCircuit->get_Elements()) {
+            subCircuit->addElement(element);
+        }
+        for (auto* node : baseCircuit->get_Nodes()) {
+            subCircuit->addNode(node);
+        }
+        delete baseCircuit; // Clean up if baseCircuit is not a SubCircuit
+
+    // Map to store nodes by name for reuse
+    unordered_map<string, Node*> nodeMap;
+    for (auto* node : subCircuit->get_Nodes()) {
+        nodeMap[node->get_name()] = node;
+    }
+
+    // Process SubCircuit-specific lines (Input, Output, Rotation)
+    for (const auto& line : lines) {
+        if (line.empty()) continue;
+
+        // Handle Input line
+        if (line[0] == "Input:") {
+            if (line.size() < 2) {
+                cerr << "Error: Invalid Input line format" << endl;
+                continue;
+            }
+            string nodeName = line[1];
+            if (nodeMap.find(nodeName) == nodeMap.end()) {
+                nodeMap[nodeName] = new Node(nodeName);
+                subCircuit->addNode(nodeMap[nodeName]);
+            }
+            subCircuit->setInput(nodeMap[nodeName]); // Set input node
+        }
+            // Handle Output line
+        else if (line[0] == "Output:") {
+            if (line.size() < 2) {
+                cerr << "Error: Invalid Output line format" << endl;
+                continue;
+            }
+            string nodeName = line[1];
+            if (nodeMap.find(nodeName) == nodeMap.end()) {
+                nodeMap[nodeName] = new Node(nodeName);
+                subCircuit->addNode(nodeMap[nodeName]);
+            }
+            subCircuit->setOutput(nodeMap[nodeName]); // Set output node
+        }
+            // Handle Rotation line
+        else if (line[0] == "Rotation:") {
+            if (line.size() < 2) {
+                cerr << "Error: Invalid Rotation line format" << endl;
+                continue;
+            }
+            try {
+                int rotationValue = stoi(line[1]);
+                switch (rotationValue) {
+                    case 0: subCircuit->set_rotation(Rotation::Up); break;
+                    case 1: subCircuit->set_rotation(Rotation::Right); break;
+                    case 2: subCircuit->set_rotation(Rotation::Down); break;
+                    case 3: subCircuit->set_rotation(Rotation::Left); break;
+                    default:
+                        cerr << "Error: Invalid rotation value: " << line[1] << endl;
+                        subCircuit->set_rotation(Rotation::Up); // Default
+                        break;
+                }
+            } catch (...) {
+                cerr << "Error: Invalid rotation value format: " << line[1] << endl;
+                subCircuit->set_rotation(Rotation::Up); // Default
+            }
+        }
+    }
+
+    return subCircuit;
+}
+
+void Controller::loadSubCircuits () {
+    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    vector<string> files = file_handler.getFilesInDirectory(path);
+    for (const auto& file : files) {
+        if (file.substr(file.find_last_of(".") + 1) == "txt") {
+            ifstream inFile(path + file);
+            if (!inFile.is_open()) {
+                cerr << "Error opening file: " << path + file << endl;
+                continue;
+            }
+            string line;
+            vector<vector<string>> lines;
+            while (getline(inFile, line)) {
+                istringstream iss(line);
+                vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
+                lines.push_back(tokens);
+            }
+            inFile.close();
+            if (!lines.empty()) {
+                string name = lines[0][0].substr(0, lines[0][0].size() - 1);
+                Circuit *circuit = textToCircuit(name, lines);
+                Node *inputNode = circuit->findNode(lines[1][1]);
+                Node *outputNode = circuit->findNode(lines[2][1]);
+                addSubCircuit(name, circuit, inputNode, outputNode);
+            }
+        }
+    }
+}
+
+void Controller::loadGraphicalSubCircuits () {
+    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    vector<string> files = file_handler.getFilesInDirectory(path);
+    for (const auto& file : files) {
+        if (file.substr(file.find_last_of(".") + 1) == "txt") {
+            ifstream inFile(path + file);
+            if (!inFile.is_open()) {
+                cerr << "Error opening file: " << path + file << endl;
+                continue;
+            }
+            string line;
+            vector<vector<string>> lines;
+            while (getline(inFile, line)) {
+                istringstream iss(line);
+                vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
+                lines.push_back(tokens);
+            }
+            inFile.close();
+            if (!lines.empty()) {
+                string name = lines[0][0].substr(0, lines[0][0].size() - 1);
+                Circuit* circuit = textToCircuit(name, lines);
+                Node *inputNode = circuit->findNode(lines[1][1]);
+                Node *outputNode = circuit->findNode(lines[2][1]);
+                addSubCircuit(name, circuit, inputNode, outputNode);
+            }
+        }
+    }
+}
 
 void Controller::addFileToCircuits(int fileIndex) {
     string name = file_handler.get_file_names()[fileIndex-1];

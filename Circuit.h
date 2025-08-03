@@ -39,6 +39,8 @@ public:
     bool isGround();
     void ground(bool b);
     Circuit(string _name) : name(_name) {total_unknowns = 0;}
+    Circuit() : name("") {}
+
     void change_name(string new_name);
     string get_name() const;
     vector<pair<double, double>> get_node_voltages(string name);
@@ -81,7 +83,7 @@ public:
     Element* findElement (string name);
     Node* findNode (string name);
     void checkHaveGround();
-
+    void addNode(Node* node);
     Node* create_new_node(const string& name);
     void addElement(Element* new_element);
 
@@ -98,6 +100,7 @@ private:
     int x, y;
     Rotation rotation;
 public:
+    SubCircuit() : Circuit(), input(nullptr), output(nullptr), x(0), y(0) {}
     SubCircuit(string _name, Node* _input, Node* _output) : Circuit(_name), input(_input), output(_output) { rotation = Rotation::Right; }
     SubCircuit(string _name, Circuit* circuit, Node* _input, Node* _output)
             : Circuit(_name), input(_input), output(_output)
@@ -112,6 +115,8 @@ public:
     void setOutput(Node* newOutput);
 
     void set_coordinates(int x_, int y_) { x = x_; y = y_; }
+    int get_rotation_as_int ();
+    void set_rotation_by_int (int r);
     void set_rotation(Rotation r) { rotation = r; }
 };
 

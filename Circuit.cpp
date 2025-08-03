@@ -19,7 +19,22 @@ void Circuit::ground(bool b){
 bool Circuit::isGround(){
     return haveGround;
 }
+void Circuit::addNode(Node* node) {
+    if (!node) {
+        cerr << "Error: Null node pointer provided" << endl;
+        return;
+    }
 
+    // Check for duplicate node by name
+    for (const auto* existingNode : Nodes) {
+        if (existingNode->get_name() == node->get_name()) {
+            cerr << "Warning: Node " << node->get_name() << " already exists, skipping" << endl;
+            return;
+        }
+    }
+
+    Nodes.push_back(node);
+}
 int Circuit::element_index_finder_by_name(const string& name)
 {
     for (int i = 0; i < Elements.size(); i++)
@@ -817,4 +832,36 @@ Node* SubCircuit::getInput()  { return input; }
 Node* SubCircuit::getOutput()  { return output; }
 void SubCircuit::setInput(Node* newInput) { input = newInput; }
 void SubCircuit::setOutput(Node* newOutput) { output = newOutput; }
+int SubCircuit::get_rotation_as_int (){
+    switch (rotation) {
+        case Rotation::Right:
+            return 0;
+        case Rotation::Left:
+            return 1;
+        case Rotation::Up:
+            return 2;
+        case Rotation::Down:
+            return 3;
+    }
+    return -1; // Should never reach here if rotation is set correctly
+}
+void SubCircuit::set_rotation_by_int (int r){
+    switch (r) {
+        case 0:
+            rotation = Rotation::Right;
+            break;
+        case 1:
+            rotation = Rotation::Left;
+            break;
+        case 2:
+            rotation = Rotation::Up;
+            break;
+        case 3:
+            rotation = Rotation::Down;
+            break;
+        default:
+            throw invalid_argument("Invalid rotation value");
+    }
+}
+
 

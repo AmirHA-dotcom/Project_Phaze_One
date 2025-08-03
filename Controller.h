@@ -212,10 +212,10 @@ public:
     void DcAnalysisOrders(vector<string> orders);
 
     void saveCircuit(Circuit* circuit, string path);
-    void saveSubCircuit(Circuit* circuit, string path);
+    void saveSubCircuit(SubCircuit* SubCircuit, string path);
 
     void saveGraphicalCircuit(Circuit* circuit, string path);
-    void saveGraphicalSubCircuit(Circuit* circuit, string path);
+    void saveGraphicalSubCircuit(SubCircuit* SubCircuit, string path);
 
     void addFileToCircuits(int fileIndex);
 
