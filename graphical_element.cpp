@@ -91,6 +91,28 @@ void Graphical_Element::set_font(TTF_Font* font_)
     font = font_;
 }
 
+void Graphical_Element::set_rotation_by_int(int rot)
+{
+    switch (rot)
+    {
+        case 0:
+            rotation = Rotation::Right;
+            break;
+        case 1:
+            rotation = Rotation::Left;
+            break;
+        case 2:
+            rotation = Rotation::Up;
+            break;
+        case 3:
+            rotation = Rotation::Down;
+            break;
+        default:
+            rotation = Rotation::Right;
+            break;
+    }
+}
+
 void Graphical_Element::change_rotation()
 {
     if (rotation == Rotation::Right)

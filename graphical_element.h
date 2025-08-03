@@ -77,6 +77,8 @@ public:
 
     void change_rotation();
 
+    void set_rotation_by_int(int rot);
+
     Rotation get_rotation() { return rotation; }
 
     Element* get_model();
