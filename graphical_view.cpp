@@ -3299,7 +3299,8 @@ bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C
     if (node1 != nullptr && node2 != nullptr)
     {
         cout << "selected 2 points" << endl;
-        C->addSubCircuit(new_SubC_name, node1, node2);
+        Circuit* cc = new Circuit();
+        C->addSubCircuit(new_SubC_name,cc, node1, node2);
         new_SubC_name = "";
         node1 = nullptr;
         node2 = nullptr;

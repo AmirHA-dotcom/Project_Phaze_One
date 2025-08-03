@@ -366,7 +366,7 @@ bool View::handleCircuitMenu (Controller* C) {
             throw elementNotFind("Node " + i[5]);
         if (!C->findNode(i[6]))
             throw elementNotFind("Node " + i[6]);
-        C->addSubCircuit(i[1],C->findNode(i[5]),C->findNode(i[6]));
+        C->addSubCircuit(i[1],C->findCircuit(i[1]),C->findNode(i[5]),C->findNode(i[6]));
         return true;
     }
     if (line == "show circuits") {
