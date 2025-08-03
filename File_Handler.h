@@ -22,7 +22,16 @@ public:
     vector<vector<string>> showText (int file_index);
     void saveFiles();
     void loadFiles();
-
+    string getMainFolderPath () const { return mainFolderPath; }
+    vector<string> getFilesInDirectory (const string& directory) {
+        vector<string> file_names;
+        for (const auto& entry : filesystem::directory_iterator(directory)) {
+            if (entry.is_regular_file()) {
+                file_names.push_back(entry.path().filename().string());
+            }
+        }
+        return file_names;
+    }
 };
 
 #endif //PROJECT_PHAZE_ONE_FILE_HANDLER_H

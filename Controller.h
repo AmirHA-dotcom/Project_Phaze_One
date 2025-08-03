@@ -144,9 +144,12 @@ public:
     Controller();
     vector<Circuit *> circuits;
     vector<SubCircuit *> subCircuits;
-
     Circuit *circuit;
-
+    void saveSubCircuits ();
+    void saveGraphicalSubCircuits ();
+    void loadSubCircuits ();
+    void loadGraphicalSubCircuits ();
+    File_Handler getFile_Handler () { return file_handler; }
     Circuit *findCircuit(string name);
     void renameCircuit(Circuit* circuit,string name);
     void deleteCircuit(Circuit* circuit);
@@ -209,8 +212,10 @@ public:
     void DcAnalysisOrders(vector<string> orders);
 
     void saveCircuit(Circuit* circuit, string path);
+    void saveSubCircuit(Circuit* circuit, string path);
 
     void saveGraphicalCircuit(Circuit* circuit, string path);
+    void saveGraphicalSubCircuit(Circuit* circuit, string path);
 
     void addFileToCircuits(int fileIndex);
 

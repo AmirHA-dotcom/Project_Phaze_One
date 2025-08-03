@@ -145,13 +145,13 @@ void File_Handler::loadFiles() {
         cerr << "Error: Could not open file for reading: " << inputPath << endl;
         return;
     }
-    files.clear(); // پاک کردن لیست قبلی
+    files.clear();
     string line, fileName, filePath;
     while (getline(in_file, line)) {
         if (line.find("File Name: ") == 0) {
-            fileName = line.substr(11); // طول "File Name: " = 11
+            fileName = line.substr(11);
         } else if (line.find("File Path: ") == 0) {
-            filePath = line.substr(11); // طول "File Path: " = 11
+            filePath = line.substr(11);
         } else if (line.find("---") == 0) {
             // وقتی جداکننده رسیدیم یعنی یک فایل کامل شده
             if (!fileName.empty() && !filePath.empty()) {
@@ -161,7 +161,6 @@ void File_Handler::loadFiles() {
             filePath.clear();
         }
     }
-    // در صورتی که آخرین ورودی جداکننده نداشت
     if (!fileName.empty() && !filePath.empty()) {
         files.emplace_back(fileName, filePath);
     }

@@ -17,7 +17,7 @@ void Controller::addCircuit(string name){
     circuits.push_back(c);
 }
 void Controller::addSubCircuit(string name, Circuit* circuit, Node* inputNode, Node* outputNode) {
-    auto* sc = new SubCircuit(name,inputNode,outputNode);
+    auto* sc = new SubCircuit(name,circuit,inputNode,outputNode);
     subCircuits.push_back(sc);
 }
 
@@ -497,7 +497,9 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
     file.close();
     handleNewFile(path + circuit->get_name() + ".txt" );
 }
+void Controller::saveSubCircuit(Circuit* circuit, string path) {
 
+}
 void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
     if (!circuit) {
         cerr << "Error: Null circuit pointer provided" << endl;
@@ -601,6 +603,80 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
     file << ".END\n";
     file.close();
     handleNewFile(path + circuit->get_name() + ".txt" );
+}
+void Controller::saveGraphicalSubCircuit(Circuit* circuit, string path){
+
+}
+
+void Controller::saveSubCircuits () {
+    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    for (const auto& subCircuit : subCircuits) {
+        saveCircuit(subCircuit,path);
+    }
+}
+void Controller::saveGraphicalSubCircuits () {
+    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    for (const auto& subCircuit : subCircuits) {
+        saveGraphicalCircuit(subCircuit,path);
+    }
+}
+
+void Controller::loadSubCircuits () {
+    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    vector<string> files = file_handler.getFilesInDirectory(path);
+    for (const auto& file : files) {
+        if (file.substr(file.find_last_of(".") + 1) == "txt") {
+            ifstream inFile(path + file);
+            if (!inFile.is_open()) {
+                cerr << "Error opening file: " << path + file << endl;
+                continue;
+            }
+            string line;
+            vector<vector<string>> lines;
+            while (getline(inFile, line)) {
+                istringstream iss(line);
+                vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
+                lines.push_back(tokens);
+            }
+            inFile.close();
+            if (!lines.empty()) {
+                string name = lines[0][0].substr(0, lines[0][0].size() - 1);
+                Circuit *circuit = textToCircuit(name, lines);
+                Node *inputNode = circuit->findNode(lines[1][1]);
+                Node *outputNode = circuit->findNode(lines[2][1]);
+                addSubCircuit(name, circuit, inputNode, outputNode);
+            }
+        }
+    }
+}
+
+void Controller::loadGraphicalSubCircuits () {
+    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    vector<string> files = file_handler.getFilesInDirectory(path);
+    for (const auto& file : files) {
+        if (file.substr(file.find_last_of(".") + 1) == "txt") {
+            ifstream inFile(path + file);
+            if (!inFile.is_open()) {
+                cerr << "Error opening file: " << path + file << endl;
+                continue;
+            }
+            string line;
+            vector<vector<string>> lines;
+            while (getline(inFile, line)) {
+                istringstream iss(line);
+                vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
+                lines.push_back(tokens);
+            }
+            inFile.close();
+            if (!lines.empty()) {
+                string name = lines[0][0].substr(0, lines[0][0].size() - 1);
+                Circuit *circuit = textToCircuit(name, lines);
+                Node *inputNode = circuit->findNode(lines[1][1]);
+                Node *outputNode = circuit->findNode(lines[2][1]);
+                addSubCircuit(name, circuit, inputNode, outputNode);
+            }
+        }
+    }
 }
 
 double Value(const string& inputRaw) {
