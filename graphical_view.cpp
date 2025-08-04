@@ -10,6 +10,7 @@ const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
 const char* PROBE = "D://Images//probe_cursor.png";
 const char* DELETE = "D://Images//sissors_cursor.png";
 const char* GROUND = "D://Images//grounding_cursor.png";
+const char* ICON = "D://Images//SparkSense2.png";
 
 //const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
 //const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
@@ -973,7 +974,7 @@ bool graphical_view::run(Controller *C)
     initialize_SubC_menu(C);
 
     SDL_Window* window = SDL_CreateWindow(
-            "AHA & AS",
+            "SparkSense",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             1280,
@@ -987,6 +988,12 @@ bool graphical_view::run(Controller *C)
     {
         SDL_Quit();
         throw runtime_error("Window could not be created! SDL_Error: " + string(SDL_GetError()));
+    }
+
+    SDL_Surface* icon_surface = IMG_Load(ICON);
+    if (icon_surface) {
+        SDL_SetWindowIcon(window, icon_surface);
+        SDL_FreeSurface(icon_surface);
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -1403,6 +1410,7 @@ bool graphical_view::run(Controller *C)
         {
             int x = 10; int y = 50;
             double start_f = 0; double stop_f = 0; double num_of_points = 0;
+            C->get_ac_params(start_f, stop_f, num_of_points, AC_sweep_type);
             string text = ".AC(" + format_with_suffix(start_f, " ") + format_with_suffix(stop_f, " ") + format_with_suffix(num_of_points, " ");
             if (AC_sweep_type == AC_Sweep_Type::Linear) { text += "Linear"; }
             else if (AC_sweep_type == AC_Sweep_Type::Octave) { text += "Octave"; }
@@ -2641,6 +2649,7 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
                         double stop_freq = toValue(edit_buffers[1]);
                         int num_points = static_cast<int>(toValue(edit_buffers[2]));
                         cout << "AC Sweep Values: Type=" << (int)AC_sweep_type << ", Start=" << start_freq << ", Stop=" << stop_freq << ", Points=" << num_points << endl;
+                        C->set_AC_sweep_variables(start_freq, stop_freq, num_points, AC_sweep_type);
                     }
                     break;
                 case Analysis_Mode::Phase_Sweep:

@@ -1648,7 +1648,7 @@ void Controller::add_Graphical_VCCS(int screenX, int screenY)
     string n1_name = "N" + to_string(node_count);
     node_count++;
     string n2_name = "N" + to_string(node_count);
-    VCVS_count++;
+    VCCS_count++;
     string name = "VCCS" + to_string(VCVS_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
@@ -1672,7 +1672,7 @@ void Controller::add_Graphical_CCVS(int screenX, int screenY)
     string n1_name = "N" + to_string(node_count);
     node_count++;
     string n2_name = "N" + to_string(node_count);
-    VCVS_count++;
+    CCVS_count++;
     string name = "CCVS" + to_string(VCVS_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
@@ -1696,7 +1696,7 @@ void Controller::add_Graphical_CCCS(int screenX, int screenY)
     string n1_name = "N" + to_string(node_count);
     node_count++;
     string n2_name = "N" + to_string(node_count);
-    VCVS_count++;
+    CCCS_count++;
     string name = "CCCS" + to_string(VCVS_count);
 
     Node* n1 = circuit->create_new_node(n1_name);
@@ -2223,7 +2223,6 @@ void Controller::build_graphical_elements_from_circuit()
     }
 }
 
-
 void Controller::load_file(string name)
 {
     int file_index = -1;
@@ -2243,4 +2242,20 @@ void Controller::load_file(string name)
     circuit = textToGraphicalCircuit(name, file_handler.showText(file_index));
 
     build_graphical_elements_from_circuit();
+}
+
+void Controller::set_AC_sweep_variables(double start_f, double end_f, double num_of_p, AC_Sweep_Type type)
+{
+    start_freq = start_f;
+    end_freq = end_f;
+    num_of_points = num_of_p;
+    ac_sweep_type = type;
+}
+
+void Controller::get_ac_params(double &start, double &stop, double &step, AC_Sweep_Type &type)
+{
+    start = start_freq;
+    stop = end_freq;
+    step = num_of_points;
+    type = ac_sweep_type;
 }

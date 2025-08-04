@@ -12,6 +12,8 @@
 #include "graphical_element.h"
 #include "Graphical_Wire.h"
 
+enum class AC_Sweep_Type { Octave, Decade, Linear };
+
 inline double toValue(const std::string& inputRaw) {
     std::string input;
     for (char c : inputRaw) {
@@ -122,10 +124,19 @@ inline bool isValidSpiceNumber(const std::string& input) {
 class Controller {
 private:
     File_Handler file_handler;
+
+    // tansient
     double time_step = 0;
     double start_time = 0;
     double end_time = 0;
 
+    // AC sweep
+    double start_freq = 0;
+    double end_freq = 0;
+    double num_of_points = 0;
+    AC_Sweep_Type ac_sweep_type = AC_Sweep_Type::Linear;
+
+    // naming
     int resistor_count = 0;
     int capacitor_count = 0;
     int inductor_count = 0;
@@ -304,6 +315,10 @@ public:
     void build_graphical_elements_from_circuit();
 
     void load_file(string name);
+
+    void set_AC_sweep_variables(double start_f, double end_f, double num_of_p, AC_Sweep_Type type);
+
+    void get_ac_params(double& start, double& stop, double& step, AC_Sweep_Type& type);
 
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H
