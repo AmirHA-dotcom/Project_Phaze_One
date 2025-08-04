@@ -165,7 +165,7 @@ public:
     void saveGraphicalSubCircuits ();
     void loadSubCircuits ();
     void loadGraphicalSubCircuits ();
-    File_Handler getFile_Handler () { return file_handler; }
+    File_Handler& getFile_Handler () { return file_handler; }
     Circuit *findCircuit(string name);
     void renameCircuit(Circuit* circuit,string name);
     void deleteCircuit(Circuit* circuit);

@@ -1,7 +1,6 @@
 //
 // Created by Arian Sadeghi on 6/7/25.
 //
-#include <X11/X.h>
 #include "Element.h"
 #include "Controller.h"
 #include "Libraries.h"

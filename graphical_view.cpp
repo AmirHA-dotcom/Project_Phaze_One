@@ -6,17 +6,17 @@
 
 // helper functions
 
-//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-//const char* PROBE = "D://Images//probe_cursor.png";
-//const char* DELETE = "D://Images//sissors_cursor.png";
-//const char* GROUND = "D://Images//grounding_cursor.png";
-//const char* ICON = "D://Images//SparkSense2.png";
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+const char* PROBE = "D://Images//probe_cursor.png";
+const char* DELETE = "D://Images//sissors_cursor.png";
+const char* GROUND = "D://Images//grounding_cursor.png";
+const char* ICON = "D://Images//SparkSense2.png";
 
-const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
-const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
-const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
-const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
-const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
+//const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
+//const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
+//const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
+//const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
+//const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
 {
@@ -851,6 +851,8 @@ void graphical_view::draw_file_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     vector<string> file_names = C->get_file_names();
 //    for (string name : C->get_file_names())
 //        cout << name << endl;
+//    if (C->get_file_names().empty())
+//        cout << "no files" << endl;
 
     int start_y = menu_panel.y + 50;
     int row_height = 35;
@@ -988,6 +990,8 @@ void graphical_view::draw_status_bar(SDL_Renderer* renderer, TTF_Font* font)
 
 bool graphical_view::run(Controller *C)
 {
+    cout << C->getFile_Handler().getMainFolderPath() << endl;
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         throw runtime_error("SDL could not initialize! SDL_Error: " + string(SDL_GetError()));
@@ -1009,6 +1013,7 @@ bool graphical_view::run(Controller *C)
     initialize_menu();
     initialize_toolbar(font);
     initialize_SubC_menu(C);
+    C->getFile_Handler().loadFiles();
 
     SDL_Window* window = SDL_CreateWindow(
             "SparkSense",
@@ -3147,6 +3152,7 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
 
         is_saving = false;
         SDL_StopTextInput();
+        C->getFile_Handler().saveFiles();
     };
 
     if (event.type == SDL_QUIT) return false;
