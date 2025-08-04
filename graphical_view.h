@@ -207,6 +207,7 @@ private:
     void draw_status_bar(SDL_Renderer* renderer, TTF_Font* font);
     void add_math_term(bool is_subtraction, Controller* C);
     void execute_math_operation();
+    void initialize_configure_analysis_menu(Controller* C);
 
     // main functions
 
