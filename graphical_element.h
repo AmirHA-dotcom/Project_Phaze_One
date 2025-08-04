@@ -233,7 +233,7 @@ public:
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
-    vector<Connection_Point> get_connection_points() override { return {}; }
+    vector<Connection_Point> get_connection_points() override;
 
     vector<Editable_Property> get_editable_properties() override { return {}; }
 

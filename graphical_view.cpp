@@ -493,6 +493,42 @@ void graphical_view::draw_toolbar(SDL_Renderer* renderer, TTF_Font* font)
     }
 }
 
+void graphical_view::initialize_configure_analysis_menu(Controller* C)
+{
+    edit_buffers.clear();
+    active_edit_box = -1;
+
+    switch (current_analysis_mode)
+    {
+        case Analysis_Mode::Transient:
+        {
+            double start, stop, step;
+            C->get_tran_params(start, stop, step);
+            edit_buffers.push_back(std::to_string(start));
+            edit_buffers.push_back(std::to_string(stop));
+            edit_buffers.push_back(std::to_string(step));
+        }
+            break;
+        case Analysis_Mode::AC_Sweep:
+        {
+            double start, stop, step;
+            AC_Sweep_Type type;
+            C->get_ac_params(start, stop, step, type);
+            C->get_ac_params(start, stop, step, type);
+            this->AC_sweep_type = type;
+            cout << "INITIALIZING MENU: AC_sweep_type set to " << (int)this->AC_sweep_type << endl;
+            this->AC_sweep_type = type;
+            edit_buffers.push_back(std::to_string(start));
+            edit_buffers.push_back(std::to_string(stop));
+            edit_buffers.push_back(std::to_string(step));
+        }
+            break;
+        case Analysis_Mode::Phase_Sweep:
+            edit_buffers.resize(4, "");
+            break;
+    }
+}
+
 void graphical_view::draw_configure_analysis(SDL_Renderer *renderer, TTF_Font *font, Controller* C)
 {
     const SDL_Color PANEL_BG = {50, 58, 69, 255};
@@ -1410,15 +1446,21 @@ bool graphical_view::run(Controller *C)
         else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
         {
             int x = 10; int y = 50;
-            double start_f = 0; double stop_f = 0; double num_of_points = 0;
-            C->get_ac_params(start_f, stop_f, num_of_points, AC_sweep_type);
+            double start_f, stop_f, num_of_points;
+            AC_Sweep_Type current_controller_type;
+
+            C->get_ac_params(start_f, stop_f, num_of_points, current_controller_type);
+
             string text = ".AC(" + format_with_suffix(start_f, " ") + format_with_suffix(stop_f, " ") + format_with_suffix(num_of_points, " ");
-            if (AC_sweep_type == AC_Sweep_Type::Linear) { text += "Linear"; }
-            else if (AC_sweep_type == AC_Sweep_Type::Octave) { text += "Octave"; }
-            else if (AC_sweep_type == AC_Sweep_Type::Decade) { text += "Decade"; }
+
+            if (current_controller_type == AC_Sweep_Type::Linear) { text += "Linear"; }
+            else if (current_controller_type == AC_Sweep_Type::Octave) { text += "Octave"; }
+            else if (current_controller_type == AC_Sweep_Type::Decade) { text += "Decade"; }
             text += ")";
+
             render_text(renderer, font, text, x, y, {0, 0, 0, 255});
         }
+
         else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
         {
             int x = 10; int y = 50;
@@ -2077,31 +2119,89 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 Rotation end_rot = target_point->rotation;
 
                 vector<SDL_Point> path_points;
-
                 path_points.push_back(start_pos);
-                SDL_Point corner_pos;
-                bool is_start_horizontal = (start_rot == Rotation::Left || start_rot == Rotation::Right);
+                SDL_Point corner;
 
-                // finding corner point
-                if (is_start_horizontal)
+                if (start_rot == Rotation::Right)
                 {
-                    corner_pos = { end_pos.x, start_pos.y };
-                }
-                else
-                {
-                    corner_pos = { start_pos.x, end_pos.y };
+                    if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                    {
+                        corner = { start_pos.x, end_pos.y };
+                    }
+                    if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                    {
+                        if (start_pos.x < end_pos.x)
+                        {
+                            corner = { end_pos.x, start_pos.y };
+                        }
+                        else
+                        {
+                            corner = { start_pos.x, end_pos.y };
+                        }
+                    }
                 }
 
-                // adding a corner point
-                if ((corner_pos.x != start_pos.x || corner_pos.y != start_pos.y) &&
-                    (corner_pos.x != end_pos.x || corner_pos.y != end_pos.y))
+                if (start_rot == Rotation::Left)
                 {
-                    path_points.push_back(corner_pos);
+                    if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                    {
+                        corner = { start_pos.x, end_pos.y };
+                    }
+                    if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                    {
+                        if (start_pos.x > end_pos.x)
+                        {
+                            corner = { end_pos.x, start_pos.y };
+                        }
+                        else
+                        {
+                            corner = { start_pos.x, end_pos.y };
+                        }
+                    }
                 }
+
+                if (start_rot == Rotation::Up)
+                {
+                    if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                    {
+                        corner = { end_pos.x, start_pos.y };
+                    }
+                    if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                    {
+                        if (start_pos.y < end_pos.y)
+                        {
+                            corner = { start_pos.x, end_pos.y };
+                        }
+                        else
+                        {
+                            corner = { end_pos.x, start_pos.y };
+                        }
+                    }
+                }
+
+                if (start_rot == Rotation::Down)
+                {
+                    if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                    {
+                        corner = { end_pos.x, start_pos.y };
+                    }
+                    if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                    {
+                        if (start_pos.y > end_pos.y)
+                        {
+                            corner = { start_pos.x, end_pos.y };
+                        }
+                        else
+                        {
+                            corner = { end_pos.x, start_pos.y };
+                        }
+                    }
+                }
+                path_points.push_back(corner);
 
                 path_points.push_back(end_pos);
 
-                // creating wire
+                // creating wire (This part remains the same)
                 vector<Connection_Point> final_wire_points;
                 for(const auto& p : path_points) final_wire_points.push_back({ p, nullptr, {} });
 
@@ -2113,7 +2213,6 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 C->connect_nodes(start_node, end_node);
                 C->add_Graphical_Wire(final_wire_points, start_node, end_node);
             }
-
             // if the click is on an existing wire
             else
             {
@@ -2504,6 +2603,15 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             break;
                         case Tool_Bar_Action::Configure_Analysis:
                             is_configuring_analysis = !is_configuring_analysis;
+
+                            if (is_configuring_analysis)
+                            {
+                                initialize_configure_analysis_menu(C);
+                            }
+                            else
+                            {
+                                SDL_StopTextInput();
+                            }
                             elements_menu = false;
                             math_operation_mode = false;
                             probe_mode = false;
@@ -2514,29 +2622,6 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             is_file_menu_open = false;
                             is_deleting = false;
                             sub_circuit_menu = false;
-                            edit_buffers.clear();
-
-                            if (current_analysis_mode == Analysis_Mode::Transient)
-                            {
-                                double start, stop, step;
-                                C->get_tran_params(start, stop, step);
-                                edit_buffers.push_back(to_string(start));
-                                edit_buffers.push_back(to_string(stop));
-                                edit_buffers.push_back(to_string(step));
-                            }
-                            else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
-                            {
-                                edit_buffers.push_back(to_string(0));
-                                edit_buffers.push_back(to_string(0));
-                                edit_buffers.push_back(to_string(0));
-                            }
-                            else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
-                            {
-                                edit_buffers.push_back(to_string(0));
-                                edit_buffers.push_back(to_string(0));
-                                edit_buffers.push_back(to_string(0));
-                            }
-                            active_edit_box = -1;
                             break;
                         case Tool_Bar_Action::Run:
                             if (current_analysis_mode == Analysis_Mode::Transient)
@@ -2545,7 +2630,9 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             }
                             else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
                             {
-                                // not coded
+                                double s, e, n;
+                                C->get_ac_params(s, e, n, AC_sweep_type);
+                                cout << s << " " << e << n << (int)AC_sweep_type;
                             }
                             else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
                             {
@@ -2649,7 +2736,6 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
                         double start_freq = toValue(edit_buffers[0]);
                         double stop_freq = toValue(edit_buffers[1]);
                         int num_points = static_cast<int>(toValue(edit_buffers[2]));
-                        cout << "AC Sweep Values: Type=" << (int)AC_sweep_type << ", Start=" << start_freq << ", Stop=" << stop_freq << ", Points=" << num_points << endl;
                         C->set_AC_sweep_variables(start_freq, stop_freq, num_points, AC_sweep_type);
                     }
                     break;
@@ -2660,14 +2746,13 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
                         double start_phase = toValue(edit_buffers[1]);
                         double stop_phase = toValue(edit_buffers[2]);
                         int num_points = static_cast<int>(toValue(edit_buffers[3]));
-                        cout << "Phase Sweep Values: Base=" << base_freq << ", Start=" << start_phase << ", Stop=" << stop_phase << ", Points=" << num_points << endl;
                     }
                     break;
             }
         }
         catch (const exception& e)
         {
-            cerr << "Error parsing values: " << e.what() << endl;
+            cerr << "Error" << e.what() << endl;
         }
         is_configuring_analysis = false;
         SDL_StopTextInput();
@@ -2711,16 +2796,19 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
             if (SDL_PointInRect(&mouse_pos, &octave_button_rect))
             {
                 AC_sweep_type = AC_Sweep_Type::Octave;
+                cout << "CLICKED Octave: AC_sweep_type is now " << (int)AC_sweep_type << endl;
                 return true;
             }
             if (SDL_PointInRect(&mouse_pos, &decade_button_rect))
             {
                 AC_sweep_type = AC_Sweep_Type::Decade;
+                cout << "CLICKED Decade: AC_sweep_type is now " << (int)AC_sweep_type << endl;
                 return true;
             }
             if (SDL_PointInRect(&mouse_pos, &linear_button_rect))
             {
                 AC_sweep_type = AC_Sweep_Type::Linear;
+                cout << "CLICKED Linear: AC_sweep_type is now " << (int)AC_sweep_type << endl;
                 return true;
             }
         }
