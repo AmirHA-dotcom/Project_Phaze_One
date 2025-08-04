@@ -2095,6 +2095,13 @@ void Controller::New_File()
     circuits.push_back(circuit);
 }
 
+inline SDL_Point snap_to_grid(int x, int y, int grid_size)
+{
+    int snapped_x = round((float)x / grid_size) * grid_size;
+    int snapped_y = round((float)y / grid_size) * grid_size;
+    return {snapped_x, snapped_y};
+}
+
 void Controller::build_graphical_elements_from_circuit()
 {
     if (!circuit) return;
@@ -2278,9 +2285,8 @@ void Controller::build_graphical_elements_from_circuit()
             add_Graphical_Wire(final_wire_points, common_node, common_node);
         }
 
-        else
+        else if (points.size() > 2)
         {
-            // a central junction point for the node
             SDL_Point junction_pos = {0, 0};
             for (const auto& p : points)
             {
@@ -2289,39 +2295,49 @@ void Controller::build_graphical_elements_from_circuit()
             }
             junction_pos.x /= points.size();
             junction_pos.y /= points.size();
-            //junction_pos = snap_to_grid(junction_pos.x, junction_pos.y, 10);
+            junction_pos = snap_to_grid(junction_pos.x, junction_pos.y, 10);
 
-            //  connecting each terminal to the central junction point
+            // connect each terminal to the central junction point
             for (const auto& start_cp : points)
             {
                 vector<SDL_Point> path_points;
                 path_points.push_back(start_cp.pos);
 
+                const int STUB_LENGTH = 20;
+                SDL_Point stub_pos;
                 SDL_Point corner_pos;
                 bool is_start_horizontal = (start_cp.rotation == Rotation::Left || start_cp.rotation == Rotation::Right);
 
+                // stubbing
                 if (is_start_horizontal)
                 {
-                    corner_pos = { junction_pos.x, start_cp.pos.y };
+                    stub_pos = { start_cp.pos.x + STUB_LENGTH * (start_cp.rotation == Rotation::Right ? 1 : -1), start_cp.pos.y };
+                    corner_pos = { stub_pos.x, junction_pos.y };
                 }
                 else
                 {
-                    corner_pos = { start_cp.pos.x, junction_pos.y };
+                    stub_pos = { start_cp.pos.x, start_cp.pos.y + STUB_LENGTH * (start_cp.rotation == Rotation::Up ? -1 : 1) };
+                    corner_pos = { junction_pos.x, stub_pos.y };
                 }
 
-                if ((corner_pos.x != start_cp.pos.x || corner_pos.y != start_cp.pos.y) &&
-                    (corner_pos.x != junction_pos.x || corner_pos.y != junction_pos.y)) {
+                // adding intermediate points to the path
+                if (stub_pos.x != start_cp.pos.x || stub_pos.y != start_cp.pos.y)
+                {
+                    path_points.push_back(stub_pos);
+                }
+                if ((corner_pos.x != stub_pos.x || corner_pos.y != stub_pos.y) && (corner_pos.x != junction_pos.x || corner_pos.y != junction_pos.y))
+                {
                     path_points.push_back(corner_pos);
                 }
+
                 path_points.push_back(junction_pos);
 
-                // final wire points vector
+                // add the wire
                 vector<Connection_Point> final_wire_points;
                 for(const auto& p : path_points)
                 {
                     final_wire_points.push_back({ p, nullptr, {} });
                 }
-
                 add_Graphical_Wire(final_wire_points, common_node, common_node);
             }
         }
