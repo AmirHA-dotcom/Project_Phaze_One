@@ -371,7 +371,7 @@ void Plot_View::render()
     // plot area
     int width, height;
     SDL_GetWindowSize(m_window, &width, &height);
-    plot_area = {100, 50, width - 100, height - 100};
+    plot_area = {100, 50, width - 120, height - 100};
 
     SDL_SetRenderDrawColor(m_renderer, 100, 100, 100, 255);
     SDL_RenderDrawRect(m_renderer, &plot_area);
