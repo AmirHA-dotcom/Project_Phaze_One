@@ -2401,7 +2401,7 @@ inline void safeAdd(MatrixXc& Y, int r, int c, ComplexNum v) {
     Y(r, c) += v;
 }
 
-void Controller::performACSweep(Circuit* circuit) {
+void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
     std::vector<double> freqList;
     std::vector<double> magList;
     std::vector<double> phaseList;
@@ -2503,11 +2503,15 @@ void Controller::performACSweep(Circuit* circuit) {
 
         // pick your output node (e.g. node index 0)
         ComplexNum Vout = V(0);
+        int outIndex = nodeIndex[OutNodeName]; // map name → index
+        if (outIndex >= 0)
+            Vout = V(outIndex);
+
 
         // store results
-        freqList.push_back(f);
-        magList.push_back(20*log10(abs(Vout)));
-        phaseList.push_back(arg(Vout)*180.0/M_PI);
+        freqList.push_back(f); // frequency in Hz
+        magList.push_back(20*log10(abs(Vout))); // magnitude in dB
+        phaseList.push_back(arg(Vout)*180.0/M_PI); // phase in degrees
     }
 
 

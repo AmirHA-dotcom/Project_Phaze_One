@@ -703,12 +703,12 @@ bool View::handleAnalysisMenu (Controller* C) {
         return true;
     }
     ///////////// AC SWEEP CHECK //////////////////
-    if (i.size() == 4 && i[0] == "AC") {
+    if (i.size() == 5 && i[0] == "AC") {
         if (!C->circuit)
             throw circuitNotFind("No circuit selected");
         // Example: AC <start> <stop> <step>
         C->set_AC_sweep_variables(toValue(i[1]), toValue(i[2]), toValue(i[3]),AC_Sweep_Type::Linear);
-        C->performACSweep(C->circuit);
+        C->performACSweep(C->circuit,i[4]);
         C->circuit->displayAC();
         return true;
     }
