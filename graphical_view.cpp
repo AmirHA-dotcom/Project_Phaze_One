@@ -1014,6 +1014,7 @@ bool graphical_view::run(Controller *C)
     initialize_toolbar(font);
     initialize_SubC_menu(C);
     C->getFile_Handler().loadFiles();
+    C->loadGraphicalSubCircuits();
 
     SDL_Window* window = SDL_CreateWindow(
             "SparkSense",
@@ -3447,6 +3448,7 @@ bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C
         node1 = nullptr;
         node2 = nullptr;
         create_SubC_mode = false;
+        C->saveGraphicalSubCircuits();
     }
 
     return true;
