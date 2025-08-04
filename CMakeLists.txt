@@ -9,6 +9,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(/opt/homebrew/include /opt/homebrew/include/SDL2)
 link_directories(/opt/homebrew/lib)
 
+# Manually include Eigen (for Homebrew-installed Eigen on Apple Silicon)
+include_directories(/opt/homebrew/include/eigen3)
+
 # تعریف فایل‌های پروژه
 add_executable(Project_Phaze_One
         Node.cpp

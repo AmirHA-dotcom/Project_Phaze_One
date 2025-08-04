@@ -320,5 +320,10 @@ public:
 
     void get_ac_params(double& start, double& stop, double& step, AC_Sweep_Type& type);
 
+    void addAdmittance(MatrixXc& Y, int node1, int node2, Complex val);
+    void performACSweep(Circuit& circuit,
+                                    std::vector<double>& freqList,
+                                    std::vector<double>& magList,
+                                    std::vector<double>& phaseList);
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

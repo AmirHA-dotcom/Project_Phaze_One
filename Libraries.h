@@ -26,8 +26,15 @@
 #include <SDL_image.h>
 #include <limits>
 #include <iterator>
+#include <complex>
+#include <Eigen/Dense>
 
+using namespace Eigen;
 using namespace std;
+
+using Complex = std::complex<double>;
+using MatrixXc = Eigen::Matrix<Complex, Eigen::Dynamic, Eigen::Dynamic>;
+using VectorXc = Eigen::Matrix<Complex, Eigen::Dynamic, 1>;
 
 extern const char* FONT;
 extern const char* PROBE;

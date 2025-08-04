@@ -1,9 +1,13 @@
 //
 // Created by Arian Sadeghi on 6/7/25.
 //
+#include <X11/X.h>
 #include "Element.h"
 #include "Controller.h"
 #include "Libraries.h"
+
+
+
 
 Controller::Controller() {
     circuit = nullptr;
@@ -2259,3 +2263,101 @@ void Controller::get_ac_params(double &start, double &stop, double &step, AC_Swe
     step = num_of_points;
     type = ac_sweep_type;
 }
+
+// Helper to add admittance to matrix
+void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, Complex val) {
+    int n1 = (node1 > 0) ? node1 - 1 : -1;
+    int n2 = (node2 > 0) ? node2 - 1 : -1;
+    if (n1 >= 0) Y(n1, n1) += val;
+    if (n2 >= 0) Y(n2, n2) += val;
+    if (n1 >= 0 && n2 >= 0) {
+        Y(n1, n2) -= val;
+        Y(n2, n1) -= val;
+    }
+}
+
+void Controller::performACSweep(Circuit& circuit,
+                                std::vector<double>& freqList,
+                                std::vector<double>& magList,
+                                std::vector<double>& phaseList) {
+    // Clear previous data
+    freqList.clear();
+    magList.clear();
+    phaseList.clear();
+
+    // Generate frequency points
+    std::vector<double> freqs;
+    if (ac_sweep_type == AC_Sweep_Type::Linear) {
+        double step = (end_freq - start_freq) / (num_of_points - 1);
+        for (int i = 0; i < num_of_points; i++)
+            freqs.push_back(start_freq + i * step);
+    } else { // assume Decade or Octave
+        double base = (ac_sweep_type == AC_Sweep_Type::Decade) ? 10.0 : 2.0;
+        double ratio = end_freq / start_freq;
+        for (int i = 0; i < num_of_points; i++) {
+            double factor = (double)i / (num_of_points - 1);
+            freqs.push_back(start_freq * pow(base, factor * log(ratio) / log(base)));
+        }
+    }
+
+    int N = circuit.get_Nodes().size() - 1; // exclude ground
+    int VsrcCount = circuit.countVoltageSources();
+    int size = N + VsrcCount;
+
+    // Loop over frequencies
+    for (double f : freqs) {
+        double omega = 2 * M_PI * f;
+
+        MatrixXc Y = MatrixXc::Zero(size, size);
+        VectorXc I = VectorXc::Zero(size);
+
+        int voltageIndex = N; // columns for voltage sources start after node equations
+
+        for (auto* el : circuit.get_Elements()) {
+            int n1 = circuit.node_index_finder_by_name(el->get_nodes().first->get_name());
+            int n2 = circuit.node_index_finder_by_name(el->get_nodes().second->get_name());
+
+            if (el->get_type() == Element_Type::Resistor) {
+                Complex G = 1.0 / el->get_value();
+                addAdmittance(Y, n1, n2, G);
+            } else if (el->get_type() == Element_Type::Capacitor) {
+                Complex Yc(0, omega * el->get_value()); // jωC
+                addAdmittance(Y, n1, n2, Yc);
+            } else if (el->get_type() == Element_Type::Inductor) {
+                Complex Yl(0, -1.0 / (omega * el->get_value())); // 1/(jωL)
+                addAdmittance(Y, n1, n2, Yl);
+            } else if (el->get_type() == Element_Type::Voltage_Source) {
+                if (n1 > 0) {
+                    Y(n1 - 1, voltageIndex) += 1;
+                    Y(voltageIndex, n1 - 1) += 1;
+                }
+                if (n2 > 0) {
+                    Y(n2 - 1, voltageIndex) -= 1;
+                    Y(voltageIndex, n2 - 1) -= 1;
+                }
+                I(voltageIndex) = el->getAmplitude(); // AC amplitude
+                voltageIndex++;
+            }
+//            else if (el->get_type() == Element_Type::Current_Source) {
+//                if (n1 > 0) I(n1 - 1) -= el->get;
+//                if (n2 > 0) I(n2 - 1) += el->ac_value;
+//            }
+        }
+
+        // Solve system
+        VectorXc V = Y.fullPivLu().solve(I);
+
+        // Select output node (example: last node)
+        Complex Vout = V(0); // or any node index you need
+
+        // Compute magnitude and phase
+        double mag = abs(Vout);
+        double mag_dB = 20.0 * log10(mag);
+        double phase_deg = std::arg(Vout) * 180.0 / M_PI;
+
+        freqList.push_back(f);
+        magList.push_back(mag_dB);
+        phaseList.push_back(phase_deg);
+    }
+}
+

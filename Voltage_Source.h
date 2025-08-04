@@ -12,6 +12,7 @@ class Voltage_Source : public Element
 protected:
     int aux_index;
     vector<pair<double, double>> currents;  // current time
+    double amplitude = 0;
 public:
     Voltage_Source(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Voltage_Source, _node1, _node2, 0.0) {}
     void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
@@ -23,6 +24,7 @@ public:
     double get_current(double time, double time_step) override;
     void set_current(double current, double time);
     int get_aux_index() const;
+    virtual double getAmplitude() const { return amplitude; }
 };
 
 class DC_Source : public Voltage_Source
@@ -53,6 +55,8 @@ public:
     double get_value_at(double time, double time_step) const override;
     void get_parameters(double& out_offset, double& out_amplitude, double& out_frequency, double& out_phase) const;
     void set_offset(double val) { offset = val; }
+    double getOffset () {return offset;}
+    virtual double getAmplitude() const override { return amplitude; }
     void set_amplitude(double val) { amplitude = val; }
     void set_frequency(double val) { frequency = val; }
     void set_phase_degrees(double val) { phase_degrees = val; }

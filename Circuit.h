@@ -87,7 +87,6 @@ public:
     Node* create_new_node(const string& name);
     void addElement(Element* new_element);
 
-private:
     int node_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
     int element_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
 };
