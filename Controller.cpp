@@ -2394,6 +2394,11 @@ void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val
         Y(n1, n2) -= val;
         Y(n2, n1) -= val;
     }
+}\
+
+inline void safeAdd(MatrixXc& Y, int r, int c, ComplexNum v) {
+    assert(r >= 0 && r < Y.rows() && c >= 0 && c < Y.cols());
+    Y(r, c) += v;
 }
 
 void Controller::performACSweep(Circuit* circuit) {
@@ -2414,66 +2419,100 @@ void Controller::performACSweep(Circuit* circuit) {
             freqs.push_back(start_freq * pow(base, factor * log(ratio) / log(base)));
         }
     }
-
-    int N = circuit->get_Nodes().size() - 1; // exclude ground
-    int VsrcCount = voltage_source_count;
+    // Assume circuit->get_Nodes() returns vector<Node*>, node 0 is ground:
+    vector<Node*> nodes = circuit->get_Nodes();
+    int N = (int)nodes.size() - 1;      // exclude ground
+    int VsrcCount = 0;
+    for (auto* el : circuit->get_Elements())
+        if (el->get_type() == Element_Type::Voltage_Source)
+            ++VsrcCount;
     int size = N + VsrcCount;
 
-    // Loop over frequencies
+// Build name→index map once:
+    unordered_map<string,int> nodeIndex;
+    for (int i = 0; i < (int)nodes.size(); ++i) {
+        // nodes[0] is ground → map to -1
+        nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
+    }
+
     for (double f : freqs) {
         double omega = 2 * M_PI * f;
-
         MatrixXc Y = MatrixXc::Zero(size, size);
         VectorXc I = VectorXc::Zero(size);
 
-        int voltageIndex = N; // columns for voltage sources start after node equations
+        int voltageIndex = N;  // first extra equation
 
         for (auto* el : circuit->get_Elements()) {
-            int n1 = circuit->node_index_finder_by_name(el->get_nodes().first->get_name());
-            int n2 = circuit->node_index_finder_by_name(el->get_nodes().second->get_name());
+            int n1 = nodeIndex[ el->get_nodes().first->get_name() ];
+            int n2 = nodeIndex[ el->get_nodes().second->get_name() ];
 
-            if (el->get_type() == Element_Type::Resistor) {
-                ComplexNum G = 1.0 / el->get_value();
-                addAdmittance(Y, n1, n2, G);
-            } else if (el->get_type() == Element_Type::Capacitor) {
-                ComplexNum Yc(0, omega * el->get_value()); // jωC
-                addAdmittance(Y, n1, n2, Yc);
-            } else if (el->get_type() == Element_Type::Inductor) {
-                ComplexNum Yl(0, -1.0 / (omega * el->get_value())); // 1/(jωL)
-                addAdmittance(Y, n1, n2, Yl);
-            } else if (el->get_type() == Element_Type::Voltage_Source) {
-                if (n1 > 0) {
-                    Y(n1 - 1, voltageIndex) += 1;
-                    Y(voltageIndex, n1 - 1) += 1;
+            switch (el->get_type()) {
+                case Element_Type::Resistor: {
+                    ComplexNum G = 1.0 / el->get_value();
+                    if (n1 >= 0) safeAdd(Y, n1, n1,  G);
+                    if (n2 >= 0) safeAdd(Y, n2, n2,  G);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -G);
+                        safeAdd(Y, n2, n1, -G);
+                    }
+                    break;
                 }
-                if (n2 > 0) {
-                    Y(n2 - 1, voltageIndex) -= 1;
-                    Y(voltageIndex, n2 - 1) -= 1;
+                case Element_Type::Capacitor: {
+                    ComplexNum Yc(0,  omega * el->get_value());  // jωC
+                    if (n1 >= 0) safeAdd(Y, n1, n1,  Yc);
+                    if (n2 >= 0) safeAdd(Y, n2, n2,  Yc);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -Yc);
+                        safeAdd(Y, n2, n1, -Yc);
+                    }
+                    break;
                 }
-                I(voltageIndex) = el->getAmplitude(); // AC amplitude
-                voltageIndex++;
+                case Element_Type::Inductor: {
+                    ComplexNum Yl(0, -1.0/(omega * el->get_value())); // 1/(jωL)
+                    if (n1 >= 0) safeAdd(Y, n1, n1,  Yl);
+                    if (n2 >= 0) safeAdd(Y, n2, n2,  Yl);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -Yl);
+                        safeAdd(Y, n2, n1, -Yl);
+                    }
+                    break;
+                }
+                case Element_Type::Voltage_Source: {
+                    // KCL rows
+                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex,  1);
+                    if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
+                    // KVL row
+                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1,  1);
+                    if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
+
+                    // RHS
+                    assert(voltageIndex < I.size());
+                    I(voltageIndex) = el->getAmplitude();
+                    voltageIndex++;
+                    break;
+                }
+                    // handle current sources similarly...
             }
-//            else if (el->get_type() == Element_Type::Current_Source) {
-//                if (n1 > 0) I(n1 - 1) -= el->get;
-//                if (n2 > 0) I(n2 - 1) += el->ac_value;
-//            }
         }
 
-        // Solve system
+        // one final sanity check
+        assert(voltageIndex == size);
+
+        // solve
         VectorXc V = Y.fullPivLu().solve(I);
 
-        // Select output node (example: last node)
-        ComplexNum Vout = V(0); // or any node index you need
+        // pick your output node (e.g. node index 0)
+        ComplexNum Vout = V(0);
 
-        // Compute magnitude and phase
-        double mag = abs(Vout);
-        double mag_dB = 20.0 * log10(mag);
-        double phase_deg = std::arg(Vout) * 180.0 / M_PI;
-
+        // store results
         freqList.push_back(f);
-        magList.push_back(mag_dB);
-        phaseList.push_back(phase_deg);
+        magList.push_back(20*log10(abs(Vout)));
+        phaseList.push_back(arg(Vout)*180.0/M_PI);
     }
+
+
+
+
     circuit->setAC(freqList, magList, phaseList);
 }
 

@@ -833,12 +833,11 @@ void Circuit::displayAC(){
     for ( auto freq : AC[0]) {
         cout << freq << " ";
     }
-    cout << endl;
+    cout << endl << "Mag : " << endl;
     for ( auto mag : AC[1]) {
         cout << mag << " ";
     }
-    cout << endl;
-
+    cout << endl << "PHASE : " << endl;
     for ( auto phase : AC[2]) {
         cout << phase << " ";
     }
