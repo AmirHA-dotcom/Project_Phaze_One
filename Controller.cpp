@@ -2248,11 +2248,11 @@ void Controller::load_file(string name)
     build_graphical_elements_from_circuit();
 }
 
-void Controller::set_AC_sweep_variables(double start_f, double end_f, double num_of_p, AC_Sweep_Type type)
+void Controller::set_AC_sweep_variables(double start_f, double end_f, double step, AC_Sweep_Type type)
 {
     start_freq = start_f;
     end_freq = end_f;
-    num_of_points = num_of_p;
+    num_of_points = end_f - start_f > 0 ? (int)(end_f - start_f) / step + 1 : 1; // ensure at least one point
     ac_sweep_type = type;
 }
 
@@ -2260,11 +2260,10 @@ void Controller::get_ac_params(double &start, double &stop, double &step, AC_Swe
 {
     start = start_freq;
     stop = end_freq;
-    step = num_of_points;
+    step = end_freq - start_freq > 0 ? (end_freq - start_freq) / (num_of_points - 1) : 1; // ensure at least one point
     type = ac_sweep_type;
 }
 
-// Helper to add admittance to matrix
 void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val) {
     int n1 = (node1 > 0) ? node1 - 1 : -1;
     int n2 = (node2 > 0) ? node2 - 1 : -1;
@@ -2276,16 +2275,11 @@ void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val
     }
 }
 
-void Controller::performACSweep(Circuit& circuit,
-                                std::vector<double>& freqList,
-                                std::vector<double>& magList,
-                                std::vector<double>& phaseList) {
-    // Clear previous data
-    freqList.clear();
-    magList.clear();
-    phaseList.clear();
+void Controller::performACSweep(Circuit* circuit) {
+    std::vector<double> freqList;
+    std::vector<double> magList;
+    std::vector<double> phaseList;
 
-    // Generate frequency points
     std::vector<double> freqs;
     if (ac_sweep_type == AC_Sweep_Type::Linear) {
         double step = (end_freq - start_freq) / (num_of_points - 1);
@@ -2300,7 +2294,7 @@ void Controller::performACSweep(Circuit& circuit,
         }
     }
 
-    int N = circuit.get_Nodes().size() - 1; // exclude ground
+    int N = circuit->get_Nodes().size() - 1; // exclude ground
     int VsrcCount = voltage_source_count;
     int size = N + VsrcCount;
 
@@ -2313,9 +2307,9 @@ void Controller::performACSweep(Circuit& circuit,
 
         int voltageIndex = N; // columns for voltage sources start after node equations
 
-        for (auto* el : circuit.get_Elements()) {
-            int n1 = circuit.node_index_finder_by_name(el->get_nodes().first->get_name());
-            int n2 = circuit.node_index_finder_by_name(el->get_nodes().second->get_name());
+        for (auto* el : circuit->get_Elements()) {
+            int n1 = circuit->node_index_finder_by_name(el->get_nodes().first->get_name());
+            int n2 = circuit->node_index_finder_by_name(el->get_nodes().second->get_name());
 
             if (el->get_type() == Element_Type::Resistor) {
                 ComplexNum G = 1.0 / el->get_value();
@@ -2359,6 +2353,6 @@ void Controller::performACSweep(Circuit& circuit,
         magList.push_back(mag_dB);
         phaseList.push_back(phase_deg);
     }
-    circuit.setAC(freqList, magList, phaseList);
+    circuit->setAC(freqList, magList, phaseList);
 }
 

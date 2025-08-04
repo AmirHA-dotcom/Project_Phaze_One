@@ -653,13 +653,13 @@ bool View::handleAnalysisMenu (Controller* C) {
     if (line.empty()) {
         return true;
     }
-//    if (i.size() == 2 && i[0] == "circuit"){
-//        if (!C->findCircuit(i[1])){
-//            return true;
-//        }
-//        C->circuit = C->findCircuit(i[1]);
-//        return true;
-//    }
+    if (i.size() == 2 && i[0] == "circuit"){
+        if (!C->findCircuit(i[1])){
+            return true;
+        }
+        C->circuit = C->findCircuit(i[1]);
+        return true;
+    }
     if (i.size() == 3 && i[0] == "switch" && i[1] == "to") {
         // Exaample: switch to <circuitName>
         if (!C->findCircuit(i[2])) {
@@ -700,6 +700,16 @@ bool View::handleAnalysisMenu (Controller* C) {
     if (dcAnalysisCheck(i)) {
         C->DcAnalysis(toValue(i[1]), toValue(i[2]), toValue(i[3].substr(1,i[3].size()-2))
                       , toValue(i[3].substr(1,i[3].size()-2)));
+        return true;
+    }
+    ///////////// AC SWEEP CHECK //////////////////
+    if (i.size() == 4 && i[0] == "AC") {
+        if (!C->circuit)
+            throw circuitNotFind("No circuit selected");
+        // Example: AC <start> <stop> <step>
+        C->set_AC_sweep_variables(toValue(i[1]), toValue(i[2]), toValue(i[3]),AC_Sweep_Type::Linear);
+        C->performACSweep(C->circuit);
+        C->circuit->displayAC();
         return true;
     }
     if (printTranCheck(i)) {    //  .print TRAN V(in) V(out) I(R1) I(D1)

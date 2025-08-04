@@ -827,7 +827,23 @@ void Circuit::delete_node(Node *node_to_delete)
         }
     }
 }
+void Circuit::displayAC(){
+    cout << "AC Analysis Results:" << endl << endl;
+    cout << "FREQ : " << endl;
+    for ( auto freq : AC[0]) {
+        cout << freq << " ";
+    }
+    cout << endl;
+    for ( auto mag : AC[1]) {
+        cout << mag << " ";
+    }
+    cout << endl;
 
+    for ( auto phase : AC[2]) {
+        cout << phase << " ";
+    }
+    cout << endl;
+}
 Node* SubCircuit::getInput()  { return input; }
 Node* SubCircuit::getOutput()  { return output; }
 void SubCircuit::setInput(Node* newInput) { input = newInput; }
