@@ -1717,6 +1717,7 @@ void Controller::add_Graphical_CCCS(int screenX, int screenY)
 void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
 {
     auto ground_symbol = make_unique<Graphical_Ground>(pos, node);
+    ground_symbol->bounding_box = {pos.x - 12, pos.y, 24, 18};
     graphical_elements.push_back(move(ground_symbol));
 }
 
@@ -2037,10 +2038,10 @@ void Controller::delete_element(Graphical_Element* g_element_to_delete)
                            }),
             wires.end());
 
-    string name_to_delete = g_element_to_delete->get_model()->get_name();
 
     if (g_element_to_delete->get_model() != nullptr)
     {
+        string name_to_delete = g_element_to_delete->get_model()->get_name();
         circuit->delete_element(name_to_delete);
 //        switch (g_element_to_delete->get_model()->get_element_type())
 //        {

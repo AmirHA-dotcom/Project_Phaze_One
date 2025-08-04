@@ -1601,6 +1601,11 @@ vector<Connection_Point> Graphical_CCCS::get_connection_points()
     };
 }
 
+vector<Connection_Point> Graphical_Ground::get_connection_points()
+{
+return { {m_position, m_node, Rotation::Up} };
+}
+
 // get info text
 
 string Graphical_Resistor::get_info_text()
