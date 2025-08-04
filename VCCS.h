@@ -21,6 +21,8 @@ public:
     void change_value(double new_value) override;
     void change_name(string new_name) override;
     double get_current(double time, double time_step) override;
+
+    pair<Node*, Node*> get_dependent_nodes() { return {ctrl_node1, ctrl_node2}; }
 };
 
 

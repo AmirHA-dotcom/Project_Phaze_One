@@ -25,6 +25,7 @@
 #include <optional>
 #include <SDL_image.h>
 #include <limits>
+#include <iterator>
 
 using namespace std;
 

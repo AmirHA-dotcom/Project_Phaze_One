@@ -1618,6 +1618,102 @@ void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
     graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
+void Controller::add_Graphical_VCVS(int screenX, int screenY)
+{
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    VCVS_count++;
+    string name = "VCVS" + to_string(VCVS_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
+
+    VCVS* sim_source = new VCVS(name, n1, n2, 1, nullptr, nullptr);
+    circuit->addElement(sim_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
+
+    auto gfx_sim_source = make_unique<Graphical_VCVS>(sim_source);
+    gfx_sim_source->bounding_box = {screenX, screenY, 100, 40};
+    graphical_elements.push_back(move(gfx_sim_source));
+}
+
+void Controller::add_Graphical_VCCS(int screenX, int screenY)
+{
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    VCVS_count++;
+    string name = "VCCS" + to_string(VCVS_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
+
+    VCCS* sim_source = new VCCS(name, n1, n2, 1, nullptr, nullptr);
+    circuit->addElement(sim_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
+
+    auto gfx_sim_source = make_unique<Graphical_VCCS>(sim_source);
+    gfx_sim_source->bounding_box = {screenX, screenY, 100, 40};
+    graphical_elements.push_back(move(gfx_sim_source));
+}
+
+void Controller::add_Graphical_CCVS(int screenX, int screenY)
+{
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    VCVS_count++;
+    string name = "CCVS" + to_string(VCVS_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
+
+    CCVS* sim_source = new CCVS(name, n1, n2, 1, nullptr, nullptr);
+    circuit->addElement(sim_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
+
+    auto gfx_sim_source = make_unique<Graphical_CCVS>(sim_source);
+    gfx_sim_source->bounding_box = {screenX, screenY, 100, 40};
+    graphical_elements.push_back(move(gfx_sim_source));
+}
+
+void Controller::add_Graphical_CCCS(int screenX, int screenY)
+{
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    VCVS_count++;
+    string name = "CCCS" + to_string(VCVS_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
+
+    CCCS* sim_source = new CCCS(name, n1, n2, 1, nullptr, nullptr);
+    circuit->addElement(sim_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
+
+    auto gfx_sim_source = make_unique<Graphical_CCCS>(sim_source);
+    gfx_sim_source->bounding_box = {screenX, screenY, 100, 40};
+    graphical_elements.push_back(move(gfx_sim_source));
+}
+
 void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
 {
     auto ground_symbol = make_unique<Graphical_Ground>(pos, node);

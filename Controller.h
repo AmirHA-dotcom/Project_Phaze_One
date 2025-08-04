@@ -134,6 +134,10 @@ private:
     int real_diode_count = 0;
     int zener_diode_count = 0;
     int voltage_source_count = 0;
+    int VCVS_count = 0;
+    int VCCS_count = 0;
+    int CCVS_count = 0;
+    int CCCS_count = 0;
 
     vector<unique_ptr<Graphical_Wire>> graphical_wires;
 
@@ -256,6 +260,14 @@ public:
     void add_Graphical_Square_Source(int screenX, int screenY);
 
     void add_Graphical_Triangular_Source(int screenX, int screenY);
+
+    void add_Graphical_VCVS(int screenX, int screenY);
+
+    void add_Graphical_VCCS(int screenX, int screenY);
+
+    void add_Graphical_CCVS(int screenX, int screenY);
+
+    void add_Graphical_CCCS(int screenX, int screenY);
 
     void add_Graphical_Ground(SDL_Point pos, Node* node);
 

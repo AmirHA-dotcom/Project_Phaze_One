@@ -174,6 +174,54 @@ public:
 
 };
 
+class Graphical_VCVS : public Graphical_Element {
+public:
+    Graphical_VCVS(VCVS* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
+
+    vector<Editable_Property> get_editable_properties() override;
+    vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
+
+};
+
+class Graphical_VCCS : public Graphical_Element {
+public:
+    Graphical_VCCS(VCCS* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
+
+    vector<Editable_Property> get_editable_properties() override;
+    vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
+
+};
+
+class Graphical_CCCS : public Graphical_Element {
+public:
+    Graphical_CCCS(CCCS* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
+
+    vector<Editable_Property> get_editable_properties() override;
+    vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
+
+};
+
+class Graphical_CCVS : public Graphical_Element {
+public:
+    Graphical_CCVS(CCVS* model) : Graphical_Element(model) {}
+
+    void draw(SDL_Renderer* renderer, bool show_grid) override;
+
+    vector<Editable_Property> get_editable_properties() override;
+    vector<Connection_Point> get_connection_points() override;
+    string get_info_text()  override;
+
+};
+
 class Graphical_Ground : public Graphical_Element
 {
 private:

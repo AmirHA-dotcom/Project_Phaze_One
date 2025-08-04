@@ -208,6 +208,11 @@ void graphical_view::initialize_menu()
     menu_items.push_back({"Delta_Dirac Source", Element_Type::Voltage_Source, "Delta"});
     menu_items.push_back({"Square Source", Element_Type::Voltage_Source, "Square"});
     menu_items.push_back({"Triangular Source", Element_Type::Voltage_Source, "Triangular"});
+    menu_items.push_back({"VCVS", Element_Type::VC_Voltage_Source});
+    menu_items.push_back({"VCCS", Element_Type::VC_Current_Source});
+    menu_items.push_back({"CCVS", Element_Type::CC_Voltage_Source});
+    menu_items.push_back({"CCCS", Element_Type::CC_Current_source});
+
 }
 
 void graphical_view::initialize_SubC_menu(Controller* C)
@@ -223,7 +228,7 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
     const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
     const SDL_Color HOVERED = {60, 68, 80, 255};
 
-    SDL_Rect menu_panel = {200, 100, 800, 500};
+    SDL_Rect menu_panel = {200, 100, 800, 550};
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
 
     // panels
@@ -319,6 +324,34 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
             case Element_Type::Voltage_Source:
             {
                 Graphical_Voltage_Source preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer, false);
+                break;
+            }
+            case Element_Type::VC_Voltage_Source:
+            {
+                Graphical_VCVS preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer, false);
+                break;
+            }
+            case Element_Type::VC_Current_Source:
+            {
+                Graphical_VCCS preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer, false);
+                break;
+            }
+            case Element_Type::CC_Voltage_Source:
+            {
+                Graphical_CCVS preview(nullptr);
+                preview.bounding_box = preview_panel;
+                preview.draw(renderer, false);
+                break;
+            }
+            case Element_Type::CC_Current_source:
+            {
+                Graphical_CCCS preview(nullptr);
                 preview.bounding_box = preview_panel;
                 preview.draw(renderer, false);
                 break;
@@ -1733,6 +1766,11 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
                                 C->add_Graphical_Triangular_Source(mouseX, mouseY);
                             break;
                         }
+                        case Element_Type::VC_Voltage_Source: C->add_Graphical_VCVS(mouseX, mouseY); break;
+                        case Element_Type::VC_Current_Source: C->add_Graphical_VCCS(mouseX, mouseY); break;
+                        case Element_Type::CC_Voltage_Source: C->add_Graphical_CCVS(mouseX, mouseY); break;
+                        case Element_Type::CC_Current_source: C->add_Graphical_CCCS(mouseX, mouseY); break;
+
                     }
 
                     elements_menu = false;

@@ -678,6 +678,240 @@ void Graphical_SubCircuit::draw(SDL_Renderer* renderer, bool show_grid)
     }
 }
 
+void Graphical_VCVS::draw(SDL_Renderer *renderer, bool show_grid)
+{
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+
+    int half_length = 40;
+    int radius = 20;
+
+    // leads
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
+
+    SDL_Point lead2_p1 = transform_point({radius, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+
+    // controller leads
+    SDL_Point lead3_p1 = transform_point({0, -half_length});
+    SDL_Point lead3_p2 = transform_point({0, -radius});
+    SDL_RenderDrawLine(renderer, lead3_p1.x, lead3_p1.y, lead3_p2.x, lead3_p2.y);
+
+    SDL_Point lead4_p1 = transform_point({0, radius});
+    SDL_Point lead4_p2 = transform_point({0, half_length});
+    SDL_RenderDrawLine(renderer, lead4_p1.x, lead4_p1.y, lead4_p2.x, lead4_p2.y);
+
+    // diomond
+    SDL_Point p_top = transform_point({0, -radius});
+    SDL_Point p_right = transform_point({radius, 0});
+    SDL_Point p_bottom = transform_point({0, radius});
+    SDL_Point p_left = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, p_top.x, p_top.y, p_right.x, p_right.y);
+    SDL_RenderDrawLine(renderer, p_right.x, p_right.y, p_bottom.x, p_bottom.y);
+    SDL_RenderDrawLine(renderer, p_bottom.x, p_bottom.y, p_left.x, p_left.y);
+    SDL_RenderDrawLine(renderer, p_left.x, p_left.y, p_top.x, p_top.y);
+
+    // + -
+    SDL_Point plus_minus[] = {
+            {5, 0}, {15, 0},
+            {10, 5}, {10, -5},
+            {-5, 0}, {-15, 0}
+    };
+    for (size_t i = 0; i < 6; i += 2) {
+        SDL_Point p1 = transform_point(plus_minus[i]);
+        SDL_Point p2 = transform_point(plus_minus[i+1]);
+        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+    }
+
+    // text
+    if (model_element != nullptr)
+    {
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        string value_str = format_with_suffix(model_element->get_value(), "");
+        render_text(renderer, font, value_str, bounding_box.x, bounding_box.y + bounding_box.h + 5);
+    }
+}
+
+void Graphical_VCCS::draw(SDL_Renderer *renderer, bool show_grid)
+{
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+
+    int half_length = 40;
+    int radius = 20;
+
+    // leads
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
+
+    SDL_Point lead2_p1 = transform_point({radius, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+
+    // controller leads
+    SDL_Point lead3_p1 = transform_point({0, -half_length});
+    SDL_Point lead3_p2 = transform_point({0, -radius});
+    SDL_RenderDrawLine(renderer, lead3_p1.x, lead3_p1.y, lead3_p2.x, lead3_p2.y);
+
+    SDL_Point lead4_p1 = transform_point({0, radius});
+    SDL_Point lead4_p2 = transform_point({0, half_length});
+    SDL_RenderDrawLine(renderer, lead4_p1.x, lead4_p1.y, lead4_p2.x, lead4_p2.y);
+
+    // diomond
+    SDL_Point p_top = transform_point({0, -radius});
+    SDL_Point p_right = transform_point({radius, 0});
+    SDL_Point p_bottom = transform_point({0, radius});
+    SDL_Point p_left = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, p_top.x, p_top.y, p_right.x, p_right.y);
+    SDL_RenderDrawLine(renderer, p_right.x, p_right.y, p_bottom.x, p_bottom.y);
+    SDL_RenderDrawLine(renderer, p_bottom.x, p_bottom.y, p_left.x, p_left.y);
+    SDL_RenderDrawLine(renderer, p_left.x, p_left.y, p_top.x, p_top.y);
+
+    // arrow-
+    SDL_Point arrow_points[] = {
+            {-radius / 2, 0}, {radius / 2, 0},
+            {radius / 2, 0}, {(int)(radius / 2) - 5, -5},
+            {radius / 2, 0}, {(int)(radius / 2) - 5, 5}
+    };
+    for (size_t i = 0; i < 6; i += 2)
+    {
+        SDL_Point p1 = transform_point(arrow_points[i]);
+        SDL_Point p2 = transform_point(arrow_points[i+1]);
+        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+    }
+
+    // text
+    if (model_element != nullptr)
+    {
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        string value_str = format_with_suffix(model_element->get_value(), "");
+        render_text(renderer, font, value_str, bounding_box.x, bounding_box.y + bounding_box.h + 5);
+    }
+}
+
+void Graphical_CCCS::draw(SDL_Renderer *renderer, bool show_grid)
+{
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+
+    int half_length = 40;
+    int radius = 20;
+
+    // leads
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
+
+    SDL_Point lead2_p1 = transform_point({radius, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+
+    // diomond
+    SDL_Point p_top = transform_point({0, -radius});
+    SDL_Point p_right = transform_point({radius, 0});
+    SDL_Point p_bottom = transform_point({0, radius});
+    SDL_Point p_left = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, p_top.x, p_top.y, p_right.x, p_right.y);
+    SDL_RenderDrawLine(renderer, p_right.x, p_right.y, p_bottom.x, p_bottom.y);
+    SDL_RenderDrawLine(renderer, p_bottom.x, p_bottom.y, p_left.x, p_left.y);
+    SDL_RenderDrawLine(renderer, p_left.x, p_left.y, p_top.x, p_top.y);
+
+    // arrow
+    SDL_Point arrow_points[] = {
+            {-radius / 2, 0}, {radius / 2, 0},
+            {radius / 2, 0}, {(int)(radius / 2) - 5, -5},
+            {radius / 2, 0}, {(int)(radius / 2) - 5, 5}
+    };
+    for (size_t i = 0; i < 6; i += 2)
+    {
+        SDL_Point p1 = transform_point(arrow_points[i]);
+        SDL_Point p2 = transform_point(arrow_points[i+1]);
+        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+    }
+
+    // text
+    if (model_element != nullptr)
+    {
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        string value_str = format_with_suffix(model_element->get_value(), "");
+        render_text(renderer, font, value_str, bounding_box.x, bounding_box.y + bounding_box.h + 5);
+    }
+}
+
+void Graphical_CCVS::draw(SDL_Renderer *renderer, bool show_grid)
+{
+    if (show_grid)
+    {
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderDrawRect(renderer, &bounding_box);
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+
+    int half_length = 40;
+    int radius = 20;
+
+    // leads
+    SDL_Point lead1_p1 = transform_point({-half_length, 0});
+    SDL_Point lead1_p2 = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, lead1_p1.x, lead1_p1.y, lead1_p2.x, lead1_p2.y);
+
+    SDL_Point lead2_p1 = transform_point({radius, 0});
+    SDL_Point lead2_p2 = transform_point({half_length, 0});
+    SDL_RenderDrawLine(renderer, lead2_p1.x, lead2_p1.y, lead2_p2.x, lead2_p2.y);
+
+
+    // diomond
+    SDL_Point p_top = transform_point({0, -radius});
+    SDL_Point p_right = transform_point({radius, 0});
+    SDL_Point p_bottom = transform_point({0, radius});
+    SDL_Point p_left = transform_point({-radius, 0});
+    SDL_RenderDrawLine(renderer, p_top.x, p_top.y, p_right.x, p_right.y);
+    SDL_RenderDrawLine(renderer, p_right.x, p_right.y, p_bottom.x, p_bottom.y);
+    SDL_RenderDrawLine(renderer, p_bottom.x, p_bottom.y, p_left.x, p_left.y);
+    SDL_RenderDrawLine(renderer, p_left.x, p_left.y, p_top.x, p_top.y);
+
+    // + -
+    SDL_Point plus_minus[] = {
+            {5, 0}, {15, 0},
+            {10, 5}, {10, -5},
+            {-5, 0}, {-15, 0}
+    };
+    for (size_t i = 0; i < 6; i += 2)
+    {
+        SDL_Point p1 = transform_point(plus_minus[i]);
+        SDL_Point p2 = transform_point(plus_minus[i+1]);
+        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+    }
+
+    // text
+    if (model_element != nullptr)
+    {
+        render_text(renderer, font, model_element->get_name(), bounding_box.x, bounding_box.y - 20);
+        string value_str = format_with_suffix(model_element->get_value(), "");
+        render_text(renderer, font, value_str, bounding_box.x, bounding_box.y + bounding_box.h + 5);
+    }
+}
+
 // get properties functions
 
 vector<Editable_Property> Graphical_Resistor::get_editable_properties()
@@ -798,6 +1032,42 @@ vector<Editable_Property> Graphical_SubCircuit::get_editable_properties()
 {
     vector<Editable_Property> props;
     props.push_back({"Name", m_type_name});
+    return props;
+}
+
+vector<Editable_Property> Graphical_VCVS::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
+    props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_VCCS::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
+    props.push_back({"Current (A)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_CCVS::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
+    props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    return props;
+}
+
+vector<Editable_Property> Graphical_CCCS::get_editable_properties()
+{
+    vector<Editable_Property> props;
+
+    props.push_back({"Name", model_element->get_name()});
+    props.push_back({"Current (A)", to_string(model_element->get_value())});
     return props;
 }
 
@@ -1153,6 +1423,184 @@ vector<Connection_Point> Graphical_SubCircuit::get_connection_points()
     };
 }
 
+vector<Connection_Point> Graphical_VCVS::get_connection_points()
+{
+    int half_length = 40;
+
+    SDL_Point local_left = {-half_length, 0};
+    SDL_Point local_right = {half_length, 0};
+    SDL_Point local_top = {0, -half_length};
+    SDL_Point local_bottom = {0, half_length};
+
+    // transform
+    SDL_Point final_left = snap_to_grid(transform_point(local_left).x, transform_point(local_left).y, 10);
+    SDL_Point final_right = snap_to_grid(transform_point(local_right).x, transform_point(local_right).y, 10);
+    SDL_Point final_top = snap_to_grid(transform_point(local_top).x, transform_point(local_top).y, 10);
+    SDL_Point final_bottom = snap_to_grid(transform_point(local_bottom).x, transform_point(local_bottom).y, 10);
+
+    // correct orientation
+    Rotation rot_left, rot_right, rot_top, rot_bottom;
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            rot_left = Rotation::Left; rot_right = Rotation::Right; rot_top = Rotation::Up; rot_bottom = Rotation::Down;
+            break;
+        case Rotation::Down:
+            rot_left = Rotation::Up; rot_right = Rotation::Down; rot_top = Rotation::Right; rot_bottom = Rotation::Left;
+            break;
+        case Rotation::Left:
+            rot_left = Rotation::Right; rot_right = Rotation::Left; rot_top = Rotation::Down; rot_bottom = Rotation::Up;
+            break;
+        case Rotation::Up:
+            rot_left = Rotation::Down; rot_right = Rotation::Up; rot_top = Rotation::Left; rot_bottom = Rotation::Right;
+            break;
+    }
+
+    auto* vcvs_model = dynamic_cast<VCVS*>(model_element);
+    auto output_nodes = vcvs_model->get_nodes();
+    auto control_nodes = vcvs_model->get_dependent_nodes();
+
+    return {
+            {final_left,   output_nodes.second,  rot_left},
+            {final_right,  output_nodes.first,   rot_right},
+            {final_top,    control_nodes.first,  rot_top},
+            {final_bottom, control_nodes.second, rot_bottom}
+    };
+}
+
+vector<Connection_Point> Graphical_VCCS::get_connection_points()
+{
+    int half_length = 40;
+
+    SDL_Point local_left = {-half_length, 0};
+    SDL_Point local_right = {half_length, 0};
+    SDL_Point local_top = {0, -half_length};
+    SDL_Point local_bottom = {0, half_length};
+
+    // transform
+    SDL_Point final_left = snap_to_grid(transform_point(local_left).x, transform_point(local_left).y, 10);
+    SDL_Point final_right = snap_to_grid(transform_point(local_right).x, transform_point(local_right).y, 10);
+    SDL_Point final_top = snap_to_grid(transform_point(local_top).x, transform_point(local_top).y, 10);
+    SDL_Point final_bottom = snap_to_grid(transform_point(local_bottom).x, transform_point(local_bottom).y, 10);
+
+    // correct orientation
+    Rotation rot_left, rot_right, rot_top, rot_bottom;
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            rot_left = Rotation::Left; rot_right = Rotation::Right; rot_top = Rotation::Up; rot_bottom = Rotation::Down;
+            break;
+        case Rotation::Down:
+            rot_left = Rotation::Up; rot_right = Rotation::Down; rot_top = Rotation::Right; rot_bottom = Rotation::Left;
+            break;
+        case Rotation::Left:
+            rot_left = Rotation::Right; rot_right = Rotation::Left; rot_top = Rotation::Down; rot_bottom = Rotation::Up;
+            break;
+        case Rotation::Up:
+            rot_left = Rotation::Down; rot_right = Rotation::Up; rot_top = Rotation::Left; rot_bottom = Rotation::Right;
+            break;
+    }
+
+    auto* vccs_model = dynamic_cast<VCCS*>(model_element);
+    auto output_nodes = vccs_model->get_nodes();
+    auto control_nodes = vccs_model->get_dependent_nodes();
+
+    return {
+            {final_left,   output_nodes.second,  rot_left},
+            {final_right,  output_nodes.first,   rot_right},
+            {final_top,    control_nodes.first,  rot_top},
+            {final_bottom, control_nodes.second, rot_bottom}
+    };
+}
+
+vector<Connection_Point> Graphical_CCVS::get_connection_points()
+{
+    int half_length = 40;
+    SDL_Point local_start = {-half_length, 0};
+    SDL_Point local_end = {half_length, 0};
+
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
+    auto nodes = model_element->get_nodes();
+
+    return {
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
+    };
+}
+
+vector<Connection_Point> Graphical_CCCS::get_connection_points()
+{
+    int half_length = 40;
+    SDL_Point local_start = {-half_length, 0};
+    SDL_Point local_end = {half_length, 0};
+
+    // transforming points
+    SDL_Point raw_screen_start = transform_point(local_start);
+    SDL_Point raw_screen_end = transform_point(local_end);
+
+    SDL_Point final_screen_start = snap_to_grid(raw_screen_start.x, raw_screen_start.y, 10);
+    SDL_Point final_screen_end = snap_to_grid(raw_screen_end.x, raw_screen_end.y, 10);
+
+    Rotation start_port_orientation;
+    Rotation end_port_orientation;
+
+    switch (this->rotation)
+    {
+        case Rotation::Right:
+            start_port_orientation = Rotation::Left;
+            end_port_orientation = Rotation::Right;
+            break;
+        case Rotation::Down:
+            start_port_orientation = Rotation::Up;
+            end_port_orientation = Rotation::Down;
+            break;
+        case Rotation::Left:
+            start_port_orientation = Rotation::Right;
+            end_port_orientation = Rotation::Left;
+            break;
+        case Rotation::Up:
+            start_port_orientation = Rotation::Down;
+            end_port_orientation = Rotation::Up;
+            break;
+    }
+
+    auto nodes = model_element->get_nodes();
+
+    return {
+            {final_screen_start, nodes.first, start_port_orientation},
+            {final_screen_end, nodes.second, end_port_orientation}
+    };
+}
+
 // get info text
 
 string Graphical_Resistor::get_info_text()
@@ -1265,4 +1713,27 @@ string Graphical_SubCircuit::get_info_text()
 {
     info_text = "Black Box Name = " + m_subcircuit_model->get_name();
     return info_text;
+}
+
+string Graphical_VCVS::get_info_text()
+{
+    return "";
+}
+
+string Graphical_VCCS::get_info_text()
+{
+    return "";
+
+}
+
+string Graphical_CCVS::get_info_text()
+{
+    return "";
+
+}
+
+string Graphical_CCCS::get_info_text()
+{
+    return "";
+
 }

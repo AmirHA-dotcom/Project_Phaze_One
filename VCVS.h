@@ -25,6 +25,9 @@ public:
     void set_current(double current, double time);
     double get_current(double time, double time_step) override;
     int get_aux_index() const;
+
+    pair<Node*, Node*> get_dependent_nodes() { return {ctrl_node1, ctrl_node2}; }
+
 };
 
 
