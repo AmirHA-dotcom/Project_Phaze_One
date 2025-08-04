@@ -2180,45 +2180,149 @@ void Controller::build_graphical_elements_from_circuit()
             continue;
         }
 
-        // a central junction point for the node
-        SDL_Point junction_pos = {0, 0};
-        for (const auto& p : points)
+        if (points.size() == 2)
         {
-            junction_pos.x += p.pos.x;
-            junction_pos.y += p.pos.y;
-        }
-        junction_pos.x /= points.size();
-        junction_pos.y /= points.size();
-         //junction_pos = snap_to_grid(junction_pos.x, junction_pos.y, 10);
+            const Connection_Point& start_cp = points[0];
+            const Connection_Point& end_cp = points[1];
 
-        //  connecting each terminal to the central junction point
-        for (const auto& start_cp : points) 
-        {
+            SDL_Point start_pos = start_cp.pos;
+            SDL_Point end_pos = end_cp.pos;
+            Rotation start_rot = start_cp.rotation;
+            Rotation end_rot = end_cp.rotation;
+
             vector<SDL_Point> path_points;
-            path_points.push_back(start_cp.pos);
+            path_points.push_back(start_pos);
+            SDL_Point corner;
 
-            SDL_Point corner_pos;
-            bool is_start_horizontal = (start_cp.rotation == Rotation::Left || start_cp.rotation == Rotation::Right);
-
-            if (is_start_horizontal) {
-                corner_pos = { junction_pos.x, start_cp.pos.y };
-            } else {
-                corner_pos = { start_cp.pos.x, junction_pos.y };
+            if (start_rot == Rotation::Right)
+            {
+                if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                {
+                    corner = { start_pos.x, end_pos.y };
+                }
+                else if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                {
+                    if (start_pos.x < end_pos.x)
+                    {
+                        corner = { end_pos.x, start_pos.y };
+                    }
+                    else
+                    {
+                        corner = { start_pos.x, end_pos.y };
+                    }
+                }
             }
-
-            if ((corner_pos.x != start_cp.pos.x || corner_pos.y != start_cp.pos.y) &&
-                (corner_pos.x != junction_pos.x || corner_pos.y != junction_pos.y)) {
-                path_points.push_back(corner_pos);
+            else if (start_rot == Rotation::Left)
+            {
+                if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                {
+                    corner = { start_pos.x, end_pos.y };
+                }
+                else if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                {
+                    if (start_pos.x > end_pos.x)
+                    {
+                        corner = { end_pos.x, start_pos.y };
+                    }
+                    else
+                    {
+                        corner = { start_pos.x, end_pos.y };
+                    }
+                }
             }
-            path_points.push_back(junction_pos);
+            else if (start_rot == Rotation::Up)
+            {
+                if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                {
+                    corner = { end_pos.x, start_pos.y };
+                }
+                else if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                {
+                    if (start_pos.y < end_pos.y)
+                    {
+                        corner = { start_pos.x, end_pos.y };
+                    }
+                    else
+                    {
+                        corner = { end_pos.x, start_pos.y };
+                    }
+                }
+            }
+            else if (start_rot == Rotation::Down)
+            {
+                if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                {
+                    corner = { end_pos.x, start_pos.y };
+                }
+                else if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                {
+                    if (start_pos.y > end_pos.y)
+                    {
+                        corner = { start_pos.x, end_pos.y };
+                    }
+                    else
+                    {
+                        corner = { end_pos.x, start_pos.y };
+                    }
+                }
+            }
+            path_points.push_back(corner);
+            path_points.push_back(end_pos);
 
-            // final wire points vector
+            // Create and add the wire
             vector<Connection_Point> final_wire_points;
             for(const auto& p : path_points) {
                 final_wire_points.push_back({ p, nullptr, {} });
             }
-
             add_Graphical_Wire(final_wire_points, common_node, common_node);
+        }
+
+        else
+        {
+            // a central junction point for the node
+            SDL_Point junction_pos = {0, 0};
+            for (const auto& p : points)
+            {
+                junction_pos.x += p.pos.x;
+                junction_pos.y += p.pos.y;
+            }
+            junction_pos.x /= points.size();
+            junction_pos.y /= points.size();
+            //junction_pos = snap_to_grid(junction_pos.x, junction_pos.y, 10);
+
+            //  connecting each terminal to the central junction point
+            for (const auto& start_cp : points)
+            {
+                vector<SDL_Point> path_points;
+                path_points.push_back(start_cp.pos);
+
+                SDL_Point corner_pos;
+                bool is_start_horizontal = (start_cp.rotation == Rotation::Left || start_cp.rotation == Rotation::Right);
+
+                if (is_start_horizontal)
+                {
+                    corner_pos = { junction_pos.x, start_cp.pos.y };
+                }
+                else
+                {
+                    corner_pos = { start_cp.pos.x, junction_pos.y };
+                }
+
+                if ((corner_pos.x != start_cp.pos.x || corner_pos.y != start_cp.pos.y) &&
+                    (corner_pos.x != junction_pos.x || corner_pos.y != junction_pos.y)) {
+                    path_points.push_back(corner_pos);
+                }
+                path_points.push_back(junction_pos);
+
+                // final wire points vector
+                vector<Connection_Point> final_wire_points;
+                for(const auto& p : path_points)
+                {
+                    final_wire_points.push_back({ p, nullptr, {} });
+                }
+
+                add_Graphical_Wire(final_wire_points, common_node, common_node);
+            }
         }
     }
 }
