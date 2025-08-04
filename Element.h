@@ -20,6 +20,7 @@ protected:
     double value;
     int x, y;
     Rotation rotation;
+    int amplitude = 0;
 public:
     Element(string _name, Element_Type _type, Node* n1, Node* n2, double _value);
     string get_name() const;
@@ -41,6 +42,7 @@ public:
     int get_rotation_as_int ();
     void set_rotation_by_int (int r);
     void set_rotation(Rotation r) { rotation = r; }
+    virtual double getAmplitude() const { return amplitude; }
 };
 
 

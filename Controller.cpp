@@ -2265,7 +2265,7 @@ void Controller::get_ac_params(double &start, double &stop, double &step, AC_Swe
 }
 
 // Helper to add admittance to matrix
-void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, Complex val) {
+void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val) {
     int n1 = (node1 > 0) ? node1 - 1 : -1;
     int n2 = (node2 > 0) ? node2 - 1 : -1;
     if (n1 >= 0) Y(n1, n1) += val;
@@ -2301,7 +2301,7 @@ void Controller::performACSweep(Circuit& circuit,
     }
 
     int N = circuit.get_Nodes().size() - 1; // exclude ground
-    int VsrcCount = circuit.countVoltageSources();
+    int VsrcCount = voltage_source_count;
     int size = N + VsrcCount;
 
     // Loop over frequencies
@@ -2318,13 +2318,13 @@ void Controller::performACSweep(Circuit& circuit,
             int n2 = circuit.node_index_finder_by_name(el->get_nodes().second->get_name());
 
             if (el->get_type() == Element_Type::Resistor) {
-                Complex G = 1.0 / el->get_value();
+                ComplexNum G = 1.0 / el->get_value();
                 addAdmittance(Y, n1, n2, G);
             } else if (el->get_type() == Element_Type::Capacitor) {
-                Complex Yc(0, omega * el->get_value()); // jωC
+                ComplexNum Yc(0, omega * el->get_value()); // jωC
                 addAdmittance(Y, n1, n2, Yc);
             } else if (el->get_type() == Element_Type::Inductor) {
-                Complex Yl(0, -1.0 / (omega * el->get_value())); // 1/(jωL)
+                ComplexNum Yl(0, -1.0 / (omega * el->get_value())); // 1/(jωL)
                 addAdmittance(Y, n1, n2, Yl);
             } else if (el->get_type() == Element_Type::Voltage_Source) {
                 if (n1 > 0) {
@@ -2348,7 +2348,7 @@ void Controller::performACSweep(Circuit& circuit,
         VectorXc V = Y.fullPivLu().solve(I);
 
         // Select output node (example: last node)
-        Complex Vout = V(0); // or any node index you need
+        ComplexNum Vout = V(0); // or any node index you need
 
         // Compute magnitude and phase
         double mag = abs(Vout);
@@ -2359,5 +2359,6 @@ void Controller::performACSweep(Circuit& circuit,
         magList.push_back(mag_dB);
         phaseList.push_back(phase_deg);
     }
+    circuit.setAC(freqList, magList, phaseList);
 }
 

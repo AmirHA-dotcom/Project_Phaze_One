@@ -8,6 +8,13 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+
+// Fix any previous macros from other libs
+#ifdef Success
+#undef Success
+#endif
+
+#include <Eigen/Dense>
 #include <vector>
 #include <sstream>
 #include <string>
@@ -27,14 +34,13 @@
 #include <limits>
 #include <iterator>
 #include <complex>
-#include <Eigen/Dense>
 
 using namespace Eigen;
 using namespace std;
 
-using Complex = std::complex<double>;
-using MatrixXc = Eigen::Matrix<Complex, Eigen::Dynamic, Eigen::Dynamic>;
-using VectorXc = Eigen::Matrix<Complex, Eigen::Dynamic, 1>;
+using ComplexNum = std::complex<double>;
+using MatrixXc = Eigen::Matrix<ComplexNum, Eigen::Dynamic, Eigen::Dynamic>;
+using VectorXc = Eigen::Matrix<ComplexNum, Eigen::Dynamic, 1>;
 
 extern const char* FONT;
 extern const char* PROBE;

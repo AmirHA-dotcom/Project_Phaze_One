@@ -35,7 +35,18 @@ private:
     string name;
     bool haveGround;
     bool is_diode_added = false;
+    vector<vector<double>> AC;
 public:
+    void setAC(std::vector<double>& freqList,
+               std::vector<double>& magList,
+               std::vector<double>& phaseList) {
+        vector<vector<double>> ac;
+        ac.push_back(freqList);
+        ac.push_back(magList);
+        ac.push_back(phaseList);
+        AC = ac;
+    }
+    vector<vector<double>> getAC() { return AC;}
     bool isGround();
     void ground(bool b);
     Circuit(string _name) : name(_name) {total_unknowns = 0;}

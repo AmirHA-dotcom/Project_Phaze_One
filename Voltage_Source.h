@@ -24,7 +24,7 @@ public:
     double get_current(double time, double time_step) override;
     void set_current(double current, double time);
     int get_aux_index() const;
-    virtual double getAmplitude() const { return amplitude; }
+    double getAmplitude() { return amplitude; }
 };
 
 class DC_Source : public Voltage_Source

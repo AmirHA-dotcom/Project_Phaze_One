@@ -156,6 +156,7 @@ private:
 
     map<string, Node*> named_nets;
 public:
+    int get_voltage_source_count() {return voltage_source_count;}
     Controller();
     vector<Circuit *> circuits;
     vector<SubCircuit *> subCircuits;
@@ -320,7 +321,7 @@ public:
 
     void get_ac_params(double& start, double& stop, double& step, AC_Sweep_Type& type);
 
-    void addAdmittance(MatrixXc& Y, int node1, int node2, Complex val);
+    void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);
     void performACSweep(Circuit& circuit,
                                     std::vector<double>& freqList,
                                     std::vector<double>& magList,
