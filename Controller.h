@@ -294,7 +294,7 @@ public:
     vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
 
     void add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end);
-
+    void addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName);
     void connect_nodes(Node* node_to_keep, Node* node_to_merge);
 
     void assign_net_name(Node* node_to_name, const string& new_name);
@@ -318,8 +318,8 @@ public:
     void load_file(string name);
 
     void set_AC_sweep_variables(double start_f, double end_f, double num_of_points_f, AC_Sweep_Type type);
-
     void get_ac_params(double& start, double& stop, double& num_of_points_f, AC_Sweep_Type& type);
+
 
     void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);
     void performACSweep(Circuit* circuit, string OutNodeName);
