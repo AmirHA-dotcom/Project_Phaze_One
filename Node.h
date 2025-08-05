@@ -30,6 +30,7 @@ public:
     void connect_element();
     void disconnect_element();
     int connected_elements_count() const;
+    void reset_voltages();
 
     string net_name;
 };

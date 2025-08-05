@@ -5,18 +5,19 @@
 #include "graphical_view.h"
 
 // helper functions
-//
-//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-//const char* PROBE = "D://Images//probe_cursor.png";
-//const char* DELETE = "D://Images//sissors_cursor.png";
-//const char* GROUND = "D://Images//grounding_cursor.png";
-//const char* ICON = "D://Images//SparkSense2.png";
 
-const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
-const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
-const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
-const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
-const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+const char* PROBE = "D://Images//probe_cursor.png";
+const char* DELETE = "D://Images//sissors_cursor.png";
+const char* GROUND = "D://Images//grounding_cursor.png";
+const char* ICON = "D://Images//SparkSense2.png";
+const char* TICK = "D://Images//tick_40x40.png";
+
+//const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
+//const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
+//const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
+//const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
+//const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
 {
@@ -1053,6 +1054,7 @@ bool graphical_view::run(Controller *C)
     math_operation_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
     dragging_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
     not_valid_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO);
+    loading_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAIT);
 
     SDL_Surface* probe_surface = IMG_Load(PROBE);
     if (probe_surface)
@@ -1072,6 +1074,12 @@ bool graphical_view::run(Controller *C)
         grounding_cursor = SDL_CreateColorCursor(ground_surface, 16, 0);
         SDL_FreeSurface(ground_surface);
     }
+    SDL_Surface* tick_surface = IMG_Load(TICK);
+    if (tick_surface)
+    {
+        finished_action_cursor = SDL_CreateColorCursor(tick_surface, 0, 0);
+        SDL_FreeSurface(tick_surface);
+    }
 
     bool running = true;
     SDL_Event event;
@@ -1087,71 +1095,95 @@ bool graphical_view::run(Controller *C)
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
 
-        // if the mouse is in the toolbar
-        if (mouseY < 40)
+        if (feedback_cursor_state != Feedback_Cursor_State::None)
         {
-            SDL_ShowCursor(SDL_ENABLE);
-            if (is_dragging)
+            Uint32 elapsed_ms = SDL_GetTicks() - feedback_cursor_timer_start;
+
+            if (feedback_cursor_state == Feedback_Cursor_State::Loading)
             {
-                if (not_valid_cursor) SDL_SetCursor(not_valid_cursor);
+                SDL_SetCursor(loading_cursor);
+                if (elapsed_ms > 1500)
+                {
+                    feedback_cursor_state = Feedback_Cursor_State::Finished;
+                }
             }
-            else
+            else if (feedback_cursor_state == Feedback_Cursor_State::Finished)
             {
-                if (default_cursor) SDL_SetCursor(default_cursor);
+                SDL_SetCursor(finished_action_cursor);
+                if (elapsed_ms > 3000)
+                {
+                    feedback_cursor_state = Feedback_Cursor_State::None;
+                }
             }
         }
         else
         {
-            if (is_dragging)
+            // if the mouse is in the toolbar
+            if (mouseY < 40)
             {
                 SDL_ShowCursor(SDL_ENABLE);
-                if (dragging_cursor) SDL_SetCursor(dragging_cursor);
-            }
-            else if (probe_mode)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (probe_cursor) SDL_SetCursor(probe_cursor);
-            }
-            else if (is_wiring)
-            {
-                SDL_ShowCursor(SDL_DISABLE);
-            }
-            else if (math_operation_mode || is_file_menu_open || sub_circuit_menu || elements_menu)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
-            }
-            else if (is_deleting)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (deleting_cursor) SDL_SetCursor(deleting_cursor);
-            }
-            else if (is_grounding)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (grounding_cursor) SDL_SetCursor(grounding_cursor);
-            }
-            else if (naming_SubC_menu_active)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (default_cursor) SDL_SetCursor(default_cursor);
-            }
-            else if (create_SubC_mode)
-            {
-                if (node1 == nullptr)
+                if (is_dragging)
                 {
-                    SDL_ShowCursor(SDL_ENABLE);
-                    if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                    if (not_valid_cursor) SDL_SetCursor(not_valid_cursor);
                 }
                 else
                 {
-                    SDL_ShowCursor(SDL_DISABLE);
+                    if (default_cursor) SDL_SetCursor(default_cursor);
                 }
             }
             else
             {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                if (is_dragging)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (dragging_cursor) SDL_SetCursor(dragging_cursor);
+                }
+                else if (probe_mode)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (probe_cursor) SDL_SetCursor(probe_cursor);
+                }
+                else if (is_wiring)
+                {
+                    SDL_ShowCursor(SDL_DISABLE);
+                }
+                else if (math_operation_mode || is_file_menu_open || sub_circuit_menu || elements_menu)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
+                }
+                else if (is_deleting)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (deleting_cursor) SDL_SetCursor(deleting_cursor);
+                }
+                else if (is_grounding)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (grounding_cursor) SDL_SetCursor(grounding_cursor);
+                }
+                else if (naming_SubC_menu_active)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (default_cursor) SDL_SetCursor(default_cursor);
+                }
+                else if (create_SubC_mode)
+                {
+                    if (node1 == nullptr)
+                    {
+                        SDL_ShowCursor(SDL_ENABLE);
+                        if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                    }
+                    else
+                    {
+                        SDL_ShowCursor(SDL_DISABLE);
+                    }
+                }
+                else
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                }
             }
         }
 
@@ -2644,6 +2676,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             {
                                 // not coded
                             }
+                            feedback_cursor_state = Feedback_Cursor_State::Loading;
+                            feedback_cursor_timer_start = SDL_GetTicks();
 
                             if (plot_view)
                             {
@@ -2893,70 +2927,95 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
     // show voltages
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && !ctrl_is_pressed)
     {
-        Node* target_node = find_node_at({event.button.x, event.button.y}, C);
-        if (target_node)
+        if (current_analysis_mode == Analysis_Mode::Transient)
         {
-            if (!plot_view)
+            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            if (target_node)
             {
-                plot_view = make_unique<Plot_View>();
-            }
-
-            // create and add the signal
-            Signal node_signal;
-            node_signal.name = "V(" + target_node->get_name() + ")";
-
-            for (int i = 0; i < target_node->get_all_voltages().size(); i++)
-                node_signal.data_points.push_back({-1 * target_node->get_all_voltages()[i].first, target_node->get_all_voltages()[i].second});
-
-            node_signal.color = default_colors[color_index % default_colors.size()];
-            color_index++;
-            if (color_index == 15)
-                color_index = 0;
-
-            plot_view->add_signal(node_signal);
-            plot_view->auto_zoom();
-            plot_view->set_y_unit(Unit::V);
-            plot_view->set_x_unit(Unit::s);
-            probe_mode = false;
-        }
-        Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
-        if (target_element)
-        {
-            if (!plot_view)
-            {
-                plot_view = make_unique<Plot_View>();
-            }
-
-            // create and add the signal
-            Signal element_signal;
-            element_signal.name = "V(" + target_element->get_model()->get_name() + ")";
-
-            if (current_analysis_mode == Analysis_Mode::Transient)
-            {
-                double start_time, stop_time, time_step;
-                C->get_tran_params(start_time, stop_time, time_step);
-
-
-                if (time_step > 0)
+                if (!plot_view)
                 {
-                    for (double time = start_time; time < stop_time; time += time_step)
+                    plot_view = make_unique<Plot_View>();
+                }
+
+                // create and add the signal
+                Signal node_signal;
+                node_signal.name = "V(" + target_node->get_name() + ")";
+
+                for (int i = 0; i < target_node->get_all_voltages().size(); i++)
+                    node_signal.data_points.push_back({-1 * target_node->get_all_voltages()[i].first, target_node->get_all_voltages()[i].second});
+
+                node_signal.color = default_colors[color_index % default_colors.size()];
+                color_index++;
+                if (color_index == 15)
+                    color_index = 0;
+
+                plot_view->add_signal(node_signal);
+                plot_view->auto_zoom();
+                plot_view->set_y_unit(Unit::V);
+                plot_view->set_x_unit(Unit::s);
+                probe_mode = false;
+            }
+            Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
+            if (target_element)
+            {
+                if (!plot_view)
+                {
+                    plot_view = make_unique<Plot_View>();
+                }
+
+                // create and add the signal
+                Signal element_signal;
+                element_signal.name = "V(" + target_element->get_model()->get_name() + ")";
+
+                if (current_analysis_mode == Analysis_Mode::Transient)
+                {
+                    double start_time, stop_time, time_step;
+                    C->get_tran_params(start_time, stop_time, time_step);
+
+
+                    if (time_step > 0)
                     {
-                        double voltage = target_element->get_model()->get_voltage_at_time(time);
-                        element_signal.data_points.push_back({voltage, time});
+                        for (double time = start_time; time < stop_time; time += time_step)
+                        {
+                            double voltage = target_element->get_model()->get_voltage_at_time(time);
+                            element_signal.data_points.push_back({voltage, time});
+                        }
                     }
                 }
+
+                element_signal.color = default_colors[color_index % default_colors.size()];
+                color_index++;
+                if (color_index == 15)
+                    color_index = 0;
+
+                plot_view->add_signal(element_signal);
+                plot_view->auto_zoom();
+                plot_view->set_y_unit(Unit::V);
+                plot_view->set_x_unit(Unit::s);
+                probe_mode = false;
             }
+        }
+        else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+        {
+            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            if (target_node)
+            {
+                if (!plot_view)
+                {
+                    plot_view = make_unique<Plot_View>();
+                }
 
-            element_signal.color = default_colors[color_index % default_colors.size()];
-            color_index++;
-            if (color_index == 15)
-                color_index = 0;
+                // create and add the signal
+                Signal node_signal;
+                node_signal.name = "V(" + target_node->get_name() + ")";
+                C->performACSweep(C->circuit, target_node->get_name());
+                vector<vector<double>> AC_results = C->circuit->getAC();
 
-            plot_view->add_signal(element_signal);
-            plot_view->auto_zoom();
-            plot_view->set_y_unit(Unit::V);
-            plot_view->set_x_unit(Unit::s);
-            probe_mode = false;
+            }
+        }
+        else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+        {
+            // not coded
         }
     }
 
@@ -3147,6 +3206,7 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         current_file_name = edit_buffers[0];
         current_file_address = edit_buffers[1];
 
+        C->check_if_nodes_are_still_ground();
         C->circuit->change_name(current_file_name);
         C->saveGraphicalCircuit(C->circuit, current_file_address);
 

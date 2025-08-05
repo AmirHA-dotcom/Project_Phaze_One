@@ -1716,6 +1716,8 @@ void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
     auto ground_symbol = make_unique<Graphical_Ground>(pos, node);
     ground_symbol->bounding_box = {pos.x - 12, pos.y, 24, 18};
     graphical_elements.push_back(move(ground_symbol));
+
+    circuit->add_graphical_ground(pos.x, pos.y, node);
 }
 
 void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name)
@@ -1989,6 +1991,11 @@ void Controller::do_transient()
     int i = 0;
     for (auto& node : circuit->get_Nodes())
     {
+        if (!node->net_name.empty())
+        {
+            node->change_name(node->net_name);
+            continue;
+        }
         node->change_name("N" + to_string(++i));
     }
 
@@ -2105,6 +2112,7 @@ void Controller::build_graphical_elements_from_circuit()
 
     graphical_elements.clear();
     graphical_wires.clear();
+    named_nets.clear();
 
     const auto& logical_elements = circuit->get_Elements();
 
@@ -2179,6 +2187,11 @@ void Controller::build_graphical_elements_from_circuit()
     {
         Node* common_node = pair.first;
         const vector<Connection_Point>& points = pair.second;
+
+        if (!common_node->net_name.empty())
+        {
+            continue;
+        }
 
         if (points.size() < 2) 
         {
@@ -2343,6 +2356,7 @@ void Controller::build_graphical_elements_from_circuit()
 
 void Controller::load_file(string name)
 {
+
     int file_index = -1;
     for (int i = 0; i < file_handler.get_file_names().size(); i++)
     {
@@ -2514,3 +2528,13 @@ void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
     circuit->setAC(freqList, magList, phaseList);
 }
 
+void Controller::check_if_nodes_are_still_ground()
+{
+    auto& grounds = circuit->get_graphical_grounds();
+
+    grounds.erase(remove_if(grounds.begin(), grounds.end(),[](const auto& ground) {
+                               return (ground.node == nullptr || !ground.node->is_the_node_ground());
+                           }),
+            grounds.end()
+    );
+}

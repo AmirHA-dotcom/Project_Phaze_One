@@ -497,6 +497,10 @@ vector<pair<double, double>> Circuit::get_node_voltages(string name)
 
 void Circuit::analyse_data()
 {
+    for (auto& node : Nodes)
+    {
+        node->reset_voltages();
+    }
     // getting non_ground nodes
     vector<Node*> Active_Nodes_;
     for (int i = 0; i < Nodes.size(); i++)
@@ -843,6 +847,12 @@ void Circuit::displayAC(){
     }
     cout << endl;
 }
+
+void Circuit::add_graphical_ground(int x, int y, Node *node)
+{
+    grounds.push_back({x, y, node});
+}
+
 Node* SubCircuit::getInput()  { return input; }
 Node* SubCircuit::getOutput()  { return output; }
 void SubCircuit::setInput(Node* newInput) { input = newInput; }

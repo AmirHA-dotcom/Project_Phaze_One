@@ -46,6 +46,7 @@ extern const char* FONT;
 extern const char* PROBE;
 extern const char* DELETE;
 extern const char* GROUND;
+extern const char* TICK;
 
 struct Triplet
 {

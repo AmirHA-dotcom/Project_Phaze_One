@@ -177,6 +177,9 @@ private:
     int color_index = 0;
 
     // cursors
+    enum class Feedback_Cursor_State { None, Loading, Finished };
+    Feedback_Cursor_State feedback_cursor_state = Feedback_Cursor_State::None;
+    Uint32 feedback_cursor_timer_start = 0;
     SDL_Cursor* default_cursor = nullptr;
     SDL_Cursor* probe_cursor = nullptr;
     SDL_Cursor* crosshair_cursor = nullptr;
@@ -185,6 +188,8 @@ private:
     SDL_Cursor* deleting_cursor = nullptr;
     SDL_Cursor* dragging_cursor = nullptr;
     SDL_Cursor* not_valid_cursor = nullptr;
+    SDL_Cursor* loading_cursor = nullptr;
+    SDL_Cursor* finished_action_cursor = nullptr;
 
     // helper functions
     Node* find_node_at(SDL_Point pos, Controller* C);
