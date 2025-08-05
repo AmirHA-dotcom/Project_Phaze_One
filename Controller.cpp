@@ -1996,6 +1996,11 @@ void Controller::do_transient()
     int i = 0;
     for (auto& node : circuit->get_Nodes())
     {
+        if (!node->net_name.empty())
+        {
+            node->change_name(node->net_name);
+            continue;
+        }
         node->change_name("N" + to_string(++i));
     }
 
@@ -2112,6 +2117,7 @@ void Controller::build_graphical_elements_from_circuit()
 
     graphical_elements.clear();
     graphical_wires.clear();
+    named_nets.clear();
 
     const auto& logical_elements = circuit->get_Elements();
 
@@ -2186,6 +2192,11 @@ void Controller::build_graphical_elements_from_circuit()
     {
         Node* common_node = pair.first;
         const vector<Connection_Point>& points = pair.second;
+
+        if (!common_node->net_name.empty())
+        {
+            continue;
+        }
 
         if (points.size() < 2) 
         {
@@ -2350,6 +2361,7 @@ void Controller::build_graphical_elements_from_circuit()
 
 void Controller::load_file(string name)
 {
+
     int file_index = -1;
     for (int i = 0; i < file_handler.get_file_names().size(); i++)
     {
