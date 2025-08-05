@@ -35,6 +35,7 @@ public:
     void reset_voltages();
 
     void set_coordinates(int x_, int y_);
+    pair<int, int> get_coordinates() { return {x, y}; }
 
     string net_name;
 };

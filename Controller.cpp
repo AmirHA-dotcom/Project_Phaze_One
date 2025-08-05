@@ -2129,6 +2129,7 @@ void Controller::build_graphical_elements_from_circuit()
     graphical_wires.clear();
     named_nets.clear();
 
+    // elements
     const auto& logical_elements = circuit->get_Elements();
 
     for (Element* model : logical_elements)
@@ -2181,6 +2182,18 @@ void Controller::build_graphical_elements_from_circuit()
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
             graphical_elements.push_back(move(gfx));
+        }
+    }
+
+    // net labels
+    const auto& logical_nodes = circuit->get_Nodes();
+    for (Node* node : logical_nodes)
+    {
+        if (!node->net_name.empty())
+        {
+            SDL_Point label_pos = { node->get_coordinates().first, node->get_coordinates().second };
+
+            add_Graphical_Net_Label(label_pos, node);
         }
     }
     
