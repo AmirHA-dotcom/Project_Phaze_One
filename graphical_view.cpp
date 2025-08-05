@@ -11,6 +11,7 @@ const char* PROBE = "D://Images//probe_cursor.png";
 const char* DELETE = "D://Images//sissors_cursor.png";
 const char* GROUND = "D://Images//grounding_cursor.png";
 const char* ICON = "D://Images//SparkSense2.png";
+const char* TICK = "D://Images//tick_40x40.png";
 
 //const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
 //const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
@@ -1053,6 +1054,7 @@ bool graphical_view::run(Controller *C)
     math_operation_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
     dragging_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
     not_valid_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO);
+    loading_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAIT);
 
     SDL_Surface* probe_surface = IMG_Load(PROBE);
     if (probe_surface)
@@ -1072,6 +1074,12 @@ bool graphical_view::run(Controller *C)
         grounding_cursor = SDL_CreateColorCursor(ground_surface, 16, 0);
         SDL_FreeSurface(ground_surface);
     }
+    SDL_Surface* tick_surface = IMG_Load(TICK);
+    if (tick_surface)
+    {
+        finished_action_cursor = SDL_CreateColorCursor(tick_surface, 0, 0);
+        SDL_FreeSurface(tick_surface);
+    }
 
     bool running = true;
     SDL_Event event;
@@ -1087,71 +1095,95 @@ bool graphical_view::run(Controller *C)
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
 
-        // if the mouse is in the toolbar
-        if (mouseY < 40)
+        if (feedback_cursor_state != Feedback_Cursor_State::None)
         {
-            SDL_ShowCursor(SDL_ENABLE);
-            if (is_dragging)
+            Uint32 elapsed_ms = SDL_GetTicks() - feedback_cursor_timer_start;
+
+            if (feedback_cursor_state == Feedback_Cursor_State::Loading)
             {
-                if (not_valid_cursor) SDL_SetCursor(not_valid_cursor);
+                SDL_SetCursor(loading_cursor);
+                if (elapsed_ms > 1500)
+                {
+                    feedback_cursor_state = Feedback_Cursor_State::Finished;
+                }
             }
-            else
+            else if (feedback_cursor_state == Feedback_Cursor_State::Finished)
             {
-                if (default_cursor) SDL_SetCursor(default_cursor);
+                SDL_SetCursor(finished_action_cursor);
+                if (elapsed_ms > 3000)
+                {
+                    feedback_cursor_state = Feedback_Cursor_State::None;
+                }
             }
         }
         else
         {
-            if (is_dragging)
+            // if the mouse is in the toolbar
+            if (mouseY < 40)
             {
                 SDL_ShowCursor(SDL_ENABLE);
-                if (dragging_cursor) SDL_SetCursor(dragging_cursor);
-            }
-            else if (probe_mode)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (probe_cursor) SDL_SetCursor(probe_cursor);
-            }
-            else if (is_wiring)
-            {
-                SDL_ShowCursor(SDL_DISABLE);
-            }
-            else if (math_operation_mode || is_file_menu_open || sub_circuit_menu || elements_menu)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
-            }
-            else if (is_deleting)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (deleting_cursor) SDL_SetCursor(deleting_cursor);
-            }
-            else if (is_grounding)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (grounding_cursor) SDL_SetCursor(grounding_cursor);
-            }
-            else if (naming_SubC_menu_active)
-            {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (default_cursor) SDL_SetCursor(default_cursor);
-            }
-            else if (create_SubC_mode)
-            {
-                if (node1 == nullptr)
+                if (is_dragging)
                 {
-                    SDL_ShowCursor(SDL_ENABLE);
-                    if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                    if (not_valid_cursor) SDL_SetCursor(not_valid_cursor);
                 }
                 else
                 {
-                    SDL_ShowCursor(SDL_DISABLE);
+                    if (default_cursor) SDL_SetCursor(default_cursor);
                 }
             }
             else
             {
-                SDL_ShowCursor(SDL_ENABLE);
-                if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                if (is_dragging)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (dragging_cursor) SDL_SetCursor(dragging_cursor);
+                }
+                else if (probe_mode)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (probe_cursor) SDL_SetCursor(probe_cursor);
+                }
+                else if (is_wiring)
+                {
+                    SDL_ShowCursor(SDL_DISABLE);
+                }
+                else if (math_operation_mode || is_file_menu_open || sub_circuit_menu || elements_menu)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (math_operation_cursor) SDL_SetCursor(math_operation_cursor);
+                }
+                else if (is_deleting)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (deleting_cursor) SDL_SetCursor(deleting_cursor);
+                }
+                else if (is_grounding)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (grounding_cursor) SDL_SetCursor(grounding_cursor);
+                }
+                else if (naming_SubC_menu_active)
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (default_cursor) SDL_SetCursor(default_cursor);
+                }
+                else if (create_SubC_mode)
+                {
+                    if (node1 == nullptr)
+                    {
+                        SDL_ShowCursor(SDL_ENABLE);
+                        if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                    }
+                    else
+                    {
+                        SDL_ShowCursor(SDL_DISABLE);
+                    }
+                }
+                else
+                {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    if (crosshair_cursor) SDL_SetCursor(crosshair_cursor);
+                }
             }
         }
 
@@ -2644,6 +2676,8 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                             {
                                 // not coded
                             }
+                            feedback_cursor_state = Feedback_Cursor_State::Loading;
+                            feedback_cursor_timer_start = SDL_GetTicks();
 
                             if (plot_view)
                             {
