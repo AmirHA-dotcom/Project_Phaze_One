@@ -95,3 +95,8 @@ int Node::connected_elements_count() const
 {
     return elements_connected_count;
 }
+
+void Node::reset_voltages()
+{
+    voltage.clear();
+}
