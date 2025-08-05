@@ -547,8 +547,8 @@ void Controller::saveSubCircuit(SubCircuit* subCircuit, string path) {
 
     // Copy SubCircuit-specific lines
     outFile << subCircuit->get_name() << ":\n";
-    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
-    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    outFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
+    outFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
 
     // Skip the circuit name line from saveCircuit output
     string line;
@@ -570,7 +570,6 @@ void Controller::saveSubCircuit(SubCircuit* subCircuit, string path) {
 
     handleNewFile(fullPath);
 }
-
 void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
     if (!circuit) {
         cerr << "Error: Null circuit pointer provided" << endl;
@@ -1250,7 +1249,7 @@ void Controller::loadSubCircuits () {
 }
 
 void Controller::loadGraphicalSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    string path = file_handler.getMainFolderPath() + "/subcircuits";
     vector<string> files = file_handler.getFilesInDirectory(path);
     for (const auto& file : files) {
         if (file.substr(file.find_last_of(".") + 1) == "txt") {
