@@ -1755,7 +1755,7 @@ void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name
         gfx_Sub_C->bounding_box = {screenX, screenY, 150, 60};
 
         graphical_elements.push_back(move(gfx_Sub_C));
-        cout << "added subcircuit, so the bug is not from controller not being called" << endl;
+        //cout << "added subcircuit, so the bug is not from controller not being called" << endl;
     }
 }
 

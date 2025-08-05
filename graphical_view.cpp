@@ -3442,13 +3442,16 @@ bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C
     if (node1 != nullptr && node2 != nullptr)
     {
         cout << "selected 2 points" << endl;
-        Circuit* cc = new Circuit();
-        C->addSubCircuit(new_SubC_name,cc, node1, node2);
+
+        //cout << node1->get_name() << " " << node2->get_name() << " pkfjpigjrpfirejfpijfpe" << endl;
+        C->addSubCircuit(new_SubC_name,C->circuit, node1, node2);
+        //C->saveGraphicalSubCircuits();
+        C->saveGraphicalSubCircuit(C->subCircuits.back(), "D://Project_Files//subcircuits/");
+
         new_SubC_name = "";
         node1 = nullptr;
         node2 = nullptr;
         create_SubC_mode = false;
-        C->saveGraphicalSubCircuits();
     }
 
     return true;
