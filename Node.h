@@ -15,8 +15,9 @@ private:
     bool is_ground;
     int elements_connected_count;
     int index;
-    int x = 0;
-    int y = 0;  // net label
+    pair<int, int> ground_coordinates;
+    pair<int, int> net_label_coordinates;
+
 public:
     Node(string _name);
     string get_name() const;
@@ -34,8 +35,10 @@ public:
     int connected_elements_count() const;
     void reset_voltages();
 
-    void set_coordinates(int x_, int y_);
-    pair<int, int> get_coordinates() { return {x, y}; }
+    void set_ground_coordinates(int x_, int y_);
+    pair<int, int> get_ground_coordinates() { return {ground_coordinates.first, ground_coordinates.second}; }
+    void set_net_label_coordinates(int x_, int y_);
+    pair<int, int> get_net_label_coordinates() { return {net_label_coordinates.first, net_label_coordinates.second}; }
 
     string net_name;
 };

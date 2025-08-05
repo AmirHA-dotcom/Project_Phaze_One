@@ -10,12 +10,6 @@
 
 enum class Rotation{Right, Left, Up, Down};
 
-struct ground_parameters
-{
-    int x, y;
-    Node* node;
-};
-
 class Element
 {
 protected:

@@ -1728,7 +1728,7 @@ void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
     ground_symbol->bounding_box = {pos.x - 12, pos.y, 24, 18};
     graphical_elements.push_back(move(ground_symbol));
 
-    circuit->add_graphical_ground(pos.x, pos.y, node);
+    node->set_ground_coordinates(pos.x, pos.y);
 }
 
 void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name)
@@ -1771,7 +1771,7 @@ Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, Node* no
 {
     auto new_label = make_unique<Graphical_Net_Label>(pos, node);
 
-    node->set_coordinates(pos.x, pos.y);
+    node->set_net_label_coordinates(pos.x, pos.y);
 
     Graphical_Net_Label* ptr = new_label.get();
     graphical_elements.push_back(move(new_label));
@@ -2191,9 +2191,15 @@ void Controller::build_graphical_elements_from_circuit()
     {
         if (!node->net_name.empty())
         {
-            SDL_Point label_pos = { node->get_coordinates().first, node->get_coordinates().second };
+            SDL_Point label_pos = {node->get_net_label_coordinates().first, node->get_net_label_coordinates().second };
 
             add_Graphical_Net_Label(label_pos, node);
+        }
+        if (node->is_the_node_ground())
+        {
+            SDL_Point ground_pos = { node->get_ground_coordinates().first, node->get_ground_coordinates().second };
+
+            add_Graphical_Ground(ground_pos, node);
         }
     }
     
@@ -2554,15 +2560,4 @@ void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
 
 
     circuit->setAC(freqList, magList, phaseList);
-}
-
-void Controller::check_if_nodes_are_still_ground()
-{
-    auto& grounds = circuit->get_graphical_grounds();
-
-    grounds.erase(remove_if(grounds.begin(), grounds.end(),[](const auto& ground) {
-                               return (ground.node == nullptr || !ground.node->is_the_node_ground());
-                           }),
-            grounds.end()
-    );
 }

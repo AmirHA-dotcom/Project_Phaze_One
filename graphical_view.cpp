@@ -3261,7 +3261,6 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         current_file_name = edit_buffers[0];
         current_file_address = edit_buffers[1];
 
-        C->check_if_nodes_are_still_ground();
         C->circuit->change_name(current_file_name);
         C->saveGraphicalCircuit(C->circuit, current_file_address);
 

@@ -101,8 +101,13 @@ void Node::reset_voltages()
     voltage.clear();
 }
 
-void Node::set_coordinates(int x_, int y_)
+void Node::set_net_label_coordinates(int x_, int y_)
 {
-    x = x_;
-    y = y_;
+    net_label_coordinates.first = x_;
+    net_label_coordinates.second = y_;
+}
+void Node::set_ground_coordinates(int x_, int y_)
+{
+    ground_coordinates.first = x_;
+    ground_coordinates.second = y_;
 }
