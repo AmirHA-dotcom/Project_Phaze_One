@@ -24,40 +24,51 @@ void Controller::addSubCircuit(string name, Circuit* circuit, Node* inputNode, N
     subCircuits.push_back(sc);
 }
 
-void changeSubCircuitAllNodeNames (SubCircuit* subCircuit){
-    for (auto node : subCircuit->get_Nodes())
-        if (node->get_name() != subCircuit->getInput()->get_name() && node->get_name() != subCircuit->getOutput()->get_name())
-            node->change_name(node->get_name()+"_sub");
 
-}
-void changeSubCircuitAllElementNames (SubCircuit* subCircuit){
-    for (auto element : subCircuit->get_Elements())
-        if (element->get_name() != subCircuit->getInput()->get_name() && element->get_name() != subCircuit->getOutput()->get_name())
-            element->change_name(element->get_name()+"_sub");
-}
-
-void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, string inputNode, string outputNode) {
-    auto input = findNode(inputNode);
-    if (!input) {
-        cerr << "Input node not found!" << endl;
-        return;
-    }
-    auto output = findNode(outputNode);
-    if (!output) {
-        cerr << "Output node not found!" << endl;
-        return;
-    }
-    subCircuit->getInput()->change_name(inputNode);
-    subCircuit->getOutput()->change_name(outputNode);
-    changeSubCircuitAllNodeNames(subCircuit);
-    changeSubCircuitAllElementNames(subCircuit);
-    for (auto node : subCircuit->get_Nodes()) {
-        if (node->get_name() != inputNode && node->get_name() != outputNode) {
-            circuit->create_new_node(node->get_name());
+void changeSubCircuitAllNodeNames(SubCircuit* subCircuit) {
+    for (auto& node : subCircuit->get_Nodes()) {
+        if (node->get_name() != subCircuit->getInput()->get_name() && node->get_name() != subCircuit->getOutput()->get_name()) {
+            node->change_name(node->get_name() + "_sub");
         }
     }
-    for (auto element : subCircuit->get_Elements()) {
-        circuit->addElement(element);
+}
+
+void changeSubCircuitAllElementNames(SubCircuit* subCircuit) {
+    for (auto& element : subCircuit->get_Elements()) {
+        if (element->get_name() != subCircuit->getInput()->get_name() && element->get_name() != subCircuit->getOutput()->get_name()) {
+            element->change_name(element->get_name() + "_sub");
+        }
+    }
+}
+
+
+void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName) {
+
+    auto input = circuit->findNode(inputNodeName);
+    if (!input) {
+        std::cerr << "Input node not found in the main circuit!" << std::endl;
+        return;
+    }
+    auto output = circuit->findNode(outputNodeName);
+    if (!output) {
+        std::cerr << "Output node not found in the main circuit!" << std::endl;
+        return;
+    }
+
+    static int subCircuitCounter = 0;
+    std::string unique_suffix = "_sub" + std::to_string(subCircuitCounter++);
+
+    for (const auto& node : subCircuit->get_Nodes()) {
+        if (node->get_name() != subCircuit->getInput()->get_name() && node->get_name() != subCircuit->getOutput()->get_name()) {
+            std::string new_name = node->get_name() + unique_suffix;
+            circuit->create_new_node(new_name);
+        }
+    }
+
+    for (auto& element : subCircuit->get_Elements()) {
+        std::string new_name = element->get_name() + unique_suffix;
+        element->change_name(new_name);
+        circuit->addElement(std::move(element));
     }
     circuit->checkHaveGround();
 }
