@@ -3107,7 +3107,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 plot_view->add_signal(node_signal);
                 plot_view->auto_zoom();
-                plot_view->set_y_unit(Unit::A);
+                plot_view->set_y_unit(Unit::V);
                 plot_view->set_x_unit(Unit::s);
                 probe_mode = false;
 

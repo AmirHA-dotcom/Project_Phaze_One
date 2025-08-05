@@ -15,6 +15,8 @@ private:
     bool is_ground;
     int elements_connected_count;
     int index;
+    int x = 0;
+    int y = 0;  // net label
 public:
     Node(string _name);
     string get_name() const;
@@ -31,6 +33,8 @@ public:
     void disconnect_element();
     int connected_elements_count() const;
     void reset_voltages();
+
+    void set_coordinates(int x_, int y_);
 
     string net_name;
 };

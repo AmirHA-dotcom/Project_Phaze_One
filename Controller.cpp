@@ -1770,6 +1770,9 @@ void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name
 Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, Node* node)
 {
     auto new_label = make_unique<Graphical_Net_Label>(pos, node);
+
+    node->set_coordinates(pos.x, pos.y);
+
     Graphical_Net_Label* ptr = new_label.get();
     graphical_elements.push_back(move(new_label));
     return ptr;

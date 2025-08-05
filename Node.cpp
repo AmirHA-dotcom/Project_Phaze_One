@@ -100,3 +100,9 @@ void Node::reset_voltages()
 {
     voltage.clear();
 }
+
+void Node::set_coordinates(int x_, int y_)
+{
+    x = x_;
+    y = y_;
+}
