@@ -51,7 +51,6 @@ void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit
     subCircuit->getOutput()->change_name(outputNode);
     changeSubCircuitAllNodeNames(subCircuit);
     changeSubCircuitAllElementNames(subCircuit);
-
     for (auto node : subCircuit->get_Nodes()) {
         if (node->get_name() != inputNode && node->get_name() != outputNode) {
             circuit->create_new_node(node->get_name());
@@ -527,8 +526,8 @@ void Controller::saveSubCircuit(SubCircuit* subCircuit, string path) {
         return;
     }
     tempFile << subCircuit->get_name() << ":\n";
-    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
-    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "") << "\n";
+    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "") << "\n";
     tempFile.close();
 
     // Call saveCircuit to append circuit components and ground
@@ -547,8 +546,8 @@ void Controller::saveSubCircuit(SubCircuit* subCircuit, string path) {
 
     // Copy SubCircuit-specific lines
     outFile << subCircuit->get_name() << ":\n";
-    outFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
-    outFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    outFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "") << "\n";
+    outFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "") << "\n";
 
     // Skip the circuit name line from saveCircuit output
     string line;
@@ -700,8 +699,8 @@ void Controller::saveGraphicalSubCircuit(SubCircuit* subCircuit, string path) {
         return;
     }
     tempFile << subCircuit->get_name() << ":\n";
-    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
-    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "") << "\n";
+    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "") << "\n";
     tempFile << "Rotation: " << subCircuit->get_rotation_as_int() << "\n";
     tempFile.close();
 
@@ -721,8 +720,8 @@ void Controller::saveGraphicalSubCircuit(SubCircuit* subCircuit, string path) {
 
     // Copy SubCircuit-specific lines
     outFile << subCircuit->get_name() << ":\n";
-    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "N1") << "\n";
-    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "N2") << "\n";
+    tempFile << "Input: " << (subCircuit->getInput() ? subCircuit->getInput()->get_name() : "") << "\n";
+    tempFile << "Output: " << (subCircuit->getOutput() ? subCircuit->getOutput()->get_name() : "") << "\n";
     outFile << "Rotation: " << subCircuit->get_rotation_as_int() << "\n";
 
     // Skip the circuit name line from saveCircuit output
@@ -747,13 +746,13 @@ void Controller::saveGraphicalSubCircuit(SubCircuit* subCircuit, string path) {
 }
 
 void Controller::saveSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    string path = file_handler.getMainFolderPath() + "/subcircuits";
     for (const auto& subCircuit : subCircuits) {
         saveSubCircuit(subCircuit,path);
     }
 }
 void Controller::saveGraphicalSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    string path = file_handler.getMainFolderPath() + "/subcircuits";
     for (const auto& subCircuit : subCircuits) {
         saveGraphicalSubCircuit(subCircuit,path);
     }
@@ -1178,7 +1177,7 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
             }
             subCircuit->setInput(nodeMap[nodeName]); // Set input node
         }
-            // Handle Output line
+        // Handle Output line
         else if (line[0] == "Output:") {
             if (line.size() < 2) {
                 cerr << "Error: Invalid Output line format" << endl;
@@ -1200,10 +1199,10 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
             try {
                 int rotationValue = stoi(line[1]);
                 switch (rotationValue) {
-                    case 0: subCircuit->set_rotation(Rotation::Up); break;
-                    case 1: subCircuit->set_rotation(Rotation::Right); break;
-                    case 2: subCircuit->set_rotation(Rotation::Down); break;
-                    case 3: subCircuit->set_rotation(Rotation::Left); break;
+                    case 0: subCircuit->set_rotation(Rotation::Right); break;
+                    case 1: subCircuit->set_rotation(Rotation::Down); break;
+                    case 2: subCircuit->set_rotation(Rotation::Left); break;
+                    case 3: subCircuit->set_rotation(Rotation::Up); break;
                     default:
                         cerr << "Error: Invalid rotation value: " << line[1] << endl;
                         subCircuit->set_rotation(Rotation::Up); // Default
@@ -1220,7 +1219,7 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
 }
 
 void Controller::loadSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "subcircuits/";
+    string path = file_handler.getMainFolderPath() + "/subcircuits";
     vector<string> files = file_handler.getFilesInDirectory(path);
     for (const auto& file : files) {
         if (file.substr(file.find_last_of(".") + 1) == "txt") {
@@ -1239,10 +1238,8 @@ void Controller::loadSubCircuits () {
             inFile.close();
             if (!lines.empty()) {
                 string name = lines[0][0].substr(0, lines[0][0].size() - 1);
-                Circuit *circuit = textToCircuit(name, lines);
-                Node *inputNode = circuit->findNode(lines[1][1]);
-                Node *outputNode = circuit->findNode(lines[2][1]);
-                addSubCircuit(name, circuit, inputNode, outputNode);
+                SubCircuit *subCircuit = textToSubCircuit(name, lines);
+                addSubCircuit(name, subCircuit, subCircuit->getInput(), subCircuit->getOutput());
             }
         }
     }
@@ -1268,10 +1265,8 @@ void Controller::loadGraphicalSubCircuits () {
             inFile.close();
             if (!lines.empty()) {
                 string name = lines[0][0].substr(0, lines[0][0].size() - 1);
-                Circuit* circuit = textToCircuit(name, lines);
-                Node *inputNode = circuit->findNode(lines[1][1]);
-                Node *outputNode = circuit->findNode(lines[2][1]);
-                addSubCircuit(name, circuit, inputNode, outputNode);
+                SubCircuit* subCircuit = textToGraphicalSubCircuit(name, lines);
+                addSubCircuit(name, subCircuit, subCircuit->getInput(), subCircuit->getOutput());
             }
         }
     }
@@ -2367,19 +2362,20 @@ void Controller::load_file(string name)
     build_graphical_elements_from_circuit();
 }
 
-void Controller::set_AC_sweep_variables(double start_f, double end_f, double step, AC_Sweep_Type type)
+void Controller::set_AC_sweep_variables(double start_f, double end_f, double num_of_points_f, AC_Sweep_Type type)
 {
     start_freq = start_f;
     end_freq = end_f;
-    num_of_points = end_f - start_f > 0 ? (int)(end_f - start_f) / step + 1 : 1; // ensure at least one point
+    num_of_points = num_of_points_f;
     ac_sweep_type = type;
+
 }
 
-void Controller::get_ac_params(double &start, double &stop, double &step, AC_Sweep_Type &type)
+void Controller::get_ac_params(double &start, double &stop, double &num_of_points_f, AC_Sweep_Type &type)
 {
     start = start_freq;
     stop = end_freq;
-    step = end_freq - start_freq > 0 ? (end_freq - start_freq) / (num_of_points - 1) : 1; // ensure at least one point
+    num_of_points_f = num_of_points;
     type = ac_sweep_type;
 }
 

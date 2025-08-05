@@ -5,18 +5,18 @@
 #include "graphical_view.h"
 
 // helper functions
+//
+//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+//const char* PROBE = "D://Images//probe_cursor.png";
+//const char* DELETE = "D://Images//sissors_cursor.png";
+//const char* GROUND = "D://Images//grounding_cursor.png";
+//const char* ICON = "D://Images//SparkSense2.png";
 
-const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-const char* PROBE = "D://Images//probe_cursor.png";
-const char* DELETE = "D://Images//sissors_cursor.png";
-const char* GROUND = "D://Images//grounding_cursor.png";
-const char* ICON = "D://Images//SparkSense2.png";
-
-//const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
-//const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
-//const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
-//const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
-//const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
+const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
+const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
+const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
+const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
+const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
 {

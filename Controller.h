@@ -317,9 +317,9 @@ public:
 
     void load_file(string name);
 
-    void set_AC_sweep_variables(double start_f, double end_f, double num_of_p, AC_Sweep_Type type);
+    void set_AC_sweep_variables(double start_f, double end_f, double num_of_points_f, AC_Sweep_Type type);
 
-    void get_ac_params(double& start, double& stop, double& step, AC_Sweep_Type& type);
+    void get_ac_params(double& start, double& stop, double& num_of_points_f, AC_Sweep_Type& type);
 
     void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);
     void performACSweep(Circuit* circuit, string OutNodeName);
