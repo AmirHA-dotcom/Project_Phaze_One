@@ -36,6 +36,8 @@ private:
     bool haveGround;
     bool is_diode_added = false;
     vector<vector<double>> AC;
+
+    vector<ground_parameters> grounds;
 public:
     void setAC(std::vector<double>& freqList,
                std::vector<double>& magList,
@@ -100,6 +102,9 @@ public:
     void displayAC ();
     int node_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
     int element_index_finder_by_name(const string& name); // returns index, if not found, returns -1.
+
+    void add_graphical_ground(int x, int y, Node* node);
+    vector<ground_parameters>& get_graphical_grounds() { return grounds; }
 };
 
 class SubCircuit : public Circuit

@@ -2893,70 +2893,95 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
     // show voltages
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && !ctrl_is_pressed)
     {
-        Node* target_node = find_node_at({event.button.x, event.button.y}, C);
-        if (target_node)
+        if (current_analysis_mode == Analysis_Mode::Transient)
         {
-            if (!plot_view)
+            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            if (target_node)
             {
-                plot_view = make_unique<Plot_View>();
-            }
-
-            // create and add the signal
-            Signal node_signal;
-            node_signal.name = "V(" + target_node->get_name() + ")";
-
-            for (int i = 0; i < target_node->get_all_voltages().size(); i++)
-                node_signal.data_points.push_back({-1 * target_node->get_all_voltages()[i].first, target_node->get_all_voltages()[i].second});
-
-            node_signal.color = default_colors[color_index % default_colors.size()];
-            color_index++;
-            if (color_index == 15)
-                color_index = 0;
-
-            plot_view->add_signal(node_signal);
-            plot_view->auto_zoom();
-            plot_view->set_y_unit(Unit::V);
-            plot_view->set_x_unit(Unit::s);
-            probe_mode = false;
-        }
-        Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
-        if (target_element)
-        {
-            if (!plot_view)
-            {
-                plot_view = make_unique<Plot_View>();
-            }
-
-            // create and add the signal
-            Signal element_signal;
-            element_signal.name = "V(" + target_element->get_model()->get_name() + ")";
-
-            if (current_analysis_mode == Analysis_Mode::Transient)
-            {
-                double start_time, stop_time, time_step;
-                C->get_tran_params(start_time, stop_time, time_step);
-
-
-                if (time_step > 0)
+                if (!plot_view)
                 {
-                    for (double time = start_time; time < stop_time; time += time_step)
+                    plot_view = make_unique<Plot_View>();
+                }
+
+                // create and add the signal
+                Signal node_signal;
+                node_signal.name = "V(" + target_node->get_name() + ")";
+
+                for (int i = 0; i < target_node->get_all_voltages().size(); i++)
+                    node_signal.data_points.push_back({-1 * target_node->get_all_voltages()[i].first, target_node->get_all_voltages()[i].second});
+
+                node_signal.color = default_colors[color_index % default_colors.size()];
+                color_index++;
+                if (color_index == 15)
+                    color_index = 0;
+
+                plot_view->add_signal(node_signal);
+                plot_view->auto_zoom();
+                plot_view->set_y_unit(Unit::V);
+                plot_view->set_x_unit(Unit::s);
+                probe_mode = false;
+            }
+            Graphical_Element* target_element = find_element_at({event.button.x, event.button.y}, C);
+            if (target_element)
+            {
+                if (!plot_view)
+                {
+                    plot_view = make_unique<Plot_View>();
+                }
+
+                // create and add the signal
+                Signal element_signal;
+                element_signal.name = "V(" + target_element->get_model()->get_name() + ")";
+
+                if (current_analysis_mode == Analysis_Mode::Transient)
+                {
+                    double start_time, stop_time, time_step;
+                    C->get_tran_params(start_time, stop_time, time_step);
+
+
+                    if (time_step > 0)
                     {
-                        double voltage = target_element->get_model()->get_voltage_at_time(time);
-                        element_signal.data_points.push_back({voltage, time});
+                        for (double time = start_time; time < stop_time; time += time_step)
+                        {
+                            double voltage = target_element->get_model()->get_voltage_at_time(time);
+                            element_signal.data_points.push_back({voltage, time});
+                        }
                     }
                 }
+
+                element_signal.color = default_colors[color_index % default_colors.size()];
+                color_index++;
+                if (color_index == 15)
+                    color_index = 0;
+
+                plot_view->add_signal(element_signal);
+                plot_view->auto_zoom();
+                plot_view->set_y_unit(Unit::V);
+                plot_view->set_x_unit(Unit::s);
+                probe_mode = false;
             }
+        }
+        else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+        {
+            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            if (target_node)
+            {
+                if (!plot_view)
+                {
+                    plot_view = make_unique<Plot_View>();
+                }
 
-            element_signal.color = default_colors[color_index % default_colors.size()];
-            color_index++;
-            if (color_index == 15)
-                color_index = 0;
+                // create and add the signal
+                Signal node_signal;
+                node_signal.name = "V(" + target_node->get_name() + ")";
+                C->performACSweep(C->circuit, target_node->get_name());
+                vector<vector<double>> AC_results = C->circuit->getAC();
 
-            plot_view->add_signal(element_signal);
-            plot_view->auto_zoom();
-            plot_view->set_y_unit(Unit::V);
-            plot_view->set_x_unit(Unit::s);
-            probe_mode = false;
+            }
+        }
+        else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+        {
+            // not coded
         }
     }
 
@@ -3147,6 +3172,7 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         current_file_name = edit_buffers[0];
         current_file_address = edit_buffers[1];
 
+        C->check_if_nodes_are_still_ground();
         C->circuit->change_name(current_file_name);
         C->saveGraphicalCircuit(C->circuit, current_file_address);
 

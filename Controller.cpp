@@ -1721,6 +1721,8 @@ void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
     auto ground_symbol = make_unique<Graphical_Ground>(pos, node);
     ground_symbol->bounding_box = {pos.x - 12, pos.y, 24, 18};
     graphical_elements.push_back(move(ground_symbol));
+
+    circuit->add_graphical_ground(pos.x, pos.y, node);
 }
 
 void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name)
@@ -2518,3 +2520,13 @@ void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
     circuit->setAC(freqList, magList, phaseList);
 }
 
+void Controller::check_if_nodes_are_still_ground()
+{
+    auto& grounds = circuit->get_graphical_grounds();
+
+    grounds.erase(remove_if(grounds.begin(), grounds.end(),[](const auto& ground) {
+                               return (ground.node == nullptr || !ground.node->is_the_node_ground());
+                           }),
+            grounds.end()
+    );
+}

@@ -843,6 +843,12 @@ void Circuit::displayAC(){
     }
     cout << endl;
 }
+
+void Circuit::add_graphical_ground(int x, int y, Node *node)
+{
+    grounds.push_back({x, y, node});
+}
+
 Node* SubCircuit::getInput()  { return input; }
 Node* SubCircuit::getOutput()  { return output; }
 void SubCircuit::setInput(Node* newInput) { input = newInput; }

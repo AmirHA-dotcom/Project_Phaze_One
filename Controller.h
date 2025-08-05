@@ -323,5 +323,7 @@ public:
 
     void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);
     void performACSweep(Circuit* circuit, string OutNodeName);
+
+    void check_if_nodes_are_still_ground();
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H
