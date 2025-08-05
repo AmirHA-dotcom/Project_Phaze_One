@@ -1920,6 +1920,8 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     if (node_to_merge->is_the_node_ground())
     {
         node_to_keep->make_ground();
+        pair<int,int> g_c = node_to_merge->get_ground_coordinates();
+        node_to_keep->set_ground_coordinates(g_c.first, g_c.second);
     }
 
     for (int i = 0; i < node_to_merge->connected_elements_count(); i++)
