@@ -1757,7 +1757,7 @@ void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name
 
     if (sim_Sub_C != nullptr)
     {
-        //addSubCircuitToCircuit(sim_Sub_C, circuit, n1->get_name(), n2->get_name());
+        addSubCircuitToCircuit(sim_Sub_C, circuit, n1->get_name(), n2->get_name());
         auto gfx_Sub_C = make_unique<Graphical_SubCircuit>(sim_Sub_C, name);
 
         gfx_Sub_C->bounding_box = {screenX, screenY, 150, 60};
