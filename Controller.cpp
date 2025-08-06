@@ -2527,6 +2527,24 @@ void Controller::get_ac_params(double &start, double &stop, double &num_of_point
     type = ac_sweep_type;
 }
 
+void Controller::set_phase_sweep_variables(double start_p, double stop_p, double base_p,double num_of_points_p, Phase_Sweep_Type type)
+{
+    start_phase = start_p;
+    end_phase = stop_p;
+    fixed_frequency = base_p;
+    num_of_points_phase = num_of_points_p;
+    phase_sweep_type = type;
+}
+
+void Controller::get_phase_params(double &start_p, double &stop_p, double &num_of_points_p, double &fixed_p, Phase_Sweep_Type &type)
+{
+    start_p = start_phase;
+    stop_p = end_phase;
+    num_of_points_p = num_of_points_phase;
+    fixed_p = fixed_frequency;
+    type = phase_sweep_type;
+}
+
 void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val) {
     int n1 = (node1 > 0) ? node1 - 1 : -1;
     int n2 = (node2 > 0) ? node2 - 1 : -1;
@@ -2536,7 +2554,7 @@ void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val
         Y(n1, n2) -= val;
         Y(n2, n1) -= val;
     }
-}\
+}
 
 inline void safeAdd(MatrixXc& Y, int r, int c, ComplexNum v) {
     assert(r >= 0 && r < Y.rows() && c >= 0 && c < Y.cols());

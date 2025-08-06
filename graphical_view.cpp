@@ -1503,6 +1503,7 @@ bool graphical_view::run(Controller *C)
         {
             int x = 10; int y = 50;
             double base_ph = 0; double start_ph = 0; double stop_ph = 0; double num_of_points = 0;
+            C->get_phase_params(start_ph, stop_ph, base_ph, num_of_points, phase_sweep_type);
             string text = ".Phase(" + format_with_suffix(base_ph, " ") + format_with_suffix(start_ph, " ") + format_with_suffix(stop_ph, " ") + format_with_suffix(num_of_points, ")");
             render_text(renderer, font, text, x, y, {0, 0, 0, 255});
         }
@@ -2671,10 +2672,13 @@ bool graphical_view::handle_toolbar_events(SDL_Event& event, Controller* C)
                                 double s, e, n;
                                 C->get_ac_params(s, e, n, AC_sweep_type);
                                 cout << s << " " << e << n << (int)AC_sweep_type;
+                                C->performACSweep(C->circuit);
                             }
                             else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
                             {
-                                // not coded
+                                double s, e, b, num;
+                                C->get_phase_params(s, e, b, num, phase_sweep_type);
+                                C->performPhaseSweep(C->circuit);
                             }
                             feedback_cursor_state = Feedback_Cursor_State::Loading;
                             feedback_cursor_timer_start = SDL_GetTicks();
@@ -2782,10 +2786,11 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
                 case Analysis_Mode::Phase_Sweep:
                     if (edit_buffers.size() >= 4)
                     {
-                        double base_freq = toValue(edit_buffers[0]);
+                        double base_phase = toValue(edit_buffers[0]);
                         double start_phase = toValue(edit_buffers[1]);
                         double stop_phase = toValue(edit_buffers[2]);
                         int num_points = static_cast<int>(toValue(edit_buffers[3]));
+                        C->set_phase_sweep_variables(start_phase, stop_phase, base_phase, num_points, phase_sweep_type);
                     }
                     break;
             }
@@ -2924,7 +2929,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
     bool ctrl_is_pressed = keystates[SDL_SCANCODE_LCTRL] || keystates[SDL_SCANCODE_RCTRL];
 
-    // show voltages
+
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && !ctrl_is_pressed)
     {
         if (current_analysis_mode == Analysis_Mode::Transient)
@@ -3009,14 +3014,22 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 Signal node_signal;
                 node_signal.name = "Mag(" + target_node->get_name() + ")";
 
-                // SHOULD EDIT
-//                C->performACSweep(C->circuit, target_node->get_name());
-//                vector<vector<double>> AC_results = C->circuit->getAC();
+                vector<double> freq, mag;
 
-//                for (int i = 0; i < min(AC_results[0].size(), AC_results[1].size()); i++)
-//                {
-//                    node_signal.data_points.push_back({AC_results[1][i], AC_results[0][i]});
-//                }
+                for (const auto& data : C->circuit->getAcVoltage())
+                {
+                    if (target_node == data.first)
+                    {
+                        freq = get<0>(data.second);
+                        mag = get<1>(data.second);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < min(freq.size(), mag.size()); i++)
+                {
+                    node_signal.data_points.push_back({freq[i], mag[i]});
+                }
 
                 node_signal.color = default_colors[color_index % default_colors.size()];
                 color_index++;
@@ -3025,18 +3038,58 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 plot_view->add_signal(node_signal);
                 plot_view->auto_zoom();
-                plot_view->set_y_unit(Unit::V);
-                plot_view->set_x_unit(Unit::s);
+                plot_view->set_y_unit(Unit::dB);
+                if (C->get_AC_sweep_t() == AC_Sweep_Type::Linear) plot_view->set_x_unit(Unit::Hz);
+                if (C->get_AC_sweep_t() == AC_Sweep_Type::Decade) plot_view->set_x_unit(Unit::Dec);
+                if (C->get_AC_sweep_t() == AC_Sweep_Type::Octave) plot_view->set_x_unit(Unit::Oct);
                 probe_mode = false;
             }
         }
         else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
         {
-            // not coded
+            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            if (target_node)
+            {
+                if (!plot_view)
+                {
+                    plot_view = make_unique<Plot_View>();
+                }
+
+                // create and add the signal
+                Signal node_signal;
+                node_signal.name = "Mag(" + target_node->get_name() + ")";
+
+                vector<double> p, mag;
+
+                for (const auto& data : C->circuit->getPhaseVoltage())
+                {
+                    if (target_node == data.first)
+                    {
+                        p = get<0>(data.second);
+                        mag = get<1>(data.second);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < min(p.size(), mag.size()); i++)
+                {
+                    node_signal.data_points.push_back({p[i], mag[i]});
+                }
+
+                node_signal.color = default_colors[color_index % default_colors.size()];
+                color_index++;
+                if (color_index == 15)
+                    color_index = 0;
+
+                plot_view->add_signal(node_signal);
+                plot_view->auto_zoom();
+                plot_view->set_y_unit(Unit::dB);
+                plot_view->set_x_unit(Unit::Hz);
+                probe_mode = false;
+            }
         }
     }
 
-    // show currents
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
     {
         if (current_analysis_mode == Analysis_Mode::Transient)
@@ -3094,14 +3147,25 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 // create and add the signal
                 Signal node_signal;
                 node_signal.name = "Phase(" + target_node->get_name() + ")";
-                // EDIT
-//                C->performACSweep(C->circuit, target_node->get_name());
-//                vector<vector<double>> AC_results = C->circuit->getAC();
-//
-//                for (int i = 0; i < min(AC_results[0].size(), AC_results[2].size()); i++)
-//                {
-//                    node_signal.data_points.push_back({AC_results[2][i], AC_results[0][i]});
-//                }
+
+
+                vector<double> freq, phase;
+
+                for (const auto& data : C->circuit->getAcVoltage())
+                {
+                    if (target_node == data.first)
+                    {
+                        freq = get<0>(data.second);
+                        phase = get<2>(data.second);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < min(freq.size(), phase.size()); i++)
+                {
+                    node_signal.data_points.push_back({freq[i], phase[i]});
+                }
+
 
                 node_signal.color = default_colors[color_index % default_colors.size()];
                 color_index++;
@@ -3110,12 +3174,62 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 plot_view->add_signal(node_signal);
                 plot_view->auto_zoom();
-                plot_view->set_y_unit(Unit::V);
-                plot_view->set_x_unit(Unit::s);
+                plot_view->set_y_unit(Unit::deg);
+                if (C->get_AC_sweep_t() == AC_Sweep_Type::Linear) plot_view->set_x_unit(Unit::Hz);
+                if (C->get_AC_sweep_t() == AC_Sweep_Type::Decade) plot_view->set_x_unit(Unit::Dec);
+                if (C->get_AC_sweep_t() == AC_Sweep_Type::Octave) plot_view->set_x_unit(Unit::Oct);
                 probe_mode = false;
 
             }
         }
+        else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+        {
+            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            if (target_node)
+            {
+                if (!plot_view)
+                {
+                    plot_view = make_unique<Plot_View>();
+                }
+
+                // create and add the signal
+                Signal node_signal;
+                node_signal.name = "Phase(" + target_node->get_name() + ")";
+
+
+                vector<double> p, phase;
+
+                for (const auto& data : C->circuit->getPhaseVoltage())
+                {
+                    if (target_node == data.first)
+                    {
+                        p = get<0>(data.second);
+                        phase = get<2>(data.second);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < min(p.size(), phase.size()); i++)
+                {
+                    node_signal.data_points.push_back({p[i], phase[i]});
+                }
+
+
+                node_signal.color = default_colors[color_index % default_colors.size()];
+                color_index++;
+                if (color_index == 15)
+                    color_index = 0;
+
+                plot_view->add_signal(node_signal);
+                plot_view->auto_zoom();
+                plot_view->set_y_unit(Unit::deg);
+                plot_view->set_x_unit(Unit::deg);
+                probe_mode = false;
+
+            }
+        }
+
+
     }
 
     // show power

@@ -140,6 +140,7 @@ private:
     AC_Sweep_Type AC_sweep_type = AC_Sweep_Type::Linear;
     SDL_Rect transient_tab_rect, ac_sweep_tab_rect, phase_sweep_tab_rect;
     SDL_Rect octave_button_rect, decade_button_rect, linear_button_rect;
+    Phase_Sweep_Type phase_sweep_type = Phase_Sweep_Type::Linear;
 
     // probe mode
     bool probe_mode = false;

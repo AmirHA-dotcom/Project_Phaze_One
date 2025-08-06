@@ -328,6 +328,10 @@ public:
 
     void set_AC_sweep_variables(double start_f, double end_f, double num_of_points_f, AC_Sweep_Type type);
     void get_ac_params(double& start, double& stop, double& num_of_points_f, AC_Sweep_Type& type);
+    AC_Sweep_Type get_AC_sweep_t() { return ac_sweep_type; }
+
+    void set_phase_sweep_variables(double start_p, double stop_p, double base_p,double num_of_points_p, Phase_Sweep_Type type);
+    void get_phase_params(double& start_p, double& stop_p, double& num_of_points_p, double& fixed_p, Phase_Sweep_Type& type);
 
 
     void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);

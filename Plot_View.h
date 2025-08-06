@@ -10,7 +10,7 @@
 
 enum class Plot_Event_Status{ Handled, Not_Handled, Close_Request };
 
-enum class Unit{V, A, W, s};
+enum class Unit{V, A, W, s, dB, Hz, deg, Dec, Oct};
 
 struct Cursor {
     double X;
