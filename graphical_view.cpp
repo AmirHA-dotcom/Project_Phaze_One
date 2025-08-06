@@ -3009,7 +3009,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
         {
             Node* target_node = find_node_at({event.button.x, event.button.y}, C);
-            if (target_node)
+            if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)
                 {
@@ -3034,7 +3034,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 for (int i = 0; i < min(freq.size(), mag.size()); i++)
                 {
-                    node_signal.data_points.push_back({freq[i], mag[i]});
+                    node_signal.data_points.push_back({mag[i], freq[i]});
                 }
 
                 node_signal.color = default_colors[color_index % default_colors.size()];
@@ -3054,7 +3054,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
         {
             Node* target_node = find_node_at({event.button.x, event.button.y}, C);
-            if (target_node)
+            if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)
                 {
@@ -3079,7 +3079,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 for (int i = 0; i < min(p.size(), mag.size()); i++)
                 {
-                    node_signal.data_points.push_back({p[i], mag[i]});
+                    node_signal.data_points.push_back({mag[i], p[i]});
                 }
 
                 node_signal.color = default_colors[color_index % default_colors.size()];
@@ -3143,7 +3143,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
         {
             Node* target_node = find_node_at({event.button.x, event.button.y}, C);
-            if (target_node)
+            if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)
                 {
@@ -3169,7 +3169,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 for (int i = 0; i < min(freq.size(), phase.size()); i++)
                 {
-                    node_signal.data_points.push_back({freq[i], phase[i]});
+                    node_signal.data_points.push_back({phase[i], freq[i]});
                 }
 
 
@@ -3191,7 +3191,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
         {
             Node* target_node = find_node_at({event.button.x, event.button.y}, C);
-            if (target_node)
+            if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)
                 {
@@ -3217,7 +3217,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 for (int i = 0; i < min(p.size(), phase.size()); i++)
                 {
-                    node_signal.data_points.push_back({p[i], phase[i]});
+                    node_signal.data_points.push_back({phase[i], p[i]});
                 }
 
 

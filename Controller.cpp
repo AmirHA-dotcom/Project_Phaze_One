@@ -2607,6 +2607,18 @@ inline void safeAdd(MatrixXc& Y, int r, int c, ComplexNum v) {
 #include <tuple>
 
 void Controller::performACSweep(Circuit* circuit) {
+    int i = 0;
+    for (auto& node : circuit->get_Nodes())
+    {
+        if (!node->net_name.empty())
+        {
+            node->change_name(node->net_name);
+            continue;
+        }
+        node->change_name("N" + to_string(++i));
+    }
+
+
     // محاسبه فرکانس‌ها
     std::vector<double> freqs;
     if (ac_sweep_type == AC_Sweep_Type::Linear) {
@@ -2718,6 +2730,17 @@ void Controller::performACSweep(Circuit* circuit) {
 }
 
 void Controller::performPhaseSweep(Circuit* circuit) {
+    int i = 0;
+    for (auto& node : circuit->get_Nodes())
+    {
+        if (!node->net_name.empty())
+        {
+            node->change_name(node->net_name);
+            continue;
+        }
+        node->change_name("N" + to_string(++i));
+    }
+
     // تولید فازها
     std::vector<double> phases;
     if (phase_sweep_type == Phase_Sweep_Type::Linear) {
