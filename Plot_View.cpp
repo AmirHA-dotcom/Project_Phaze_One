@@ -394,6 +394,8 @@ void Plot_View::render()
             if (y_axis_unit == Unit::V) {unit += "V"; }
             else if (y_axis_unit == Unit::A) {unit += "A"; }
             else if (y_axis_unit == Unit::W) {unit += "W"; }
+            else if (y_axis_unit == Unit::deg) {unit += "deg"; }
+            else if (y_axis_unit == Unit::dB) {unit += "dB"; }
 
             string tick_text = format_with_suffix(tick_value, unit);
 
@@ -420,7 +422,10 @@ void Plot_View::render()
             SDL_RenderDrawLine(m_renderer, screen_x, plot_area.y, screen_x, plot_area.y + plot_area.h);
 
             string unit = " ";
-            if (y_axis_unit == Unit::s) {unit += "s"; }
+            if (x_axis_unit == Unit::s) {unit += "s"; }
+            else if (x_axis_unit == Unit::Hz) {unit += "Hz"; }
+            else if (x_axis_unit == Unit::Dec) {unit += "Dec"; }
+            else if (x_axis_unit == Unit::Oct) {unit += "Oct"; }
 
             string tick_text = format_with_suffix(tick_value, unit);
 
