@@ -4,7 +4,7 @@
 
 #include "Circuit.h"
 
-int Circuit::node_index_finder_by_name(const string& name)
+int Circuit::node_index_finder_by_name(const string& name) const
 {
     for (int i = 0; i < Nodes.size(); i++)
     {
@@ -16,7 +16,7 @@ int Circuit::node_index_finder_by_name(const string& name)
 void Circuit::ground(bool b){
     this->haveGround = b;
 }
-bool Circuit::isGround(){
+bool Circuit::isGround() const {
     return haveGround;
 }
 void Circuit::addNode(Node* node) {
@@ -35,7 +35,7 @@ void Circuit::addNode(Node* node) {
 
     Nodes.push_back(node);
 }
-int Circuit::element_index_finder_by_name(const string& name)
+int Circuit::element_index_finder_by_name(const string& name) const
 {
     for (int i = 0; i < Elements.size(); i++)
     {
@@ -45,7 +45,7 @@ int Circuit::element_index_finder_by_name(const string& name)
     return -1;
 }
 
-void Circuit::change_name(string new_name)
+void Circuit::change_name(const string& new_name)
 {
     name = new_name;
 }
@@ -55,12 +55,12 @@ string Circuit::get_name() const
     return name;
 }
 
-const vector<Element *> Circuit::get_Elements()
+const vector<Element *> Circuit::get_Elements() const
 {
     return Elements;
 }
 
-void Circuit::change_name_of_node(string old_name, string new_name)
+void Circuit::change_name_of_node(const string& old_name, const string& new_name)
 {
     int node_index = node_index_finder_by_name(old_name);
     if(node_index == -1)
@@ -71,12 +71,12 @@ void Circuit::change_name_of_node(string old_name, string new_name)
     Nodes[node_index]->change_name(new_name);
 }
 
-const vector<Node *> Circuit::get_Nodes()
+const vector<Node *> Circuit::get_Nodes() const
 {
     return Nodes;
 }
 
-const vector<Element *> Circuit::get_Elements_of_type(Element_Type type)
+const vector<Element *> Circuit::get_Elements_of_type(Element_Type type) const
 {
     if (type == Element_Type::Real_Diode)
     {
@@ -111,7 +111,7 @@ void Circuit::set_time_end(double ts)
     t_end = ts;
 }
 
-void Circuit::change_value_of_element(string name, double value)
+void Circuit::change_value_of_element(const string& name, double value)
 {
     int element_index = element_index_finder_by_name(name);
     if (element_index == -1)
@@ -122,18 +122,19 @@ void Circuit::change_value_of_element(string name, double value)
     Elements[element_index]->change_value(value);
 }
 
-void Circuit::change_name_of_element(string old_name, string new_name)
+void Circuit::change_name_of_element(const string& old_name, const string& new_name)
 {
     int element_index = element_index_finder_by_name(old_name);
     if (element_index == -1)
     {
-        cerr << "ELEMENT doesnt exist" << endl;
+        cerr << "ELEMENT doesn't exist" << endl;
         return;
     }
     Elements[element_index]->change_name(new_name);
 }
 
-void Circuit::make_node_ground(string name)
+
+void Circuit::make_node_ground (const string& name)
 {
     int node_index = node_index_finder_by_name(name);
     if (node_index == -1)
@@ -155,7 +156,7 @@ void Circuit::checkHaveGround() {
     }
 }
 
-Element* Circuit::findElement (string name){
+Element* Circuit::findElement (const string& name) const {
     for (auto& e : get_Elements())
     {
         if (e->get_name() == name)
@@ -163,7 +164,7 @@ Element* Circuit::findElement (string name){
     }
     return nullptr;
 }
-Node* Circuit::findNode (string name){
+Node* Circuit::findNode (const string& name) const {
     for (auto& n : get_Nodes())
     {
         if (n->get_name() == name)
@@ -172,7 +173,7 @@ Node* Circuit::findNode (string name){
     return nullptr;
 }
 
-void Circuit::make_node_NOT_ground(string name)
+void Circuit::make_node_NOT_ground(const string& name)
 {
     int node_index = node_index_finder_by_name(name);
     if (node_index == -1)
@@ -183,7 +184,7 @@ void Circuit::make_node_NOT_ground(string name)
     Nodes[node_index]->return_to_normal();
 }
 
-void Circuit::create_new_resistor(string name, string node1_name, string node2_name, double resistance)
+void Circuit::create_new_resistor(const string& name, const string& node1_name, const string& node2_name, double resistance)
 {
     //cout << "ojn" << endl;
     // finding if we need to make a new node
@@ -204,7 +205,7 @@ void Circuit::create_new_resistor(string name, string node1_name, string node2_n
     Elements.push_back(new Resistor(name, Nodes[node1_index], Nodes[node2_index], resistance));
 }
 
-void Circuit::create_new_capacitor(string name, string node1_name, string node2_name, double capacitance)
+void Circuit::create_new_capacitor(const string& name, const string& node1_name, const string& node2_name, double capacitance)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -219,7 +220,7 @@ void Circuit::create_new_capacitor(string name, string node1_name, string node2_
     Elements.push_back(new Capacitor(name, Nodes[node1_index], Nodes[node2_index], capacitance));
 }
 
-void Circuit::create_new_inductor(string name, string node1_name, string node2_name, double inductance)
+void Circuit::create_new_inductor(const string& name, const string& node1_name, const string& node2_name, double inductance)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -234,7 +235,7 @@ void Circuit::create_new_inductor(string name, string node1_name, string node2_n
     Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], inductance));
 }
 
-void Circuit::create_new_current_source(string name, string node1_name, string node2_name, double current)
+void Circuit::create_new_current_source(const string& name, const string& node1_name, const string& node2_name, double current)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -249,7 +250,7 @@ void Circuit::create_new_current_source(string name, string node1_name, string n
     Elements.push_back(new Current_Source(name, Nodes[node1_index], Nodes[node2_index], current));
 }
 
-void Circuit::create_new_VCCS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
+void Circuit::create_new_VCCS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -264,7 +265,7 @@ void Circuit::create_new_VCCS(string name, string node1_name, string node2_name,
     Elements.push_back(new VCCS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
-void Circuit::create_new_CCCS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
+void Circuit::create_new_CCCS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -279,7 +280,7 @@ void Circuit::create_new_CCCS(string name, string node1_name, string node2_name,
     Elements.push_back(new CCCS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
-void Circuit::create_new_VCVS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
+void Circuit::create_new_VCVS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -294,7 +295,7 @@ void Circuit::create_new_VCVS(string name, string node1_name, string node2_name,
     Elements.push_back(new VCVS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
-void Circuit::create_new_CCVS(string name, string node1_name, string node2_name, string ctrl1, string ctrl2, double gain)
+void Circuit::create_new_CCVS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -309,7 +310,7 @@ void Circuit::create_new_CCVS(string name, string node1_name, string node2_name,
     Elements.push_back(new CCVS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
-void Circuit::create_new_real_diode(string name, string node1_name, string node2_name, double dummy_number)
+void Circuit::create_new_real_diode(const string& name, const string& node1_name, const string& node2_name, double dummy_number)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -325,7 +326,7 @@ void Circuit::create_new_real_diode(string name, string node1_name, string node2
     is_diode_added = true;
 }
 
-void Circuit::create_new_zener_diode(string name, string node1_name, string node2_name, double dummy_number)
+void Circuit::create_new_zener_diode(const string& name, const string& node1_name, const string& node2_name, double dummy_number)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -341,7 +342,7 @@ void Circuit::create_new_zener_diode(string name, string node1_name, string node
     is_diode_added = true;
 }
 
-void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_name, std::string node2_name, double voltage)
+void Circuit::create_new_DC_voltage_source(const string& name, const string& node1_name, const string& node2_name, double voltage)
 {
     //cout << "meow" << endl;
     int node1_index = node_index_finder_by_name(node1_name);
@@ -360,7 +361,7 @@ void Circuit::create_new_DC_voltage_source(std::string name, std::string node1_n
 }
 
 void
-Circuit::create_new_Sin_voltage_source(std::string name, std::string node1_name, std::string node2_name, double offset, double amplitude, double frequency)
+Circuit::create_new_Sin_voltage_source(const string& name, const string& node1_name, const string& node2_name, double offset, double amplitude, double frequency)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -375,7 +376,7 @@ Circuit::create_new_Sin_voltage_source(std::string name, std::string node1_name,
     Elements.push_back(new Sine_Source(name, Nodes[node1_index], Nodes[node2_index],offset, amplitude, frequency, 0.0));
 }
 
-void Circuit::create_new_Pulse_voltage_source(std::string name, std::string node1_name, std::string node2_name, double period, double value)
+void Circuit::create_new_Pulse_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -390,7 +391,7 @@ void Circuit::create_new_Pulse_voltage_source(std::string name, std::string node
     Elements.push_back(new Pulse_Source(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period/100, period/100, 2, period));
 }
 
-void Circuit::create_new_Delta_voltage_source(std::string name, std::string node1_name, std::string node2_name, double time)
+void Circuit::create_new_Delta_voltage_source(const string& name, const string& node1_name, const string& node2_name, double time)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -405,7 +406,7 @@ void Circuit::create_new_Delta_voltage_source(std::string name, std::string node
     Elements.push_back(new Delta_Dirac(name, Nodes[node1_index], Nodes[node2_index], time));
 }
 
-void Circuit::create_new_Square_voltage_source(string name, string node1_name, string node2_name, double period, double value)
+void Circuit::create_new_Square_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -420,7 +421,7 @@ void Circuit::create_new_Square_voltage_source(string name, string node1_name, s
     Elements.push_back(new Square_Source(name, Nodes[node1_index], Nodes[node2_index], -1 * value, value, 0.0, 2, period));
 }
 
-void Circuit::create_new_Triangle_voltage_source(string name, string node1_name, string node2_name, double period, double value)
+void Circuit::create_new_Triangle_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -435,7 +436,7 @@ void Circuit::create_new_Triangle_voltage_source(string name, string node1_name,
     Elements.push_back(new Triangular_Source(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period));
 }
 
-void Circuit::delete_element(string name)
+void Circuit::delete_element(const string& name)
 {
     int element_index = -1;
     for (int i = 0; i < Elements.size(); i++)
@@ -490,7 +491,7 @@ void Circuit::delete_element(string name)
 //        cout << element->get_name() << endl;
 }
 
-vector<pair<double, double>> Circuit::get_node_voltages(string name)
+vector<pair<double, double>> Circuit::get_node_voltages(const string& name) const
 {
     return Nodes[node_index_finder_by_name(name)]->get_all_voltages();
 }
@@ -831,7 +832,7 @@ void Circuit::delete_node(Node *node_to_delete)
         }
     }
 }
-void Circuit::displayAC(){
+void Circuit::displayAC() const {
     cout << "AC Analysis Results:" << endl << endl;
     cout << "FREQ : " << endl;
     for ( auto freq : AC[0]) {
