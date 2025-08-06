@@ -28,6 +28,9 @@ public:
     void make_ground();
     void return_to_normal();
     bool is_the_node_ground();
+    bool haveNetLabel(){
+        return !net_name.empty();
+    }
     void set_index(int i);
     int get_index();
     void connect_element();

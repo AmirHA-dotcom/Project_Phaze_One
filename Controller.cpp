@@ -672,11 +672,15 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
         file << line << "\n";
     }
     // Write ground directive if present
-    if (circuit->isGround()) {
-        for ( auto node : circuit->get_Nodes()) {
-            if (node->is_the_node_ground()) {
-                file << ".GND " << node->get_name() << "\n";
-            }
+    for ( auto node : circuit->get_Nodes()) {
+        if (node->is_the_node_ground()) {
+            file << ".GND " << node->get_name() << " " << node->get_ground_coordinates().first
+                 << " " << node->get_ground_coordinates().second << "\n";            }
+    }
+    for ( auto node : circuit->get_Nodes()) {
+        if (node->haveNetLabel()) {
+            file << ".NL " << node->get_name() << " " << node->net_name << " " <<
+            node->get_net_label_coordinates().first << " " << node->get_net_label_coordinates().second << "\n";
         }
     }
     // End of circuit
@@ -936,7 +940,6 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
 
     return circuit;
 }
-
 SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
     // Use textToCircuit to create the base Circuit
     Circuit* baseCircuit = textToCircuit(Name, lines);
@@ -993,6 +996,7 @@ SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
 
     return subCircuit;
 }
+
 Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines) {
     Circuit* circuit = new Circuit(Name);
 
@@ -1128,10 +1132,16 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
                 circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
                 circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
             }
-            else if (prefix == 'G' && tokens.size() == 2 && tokens[0] == "GND") {
-                // Example .GND a
-                circuit->make_node_ground(tokens[1]);
+            else if (prefix == 'G' && tokens.size() == 4 && tokens[0] == "GND") {
+                // Example .GND a x y
+                Node* node = circuit->findNode(tokens[1]);
+                node->make_ground();    node->set_ground_coordinates(stoi(tokens[2]), stoi(tokens[3]));
                 circuit->ground(true);
+            }
+            else if (prefix == 'N' && tokens.size() == 5 && tokens[0] == "NL") {
+                // Example .NL a Netname x y
+                Node* node = circuit->findNode(tokens[1]);
+                node->net_name = tokens[2];    node->set_net_label_coordinates(stoi(tokens[3]), stoi(tokens[4]));
             }
             else if (type == ".END") {
                 break;
