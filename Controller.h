@@ -293,7 +293,9 @@ public:
     vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
 
     void add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end);
-    void addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName);
+    static void addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName);
+    static void addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName,int screenX, int screenY);
+
     void connect_nodes(Node* node_to_keep, Node* node_to_merge);
 
     void assign_net_name(Node* node_to_name, const string& new_name);

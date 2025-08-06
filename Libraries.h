@@ -34,6 +34,8 @@
 #include <limits>
 #include <iterator>
 #include <complex>
+#include <tuple>
+
 
 using namespace Eigen;
 using namespace std;

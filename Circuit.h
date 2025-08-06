@@ -27,6 +27,7 @@ private:
     vector<Element*> Elements;
     vector<Node*> Nodes;
     vector<Node*> Active_Nodes;
+    vector<tuple<string,int, Rotation,pair<int,int>>> subs;
     int total_unknowns;
     double time_step;
     double t_start;
@@ -48,6 +49,7 @@ public:
         AC = ac;
     }
     vector<vector<double>> getAC() { return AC;}
+    vector<tuple<string,int, Rotation,pair<int,int>>> getSubs() {return subs;}
     bool isGround();
     void ground(bool b);
     Circuit(string _name) : name(_name) {total_unknowns = 0;}

@@ -32,7 +32,6 @@ void changeSubCircuitAllNodeNames(SubCircuit* subCircuit) {
         }
     }
 }
-
 void changeSubCircuitAllElementNames(SubCircuit* subCircuit) {
     for (auto& element : subCircuit->get_Elements()) {
         if (element->get_name() != subCircuit->getInput()->get_name() && element->get_name() != subCircuit->getOutput()->get_name()) {
@@ -40,7 +39,6 @@ void changeSubCircuitAllElementNames(SubCircuit* subCircuit) {
         }
     }
 }
-
 
 void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName) {
 
@@ -71,6 +69,42 @@ void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit
         circuit->addElement(std::move(element));
     }
     circuit->checkHaveGround();
+    tuple<string, int, Rotation, pair<int, int>> sub =
+            make_tuple(subCircuit->get_name(), subCircuitCounter, Rotation::Right, make_pair(0, 0));
+    circuit->getSubs().push_back(sub);
+}
+void Controller::addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName,int screenX, int screenY) {
+
+    auto input = circuit->findNode(inputNodeName);
+    if (!input) {
+        std::cerr << "Input node not found in the main circuit!" << std::endl;
+        return;
+    }
+    auto output = circuit->findNode(outputNodeName);
+    if (!output) {
+        std::cerr << "Output node not found in the main circuit!" << std::endl;
+        return;
+    }
+
+    static int subCircuitCounter = 0;
+    std::string unique_suffix = "_sub" + std::to_string(subCircuitCounter++);
+
+    for (const auto& node : subCircuit->get_Nodes()) {
+        if (node->get_name() != subCircuit->getInput()->get_name() && node->get_name() != subCircuit->getOutput()->get_name()) {
+            std::string new_name = node->get_name() + unique_suffix;
+            circuit->create_new_node(new_name);
+        }
+    }
+
+    for (auto& element : subCircuit->get_Elements()) {
+        std::string new_name = element->get_name() + unique_suffix;
+        element->change_name(new_name);
+        circuit->addElement(std::move(element));
+    }
+    circuit->checkHaveGround();
+    tuple<string, int, Rotation, pair<int, int>> sub =
+            make_tuple(subCircuit->get_name(), subCircuitCounter, Rotation::Right, make_pair(screenX, screenY));
+    circuit->getSubs().push_back(sub);
 }
 
 Circuit* Controller::findCircuit(string name){
@@ -404,6 +438,83 @@ void Controller::tranAnalysisOrders(vector<string> orders){
     }
 }
 
+int rotationToInt (Rotation rotation) {
+    switch (rotation) {
+        case Rotation::Right:
+            return 0;
+        case Rotation::Left:
+            return 1;
+        case Rotation::Up:
+            return 2;
+        case Rotation::Down:
+            return 3;
+    }
+    return -1; // Should never reach here if rotation is set correctly
+}
+Rotation intToRotation (int r){
+    Rotation rotation;
+    switch (r) {
+        case 0:
+            rotation = Rotation::Right;
+            break;
+        case 1:
+            rotation = Rotation::Left;
+            break;
+        case 2:
+            rotation = Rotation::Up;
+            break;
+        case 3:
+            rotation = Rotation::Down;
+            break;
+        default:
+            throw invalid_argument("Invalid rotation value");
+    }
+    return rotation;
+}
+double Value(const string& inputRaw) {
+    string input;
+    for (char c : inputRaw) {
+        if (c == ',') input += '.';
+        else input += c;
+    }
+
+    static const unordered_map<string, double> suffixes = {
+            {"f", 1e-15}, {"p", 1e-12}, {"n", 1e-9}, {"u", 1e-6}, {"m", 1e-3},
+            {"k", 1e3}, {"meg", 1e6}, {"g", 1e9}, {"t", 1e12}
+    };
+
+    // پیدا کردن جایی که suffix شروع میشه (یعنی جایی که دیگه e-style number تموم شده)
+    size_t pos = 0;
+    bool eSeen = false;
+    while (pos < input.size()) {
+        char c = input[pos];
+        if (isdigit(c) || c == '.' || c == '-' || c == '+') {
+            pos++;
+        } else if ((c == 'e' || c == 'E') && !eSeen) {
+            eSeen = true;
+            pos++;
+        } else {
+            break;
+        }
+    }
+
+    string numberPart = input.substr(0, pos);
+    string suffixPart = input.substr(pos);
+
+    double number = stod(numberPart);
+
+    for (char& c : suffixPart) c = tolower(c);
+    if (!suffixPart.empty()) {
+        auto it = suffixes.find(suffixPart);
+        if (it != suffixes.end()) {
+            number *= it->second;
+        } else {
+            throw invalid_argument("Unknown suffix: " + suffixPart);
+        }
+    }
+
+    return number;
+}
 
 void Controller::saveCircuit(Circuit* circuit, string path) {
     if (!circuit) {
@@ -498,12 +609,13 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
         file << line << "\n";
     }
     // Write ground directive if present
-    if (circuit->isGround()) {
-        for ( auto node : circuit->get_Nodes()) {
-            if (node->is_the_node_ground()) {
-                file << ".GND " << node->get_name() << "\n";
-            }
+    for ( auto node : circuit->get_Nodes()) {
+        if (node->is_the_node_ground()) {
+            file << ".GND " << node->get_name() << "\n";
         }
+    }
+    for (auto& sub : circuit->getSubs()) {
+        file << ".SUB " << get<0>(sub) << " " << get<1>(sub) << "\n";
     }
     // End of circuit
     file << ".END\n";
@@ -683,6 +795,11 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
             node->get_net_label_coordinates().first << " " << node->get_net_label_coordinates().second << "\n";
         }
     }
+    for (auto & sub : circuit->getSubs()) {
+        file << ".SUB " << get<0>(sub) << " " << get<1>(sub) << " " << rotationToInt(get<2>(sub)) << " "
+             << get<3>(sub).first << " " << get<3>(sub).second << "\n";
+
+    }
     // End of circuit
     file << ".END\n";
     file.close();
@@ -773,50 +890,8 @@ void Controller::saveGraphicalSubCircuits () {
     }
 }
 
-double Value(const string& inputRaw) {
-    string input;
-    for (char c : inputRaw) {
-        if (c == ',') input += '.';
-        else input += c;
-    }
 
-    static const unordered_map<string, double> suffixes = {
-            {"f", 1e-15}, {"p", 1e-12}, {"n", 1e-9}, {"u", 1e-6}, {"m", 1e-3},
-            {"k", 1e3}, {"meg", 1e6}, {"g", 1e9}, {"t", 1e12}
-    };
 
-    // پیدا کردن جایی که suffix شروع میشه (یعنی جایی که دیگه e-style number تموم شده)
-    size_t pos = 0;
-    bool eSeen = false;
-    while (pos < input.size()) {
-        char c = input[pos];
-        if (isdigit(c) || c == '.' || c == '-' || c == '+') {
-            pos++;
-        } else if ((c == 'e' || c == 'E') && !eSeen) {
-            eSeen = true;
-            pos++;
-        } else {
-            break;
-        }
-    }
-
-    string numberPart = input.substr(0, pos);
-    string suffixPart = input.substr(pos);
-
-    double number = stod(numberPart);
-
-    for (char& c : suffixPart) c = tolower(c);
-    if (!suffixPart.empty()) {
-        auto it = suffixes.find(suffixPart);
-        if (it != suffixes.end()) {
-            number *= it->second;
-        } else {
-            throw invalid_argument("Unknown suffix: " + suffixPart);
-        }
-    }
-
-    return number;
-}
 
 Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
     Circuit* circuit = new Circuit(Name);
@@ -923,6 +998,12 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
                 // Example .GND a
                 circuit->make_node_ground(tokens[1]);
                 circuit->ground(true);
+            }
+            else if (prefix == 'S' && tokens.size() == 3 && tokens[0] == "SUB") {
+                // Example .SUB subName index
+                tuple<string, int, Rotation, pair<int, int>> sub =
+                        make_tuple(tokens[1], stoi(tokens[2]), Rotation::Right, make_pair(0, 0));
+                circuit->getSubs().push_back(sub);
             }
             else if (type == ".END") {
                 break;
@@ -1142,6 +1223,13 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
                 // Example .NL a Netname x y
                 Node* node = circuit->findNode(tokens[1]);
                 node->net_name = tokens[2];    node->set_net_label_coordinates(stoi(tokens[3]), stoi(tokens[4]));
+            }
+            else if (prefix == 'S' && tokens.size() == 6 && tokens[0] == "SUB") {
+                // Example .SUB subName index Rotation(int) x y
+                tuple<string, int, Rotation, pair<int, int>> sub =
+                        make_tuple(tokens[1], stoi(tokens[2]), intToRotation(stoi(tokens[3])), make_pair(stoi(tokens[4]), stoi(tokens[5])));
+
+                circuit->getSubs().push_back(sub);
             }
             else if (type == ".END") {
                 break;
