@@ -280,6 +280,8 @@ public:
 
     void add_Graphical_Triangular_Source(int screenX, int screenY);
 
+    void add_Graphical_AC_Phase_Source(int screenX, int screenY);
+
     void add_Graphical_VCVS(int screenX, int screenY);
 
     void add_Graphical_VCCS(int screenX, int screenY);

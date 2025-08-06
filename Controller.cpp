@@ -1724,6 +1724,31 @@ void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
     graphical_elements.push_back(move(gfx_sim_voltage_source));
 }
 
+void Controller::add_Graphical_AC_Phase_Source(int screenX, int screenY)
+{
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+
+    string VS_name = "Source";
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
+
+    //AC_Voltage_Source* sim_source = new AC_Voltage_Source(VS_name, n1, n2, 1, 1, 0.0);
+
+//    circuit->addElement(sim_source);
+//    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
+//
+//    auto gfx_sim_source = make_unique<Graphical_Voltage_Source>(sim_source);
+//    gfx_sim_source->bounding_box = {screenX, screenY, 100, 40};
+//    graphical_elements.push_back(move(gfx_sim_source));
+}
+
 void Controller::add_Graphical_VCVS(int screenX, int screenY)
 {
     node_count++;
@@ -1988,6 +2013,15 @@ void Controller::update_element_properties(int element_index, const vector<strin
         {
             if (new_values.size() > 1 && isValidSpiceNumber(new_values[1]))
                 delta->set_time_of_delta(toValue(new_values[1]));
+        }
+        else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(v_source))
+        {
+            if (new_values.size() > 3)
+            {
+                if (isValidSpiceNumber(new_values[1])) AC->set_amplitude(toValue(new_values[1]));
+                if (isValidSpiceNumber(new_values[2])) AC->set_frequency(toValue(new_values[2]));
+                if (isValidSpiceNumber(new_values[3])) AC->set_phase_degrees(toValue(new_values[3]));
+            }
         }
     }
 }

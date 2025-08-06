@@ -506,25 +506,34 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
     }
     SDL_RenderDrawLines(renderer, circle_points.data(), circle_points.size());
 
-    // V symbol
-//    SDL_Point V_points[] = {
-//            {0, +radius / 2}, {(int)(radius / 2) - 5, -(int)(radius / 2)},
-//            {0, +radius / 2}, {-(int)(radius / 2) + 5, -(int)(radius / 2)},
-//            {(int)(radius / 2) - 5, -(int)(radius / 2)}, {(int)(radius / 2) + 3, -(int)(radius / 2)},
-//            {-(int)(radius / 2) + 5, -(int)(radius / 2)}, {-(int)(radius / 2) - 3, -(int)(radius / 2)}
-//    };
+    // AC symbol
+    if ((model_element && dynamic_cast<AC_Voltage_Source*>(model_element)) || this->is_AC)
+    {
+        int wave_radius = 8;
 
+        SDL_Point top_arc_center_local = {-wave_radius, 0};
+        SDL_Point bottom_arc_center_local = {wave_radius, 0};
+
+        SDL_Point top_arc_center_screen = transform_point(top_arc_center_local);
+        SDL_Point bottom_arc_center_screen = transform_point(bottom_arc_center_local);
+
+        draw_arc(renderer, top_arc_center_screen.x, top_arc_center_screen.y, wave_radius, 180, 360);
+        draw_arc(renderer, bottom_arc_center_screen.x, bottom_arc_center_screen.y, wave_radius, 0, 180);
+    }
     // - + symbol
-    SDL_Point plus_minus[] = {
-            {-5 , 0}, {- 15, 0},
-            {5, 0}, {15, 0},
-            {10, 5}, {10, -5}
-    };
+    else
+    {
+        SDL_Point plus_minus[] = {
+                {-5 , 0}, {- 15, 0},
+                {5, 0}, {15, 0},
+                {10, 5}, {10, -5}
+        };
 
-    for (size_t i = 0; i < 6; i+=2) {
-        SDL_Point p1 = transform_point(plus_minus[i]);
-        SDL_Point p2 = transform_point(plus_minus[i+1]);
-        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+        for (size_t i = 0; i < 6; i+=2) {
+            SDL_Point p1 = transform_point(plus_minus[i]);
+            SDL_Point p2 = transform_point(plus_minus[i+1]);
+            SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+        }
     }
 
     // text
@@ -601,6 +610,12 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
             double delta_value, not_delta_value, time_of_delta;
             delta->get_parameters(delta_value, not_delta_value, time_of_delta);
             to_be_printed = "DELTA(" + format_with_suffix(time_of_delta, "s)");
+        }
+        else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model_element))
+        {
+            double amp, freq, phase;
+            AC->get_parameters(amp, freq, phase);
+            to_be_printed = "AC(" + format_with_suffix(amp, " ") + format_with_suffix(freq, " ") + format_with_suffix(phase, ")");
         }
         else
         {
@@ -1023,6 +1038,14 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         double delta_val, not_delta_val, time;
         delta->get_parameters(delta_val, not_delta_val, time);
         props.push_back({"Time (s)", to_string(time)});
+    }
+    else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model_element))
+    {
+        double amp, freq, phase;
+        AC->get_parameters(amp, freq, phase);
+        props.push_back({"Amplitude (V)", to_string(amp)});
+        props.push_back({"Frequency (Hz)", to_string(freq)});
+        props.push_back({"Phase (deg)", to_string(phase)});
     }
 
     return props;

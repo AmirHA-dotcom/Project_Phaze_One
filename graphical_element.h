@@ -163,9 +163,12 @@ public:
 };
 
 class Graphical_Voltage_Source : public Graphical_Element {
+private:
+    bool is_AC = false;
 public:
     Graphical_Voltage_Source(Voltage_Source* model) : Graphical_Element(model) {}
 
+    void make_AC() { is_AC = true; }
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
