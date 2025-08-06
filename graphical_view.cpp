@@ -1858,6 +1858,8 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
                                 C->add_Graphical_Square_Source(mouseX, mouseY);
                             else if (menu_items[i].subtype_tag == "Triangular")
                                 C->add_Graphical_Triangular_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "AC")
+                                C->add_Graphical_AC_Phase_Source(mouseX, mouseY);
                             break;
                         }
                         case Element_Type::VC_Voltage_Source: C->add_Graphical_VCVS(mouseX, mouseY); break;

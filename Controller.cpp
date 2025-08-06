@@ -1739,14 +1739,14 @@ void Controller::add_Graphical_AC_Phase_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    //AC_Voltage_Source* sim_source = new AC_Voltage_Source(VS_name, n1, n2, 1, 1, 0.0);
+    AC_Voltage_Source* sim_source = new AC_Voltage_Source(VS_name, n1, n2, 1, 1, 0.0);
 
-//    circuit->addElement(sim_source);
-//    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
-//
-//    auto gfx_sim_source = make_unique<Graphical_Voltage_Source>(sim_source);
-//    gfx_sim_source->bounding_box = {screenX, screenY, 100, 40};
-//    graphical_elements.push_back(move(gfx_sim_source));
+    circuit->addElement(sim_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
+
+    auto gfx_sim_source = make_unique<Graphical_Voltage_Source>(sim_source);
+    gfx_sim_source->bounding_box = {screenX, screenY, 100, 40};
+    graphical_elements.push_back(move(gfx_sim_source));
 }
 
 void Controller::add_Graphical_VCVS(int screenX, int screenY)

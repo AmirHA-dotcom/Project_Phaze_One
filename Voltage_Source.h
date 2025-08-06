@@ -64,6 +64,8 @@ public:
     void set_phase_degrees(double val) { phase_degrees = val; }
     double getPhase() const { return phase_degrees; }
     void setPhase(double val) { phase_degrees = val; } // برای هماهنگی با performPhaseSweep
+    // dummy function
+    double get_value_at(double time, double time_step) const override { return 0.0; }
 };
 
 class Sine_Source : public Voltage_Source
