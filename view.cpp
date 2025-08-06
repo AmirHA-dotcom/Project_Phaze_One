@@ -708,8 +708,8 @@ bool View::handleAnalysisMenu (Controller* C) {
             throw circuitNotFind("No circuit selected");
         // Example: AC <start> <stop> <step>
         C->set_AC_sweep_variables(toValue(i[1]), toValue(i[2]), toValue(i[3]),AC_Sweep_Type::Linear);
-        C->performACSweep(C->circuit,i[4]);
-        C->circuit->displayAC();
+        C->performACSweep(C->circuit);
+        cout << "NO DISPLAY FUNCTION FOR AC SWEEP YET!" << endl;
         return true;
     }
     if (printTranCheck(i)) {    //  .print TRAN V(in) V(out) I(R1) I(D1)

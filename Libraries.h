@@ -35,7 +35,10 @@
 #include <iterator>
 #include <complex>
 #include <tuple>
-
+#include <vector>
+#include <utility>
+#include <cmath>
+#include <cassert>
 
 using namespace Eigen;
 using namespace std;
@@ -65,6 +68,6 @@ struct Triplet
 };
 
 enum class Element_Type{Resistor, Capacitor, Inductor, Voltage_Source, Real_Diode, Zener_Diode,
-    Current_Source, VC_Voltage_Source, VC_Current_Source, CC_Voltage_Source, CC_Current_source};
+    Current_Source, VC_Voltage_Source,AC_Voltage_Source, VC_Current_Source, CC_Voltage_Source, CC_Current_source};
 
 #endif //PROJECT_PHAZE_ONE_LIBRARIES_H

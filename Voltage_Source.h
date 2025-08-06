@@ -41,6 +41,31 @@ public:
 
 const double PI = 3.14159;
 
+class AC_Voltage_Source : public Voltage_Source
+{
+private:
+    double amplitude;
+    double frequency;
+    double phase_degrees; // فاز در درجه
+
+public:
+    AC_Voltage_Source(string _name, Node* _node1, Node* _node2, double amp, double freq, double phase = 0.0)
+            : Voltage_Source(_name, _node1, _node2, 0.0), amplitude(amp), frequency(freq), phase_degrees(phase) {}
+
+    void get_parameters(double& out_amplitude, double& out_frequency, double& out_phase) const {
+        out_amplitude = amplitude;
+        out_frequency = frequency;
+        out_phase = phase_degrees;
+    }
+
+    double getAmplitude() const override { return amplitude; }
+    void set_amplitude(double val) { amplitude = val; }
+    void set_frequency(double val) { frequency = val; }
+    void set_phase_degrees(double val) { phase_degrees = val; }
+    double getPhase() const { return phase_degrees; }
+    void setPhase(double val) { phase_degrees = val; } // برای هماهنگی با performPhaseSweep
+};
+
 class Sine_Source : public Voltage_Source
 {
 private:
@@ -48,6 +73,7 @@ private:
     double amplitude;
     double frequency;
     double phase_degrees;
+    double phase = 0;
 public:
     Sine_Source(string _name, Node* _node1, Node* _node2, double off, double amp, double freq, double phase = 0.0)
             : Voltage_Source(_name, _node1, _node2, 0.0), offset(off), amplitude(amp), frequency(freq), phase_degrees(phase) {}

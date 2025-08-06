@@ -2543,17 +2543,25 @@ inline void safeAdd(MatrixXc& Y, int r, int c, ComplexNum v) {
     Y(r, c) += v;
 }
 
-void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
-    std::vector<double> freqList;
-    std::vector<double> magList;
-    std::vector<double> phaseList;
+#include <vector>
+#include <utility>
+#include <cmath>
+#include <cassert>
 
+#include <vector>
+#include <utility>
+#include <cmath>
+#include <cassert>
+#include <tuple>
+
+void Controller::performACSweep(Circuit* circuit) {
+    // محاسبه فرکانس‌ها
     std::vector<double> freqs;
     if (ac_sweep_type == AC_Sweep_Type::Linear) {
         double step = (end_freq - start_freq) / (num_of_points - 1);
         for (int i = 0; i < num_of_points; i++)
             freqs.push_back(start_freq + i * step);
-    } else { // assume Decade or Octave
+    } else { // فرض بر Decade یا Octave
         double base = (ac_sweep_type == AC_Sweep_Type::Decade) ? 10.0 : 2.0;
         double ratio = end_freq / start_freq;
         for (int i = 0; i < num_of_points; i++) {
@@ -2561,38 +2569,47 @@ void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
             freqs.push_back(start_freq * pow(base, factor * log(ratio) / log(base)));
         }
     }
-    // Assume circuit->get_Nodes() returns vector<Node*>, node 0 is ground:
+
+    // دریافت نودها و محاسبه تعداد نودها و منابع ولتاژ
     vector<Node*> nodes = circuit->get_Nodes();
-    int N = (int)nodes.size() - 1;      // exclude ground
+    int N = (int)nodes.size() - 1; // بدون احتساب زمین
+    int M = freqs.size(); // تعداد فرکانس‌ها
     int VsrcCount = 0;
     for (auto* el : circuit->get_Elements())
         if (el->get_type() == Element_Type::Voltage_Source)
             ++VsrcCount;
     int size = N + VsrcCount;
 
-// Build name→index map once:
-    unordered_map<string,int> nodeIndex;
+    // ساخت نقشه نام به اندیس
+    unordered_map<string, int> nodeIndex;
     for (int i = 0; i < (int)nodes.size(); ++i) {
-        // nodes[0] is ground → map to -1
         nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
     }
 
-    for (double f : freqs) {
+    // پیش‌تخصیص بردار برای ذخیره نتایج هر نود
+    std::vector<std::pair<Node*, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> acResults;
+    for (int i = 1; i <= N; ++i) {
+        acResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
+    }
+
+    // حل سیستم برای هر فرکانس
+    for (int k = 0; k < M; ++k) {
+        double f = freqs[k];
         double omega = 2 * M_PI * f;
         MatrixXc Y = MatrixXc::Zero(size, size);
         VectorXc I = VectorXc::Zero(size);
 
-        int voltageIndex = N;  // first extra equation
+        int voltageIndex = N; // اندیس شروع معادلات اضافی
 
         for (auto* el : circuit->get_Elements()) {
-            int n1 = nodeIndex[ el->get_nodes().first->get_name() ];
-            int n2 = nodeIndex[ el->get_nodes().second->get_name() ];
+            int n1 = nodeIndex[el->get_nodes().first->get_name()];
+            int n2 = nodeIndex[el->get_nodes().second->get_name()];
 
             switch (el->get_type()) {
                 case Element_Type::Resistor: {
                     ComplexNum G = 1.0 / el->get_value();
-                    if (n1 >= 0) safeAdd(Y, n1, n1,  G);
-                    if (n2 >= 0) safeAdd(Y, n2, n2,  G);
+                    if (n1 >= 0) safeAdd(Y, n1, n1, G);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, G);
                     if (n1 >= 0 && n2 >= 0) {
                         safeAdd(Y, n1, n2, -G);
                         safeAdd(Y, n2, n1, -G);
@@ -2600,9 +2617,9 @@ void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
                     break;
                 }
                 case Element_Type::Capacitor: {
-                    ComplexNum Yc(0,  omega * el->get_value());  // jωC
-                    if (n1 >= 0) safeAdd(Y, n1, n1,  Yc);
-                    if (n2 >= 0) safeAdd(Y, n2, n2,  Yc);
+                    ComplexNum Yc(0, omega * el->get_value()); // jωC
+                    if (n1 >= 0) safeAdd(Y, n1, n1, Yc);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, Yc);
                     if (n1 >= 0 && n2 >= 0) {
                         safeAdd(Y, n1, n2, -Yc);
                         safeAdd(Y, n2, n1, -Yc);
@@ -2610,9 +2627,9 @@ void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
                     break;
                 }
                 case Element_Type::Inductor: {
-                    ComplexNum Yl(0, -1.0/(omega * el->get_value())); // 1/(jωL)
-                    if (n1 >= 0) safeAdd(Y, n1, n1,  Yl);
-                    if (n2 >= 0) safeAdd(Y, n2, n2,  Yl);
+                    ComplexNum Yl(0, -1.0 / (omega * el->get_value())); // 1/(jωL)
+                    if (n1 >= 0) safeAdd(Y, n1, n1, Yl);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, Yl);
                     if (n1 >= 0 && n2 >= 0) {
                         safeAdd(Y, n1, n2, -Yl);
                         safeAdd(Y, n2, n1, -Yl);
@@ -2620,44 +2637,161 @@ void Controller::performACSweep(Circuit* circuit, string OutNodeName) {
                     break;
                 }
                 case Element_Type::Voltage_Source: {
-                    // KCL rows
-                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex,  1);
+                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
                     if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
-                    // KVL row
-                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1,  1);
+                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
                     if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
-
-                    // RHS
                     assert(voltageIndex < I.size());
                     I(voltageIndex) = el->getAmplitude();
                     voltageIndex++;
                     break;
                 }
-                    // handle current sources similarly...
             }
         }
 
-        // one final sanity check
         assert(voltageIndex == size);
-
-        // solve
         VectorXc V = Y.fullPivLu().solve(I);
 
-        // pick your output node (e.g. node index 0)
-        ComplexNum Vout = V(0);
-        int outIndex = nodeIndex[OutNodeName]; // map name → index
-        if (outIndex >= 0)
-            Vout = V(outIndex);
-
-
-        // store results
-        freqList.push_back(f); // frequency in Hz
-        magList.push_back(20*log10(abs(Vout))); // magnitude in dB
-        phaseList.push_back(arg(Vout)*180.0/M_PI); // phase in degrees
+        // ذخیره بزرگی و فاز برای همه نودها
+        for (int j = 0; j < N; ++j) {
+            auto& [freq_vec, mag_vec, phase_vec] = acResults[j].second;
+            freq_vec[k] = f;
+            mag_vec[k] = 20 * log10(std::abs(V(j)));
+            phase_vec[k] = std::arg(V(j)) * 180.0 / M_PI;
+        }
     }
 
+    // تنظیم نتایج در مدار
+    circuit->setAcVoltage( std::move(acResults) );
+}
 
+void Controller::performPhaseSweep(Circuit* circuit) {
+    // تولید فازها
+    std::vector<double> phases;
+    if (phase_sweep_type == Phase_Sweep_Type::Linear) {
+        double step = (end_phase - start_phase) / (num_of_points - 1);
+        for (int i = 0; i < num_of_points; i++)
+            phases.push_back(start_phase + i * step);
+    } else { // لگاریتمی (Decade یا Octave)
+        double base = (phase_sweep_type == Phase_Sweep_Type::Decade) ? 10.0 : 2.0;
+        double ratio = end_phase / start_phase;
+        for (int i = 0; i < num_of_points; i++) {
+            double factor = (double)i / (num_of_points - 1);
+            phases.push_back(start_phase * pow(base, factor * log(ratio) / log(base)));
+        }
+    }
 
+    // دریافت نودها و محاسبه تعداد نودها و منابع ولتاژ
+    vector<Node*> nodes = circuit->get_Nodes();
+    int N = (int)nodes.size() - 1; // بدون احتساب زمین
+    int M = phases.size(); // تعداد فازها
+    int VsrcCount = 0;
+    for (auto* el : circuit->get_Elements())
+        if (el->get_type() == Element_Type::AC_Voltage_Source)
+            ++VsrcCount;
+    int size = N + VsrcCount;
 
-    circuit->setAC(freqList, magList, phaseList);
+    // ساخت نقشه نام به اندیس
+    unordered_map<string, int> nodeIndex;
+    for (int i = 0; i < (int)nodes.size(); ++i) {
+        nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
+    }
+
+    // پیش‌تخصیص بردار برای ذخیره نتایج هر نود
+    std::vector<std::pair<Node*, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> phaseResults;
+    for (int i = 1; i <= N; ++i) {
+        phaseResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
+    }
+
+    // یافتن منبع ولتاژ AC
+    AC_Voltage_Source* voltageSource = nullptr;
+    for (auto* el : circuit->get_Elements()) {
+        if (el->get_type() == Element_Type::AC_Voltage_Source) {
+            voltageSource = dynamic_cast<AC_Voltage_Source*>(el);
+            if (voltageSource) break;
+        }
+    }
+    assert(voltageSource != nullptr); // باید حداقل یک منبع ولتاژ AC وجود داشته باشد
+
+    // فرکانس ثابت
+    double omega = 2 * M_PI * fixed_frequency;
+
+    // حل سیستم برای هر فاز
+    for (int k = 0; k < M; ++k) {
+        double phase_deg = phases[k];
+        double phase_rad = phase_deg * M_PI / 180.0;
+        voltageSource->setPhase(phase_deg);
+
+        MatrixXc Y = MatrixXc::Zero(size, size);
+        VectorXc I = VectorXc::Zero(size);
+
+        int voltageIndex = N; // اندیس شروع معادلات اضافی
+
+        for (auto* el : circuit->get_Elements()) {
+            int n1 = nodeIndex[el->get_nodes().first->get_name()];
+            int n2 = nodeIndex[el->get_nodes().second->get_name()];
+
+            switch (el->get_type()) {
+                case Element_Type::Resistor: {
+                    ComplexNum G = 1.0 / el->get_value();
+                    if (n1 >= 0) safeAdd(Y, n1, n1, G);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, G);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -G);
+                        safeAdd(Y, n2, n1, -G);
+                    }
+                    break;
+                }
+                case Element_Type::Capacitor: {
+                    ComplexNum Yc(0, omega * el->get_value());
+                    if (n1 >= 0) safeAdd(Y, n1, n1, Yc);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, Yc);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -Yc);
+                        safeAdd(Y, n2, n1, -Yc);
+                    }
+                    break;
+                }
+                case Element_Type::Inductor: {
+                    ComplexNum Yl(0, -1.0 / (omega * el->get_value()));
+                    if (n1 >= 0) safeAdd(Y, n1, n1, Yl);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, Yl);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -Yl);
+                        safeAdd(Y, n2, n1, -Yl);
+                    }
+                    break;
+                }
+                case Element_Type::AC_Voltage_Source: {
+                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
+                    if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
+                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
+                    if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
+                    AC_Voltage_Source* src = dynamic_cast<AC_Voltage_Source*>(el);
+                    if (src) {
+                        double amplitude = src->getAmplitude();
+                        double phase_rad = src->getPhase() * M_PI / 180.0;
+                        ComplexNum Vsrc = amplitude * ComplexNum(cos(phase_rad), sin(phase_rad));
+                        I(voltageIndex) = Vsrc;
+                    }
+                    voltageIndex++;
+                    break;
+                }
+            }
+        }
+
+        assert(voltageIndex == size);
+        VectorXc V = Y.fullPivLu().solve(I);
+
+        // ذخیره نتایج
+        for (int j = 0; j < N; ++j) {
+            auto& [phase_vec, mag_vec, phase_vec_out] = phaseResults[j].second;
+            phase_vec[k] = phase_deg;
+            mag_vec[k] = 20 * log10(std::abs(V(j)));
+            phase_vec_out[k] = std::arg(V(j)) * 180.0 / M_PI;
+        }
+    }
+
+    // ذخیره نتایج در مدار
+    circuit->setPhaseVoltage( std::move(phaseResults) );
 }

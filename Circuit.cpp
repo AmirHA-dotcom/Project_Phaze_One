@@ -817,36 +817,15 @@ void Circuit::addElement(Element* new_element)
     }
 }
 
-void Circuit::delete_node(Node *node_to_delete)
-{
-    for (auto it = Nodes.begin(); it != Nodes.end(); )
-    {
-        if ((*it)->get_name() == node_to_delete->get_name())
-        {
+void Circuit::delete_node(Node *node_to_delete) {
+    for (auto it = Nodes.begin(); it != Nodes.end();) {
+        if ((*it)->get_name() == node_to_delete->get_name()) {
             delete *it;
             it = Nodes.erase(it);
-        }
-        else
-        {
+        } else {
             ++it;
         }
     }
-}
-void Circuit::displayAC() const {
-    cout << "AC Analysis Results:" << endl << endl;
-    cout << "FREQ : " << endl;
-    for ( auto freq : AC[0]) {
-        cout << freq << " ";
-    }
-    cout << endl << "Mag : " << endl;
-    for ( auto mag : AC[1]) {
-        cout << mag << " ";
-    }
-    cout << endl << "PHASE : " << endl;
-    for ( auto phase : AC[2]) {
-        cout << phase << " ";
-    }
-    cout << endl;
 }
 
 Node* SubCircuit::getInput()  { return input; }

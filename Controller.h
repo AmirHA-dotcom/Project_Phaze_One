@@ -13,6 +13,7 @@
 #include "Graphical_Wire.h"
 
 enum class AC_Sweep_Type { Octave, Decade, Linear };
+enum class Phase_Sweep_Type { Octave, Decade, Linear };
 
 inline double toValue(const std::string& inputRaw) {
     std::string input;
@@ -135,6 +136,13 @@ private:
     double end_freq = 0;
     double num_of_points = 0;
     AC_Sweep_Type ac_sweep_type = AC_Sweep_Type::Linear;
+
+    // Phase sweep
+    double start_phase = 0;
+    double end_phase = 0;
+    double num_of_points_phase = 0;
+    double fixed_frequency = 0;
+    Phase_Sweep_Type phase_sweep_type = Phase_Sweep_Type::Linear;
 
     // naming
     int resistor_count = 0;
@@ -323,8 +331,8 @@ public:
 
 
     void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);
-    void performACSweep(Circuit* circuit, string OutNodeName);
+    void performACSweep(Circuit* circuit);
+    void performPhaseSweep(Circuit* circuit);
 
-    void check_if_nodes_are_still_ground();
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

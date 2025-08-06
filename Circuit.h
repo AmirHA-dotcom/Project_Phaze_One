@@ -35,20 +35,19 @@ private:
     string name;
     bool haveGround;
     bool is_diode_added = false;
-    vector<vector<double>> AC;
-    vector<pair<Node*,pair<int,int>>> acVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
+    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> acVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
+    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> phaseVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
 public:
-    void setAcVoltage (const vector<pair<Node*,pair<int,int>>>& acVoltageList)
-    {
+    void setAcVoltage (const vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>>& acVoltageList) {
         acVoltage = acVoltageList;
     }
-    void setAC(const vector<double>& freqList,
-               const vector<double>& magList,
-               const vector<double>& phaseList)
-    {
-        AC = { freqList, magList, phaseList };
+    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> getAcVoltage() { return acVoltage; }
+
+    void setPhaseVoltage (const vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>>& phaseVoltageList) {
+            phaseVoltage = phaseVoltageList;
     }
-    vector<vector<double>> getAC() const { return AC; }
+    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> getPhaseVoltage() { return phaseVoltage; }
+
     vector<tuple<string,int, Rotation,pair<int,int>>> getSubs() const { return subs; }
     bool isGround() const;
     void ground(bool b);
@@ -110,7 +109,6 @@ public:
     void addNode(Node* node);
     Node* create_new_node(const string& name);
     void addElement(Element* new_element);
-    void displayAC() const;
     int node_index_finder_by_name(const string& name) const;
     int element_index_finder_by_name(const string& name) const;
 };

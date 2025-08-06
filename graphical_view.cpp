@@ -3008,13 +3008,15 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 // create and add the signal
                 Signal node_signal;
                 node_signal.name = "Mag(" + target_node->get_name() + ")";
-                C->performACSweep(C->circuit, target_node->get_name());
-                vector<vector<double>> AC_results = C->circuit->getAC();
 
-                for (int i = 0; i < min(AC_results[0].size(), AC_results[1].size()); i++)
-                {
-                    node_signal.data_points.push_back({AC_results[1][i], AC_results[0][i]});
-                }
+                // SHOULD EDIT
+//                C->performACSweep(C->circuit, target_node->get_name());
+//                vector<vector<double>> AC_results = C->circuit->getAC();
+
+//                for (int i = 0; i < min(AC_results[0].size(), AC_results[1].size()); i++)
+//                {
+//                    node_signal.data_points.push_back({AC_results[1][i], AC_results[0][i]});
+//                }
 
                 node_signal.color = default_colors[color_index % default_colors.size()];
                 color_index++;
@@ -3092,13 +3094,14 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
                 // create and add the signal
                 Signal node_signal;
                 node_signal.name = "Phase(" + target_node->get_name() + ")";
-                C->performACSweep(C->circuit, target_node->get_name());
-                vector<vector<double>> AC_results = C->circuit->getAC();
-
-                for (int i = 0; i < min(AC_results[0].size(), AC_results[2].size()); i++)
-                {
-                    node_signal.data_points.push_back({AC_results[2][i], AC_results[0][i]});
-                }
+                // EDIT
+//                C->performACSweep(C->circuit, target_node->get_name());
+//                vector<vector<double>> AC_results = C->circuit->getAC();
+//
+//                for (int i = 0; i < min(AC_results[0].size(), AC_results[2].size()); i++)
+//                {
+//                    node_signal.data_points.push_back({AC_results[2][i], AC_results[0][i]});
+//                }
 
                 node_signal.color = default_colors[color_index % default_colors.size()];
                 color_index++;
