@@ -36,7 +36,7 @@ private:
     bool haveGround;
     bool is_diode_added = false;
     vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> acVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
-    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> phaseVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
+    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> phaseVoltage; // Node and pair of indices for Phase voltage {magnitude, phase}
 public:
     void setAcVoltage (const vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>>& acVoltageList) {
         acVoltage = acVoltageList;
