@@ -818,13 +818,15 @@ void Circuit::addElement(Element* new_element)
 }
 
 void Circuit::delete_node(Node *node_to_delete) {
-    for (auto it = Nodes.begin(); it != Nodes.end();) {
-        if ((*it)->get_name() == node_to_delete->get_name()) {
-            delete *it;
-            it = Nodes.erase(it);
-        } else {
-            ++it;
-        }
+    if (node_to_delete == nullptr) return;
+
+    auto it = std::find(Nodes.begin(), Nodes.end(), node_to_delete);
+
+    if (it != Nodes.end())
+    {
+        Nodes.erase(it);
+
+        delete node_to_delete;
     }
 }
 

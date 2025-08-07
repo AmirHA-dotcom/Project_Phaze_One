@@ -2261,11 +2261,9 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
             SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
             auto& elements = C->get_graphical_elements();
 
-            // --- CORRECTED LOGIC ---
             Graphical_Element* target_element = nullptr;
             int target_point_index = -1;
 
-            // 1. Find the target element and the INDEX of the connection point
             for (auto& element : elements) {
                 auto connection_points = element->get_connection_points();
                 for (int i = 0; i < connection_points.size(); ++i) {
@@ -2284,11 +2282,19 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 Node* start_node = new_wire_points.front().node;
                 Node* end_node = target_point.node;
 
+                Node* node_to_keep = start_node;
+                Node* node_to_merge = end_node;
+                if (end_node->is_the_node_ground() || !end_node->net_name.empty()) {
+                    node_to_keep = end_node;
+                    node_to_merge = start_node;
+                }
+
+                Node* final_node = C->connect_nodes(node_to_keep, node_to_merge);
+
                 SDL_Point start_pos = new_wire_points.front().pos;
                 SDL_Point end_pos = target_point.pos;
                 Rotation start_rot = new_wire_points.front().rotation;
                 Rotation end_rot = target_point.rotation;
-
                 vector<SDL_Point> path_points;
                 path_points.push_back(start_pos);
                 SDL_Point corner;
@@ -2382,7 +2388,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                 final_wire_points.back().rotation = end_rot;
 
                 C->connect_nodes(start_node, end_node);
-                C->add_Graphical_Wire(final_wire_points, start_node, end_node);
+                C->add_Graphical_Wire(final_wire_points, final_node, final_node);
             }
             // if the click is on an existing wire
             else

@@ -2042,13 +2042,12 @@ void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node
     graphical_wires.push_back(move(new_wire));
 }
 
-void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
+Node* Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
 {
     if (!node_to_keep || !node_to_merge || node_to_keep == node_to_merge)
     {
-        return;
+        return node_to_keep ? node_to_keep : node_to_merge;
     }
-
     if (node_to_merge->is_the_node_ground())
     {
         node_to_keep->make_ground();
@@ -2087,6 +2086,8 @@ void Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     }
 
     circuit->delete_node(node_to_merge);
+
+    return node_to_keep;
 }
 
 void Controller::assign_net_name(Node* node_to_name, const string& new_name)

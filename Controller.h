@@ -306,7 +306,7 @@ public:
     static void addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName);
     static void addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName,int screenX, int screenY);
 
-    void connect_nodes(Node* node_to_keep, Node* node_to_merge);
+    Node* connect_nodes(Node* node_to_keep, Node* node_to_merge);
 
     void assign_net_name(Node* node_to_name, const string& new_name);
 
