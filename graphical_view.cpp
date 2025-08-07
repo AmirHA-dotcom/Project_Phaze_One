@@ -167,17 +167,56 @@ int graphical_view::find_connection_point_at(Graphical_Element* element, SDL_Poi
     return -1;
 }
 
-vector<pair<double, double>> generate_data_for_element(Graphical_Element* element, Controller* C)
+vector<pair<double, double>> generate_data_for_element_V(Graphical_Element* element, Controller* C)
 {
     vector<pair<double, double>> data_points;
     double start_time, stop_time, time_step;
     C->get_tran_params(start_time, stop_time, time_step);
 
-    if (time_step > 0) {
-        for (double time = start_time; time < stop_time; time += time_step)
+    double voltage;
+    if (time_step > 0)
+    {
+        for (double time = start_time; time < stop_time - time_step; time += time_step)
         {
-            double voltage = element->get_model()->get_voltage_at_time(time);
+            voltage = element->get_model()->get_voltage_at_time(time);
             data_points.push_back({voltage, time});
+        }
+    }
+    return data_points;
+}
+
+vector<pair<double, double>> generate_data_for_element_I(Graphical_Element* element, Controller* C)
+{
+    vector<pair<double, double>> data_points;
+    double start_time, stop_time, time_step;
+    C->get_tran_params(start_time, stop_time, time_step);
+
+    double current;
+    if (time_step > 0)
+    {
+        for (double time = start_time; time < stop_time - time_step; time += time_step)
+        {
+            current = element->get_model()->get_current(time, time_step);
+            data_points.push_back({current, time});
+        }
+    }
+    return data_points;
+}
+
+vector<pair<double, double>> generate_data_for_element_P(Graphical_Element* element, Controller* C)
+{
+    vector<pair<double, double>> data_points;
+    double start_time, stop_time, time_step;
+    C->get_tran_params(start_time, stop_time, time_step);
+
+    double voltage, current, power;
+    if (time_step > 0) {
+        for (double time = start_time; time < stop_time - time_step; time += time_step)
+        {
+            voltage = element->get_model()->get_voltage_at_time(time);
+            current = element->get_model()->get_current(time, time_step);
+            power = current * voltage;
+            data_points.push_back({power, time});
         }
     }
     return data_points;
@@ -666,14 +705,50 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     SDL_RenderDrawRect(renderer, &constant_textbox_rect);
     render_text(renderer, font, math_constant_buffer, constant_textbox_rect.x + 5, constant_textbox_rect.y + 5, TEXT_COLOR);
 
+    // type of signal (VIP!)
+    render_text(renderer, font, "Signal Type:", menu_panel.x + 280, builder_y + 30, TEXT_COLOR);
+    m_v_button_rect = {menu_panel.x + 380, builder_y + 25, 30, 30};
+    m_i_button_rect = {menu_panel.x + 415, builder_y + 25, 30, 30};
+    m_p_button_rect = {menu_panel.x + 450, builder_y + 25, 30, 30};
+
+    // voltage button
+    SDL_SetRenderDrawColor(renderer,
+                           (m_math_selected_signal_type == SignalType::Voltage) ? SELECTED_BG.r : BUTTON_BG.r,
+                           (m_math_selected_signal_type == SignalType::Voltage) ? SELECTED_BG.g : BUTTON_BG.g,
+                           (m_math_selected_signal_type == SignalType::Voltage) ? SELECTED_BG.b : BUTTON_BG.b,
+                           255
+    );
+    SDL_RenderFillRect(renderer, &m_v_button_rect);
+    render_text(renderer, font, "V", m_v_button_rect.x + 10, m_v_button_rect.y + 5);
+
+    // current button
+    SDL_SetRenderDrawColor(renderer,
+                           (m_math_selected_signal_type == SignalType::Current) ? SELECTED_BG.r : BUTTON_BG.r,
+                           (m_math_selected_signal_type == SignalType::Current) ? SELECTED_BG.g : BUTTON_BG.g,
+                           (m_math_selected_signal_type == SignalType::Current) ? SELECTED_BG.b : BUTTON_BG.b,
+                           255
+    );
+    SDL_RenderFillRect(renderer, &m_i_button_rect);
+    render_text(renderer, font, "I", m_i_button_rect.x + 10, m_i_button_rect.y + 5);
+
+    // power button
+    SDL_SetRenderDrawColor(renderer,
+                           (m_math_selected_signal_type == SignalType::Power) ? SELECTED_BG.r : BUTTON_BG.r,
+                           (m_math_selected_signal_type == SignalType::Power) ? SELECTED_BG.g : BUTTON_BG.g,
+                           (m_math_selected_signal_type == SignalType::Power) ? SELECTED_BG.b : BUTTON_BG.b,
+                           255
+    );
+    SDL_RenderFillRect(renderer, &m_p_button_rect);
+    render_text(renderer, font, "P", m_p_button_rect.x + 10, m_p_button_rect.y + 5);
+
     // list of elements
-    render_text(renderer, font, "Element (V):", menu_panel.x + 20, builder_y + 70, TEXT_COLOR);
+    render_text(renderer, font, "Element:", menu_panel.x + 20, builder_y + 70, TEXT_COLOR);
     math_element_buttons.clear();
     int list_y = builder_y + 95;
     for (int i = 0; i < C->get_graphical_elements().size(); ++i)
     {
         const auto& element = C->get_graphical_elements()[i];
-        if (dynamic_cast<Graphical_Ground*>(element.get())) continue;
+        if (dynamic_cast<Graphical_Ground*>(element.get()) || dynamic_cast<Graphical_SubCircuit*>(element.get()) || dynamic_cast<Graphical_Net_Label*>(element.get())) continue;
 
         SDL_Rect item_rect = {menu_panel.x + 20, list_y + (i * 35), 230, 30};
         math_element_buttons.push_back(item_rect);
@@ -725,14 +800,32 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
 
     // editing data
     Signal new_term;
-    new_term.name = to_string(k) + " * " + selected_element->get_model()->get_name();
-    auto element_data = generate_data_for_element(selected_element, C);
+    new_term.name = to_string(k) + " x " + selected_element->get_model()->get_name();
+
+    vector<pair<double, double>> element_data;
+
+    switch (m_math_selected_signal_type)
+    {
+        case SignalType::Voltage:
+            new_term.name = "V(" + selected_element->get_model()->get_name() + ")";
+            element_data = generate_data_for_element_V(selected_element, C);
+            break;
+        case SignalType::Current:
+            new_term.name = "I(" + selected_element->get_model()->get_name() + ")";
+            element_data = generate_data_for_element_I(selected_element, C);
+            break;
+        case SignalType::Power:
+            new_term.name = "P(" + selected_element->get_model()->get_name() + ")";
+            element_data = generate_data_for_element_P(selected_element, C);
+            break;
+    }
 
     for (const auto& point : element_data)
     {
-        new_term.data_points.push_back({point.first * k, point.second});
+        double x_val = point.second;
+        double y_val = point.first;
+        new_term.data_points.push_back({y_val * k, x_val});
     }
-
     math_terms.push_back(new_term);
 
     // updating expression string
@@ -740,7 +833,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
     {
         math_expression_string += (is_subtraction) ? " - " : " + ";
     }
-    math_expression_string += math_constant_buffer + " * " + selected_element->get_model()->get_name();
+    math_expression_string += math_constant_buffer + " x " + "V(" + selected_element->get_model()->get_name() + ")";
 
     math_constant_buffer = "1.0";
     math_selected_element_index = -1;
@@ -770,7 +863,9 @@ void graphical_view::execute_math_operation()
         color_index = 0;
     plot_view->add_signal(final_signal);
     plot_view->auto_zoom();
-    plot_view->set_y_unit(Unit::V);
+    if (m_math_selected_signal_type == SignalType::Voltage)     plot_view->set_y_unit(Unit::V);
+    if (m_math_selected_signal_type == SignalType::Current)     plot_view->set_y_unit(Unit::A);
+    if (m_math_selected_signal_type == SignalType::Power)     plot_view->set_y_unit(Unit::W);
     plot_view->set_x_unit(Unit::s);
 
     math_terms.clear();
@@ -3333,6 +3428,23 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
                 control_was_clicked = true;
                 break;
             }
+        }
+
+        // click on signal type
+        if (SDL_PointInRect(&mouse_pos, &m_v_button_rect))
+        {
+            m_math_selected_signal_type = SignalType::Voltage;
+            return true;
+        }
+        if (SDL_PointInRect(&mouse_pos, &m_i_button_rect))
+        {
+            m_math_selected_signal_type = SignalType::Current;
+            return true;
+        }
+        if (SDL_PointInRect(&mouse_pos, &m_p_button_rect))
+        {
+            m_math_selected_signal_type = SignalType::Power;
+            return true;
         }
 
         // click on add or subtract
