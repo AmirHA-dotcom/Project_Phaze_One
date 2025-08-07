@@ -158,6 +158,8 @@ private:
     enum class Signal_Type { Voltage, Current, Power };
     SDL_Rect v_button_rect, i_button_rect, p_button_rect;
     Signal_Type math_selected_signal_type;
+    int math_selected_node_index = -1;
+    vector<SDL_Rect> math_node_buttons;
 
     // plot window
     unique_ptr<Plot_View> plot_view;

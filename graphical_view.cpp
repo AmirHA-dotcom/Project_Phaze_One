@@ -758,6 +758,24 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
         render_text(renderer, font, element->get_model()->get_name(), item_rect.x + 5, item_rect.y + 5, TEXT_COLOR);
     }
 
+    // nodes
+    int column2_x = menu_panel.x + 270;
+    render_text(renderer, font, "Nodes:", column2_x, builder_y + 70, TEXT_COLOR);
+    math_node_buttons.clear();
+    const auto& nodes = C->circuit->get_Nodes();
+    for (int i = 0; i < nodes.size(); ++i) {
+        const auto& node = nodes[i];
+        if (node->is_the_node_ground()) continue;
+
+        SDL_Rect item_rect = {column2_x, list_y + (i * 35), 230, 30};
+        math_node_buttons.push_back(item_rect);
+
+        bool is_selected = (i == math_selected_node_index);
+        SDL_SetRenderDrawColor(renderer, is_selected ? SELECTED_BG.r : BUTTON_BG.r, is_selected ? SELECTED_BG.g : BUTTON_BG.g, is_selected ? SELECTED_BG.b : BUTTON_BG.b, 255);
+        SDL_RenderFillRect(renderer, &item_rect);
+        render_text(renderer, font, node->get_name(), item_rect.x + 5, item_rect.y + 5, TEXT_COLOR);
+    }
+
     // add and subtract buttons
     int add_term_y = menu_panel.y + 75;
     op_plus_button = {menu_panel.x + 520, add_term_y, 140, 40};
@@ -784,7 +802,7 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
 
 void graphical_view::add_math_term(bool is_subtraction, Controller* C)
 {
-    if (math_selected_element_index == -1) return;
+    if (math_selected_element_index == -1 && math_selected_node_index == -1) return;
 
     double k = 1.0;
     k = toValue(math_constant_buffer);
@@ -804,20 +822,31 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
 
     vector<pair<double, double>> element_data;
 
-    switch (math_selected_signal_type)
+    if (math_selected_element_index != -1)
     {
-        case Signal_Type::Voltage:
-            new_term.name = "V(" + selected_element->get_model()->get_name() + ")";
-            element_data = generate_data_for_element_V(selected_element, C);
-            break;
-        case Signal_Type::Current:
-            new_term.name = "I(" + selected_element->get_model()->get_name() + ")";
-            element_data = generate_data_for_element_I(selected_element, C);
-            break;
-        case Signal_Type::Power:
-            new_term.name = "P(" + selected_element->get_model()->get_name() + ")";
-            element_data = generate_data_for_element_P(selected_element, C);
-            break;
+        switch (math_selected_signal_type)
+        {
+            case Signal_Type::Voltage:
+                new_term.name = "V(" + selected_element->get_model()->get_name() + ")";
+                element_data = generate_data_for_element_V(selected_element, C);
+                break;
+            case Signal_Type::Current:
+                new_term.name = "I(" + selected_element->get_model()->get_name() + ")";
+                element_data = generate_data_for_element_I(selected_element, C);
+                break;
+            case Signal_Type::Power:
+                new_term.name = "P(" + selected_element->get_model()->get_name() + ")";
+                element_data = generate_data_for_element_P(selected_element, C);
+                break;
+        }
+    }
+
+    else
+    {
+        const auto& nodes = C->circuit->get_Nodes();
+        Node* selected_node = nodes[math_selected_node_index];
+        new_term.name = "V(" + selected_node->get_name() + ")";
+        element_data = selected_node->get_all_voltages();
     }
 
     for (const auto& point : element_data)
@@ -2232,31 +2261,33 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
             SDL_Point snapped_pos = snap_to_grid(mouseX, mouseY, GRID_SIZE);
             auto& elements = C->get_graphical_elements();
 
-            // component connection point
-            Connection_Point* target_point = nullptr;
-            for (auto& element : elements)
-            {
+            // --- CORRECTED LOGIC ---
+            Graphical_Element* target_element = nullptr;
+            int target_point_index = -1;
+
+            // 1. Find the target element and the INDEX of the connection point
+            for (auto& element : elements) {
                 auto connection_points = element->get_connection_points();
-                for (auto& point : connection_points)
-                {
-                    if (abs(snapped_pos.x - point.pos.x) < 20 && abs(snapped_pos.y - point.pos.y) < 20)
-                    {
-                        target_point = &point;
+                for (int i = 0; i < connection_points.size(); ++i) {
+                    if (abs(snapped_pos.x - connection_points[i].pos.x) < 20 && abs(snapped_pos.y - connection_points[i].pos.y) < 20) {
+                        target_element = element.get();
+                        target_point_index = i;
                         break;
                     }
                 }
-                if (target_point) break;
+                if (target_element) break;
             }
 
-            if (target_point)
-            {
+            if (target_element) {
+                Connection_Point target_point = target_element->get_connection_points()[target_point_index];
+
                 Node* start_node = new_wire_points.front().node;
-                Node* end_node = target_point->node;
+                Node* end_node = target_point.node;
 
                 SDL_Point start_pos = new_wire_points.front().pos;
-                SDL_Point end_pos = target_point->pos;
+                SDL_Point end_pos = target_point.pos;
                 Rotation start_rot = new_wire_points.front().rotation;
-                Rotation end_rot = target_point->rotation;
+                Rotation end_rot = target_point.rotation;
 
                 vector<SDL_Point> path_points;
                 path_points.push_back(start_pos);
@@ -2268,7 +2299,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     {
                         corner = { start_pos.x, end_pos.y };
                     }
-                    if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                    else if (end_rot == Rotation::Right || end_rot == Rotation::Left)
                     {
                         if (start_pos.x < end_pos.x)
                         {
@@ -2281,13 +2312,13 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     }
                 }
 
-                if (start_rot == Rotation::Left)
+                else if (start_rot == Rotation::Left)
                 {
                     if (end_rot == Rotation::Up || end_rot == Rotation::Down)
                     {
                         corner = { start_pos.x, end_pos.y };
                     }
-                    if (end_rot == Rotation::Right || end_rot == Rotation::Left)
+                    else if (end_rot == Rotation::Right || end_rot == Rotation::Left)
                     {
                         if (start_pos.x > end_pos.x)
                         {
@@ -2300,13 +2331,13 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     }
                 }
 
-                if (start_rot == Rotation::Up)
+                else if (start_rot == Rotation::Up)
                 {
                     if (end_rot == Rotation::Right || end_rot == Rotation::Left)
                     {
                         corner = { end_pos.x, start_pos.y };
                     }
-                    if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                    else if (end_rot == Rotation::Up || end_rot == Rotation::Down)
                     {
                         if (start_pos.y < end_pos.y)
                         {
@@ -2319,13 +2350,13 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
                     }
                 }
 
-                if (start_rot == Rotation::Down)
+                else if (start_rot == Rotation::Down)
                 {
                     if (end_rot == Rotation::Right || end_rot == Rotation::Left)
                     {
                         corner = { end_pos.x, start_pos.y };
                     }
-                    if (end_rot == Rotation::Up || end_rot == Rotation::Down)
+                    else if (end_rot == Rotation::Up || end_rot == Rotation::Down)
                     {
                         if (start_pos.y > end_pos.y)
                         {
@@ -3425,6 +3456,17 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
             if (SDL_PointInRect(&mouse_pos, &math_element_buttons[i]))
             {
                 math_selected_element_index = i;
+                math_selected_node_index = -1;
+                control_was_clicked = true;
+                break;
+            }
+        }
+
+        // click on node list
+        for (int i = 0; i < math_node_buttons.size(); ++i) {
+            if (SDL_PointInRect(&mouse_pos, &math_node_buttons[i])) {
+                math_selected_node_index = i;
+                math_selected_element_index = -1;
                 control_was_clicked = true;
                 break;
             }
@@ -3448,7 +3490,7 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
         }
 
         // click on add or subtract
-        bool term_ready = math_selected_element_index != -1;
+        bool term_ready = (math_selected_element_index != -1 || math_selected_node_index != -1);
         if (term_ready) {
             if (SDL_PointInRect(&mouse_pos, &op_plus_button))
             {
