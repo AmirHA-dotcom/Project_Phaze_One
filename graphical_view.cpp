@@ -681,8 +681,8 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     const SDL_Color DISPLAY_BG = {33, 37, 41, 255}, BUTTON_BG = {80, 88, 99, 255};
     const SDL_Color SELECTED_BG = {52, 152, 219, 255}, DISABLED_BG = {60, 68, 80, 255};
 
-    int menu_width = 600;
-    int menu_height = 450;
+    int menu_width = 830;
+    int menu_height = 700;
     SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
     SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
     SDL_RenderFillRect(renderer, &menu_panel);
@@ -694,7 +694,7 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     render_text(renderer, font, math_expression_string, display_rect.x + 5, display_rect.y + 10, TEXT_COLOR);
 
     int builder_y = menu_panel.y + 60;
-    render_text(renderer, font, "Build a Term:", menu_panel.x + 10, builder_y, TEXT_COLOR);
+    render_text(renderer, font, "Build a Term:", menu_panel.x + 20, builder_y, TEXT_COLOR);
 
     // constant input box
     render_text(renderer, font, "Constant (K):", menu_panel.x + 20, builder_y + 30, TEXT_COLOR);
@@ -707,39 +707,39 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
 
     // type of signal (VIP!)
     render_text(renderer, font, "Signal Type:", menu_panel.x + 280, builder_y + 30, TEXT_COLOR);
-    m_v_button_rect = {menu_panel.x + 380, builder_y + 25, 30, 30};
-    m_i_button_rect = {menu_panel.x + 415, builder_y + 25, 30, 30};
-    m_p_button_rect = {menu_panel.x + 450, builder_y + 25, 30, 30};
+    v_button_rect = {menu_panel.x + 380, builder_y + 25, 30, 30};
+    i_button_rect = {menu_panel.x + 415, builder_y + 25, 30, 30};
+    p_button_rect = {menu_panel.x + 450, builder_y + 25, 30, 30};
 
     // voltage button
     SDL_SetRenderDrawColor(renderer,
-                           (m_math_selected_signal_type == SignalType::Voltage) ? SELECTED_BG.r : BUTTON_BG.r,
-                           (m_math_selected_signal_type == SignalType::Voltage) ? SELECTED_BG.g : BUTTON_BG.g,
-                           (m_math_selected_signal_type == SignalType::Voltage) ? SELECTED_BG.b : BUTTON_BG.b,
+                           (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.r : BUTTON_BG.r,
+                           (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.g : BUTTON_BG.g,
+                           (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.b : BUTTON_BG.b,
                            255
     );
-    SDL_RenderFillRect(renderer, &m_v_button_rect);
-    render_text(renderer, font, "V", m_v_button_rect.x + 10, m_v_button_rect.y + 5);
+    SDL_RenderFillRect(renderer, &v_button_rect);
+    render_text(renderer, font, "V", v_button_rect.x + 10, v_button_rect.y + 5);
 
     // current button
     SDL_SetRenderDrawColor(renderer,
-                           (m_math_selected_signal_type == SignalType::Current) ? SELECTED_BG.r : BUTTON_BG.r,
-                           (m_math_selected_signal_type == SignalType::Current) ? SELECTED_BG.g : BUTTON_BG.g,
-                           (m_math_selected_signal_type == SignalType::Current) ? SELECTED_BG.b : BUTTON_BG.b,
+                           (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.r : BUTTON_BG.r,
+                           (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.g : BUTTON_BG.g,
+                           (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.b : BUTTON_BG.b,
                            255
     );
-    SDL_RenderFillRect(renderer, &m_i_button_rect);
-    render_text(renderer, font, "I", m_i_button_rect.x + 10, m_i_button_rect.y + 5);
+    SDL_RenderFillRect(renderer, &i_button_rect);
+    render_text(renderer, font, "I", i_button_rect.x + 10, i_button_rect.y + 5);
 
     // power button
     SDL_SetRenderDrawColor(renderer,
-                           (m_math_selected_signal_type == SignalType::Power) ? SELECTED_BG.r : BUTTON_BG.r,
-                           (m_math_selected_signal_type == SignalType::Power) ? SELECTED_BG.g : BUTTON_BG.g,
-                           (m_math_selected_signal_type == SignalType::Power) ? SELECTED_BG.b : BUTTON_BG.b,
+                           (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.r : BUTTON_BG.r,
+                           (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.g : BUTTON_BG.g,
+                           (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.b : BUTTON_BG.b,
                            255
     );
-    SDL_RenderFillRect(renderer, &m_p_button_rect);
-    render_text(renderer, font, "P", m_p_button_rect.x + 10, m_p_button_rect.y + 5);
+    SDL_RenderFillRect(renderer, &p_button_rect);
+    render_text(renderer, font, "P", p_button_rect.x + 10, p_button_rect.y + 5);
 
     // list of elements
     render_text(renderer, font, "Element:", menu_panel.x + 20, builder_y + 70, TEXT_COLOR);
@@ -759,9 +759,9 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     }
 
     // add and subtract buttons
-    int add_term_y = menu_panel.y + 200;
-    op_plus_button = {menu_panel.x + 300, add_term_y, 140, 40};
-    op_minus_button = {menu_panel.x + 450, add_term_y, 140, 40};
+    int add_term_y = menu_panel.y + 75;
+    op_plus_button = {menu_panel.x + 520, add_term_y, 140, 40};
+    op_minus_button = {menu_panel.x + 670, add_term_y, 140, 40};
     bool term_ready = math_selected_element_index != -1;
     SDL_SetRenderDrawColor(renderer, term_ready ? BUTTON_BG.r : DISABLED_BG.r, term_ready ? BUTTON_BG.g : DISABLED_BG.g, term_ready ? BUTTON_BG.b : DISABLED_BG.b, 255);
     SDL_RenderFillRect(renderer, &op_plus_button);
@@ -804,17 +804,17 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
 
     vector<pair<double, double>> element_data;
 
-    switch (m_math_selected_signal_type)
+    switch (math_selected_signal_type)
     {
-        case SignalType::Voltage:
+        case Signal_Type::Voltage:
             new_term.name = "V(" + selected_element->get_model()->get_name() + ")";
             element_data = generate_data_for_element_V(selected_element, C);
             break;
-        case SignalType::Current:
+        case Signal_Type::Current:
             new_term.name = "I(" + selected_element->get_model()->get_name() + ")";
             element_data = generate_data_for_element_I(selected_element, C);
             break;
-        case SignalType::Power:
+        case Signal_Type::Power:
             new_term.name = "P(" + selected_element->get_model()->get_name() + ")";
             element_data = generate_data_for_element_P(selected_element, C);
             break;
@@ -863,9 +863,9 @@ void graphical_view::execute_math_operation()
         color_index = 0;
     plot_view->add_signal(final_signal);
     plot_view->auto_zoom();
-    if (m_math_selected_signal_type == SignalType::Voltage)     plot_view->set_y_unit(Unit::V);
-    if (m_math_selected_signal_type == SignalType::Current)     plot_view->set_y_unit(Unit::A);
-    if (m_math_selected_signal_type == SignalType::Power)     plot_view->set_y_unit(Unit::W);
+    if (math_selected_signal_type == Signal_Type::Voltage)     plot_view->set_y_unit(Unit::V);
+    if (math_selected_signal_type == Signal_Type::Current)     plot_view->set_y_unit(Unit::A);
+    if (math_selected_signal_type == Signal_Type::Power)     plot_view->set_y_unit(Unit::W);
     plot_view->set_x_unit(Unit::s);
 
     math_terms.clear();
@@ -3431,19 +3431,19 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
         }
 
         // click on signal type
-        if (SDL_PointInRect(&mouse_pos, &m_v_button_rect))
+        if (SDL_PointInRect(&mouse_pos, &v_button_rect))
         {
-            m_math_selected_signal_type = SignalType::Voltage;
+            math_selected_signal_type = Signal_Type::Voltage;
             return true;
         }
-        if (SDL_PointInRect(&mouse_pos, &m_i_button_rect))
+        if (SDL_PointInRect(&mouse_pos, &i_button_rect))
         {
-            m_math_selected_signal_type = SignalType::Current;
+            math_selected_signal_type = Signal_Type::Current;
             return true;
         }
-        if (SDL_PointInRect(&mouse_pos, &m_p_button_rect))
+        if (SDL_PointInRect(&mouse_pos, &p_button_rect))
         {
-            m_math_selected_signal_type = SignalType::Power;
+            math_selected_signal_type = Signal_Type::Power;
             return true;
         }
 
