@@ -804,68 +804,66 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
 {
     if (math_selected_element_index == -1 && math_selected_node_index == -1) return;
 
+    // constant
     double k = 1.0;
-    k = toValue(math_constant_buffer);
-
-
-    if (is_subtraction)
+    try
     {
-        k *= -1.0;
+        k = toValue(math_constant_buffer);
     }
+    catch (const std::exception& e)
+    {
+        cerr << "Error: Invalid value" << e.what() << endl;
+        return;
+    }
+    if (is_subtraction) { k *= -1.0; }
 
-    auto& elements = C->get_graphical_elements();
-    Graphical_Element* selected_element = elements[math_selected_element_index].get();
-
-    // editing data
     Signal new_term;
-    new_term.name = to_string(k) + " x " + selected_element->get_model()->get_name();
-
-    vector<pair<double, double>> element_data;
+    vector<pair<double, double>> data;
+    string name;
+    string prefix;
 
     if (math_selected_element_index != -1)
     {
-        switch (math_selected_signal_type)
-        {
-            case Signal_Type::Voltage:
-                new_term.name = "V(" + selected_element->get_model()->get_name() + ")";
-                element_data = generate_data_for_element_V(selected_element, C);
-                break;
-            case Signal_Type::Current:
-                new_term.name = "I(" + selected_element->get_model()->get_name() + ")";
-                element_data = generate_data_for_element_I(selected_element, C);
-                break;
-            case Signal_Type::Power:
-                new_term.name = "P(" + selected_element->get_model()->get_name() + ")";
-                element_data = generate_data_for_element_P(selected_element, C);
-                break;
+        auto& elements = C->get_graphical_elements();
+        if (math_selected_element_index >= elements.size() || elements[math_selected_element_index]->get_model() == nullptr) return;
+        Graphical_Element* selected_element = elements[math_selected_element_index].get();
+        name = selected_element->get_model()->get_name();
+
+        switch (math_selected_signal_type) {
+            case Signal_Type::Voltage: prefix = "V"; data = generate_data_for_element_V(selected_element, C); break;
+            case Signal_Type::Current: prefix = "I"; data = generate_data_for_element_I(selected_element, C); break;
+            case Signal_Type::Power:   prefix = "P"; data = generate_data_for_element_P(selected_element, C); break;
         }
     }
-
-    else
+    else if (math_selected_node_index != -1)
     {
+        k *= -1;
         const auto& nodes = C->circuit->get_Nodes();
+        if (math_selected_node_index >= nodes.size()) return;
         Node* selected_node = nodes[math_selected_node_index];
-        new_term.name = "V(" + selected_node->get_name() + ")";
-        element_data = selected_node->get_all_voltages();
+
+        name = selected_node->get_name();
+        prefix = "V";
+        data = selected_node->get_all_voltages();
     }
 
-    for (const auto& point : element_data)
+    for (const auto& point : data)
     {
-        double x_val = point.second;
-        double y_val = point.first;
-        new_term.data_points.push_back({y_val * k, x_val});
+        double x_val = point.first;  // x, y
+        double y_val = point.second;
+        new_term.data_points.push_back({x_val, y_val * k});
     }
     math_terms.push_back(new_term);
 
-    // updating expression string
     if (!math_expression_string.empty())
     {
         math_expression_string += (is_subtraction) ? " - " : " + ";
     }
-    math_expression_string += math_constant_buffer + " x " + "V(" + selected_element->get_model()->get_name() + ")";
+    math_expression_string += math_constant_buffer + " * " + prefix + "(" + name + ")";
 
     math_constant_buffer = "1.0";
     math_selected_element_index = -1;
+    math_selected_node_index = -1;
 }
 
 void graphical_view::execute_math_operation()
