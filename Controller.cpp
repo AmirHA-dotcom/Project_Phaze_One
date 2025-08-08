@@ -2316,11 +2316,15 @@ void Controller::build_graphical_elements_from_circuit()
             auto gfx = make_unique<Graphical_Voltage_Source>(voltage_source);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
+            if (dynamic_cast<AC_Voltage_Source*>(model))
+            {
+                gfx->make_AC();
+            }
             graphical_elements.push_back(move(gfx));
         }
     }
 
-    // net labels
+    // net labels and grounds
     const auto& logical_nodes = circuit->get_Nodes();
     for (Node* node : logical_nodes)
     {
