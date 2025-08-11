@@ -73,8 +73,8 @@ void Controller::addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit
             make_tuple(subCircuit->get_name(), subCircuitCounter, Rotation::Right, make_pair(0, 0));
     circuit->getSubs().push_back(sub);
 }
-void Controller::addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName,int screenX, int screenY) {
-
+void Controller::addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName,
+                                                 const std::string& outputNodeName,int screenX, int screenY) {
     auto input = circuit->findNode(inputNodeName);
     if (!input) {
         std::cerr << "Input node not found in the main circuit!" << std::endl;
@@ -89,10 +89,12 @@ void Controller::addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit
     static int subCircuitCounter = 0;
     std::string unique_suffix = "_sub" + std::to_string(subCircuitCounter++);
 
-    for (const auto& node : subCircuit->get_Nodes()) {
+    for (auto& node : subCircuit->get_Nodes()) {
         if (node->get_name() != subCircuit->getInput()->get_name() && node->get_name() != subCircuit->getOutput()->get_name()) {
             std::string new_name = node->get_name() + unique_suffix;
-            circuit->create_new_node(new_name);
+            node->change_name(new_name);
+            circuit->addNode(node);
+            //circuit->create_new_node(new_name);
         }
     }
 
@@ -101,6 +103,7 @@ void Controller::addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit
         element->change_name(new_name);
         circuit->addElement(std::move(element));
     }
+
     circuit->checkHaveGround();
     tuple<string, int, Rotation, pair<int, int>> sub =
             make_tuple(subCircuit->get_name(), subCircuitCounter, Rotation::Right, make_pair(screenX, screenY));
@@ -789,7 +792,7 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
             file << ".GND " << node->get_name() << " " << node->get_ground_coordinates().first
                  << " " << node->get_ground_coordinates().second << "\n";            }
     }
-    for ( auto node : circuit->get_Nodes()) {
+    for (auto node : circuit->get_Nodes()) {
         if (node->haveNetLabel()) {
             file << ".NL " << node->get_name() << " " << node->net_name << " " <<
             node->get_net_label_coordinates().first << " " << node->get_net_label_coordinates().second << "\n";
@@ -1213,7 +1216,7 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
                 circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
                 circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
             }
-            else if (prefix == 'G' && tokens.size() == 4 && tokens[0] == "GND") {
+            else if (prefix == 'G' && tokens.size() >= 4 && tokens[0] == "GND") {
                 // Example .GND a x y
                 Node* node = circuit->findNode(tokens[1]);
                 node->make_ground();    node->set_ground_coordinates(stoi(tokens[2]), stoi(tokens[3]));
@@ -1326,9 +1329,9 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
 
     return subCircuit;
 }
-
+/**/
 void Controller::loadSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "/subcircuits";
+    string path = file_handler.getMainFolderPath() + "/subcircuits/";
     vector<string> files = file_handler.getFilesInDirectory(path);
     for (const auto& file : files) {
         if (file.substr(file.find_last_of(".") + 1) == "txt") {
@@ -1355,7 +1358,7 @@ void Controller::loadSubCircuits () {
 }
 
 void Controller::loadGraphicalSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "/subcircuits";
+    string path = file_handler.getMainFolderPath() + "/subcircuits/";
     vector<string> files = file_handler.getFilesInDirectory(path);
     for (const auto& file : files) {
         if (file.substr(file.find_last_of(".") + 1) == "txt") {
@@ -1421,6 +1424,9 @@ void Controller::handleNewFile(string path){
 bool Controller::is_files_empty()
 {
     return file_handler.get_file_names().empty();
+}
+void Controller::add_Waveform_Voltage_Source(Waveform_Voltage_Source* waveform) const{
+    circuit->addElement(waveform);
 }
 
 // GRAPHICS!!!

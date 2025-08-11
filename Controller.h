@@ -253,6 +253,7 @@ public:
     void handleNewFile(string path);
 
     bool is_files_empty();
+    void add_Waveform_Voltage_Source(Waveform_Voltage_Source* waveform) const;
 
     // GRAPHICS!!!
 

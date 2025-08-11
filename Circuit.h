@@ -90,7 +90,7 @@ public:
     void analyse_data();
 
     const vector<Element*> get_Elements() const;
-    const vector<Node*> get_Nodes() const;
+    vector<Node*> get_Nodes() const;
 
     void setNodes(const vector<Node*>& new_nodes) { Nodes = new_nodes; }
     void setElements(const vector<Element*>& new_elements) { Elements = new_elements; }

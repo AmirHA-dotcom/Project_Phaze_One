@@ -26,6 +26,55 @@ public:
     int get_aux_index() const;
     double getAmplitude() { return amplitude; }
 };
+class Waveform_Voltage_Source : public Voltage_Source {
+private:
+    std::vector<double> voltageSamples;
+    double signalDuration;
+    double samplingRate;
+    double timeStep;
+
+public:
+    // Constructor
+    Waveform_Voltage_Source(string _name, Node* _node1, Node* _node2, double duration, double fs)
+            : Voltage_Source(_name, _node1, _node2, 0.0) {
+        if (duration <= 0 || fs <= 0) {
+            throw std::invalid_argument("Duration and Sampling Rate must be positive.");
+        }
+        this->signalDuration = duration;
+        this->samplingRate = fs;
+        this->timeStep = 1.0 / fs;
+        int numberOfSamples = static_cast<int>(duration * fs);
+        this->voltageSamples.resize(numberOfSamples, 0.0); // Initialize with zero
+    }
+    // Override the pure virtual function
+    double get_value_at(double time, double time_step) const override {
+        // Find the index corresponding to the given time
+        if (time < 0 || time > signalDuration) {
+            return 0.0; // Return 0 outside the signal duration
+        }
+        int index = static_cast<int>(round(time / timeStep));
+
+        // Check for boundary conditions
+        if (index < 0 || index >= voltageSamples.size()) {
+            return 0.0;
+        }
+        return voltageSamples[index];
+    }
+    // New method to set voltage values at a specific time
+    void set_voltage_at(double time, double voltage) {
+        if (time < 0 || time > signalDuration) {
+            throw std::out_of_range("Time is outside the signal duration.");
+        }
+        int index = static_cast<int>(round(time / timeStep));
+        if (index >= 0 && index < voltageSamples.size()) {
+            voltageSamples[index] = voltage;
+        }
+    }
+
+    // Other inherited methods to be implemented if needed
+    // The provided snippet doesn't show the implementation for stamp, get_current, etc.
+    // Assuming they will be implemented in the base class or other derived classes.
+};
 
 class DC_Source : public Voltage_Source
 {

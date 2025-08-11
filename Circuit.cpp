@@ -71,7 +71,7 @@ void Circuit::change_name_of_node(const string& old_name, const string& new_name
     Nodes[node_index]->change_name(new_name);
 }
 
-const vector<Node *> Circuit::get_Nodes() const
+vector<Node *> Circuit::get_Nodes() const
 {
     return Nodes;
 }

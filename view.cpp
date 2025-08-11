@@ -373,6 +373,23 @@ bool View::handleCircuitMenu (Controller* C) {
         C->showCircuits();
         return true;
     }
+    /////////// WAVEFORM //////////
+    if (i[0] == "add" && i[1] == "Waveform" && i.size() >= 7) {
+        string waveformName = i[2];
+        string node1Name = i[3];
+        string node2Name = i[4];
+        double duration = stod(i[5]);
+        double samplingRate = stod(i[6]);
+
+        if (C->findElement(waveformName)) {
+            throw elementExists(waveformName);
+        }
+        Node* node1 = C->findNode(node1Name);
+        Node* node2 = C->findNode(node2Name);
+        Waveform_Voltage_Source* waveform = new Waveform_Voltage_Source(waveformName, node1, node2, duration, samplingRate);
+        C->add_Waveform_Voltage_Source(waveform);
+        return true;
+    }
     if (addRCheck(i)) {
         if (i[2] == i[3])
             throw sameNode();
