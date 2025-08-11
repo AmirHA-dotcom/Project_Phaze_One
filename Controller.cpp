@@ -1213,19 +1213,19 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
                 circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
                 circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
             }
-            else if (prefix == 'G' && tokens.size() == 4 && tokens[0] == ".GND") {
+            else if (/*prefix == 'G' &&*/ tokens.size() == 4 && tokens[0] == ".GND") {
                 // Example .GND a x y
                 Node* node = circuit->findNode(tokens[1]);
                 node->make_ground();    node->set_ground_coordinates(stoi(tokens[2]), stoi(tokens[3]));
                 circuit->ground(true);
-                cout << "ofhf9ofhepifuohfwe9fio pwgeilfweidygqidjwfobw8ihwhfieug9hrioh3uib9rujio" << endl;
+                //cout << "ofhf9ofhepifuohfwe9fio pwgeilfweidygqidjwfobw8ihwhfieug9hrioh3uib9rujio" << endl;
             }
-            else if (prefix == 'N' && tokens.size() == 5 && tokens[0] == ".NL") {
+            else if (/*prefix == 'N' && */tokens.size() == 5 && tokens[0] == ".NL") {
                 // Example .NL a Netname x y
                 Node* node = circuit->findNode(tokens[1]);
                 node->net_name = tokens[2];    node->set_net_label_coordinates(stoi(tokens[3]), stoi(tokens[4]));
             }
-            else if (prefix == 'S' && tokens.size() == 6 && tokens[0] == ".SUB") {
+            else if (/*prefix == 'S' && */tokens.size() == 6 && tokens[0] == ".SUB") {
                 // Example .SUB subName index Rotation(int) x y
                 tuple<string, int, Rotation, pair<int, int>> sub =
                         make_tuple(tokens[1], stoi(tokens[2]), intToRotation(stoi(tokens[3])), make_pair(stoi(tokens[4]), stoi(tokens[5])));
@@ -1356,7 +1356,7 @@ void Controller::loadSubCircuits () {
 }
 
 void Controller::loadGraphicalSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "/subcircuits";
+    string path = file_handler.getMainFolderPath() + "/subcircuits/";
     vector<string> files = file_handler.getFilesInDirectory(path);
     for (const auto& file : files) {
         if (file.substr(file.find_last_of(".") + 1) == "txt") {
@@ -1881,13 +1881,15 @@ void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name
 
     if (sim_Sub_C != nullptr)
     {
+        cout << "addGraphicalSubCircuitToCircuit called" << endl;
         addGraphicalSubCircuitToCircuit(sim_Sub_C, circuit, n1->get_name(), n2->get_name(), screenX, screenY);
+        cout << "addGraphicalSubCircuitToCircuit worked!!!!!!" << endl;
         auto gfx_Sub_C = make_unique<Graphical_SubCircuit>(sim_Sub_C, name);
 
         gfx_Sub_C->bounding_box = {screenX, screenY, 150, 60};
 
         graphical_elements.push_back(move(gfx_Sub_C));
-        //cout << "added subcircuit, so the bug is not from controller not being called" << endl;
+        cout << "added subcircuit, so the bug is not from controller not being called" << endl;
     }
 }
 
