@@ -707,41 +707,70 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     SDL_RenderDrawRect(renderer, &constant_textbox_rect);
     render_text(renderer, font, math_constant_buffer, constant_textbox_rect.x + 5, constant_textbox_rect.y + 5, TEXT_COLOR);
 
-    // type of signal (VIP!)
     render_text(renderer, font, "Signal Type:", menu_panel.x + 280, builder_y + 30, TEXT_COLOR);
-    v_button_rect = {menu_panel.x + 380, builder_y + 25, 30, 30};
-    i_button_rect = {menu_panel.x + 415, builder_y + 25, 30, 30};
-    p_button_rect = {menu_panel.x + 450, builder_y + 25, 30, 30};
+    if (current_analysis_mode == Analysis_Mode::Transient)
+    {
+        // type of signal (VIP!)
+        v_button_rect = {menu_panel.x + 380, builder_y + 25, 30, 30};
+        i_button_rect = {menu_panel.x + 415, builder_y + 25, 30, 30};
+        p_button_rect = {menu_panel.x + 450, builder_y + 25, 30, 30};
 
-    // voltage button
-    SDL_SetRenderDrawColor(renderer,
-                           (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.r : BUTTON_BG.r,
-                           (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.g : BUTTON_BG.g,
-                           (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.b : BUTTON_BG.b,
-                           255
-    );
-    SDL_RenderFillRect(renderer, &v_button_rect);
-    render_text(renderer, font, "V", v_button_rect.x + 10, v_button_rect.y + 5);
+        // voltage button
+        SDL_SetRenderDrawColor(renderer,
+                               (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.r : BUTTON_BG.r,
+                               (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.g : BUTTON_BG.g,
+                               (math_selected_signal_type == Signal_Type::Voltage) ? SELECTED_BG.b : BUTTON_BG.b,
+                               255
+        );
+        SDL_RenderFillRect(renderer, &v_button_rect);
+        render_text(renderer, font, "V", v_button_rect.x + 10, v_button_rect.y + 5);
 
-    // current button
-    SDL_SetRenderDrawColor(renderer,
-                           (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.r : BUTTON_BG.r,
-                           (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.g : BUTTON_BG.g,
-                           (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.b : BUTTON_BG.b,
-                           255
-    );
-    SDL_RenderFillRect(renderer, &i_button_rect);
-    render_text(renderer, font, "I", i_button_rect.x + 10, i_button_rect.y + 5);
+        // current button
+        SDL_SetRenderDrawColor(renderer,
+                               (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.r : BUTTON_BG.r,
+                               (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.g : BUTTON_BG.g,
+                               (math_selected_signal_type == Signal_Type::Current) ? SELECTED_BG.b : BUTTON_BG.b,
+                               255
+        );
+        SDL_RenderFillRect(renderer, &i_button_rect);
+        render_text(renderer, font, "I", i_button_rect.x + 10, i_button_rect.y + 5);
 
-    // power button
-    SDL_SetRenderDrawColor(renderer,
-                           (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.r : BUTTON_BG.r,
-                           (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.g : BUTTON_BG.g,
-                           (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.b : BUTTON_BG.b,
-                           255
-    );
-    SDL_RenderFillRect(renderer, &p_button_rect);
-    render_text(renderer, font, "P", p_button_rect.x + 10, p_button_rect.y + 5);
+        // power button
+        SDL_SetRenderDrawColor(renderer,
+                               (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.r : BUTTON_BG.r,
+                               (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.g : BUTTON_BG.g,
+                               (math_selected_signal_type == Signal_Type::Power) ? SELECTED_BG.b : BUTTON_BG.b,
+                               255
+        );
+        SDL_RenderFillRect(renderer, &p_button_rect);
+        render_text(renderer, font, "P", p_button_rect.x + 10, p_button_rect.y + 5);
+    }
+    else if (current_analysis_mode == Analysis_Mode::AC_Sweep || current_analysis_mode == Analysis_Mode::Phase_Sweep)
+    {
+        // type of signal (MP!)
+        mag_button_rect = {menu_panel.x + 380, builder_y + 25, 60, 30};
+        phase_button_rect = {menu_panel.x + 445, builder_y + 25, 60, 30};
+
+        // mag button
+        SDL_SetRenderDrawColor(renderer,
+                               (math_selected_signal_type == Signal_Type::Mag) ? SELECTED_BG.r : BUTTON_BG.r,
+                               (math_selected_signal_type == Signal_Type::Mag) ? SELECTED_BG.g : BUTTON_BG.g,
+                               (math_selected_signal_type == Signal_Type::Mag) ? SELECTED_BG.b : BUTTON_BG.b,
+                               255
+        );
+        SDL_RenderFillRect(renderer, &mag_button_rect);
+        render_text(renderer, font, "Mag", mag_button_rect.x + 15, mag_button_rect.y + 5);
+
+        // phase button
+        SDL_SetRenderDrawColor(renderer,
+                               (math_selected_signal_type == Signal_Type::Phase) ? SELECTED_BG.r : BUTTON_BG.r,
+                               (math_selected_signal_type == Signal_Type::Phase) ? SELECTED_BG.g : BUTTON_BG.g,
+                               (math_selected_signal_type == Signal_Type::Phase) ? SELECTED_BG.b : BUTTON_BG.b,
+                               255
+        );
+        SDL_RenderFillRect(renderer, &phase_button_rect);
+        render_text(renderer, font, "Phase", phase_button_rect.x + 10, phase_button_rect.y + 5);
+    }
 
     // list of elements
     render_text(renderer, font, "Element:", menu_panel.x + 20, builder_y + 70, TEXT_COLOR);
@@ -782,7 +811,7 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     int add_term_y = menu_panel.y + 75;
     op_plus_button = {menu_panel.x + 520, add_term_y, 140, 40};
     op_minus_button = {menu_panel.x + 670, add_term_y, 140, 40};
-    bool term_ready = math_selected_element_index != -1;
+    bool term_ready = (math_selected_element_index != -1 || math_selected_node_index != -1);
     SDL_SetRenderDrawColor(renderer, term_ready ? BUTTON_BG.r : DISABLED_BG.r, term_ready ? BUTTON_BG.g : DISABLED_BG.g, term_ready ? BUTTON_BG.b : DISABLED_BG.b, 255);
     SDL_RenderFillRect(renderer, &op_plus_button);
     SDL_RenderFillRect(renderer, &op_minus_button);
@@ -812,7 +841,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
     {
         k = toValue(math_constant_buffer);
     }
-    catch (const std::exception& e)
+    catch (const exception& e)
     {
         cerr << "Error: Invalid value" << e.what() << endl;
         return;
@@ -831,10 +860,128 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
         Graphical_Element* selected_element = elements[math_selected_element_index].get();
         name = selected_element->get_model()->get_name();
 
-        switch (math_selected_signal_type) {
-            case Signal_Type::Voltage: prefix = "V"; data = generate_data_for_element_V(selected_element, C); break;
-            case Signal_Type::Current: prefix = "I"; data = generate_data_for_element_I(selected_element, C); break;
-            case Signal_Type::Power:   prefix = "P"; data = generate_data_for_element_P(selected_element, C); break;
+        if (current_analysis_mode == Analysis_Mode::Transient)
+        {
+            switch (math_selected_signal_type)
+            {
+                case Signal_Type::Voltage: prefix = "V"; data = generate_data_for_element_V(selected_element, C); break;
+                case Signal_Type::Current: prefix = "I"; data = generate_data_for_element_I(selected_element, C); break;
+                case Signal_Type::Power:   prefix = "P"; data = generate_data_for_element_P(selected_element, C); break;
+            }
+        }
+
+        else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+        {
+            switch (math_selected_signal_type)
+            {
+                case Signal_Type::Mag:
+                {
+                    prefix = "Mag";
+                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    vector<double> freq1, mag1, freq2, mag2;
+                    for (const auto& ac_data : C->circuit->getAcVoltage())
+                    {
+                        if (nodes.first == ac_data.first)
+                        {
+                            freq1 = get<0>(ac_data.second);
+                            mag1 = get<1>(ac_data.second);
+                        }
+                        else if (nodes.second == ac_data.first)
+                        {
+                            freq2 = get<0>(ac_data.second);
+                            mag2 = get<1>(ac_data.second);
+                        }
+                    }
+
+                    for (size_t i = 0; i < min(min(freq1.size(), mag1.size()), min(freq2.size(), mag2.size())); ++i)
+                    {
+                        data.push_back({mag1[i] - mag2[i], freq1[i]});
+                    }
+                    break;
+                }
+                case Signal_Type::Phase:
+                {
+                    prefix = "Phase";
+                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    vector<double> freq1, mag1, freq2, mag2;
+                    for (const auto& ac_data : C->circuit->getAcVoltage())
+                    {
+                        if (nodes.first == ac_data.first)
+                        {
+                            freq1 = get<0>(ac_data.second);
+                            mag1 = get<2>(ac_data.second);
+                        }
+                        else if (nodes.second == ac_data.first)
+                        {
+                            freq2 = get<0>(ac_data.second);
+                            mag2 = get<2>(ac_data.second);
+                        }
+                    }
+
+                    for (size_t i = 0; i < min(min(freq1.size(), mag1.size()), min(freq2.size(), mag2.size())); ++i)
+                    {
+                        data.push_back({mag1[i] - mag2[i], freq1[i]});
+                    }
+                    break;
+                }
+            }
+        }
+
+        else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+        {
+            switch (math_selected_signal_type)
+            {
+                case Signal_Type::Mag:
+                {
+                    prefix = "Mag";
+                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    vector<double> freq1, mag1, freq2, mag2;
+                    for (const auto& ac_data : C->circuit->getPhaseVoltage())
+                    {
+                        if (nodes.first == ac_data.first)
+                        {
+                            freq1 = get<0>(ac_data.second);
+                            mag1 = get<1>(ac_data.second);
+                        }
+                        else if (nodes.second == ac_data.first)
+                        {
+                            freq2 = get<0>(ac_data.second);
+                            mag2 = get<1>(ac_data.second);
+                        }
+                    }
+
+                    for (size_t i = 0; i < min(min(freq1.size(), mag1.size()), min(freq2.size(), mag2.size())); ++i)
+                    {
+                        data.push_back({mag1[i] - mag2[i], freq1[i]});
+                    }
+                    break;
+                }
+                case Signal_Type::Phase:
+                {
+                    prefix = "Phase";
+                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    vector<double> freq1, mag1, freq2, mag2;
+                    for (const auto& ac_data : C->circuit->getPhaseVoltage())
+                    {
+                        if (nodes.first == ac_data.first)
+                        {
+                            freq1 = get<0>(ac_data.second);
+                            mag1 = get<2>(ac_data.second);
+                        }
+                        else if (nodes.second == ac_data.first)
+                        {
+                            freq2 = get<0>(ac_data.second);
+                            mag2 = get<2>(ac_data.second);
+                        }
+                    }
+
+                    for (size_t i = 0; i < min(min(freq1.size(), mag1.size()), min(freq2.size(), mag2.size())); ++i)
+                    {
+                        data.push_back({mag1[i] - mag2[i], freq1[i]});
+                    }
+                    break;
+                }
+            }
         }
     }
     else if (math_selected_node_index != -1)
@@ -845,15 +992,113 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
         Node* selected_node = nodes[math_selected_node_index];
 
         name = selected_node->get_name();
-        prefix = "V";
-        data = selected_node->get_all_voltages();
+        if (current_analysis_mode == Analysis_Mode::Transient)
+        {
+            prefix = "V";
+            data = selected_node->get_all_voltages();
+        }
+
+        else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+        {
+            switch (math_selected_signal_type)
+            {
+                case Signal_Type::Mag:
+                {
+                    prefix = "Mag";
+                    vector<double> freq, mag;
+                    for (const auto& ac_data : C->circuit->getAcVoltage())
+                    {
+                        if (selected_node == ac_data.first)
+                        {
+                            freq = get<0>(ac_data.second);
+                            mag = get<1>(ac_data.second);
+                            break;
+                        }
+                    }
+
+                    for (size_t i = 0; i < std::min(freq.size(), mag.size()); ++i)
+                    {
+                        data.push_back({mag[i], freq[i]});
+                    }
+                    break;
+                }
+                case Signal_Type::Phase:
+                {
+                    prefix = "Phase";
+                    vector<double> freq, phase;
+                    for (const auto& ac_data : C->circuit->getAcVoltage())
+                    {
+                        if (selected_node == ac_data.first)
+                        {
+                            freq = get<0>(ac_data.second);
+                            phase = get<2>(ac_data.second);
+                            break;
+                        }
+                    }
+
+                    for (size_t i = 0; i < min(freq.size(), phase.size()); ++i)
+                    {
+                        data.push_back({phase[i], freq[i]});
+                    }
+                    break;
+                }
+            }
+        }
+
+        else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+        {
+            switch (math_selected_signal_type)
+            {
+                case Signal_Type::Mag:
+                {
+                    prefix = "Mag";
+                    vector<double> freq, mag;
+                    for (const auto& ac_data : C->circuit->getPhaseVoltage())
+                    {
+                        if (selected_node == ac_data.first)
+                        {
+                            freq = get<0>(ac_data.second);
+                            mag = get<1>(ac_data.second);
+                            break;
+                        }
+                    }
+
+                    for (size_t i = 0; i < min(freq.size(), mag.size()); ++i)
+                    {
+                        data.push_back({mag[i], freq[i]});
+                    }
+                    break;
+                }
+                case Signal_Type::Phase:
+                {
+                    prefix = "Phase";
+                    vector<double> freq, phase;
+                    for (const auto& ac_data : C->circuit->getPhaseVoltage())
+                    {
+                        if (selected_node == ac_data.first)
+                        {
+                            freq = get<0>(ac_data.second);
+                            phase = get<2>(ac_data.second);
+                            break;
+                        }
+                    }
+
+                    for (size_t i = 0; i < min(freq.size(), phase.size()); ++i)
+                    {
+                        data.push_back({phase[i], freq[i]});
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     for (const auto& point : data)
     {
         double x_val = point.first;  // x, y
         double y_val = point.second;
-        new_term.data_points.push_back({x_val, y_val * k});
+        //new_term.data_points.push_back({x_val, y_val * k});
+        new_term.data_points.push_back({point.first * k, point.second});
     }
     math_terms.push_back(new_term);
 
@@ -892,10 +1137,28 @@ void graphical_view::execute_math_operation()
         color_index = 0;
     plot_view->add_signal(final_signal);
     plot_view->auto_zoom();
-    if (math_selected_signal_type == Signal_Type::Voltage)     plot_view->set_y_unit(Unit::V);
-    if (math_selected_signal_type == Signal_Type::Current)     plot_view->set_y_unit(Unit::A);
-    if (math_selected_signal_type == Signal_Type::Power)     plot_view->set_y_unit(Unit::W);
-    plot_view->set_x_unit(Unit::s);
+    if (current_analysis_mode == Analysis_Mode::Transient)
+    {
+        if (math_selected_signal_type == Signal_Type::Voltage)     plot_view->set_y_unit(Unit::V);
+        else if (math_selected_signal_type == Signal_Type::Current)     plot_view->set_y_unit(Unit::A);
+        else if (math_selected_signal_type == Signal_Type::Power)     plot_view->set_y_unit(Unit::W);
+        plot_view->set_x_unit(Unit::s);
+    }
+    else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
+    {
+        if (math_selected_signal_type == Signal_Type::Mag)  plot_view->set_y_unit(Unit::dB);
+        else if (math_selected_signal_type == Signal_Type::Phase)  plot_view->set_y_unit(Unit::deg);
+
+        if (AC_sweep_type == AC_Sweep_Type::Linear)     plot_view->set_x_unit(Unit::Hz);
+        else if (AC_sweep_type == AC_Sweep_Type::Octave)     plot_view->set_x_unit(Unit::Oct);
+        else if (AC_sweep_type == AC_Sweep_Type::Decade)     plot_view->set_x_unit(Unit::Dec);
+    }
+    else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
+    {
+        if (math_selected_signal_type == Signal_Type::Mag)  plot_view->set_y_unit(Unit::dB);
+        else if (math_selected_signal_type == Signal_Type::Phase)  plot_view->set_y_unit(Unit::deg);
+        plot_view->set_x_unit(Unit::deg);
+    }
 
     math_terms.clear();
     math_expression_string.clear();
@@ -3479,20 +3742,36 @@ bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *
         }
 
         // click on signal type
-        if (SDL_PointInRect(&mouse_pos, &v_button_rect))
+        if (current_analysis_mode == Analysis_Mode::Transient)
         {
-            math_selected_signal_type = Signal_Type::Voltage;
-            return true;
+            if (SDL_PointInRect(&mouse_pos, &v_button_rect))
+            {
+                math_selected_signal_type = Signal_Type::Voltage;
+                return true;
+            }
+            if (SDL_PointInRect(&mouse_pos, &i_button_rect))
+            {
+                math_selected_signal_type = Signal_Type::Current;
+                return true;
+            }
+            if (SDL_PointInRect(&mouse_pos, &p_button_rect))
+            {
+                math_selected_signal_type = Signal_Type::Power;
+                return true;
+            }
         }
-        if (SDL_PointInRect(&mouse_pos, &i_button_rect))
+        else if (current_analysis_mode == Analysis_Mode::AC_Sweep || current_analysis_mode == Analysis_Mode::Phase_Sweep)
         {
-            math_selected_signal_type = Signal_Type::Current;
-            return true;
-        }
-        if (SDL_PointInRect(&mouse_pos, &p_button_rect))
-        {
-            math_selected_signal_type = Signal_Type::Power;
-            return true;
+            if (SDL_PointInRect(&mouse_pos, &mag_button_rect))
+            {
+                math_selected_signal_type = Signal_Type::Mag;
+                return true;
+            }
+            if (SDL_PointInRect(&mouse_pos, &phase_button_rect))
+            {
+                math_selected_signal_type = Signal_Type::Phase;
+                return true;
+            }
         }
 
         // click on add or subtract

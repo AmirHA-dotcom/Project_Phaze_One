@@ -155,8 +155,8 @@ private:
     vector<SDL_Rect> math_element_buttons;
     SDL_Rect constant_textbox_rect;
     SDL_Rect op_plus_button, op_minus_button, op_clear_button, op_execute_button;
-    enum class Signal_Type { Voltage, Current, Power };
-    SDL_Rect v_button_rect, i_button_rect, p_button_rect;
+    enum class Signal_Type { Voltage, Current, Power, Mag, Phase };
+    SDL_Rect v_button_rect, i_button_rect, p_button_rect, mag_button_rect, phase_button_rect;
     Signal_Type math_selected_signal_type;
     int math_selected_node_index = -1;
     vector<SDL_Rect> math_node_buttons;
