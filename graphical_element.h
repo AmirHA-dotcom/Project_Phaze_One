@@ -88,6 +88,8 @@ public:
     virtual vector<Connection_Point> get_connection_points() = 0;
 
     virtual string get_info_text() = 0;
+
+    TTF_Font* get_font() { return font;}
 };
 
 class Graphical_Resistor : public Graphical_Element {

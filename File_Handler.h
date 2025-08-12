@@ -12,8 +12,8 @@ class File_Handler
 private:
     vector<pair<string, string>> files;     // pair of file name and file path
     int current_file_index = 0;
-    string mainFolderPath = "/Users/arian/Desktop/OOP/PNGs & FONTs";
-    //string mainFolderPath = "D://Project_Files";
+//    string mainFolderPath = "/Users/arian/Desktop/OOP/PNGs & FONTs";
+    string mainFolderPath = "D://Project_Files";
 public:
     vector<string> get_file_names();
     vector<string> get_file_paths();

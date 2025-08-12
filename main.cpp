@@ -45,12 +45,18 @@ int main(int argc, char* argv[]) {
             if (input == "end") {
                 continueRunning = false;
             }
-        } catch (const exception& e) {
+        }
+        catch (const Quit_Event_Exception& e)
+        {
+            cout << "closing the APP!" << endl;
+            continueRunning = false;
+        }
+        catch (const exception& e)
+        {
             cerr << e.what() << endl;
         }
     }
 
-    // Clean up memory
     delete view;
     delete graphicalView;
     delete controller;

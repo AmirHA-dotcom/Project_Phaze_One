@@ -6,19 +6,19 @@
 
 // helper functions
 
-//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-//const char* PROBE = "D://Images//probe_cursor.png";
-//const char* DELETE = "D://Images//sissors_cursor.png";
-//const char* GROUND = "D://Images//grounding_cursor.png";
-//const char* ICON = "D://Images//SparkSense2.png";
-//const char* TICK = "D://Images//tick_40x40.png";
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+const char* PROBE = "D://Images//probe_cursor.png";
+const char* DELETE = "D://Images//sissors_cursor.png";
+const char* GROUND = "D://Images//grounding_cursor.png";
+const char* ICON = "D://Images//SparkSense2.png";
+const char* TICK = "D://Images//tick_40x40.png";
 
-const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
-const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
-const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
-const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
-const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
-const char* TICK = "/Users/arian/Desktop/OOP/PNGs & FONTs/tick_40x40.png";
+//const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
+//const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
+//const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
+//const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
+//const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
+//const char* TICK = "/Users/arian/Desktop/OOP/PNGs & FONTs/tick_40x40.png";
 
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
@@ -252,6 +252,7 @@ void graphical_view::initialize_menu()
     menu_items.push_back({"Delta_Dirac Source", Element_Type::Voltage_Source, "Delta"});
     menu_items.push_back({"Square Source", Element_Type::Voltage_Source, "Square"});
     menu_items.push_back({"Triangular Source", Element_Type::Voltage_Source, "Triangular"});
+    menu_items.push_back({"Waveform Source", Element_Type::Voltage_Source, "Waveform"});
     menu_items.push_back({"AC Source", Element_Type::Voltage_Source, "AC"});
     menu_items.push_back({"VCVS", Element_Type::VC_Voltage_Source});
     menu_items.push_back({"VCCS", Element_Type::VC_Current_Source});
@@ -272,7 +273,7 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
     const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
     const SDL_Color HOVERED = {60, 68, 80, 255};
 
-    SDL_Rect menu_panel = {200, 100, 800, 570};
+    SDL_Rect menu_panel = {200, 80, 800, 600};
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
 
     // panels
@@ -1628,7 +1629,7 @@ bool graphical_view::run(Controller *C)
         {
             if (event.type == SDL_QUIT)
             {
-                running = false;
+                throw Quit_Event_Exception();
                 continue;
             }
 
@@ -1926,7 +1927,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
     // quit
     if (event.type == SDL_QUIT)
     {
-        return false;
+        throw Quit_Event_Exception();
     }
 
     // window events
@@ -2090,10 +2091,16 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
                 {
-                    is_dragging = true;
-                    dragged_element_index = i;
-                    drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
-                    drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
+                    if (dynamic_cast<Graphical_Ground*>(graphical_elements[i].get()) || dynamic_cast<Graphical_Net_Label*>(graphical_elements[i].get()))
+                    {
+                    }
+                    else
+                    {
+                        is_dragging = true;
+                        dragged_element_index = i;
+                        drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
+                        drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
+                    }
                     break;
                 }
             }
@@ -2102,7 +2109,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
         {
             for (int i = graphical_elements.size() - 1; i >= 0; --i)
             {
-                if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box) && graphical_elements[i]->get_model() != nullptr)
+                if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box)/* && graphical_elements[i]->get_model() != nullptr*/)
                 {
                     editing = true;
                     edited_element_index = i;
@@ -2131,10 +2138,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
     if (event.type == SDL_MOUSEMOTION && is_dragging)
     {
-//        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-//        graphical_elements[dragged_element_index]->bounding_box.x = mouse_pos.x - drag_offset.x;
-//        graphical_elements[dragged_element_index]->bounding_box.y = mouse_pos.y - drag_offset.y;
-
         SDL_Point mouse_pos = {event.motion.x, event.motion.y};
 
         int new_x = mouse_pos.x - drag_offset.x;
@@ -2159,7 +2162,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -2247,6 +2251,8 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
                                 C->add_Graphical_Triangular_Source(mouseX, mouseY);
                             else if (menu_items[i].subtype_tag == "AC")
                                 C->add_Graphical_AC_Phase_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "Waveform")
+                                C->add_Graphical_WF_Source(mouseX, mouseY);
                             break;
                         }
                         case Element_Type::VC_Voltage_Source: C->add_Graphical_VCVS(mouseX, mouseY); break;
@@ -2310,7 +2316,8 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
         SDL_StopTextInput();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
@@ -2381,7 +2388,8 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
 
 bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -2757,7 +2765,8 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -2845,7 +2854,8 @@ bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -3204,7 +3214,8 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
         SDL_StopTextInput();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -3319,7 +3330,8 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
 
 bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
     {
@@ -3687,7 +3699,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
     {
@@ -3832,7 +3845,8 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         C->getFile_Handler().saveFiles();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -3904,7 +3918,8 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
     {
@@ -3917,6 +3932,7 @@ bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
         Graphical_Element* element = find_element_at(pos, C);
         if (element)
         {
+            if (dynamic_cast<Graphical_Net_Label*>(element)) return true;
             if (dynamic_cast<Graphical_Ground*>(element)) dynamic_cast<Graphical_Ground*>(element)->get_node()->return_to_normal();
             C->delete_element(element);
             is_deleting = false;
@@ -3940,7 +3956,8 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
         is_file_menu_open = false;
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE))
     {
@@ -4005,7 +4022,8 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -4078,7 +4096,8 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -4142,7 +4161,8 @@ bool graphical_view::handle_text_input_menu_events(SDL_Event& event)
         SDL_StopTextInput();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {

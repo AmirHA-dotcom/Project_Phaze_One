@@ -13,6 +13,8 @@
 #include "Graphical_Wire.h"
 #include "Plot_View.h"
 
+struct Quit_Event_Exception {};
+
 enum class Analysis_Mode { Transient, AC_Sweep, Phase_Sweep };
 
 enum class Tool_Bar_Action { Wire, Components_Menu, Grid, Net_Label, File, Configure_Analysis, Run, Probe, Math_Operation, Save, Delete , Sub_Circuit, New_File };
