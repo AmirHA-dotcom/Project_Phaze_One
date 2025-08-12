@@ -1902,6 +1902,22 @@ Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, Node* no
 
     node->set_net_label_coordinates(pos.x, pos.y);
 
+
+    TTF_Font* font = new_label->get_font();
+
+    if (font && !node->net_name.empty())
+    {
+        int text_width, text_height;
+        // size of text
+        TTF_SizeText(font, node->net_name.c_str(), &text_width, &text_height);
+        new_label->bounding_box = { pos.x, pos.y, text_width + 4, text_height + 4 };
+    }
+    else
+    {
+        new_label->bounding_box = { pos.x, pos.y, 30, 20 };
+    }
+
+
     Graphical_Net_Label* ptr = new_label.get();
     graphical_elements.push_back(move(new_label));
     return ptr;
@@ -2198,6 +2214,17 @@ void Controller::delete_element(Graphical_Element* g_element_to_delete)
                            }),
             wires.end());
 
+    if (auto* g_label = dynamic_cast<Graphical_Net_Label*>(g_element_to_delete))
+    {
+        Node* label_node = g_label->get_node();
+        if (label_node && !label_node->net_name.empty())
+        {
+            string old_name = label_node->net_name;
+            label_node->net_name.clear();
+
+            named_nets.erase(old_name);
+        }
+    }
 
     if (g_element_to_delete->get_model() != nullptr)
     {

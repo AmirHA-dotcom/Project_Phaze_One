@@ -1063,7 +1063,7 @@ vector<Editable_Property> Graphical_VCVS::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    props.push_back({"Voltage constant", to_string(model_element->get_value())});
     return props;
 }
 
@@ -1072,7 +1072,7 @@ vector<Editable_Property> Graphical_VCCS::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Current (A)", to_string(model_element->get_value())});
+    props.push_back({"Current constant", to_string(model_element->get_value())});
     return props;
 }
 

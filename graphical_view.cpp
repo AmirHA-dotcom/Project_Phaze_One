@@ -6,19 +6,19 @@
 
 // helper functions
 
-//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-//const char* PROBE = "D://Images//probe_cursor.png";
-//const char* DELETE = "D://Images//sissors_cursor.png";
-//const char* GROUND = "D://Images//grounding_cursor.png";
-//const char* ICON = "D://Images//SparkSense2.png";
-//const char* TICK = "D://Images//tick_40x40.png";
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+const char* PROBE = "D://Images//probe_cursor.png";
+const char* DELETE = "D://Images//sissors_cursor.png";
+const char* GROUND = "D://Images//grounding_cursor.png";
+const char* ICON = "D://Images//SparkSense2.png";
+const char* TICK = "D://Images//tick_40x40.png";
 
-const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
-const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
-const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
-const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
-const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
-const char* TICK = "/Users/arian/Desktop/OOP/PNGs & FONTs/tick_40x40.png";
+//const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
+//const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
+//const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
+//const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
+//const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
+//const char* TICK = "/Users/arian/Desktop/OOP/PNGs & FONTs/tick_40x40.png";
 
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
@@ -2090,10 +2090,16 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
             {
                 if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box))
                 {
-                    is_dragging = true;
-                    dragged_element_index = i;
-                    drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
-                    drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
+                    if (dynamic_cast<Graphical_Ground*>(graphical_elements[i].get()) || dynamic_cast<Graphical_Net_Label*>(graphical_elements[i].get()))
+                    {
+                    }
+                    else
+                    {
+                        is_dragging = true;
+                        dragged_element_index = i;
+                        drag_offset.x = mouse_pos.x - graphical_elements[i]->bounding_box.x;
+                        drag_offset.y = mouse_pos.y - graphical_elements[i]->bounding_box.y;
+                    }
                     break;
                 }
             }
@@ -2102,7 +2108,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
         {
             for (int i = graphical_elements.size() - 1; i >= 0; --i)
             {
-                if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box) && graphical_elements[i]->get_model() != nullptr)
+                if (SDL_PointInRect(&mouse_pos, &graphical_elements[i]->bounding_box)/* && graphical_elements[i]->get_model() != nullptr*/)
                 {
                     editing = true;
                     edited_element_index = i;
@@ -2131,10 +2137,6 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
     if (event.type == SDL_MOUSEMOTION && is_dragging)
     {
-//        SDL_Point mouse_pos = {event.motion.x, event.motion.y};
-//        graphical_elements[dragged_element_index]->bounding_box.x = mouse_pos.x - drag_offset.x;
-//        graphical_elements[dragged_element_index]->bounding_box.y = mouse_pos.y - drag_offset.y;
-
         SDL_Point mouse_pos = {event.motion.x, event.motion.y};
 
         int new_x = mouse_pos.x - drag_offset.x;
