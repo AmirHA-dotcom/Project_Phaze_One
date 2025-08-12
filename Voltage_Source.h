@@ -26,54 +26,72 @@ public:
     int get_aux_index() const;
     double getAmplitude() { return amplitude; }
 };
+
 class Waveform_Voltage_Source : public Voltage_Source {
 private:
-    std::vector<double> voltageSamples;
-    double signalDuration;
-    double samplingRate;
-    double timeStep;
+    vector<pair<double, double>> segments; // (voltage, duration)
+    double totalDuration = 0.0;
 
 public:
     // Constructor
-    Waveform_Voltage_Source(string _name, Node* _node1, Node* _node2, double duration, double fs)
-            : Voltage_Source(_name, _node1, _node2, 0.0) {
-        if (duration <= 0 || fs <= 0) {
-            throw std::invalid_argument("Duration and Sampling Rate must be positive.");
-        }
-        this->signalDuration = duration;
-        this->samplingRate = fs;
-        this->timeStep = 1.0 / fs;
-        int numberOfSamples = static_cast<int>(duration * fs);
-        this->voltageSamples.resize(numberOfSamples, 0.0); // Initialize with zero
-    }
-    // Override the pure virtual function
-    double get_value_at(double time, double time_step) const override {
-        // Find the index corresponding to the given time
-        if (time < 0 || time > signalDuration) {
-            return 0.0; // Return 0 outside the signal duration
-        }
-        int index = static_cast<int>(round(time / timeStep));
+    Waveform_Voltage_Source(std::string _name, Node* _node1, Node* _node2)
+            : Voltage_Source(_name, _node1, _node2, 0.0) {}
 
-        // Check for boundary conditions
-        if (index < 0 || index >= voltageSamples.size()) {
+    // Add a voltage segment (voltage in volts, duration in seconds)
+    void add_segment(double voltage, double duration) {
+        if (duration <= 0) {
+            throw std::invalid_argument("Duration must be positive.");
+        }
+        segments.emplace_back(voltage, duration);
+        totalDuration += duration;
+    }
+    void set_segments(const std::vector<std::pair<double, double>>& newSegments) {
+        double total = 0.0;
+        for (const auto& seg : newSegments) {
+            if (seg.second <= 0) {
+                throw std::invalid_argument("Duration must be positive for all segments.");
+            }
+            total += seg.second;
+        }
+        segments = newSegments;
+        totalDuration = total;
+    }
+    // Get the value of the voltage at a given time
+    double get_value_at(double time, double /*time_step*/) const override {
+        if (time < 0.0 || segments.empty()) {
             return 0.0;
         }
-        return voltageSamples[index];
-    }
-    // New method to set voltage values at a specific time
-    void set_voltage_at(double time, double voltage) {
-        if (time < 0 || time > signalDuration) {
-            throw std::out_of_range("Time is outside the signal duration.");
-        }
-        int index = static_cast<int>(round(time / timeStep));
-        if (index >= 0 && index < voltageSamples.size()) {
-            voltageSamples[index] = voltage;
-        }
-    }
 
-    // Other inherited methods to be implemented if needed
-    // The provided snippet doesn't show the implementation for stamp, get_current, etc.
-    // Assuming they will be implemented in the base class or other derived classes.
+        double elapsed = 0.0;
+        for (const auto& seg : segments) {
+            double voltage = seg.first;
+            double dur = seg.second;
+            if (time >= elapsed && time < elapsed + dur) {
+                return voltage;
+            }
+            elapsed += dur;
+        }
+        return 0.0; // Time beyond the end of waveform
+    }
+    // Interactive method to read waveform from user
+    void read_from_user() {
+        int count;
+        std::cout << "Enter number of voltage segments: ";
+        std::cin >> count;
+
+        for (int i = 0; i < count; ++i) {
+            double voltage, duration;
+            std::cout << "Segment " << (i + 1) << " - Voltage (V): ";
+            std::cin >> voltage;
+            std::cout << "Segment " << (i + 1) << " - Duration (s): ";
+            std::cin >> duration;
+            add_segment(voltage, duration);
+        }
+    }
+    // Optional: Get total duration
+    double get_total_duration() const {
+        return totalDuration;
+    }
 };
 
 class DC_Source : public Voltage_Source

@@ -108,6 +108,7 @@ void Controller::addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit
     tuple<string, int, Rotation, pair<int, int>> sub =
             make_tuple(subCircuit->get_name(), subCircuitCounter, Rotation::Right, make_pair(screenX, screenY));
     circuit->getSubs().push_back(sub);
+
 }
 
 Circuit* Controller::findCircuit(string name){
