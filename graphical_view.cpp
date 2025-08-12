@@ -252,6 +252,7 @@ void graphical_view::initialize_menu()
     menu_items.push_back({"Delta_Dirac Source", Element_Type::Voltage_Source, "Delta"});
     menu_items.push_back({"Square Source", Element_Type::Voltage_Source, "Square"});
     menu_items.push_back({"Triangular Source", Element_Type::Voltage_Source, "Triangular"});
+    menu_items.push_back({"Waveform Source", Element_Type::Voltage_Source, "Waveform"});
     menu_items.push_back({"AC Source", Element_Type::Voltage_Source, "AC"});
     menu_items.push_back({"VCVS", Element_Type::VC_Voltage_Source});
     menu_items.push_back({"VCCS", Element_Type::VC_Current_Source});
@@ -272,7 +273,7 @@ void graphical_view::draw_component_menu(SDL_Renderer* renderer, TTF_Font* font)
     const SDL_Color TEXT_COLOR = {211, 211, 211, 255};
     const SDL_Color HOVERED = {60, 68, 80, 255};
 
-    SDL_Rect menu_panel = {200, 100, 800, 570};
+    SDL_Rect menu_panel = {200, 80, 800, 600};
     SDL_Rect preview_panel = {menu_panel.x + 550, menu_panel.y + 50, 200, 200};
 
     // panels
@@ -2249,6 +2250,8 @@ bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
                                 C->add_Graphical_Triangular_Source(mouseX, mouseY);
                             else if (menu_items[i].subtype_tag == "AC")
                                 C->add_Graphical_AC_Phase_Source(mouseX, mouseY);
+                            else if (menu_items[i].subtype_tag == "Waveform")
+                                C->add_Graphical_WF_Source(mouseX, mouseY);
                             break;
                         }
                         case Element_Type::VC_Voltage_Source: C->add_Graphical_VCVS(mouseX, mouseY); break;

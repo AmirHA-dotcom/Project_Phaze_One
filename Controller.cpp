@@ -1755,6 +1755,31 @@ void Controller::add_Graphical_AC_Phase_Source(int screenX, int screenY)
     graphical_elements.push_back(move(gfx_sim_source));
 }
 
+void Controller::add_Graphical_WF_Source(int screenX, int screenY)
+{
+    node_count++;
+    string n1_name = "N" + to_string(node_count);
+    node_count++;
+    string n2_name = "N" + to_string(node_count);
+    voltage_source_count++;
+    string VS_name = "VS" + to_string(voltage_source_count);
+
+    Node* n1 = circuit->create_new_node(n1_name);
+    Node* n2 = circuit->create_new_node(n2_name);
+
+    n1->connect_element();
+    n2->connect_element();
+
+    Voltage_Source* sim_WF_voltage_source = new Waveform_Voltage_Source(VS_name, n1, n2, 1, 1);
+
+    circuit->addElement(sim_WF_voltage_source);
+    circuit->get_Elements().back()->set_coordinates(screenX, screenY);
+
+    auto gfx_sim_voltage_source = make_unique<Graphical_Voltage_Source>(sim_WF_voltage_source);
+    gfx_sim_voltage_source->bounding_box = {screenX, screenY, 100, 40};
+    graphical_elements.push_back(move(gfx_sim_voltage_source));
+}
+
 void Controller::add_Graphical_VCVS(int screenX, int screenY)
 {
     node_count++;
@@ -2349,6 +2374,10 @@ void Controller::build_graphical_elements_from_circuit()
             auto gfx = make_unique<Graphical_Voltage_Source>(voltage_source);
             gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
             gfx->set_rotation_by_int(model->get_rotation_as_int());
+            if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model))
+            {
+                gfx->make_AC();
+            }
             graphical_elements.push_back(move(gfx));
         }
     }

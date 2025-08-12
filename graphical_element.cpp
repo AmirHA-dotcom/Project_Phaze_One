@@ -617,6 +617,10 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
             AC->get_parameters(amp, freq, phase);
             to_be_printed = "AC(" + format_with_suffix(amp, " ") + format_with_suffix(freq, " ") + format_with_suffix(phase, ")");
         }
+        else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
+        {
+            to_be_printed = "WaveForm VS";
+        }
         else
         {
             to_be_printed = format_with_suffix(model_element->get_value(), "V");
@@ -1046,6 +1050,10 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         props.push_back({"Amplitude (V)", to_string(amp)});
         props.push_back({"Frequency (Hz)", to_string(freq)});
         props.push_back({"Phase (deg)", to_string(phase)});
+    }
+    else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
+    {
+
     }
 
     return props;
