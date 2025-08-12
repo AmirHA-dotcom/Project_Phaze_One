@@ -1629,7 +1629,7 @@ bool graphical_view::run(Controller *C)
         {
             if (event.type == SDL_QUIT)
             {
-                running = false;
+                throw Quit_Event_Exception();
                 continue;
             }
 
@@ -1927,7 +1927,7 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
     // quit
     if (event.type == SDL_QUIT)
     {
-        return false;
+        throw Quit_Event_Exception();
     }
 
     // window events
@@ -2162,7 +2162,8 @@ bool graphical_view::handle_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_menu_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -2315,7 +2316,8 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
         SDL_StopTextInput();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         SDL_Point mouse_pos = {event.button.x, event.button.y};
@@ -2386,7 +2388,8 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
 
 bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -2762,7 +2765,8 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -2850,7 +2854,8 @@ bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -3209,7 +3214,8 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
         SDL_StopTextInput();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -3324,7 +3330,8 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
 
 bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
     {
@@ -3692,7 +3699,8 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
 bool graphical_view::handle_math_operation_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
     {
@@ -3837,7 +3845,8 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         C->getFile_Handler().saveFiles();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -3909,7 +3918,8 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
     {
@@ -3946,7 +3956,8 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
         is_file_menu_open = false;
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE))
     {
@@ -4011,7 +4022,8 @@ bool graphical_view::handle_file_menu_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -4084,7 +4096,8 @@ bool graphical_view::handle_SubC_menu_events(SDL_Event &event, Controller *C)
 
 bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C)
 {
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -4148,7 +4161,8 @@ bool graphical_view::handle_text_input_menu_events(SDL_Event& event)
         SDL_StopTextInput();
     };
 
-    if (event.type == SDL_QUIT) return false;
+    if (event.type == SDL_QUIT)
+        throw Quit_Event_Exception();
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
