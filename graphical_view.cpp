@@ -3919,6 +3919,7 @@ bool graphical_view::handle_deleting_events(SDL_Event &event, Controller *C)
         Graphical_Element* element = find_element_at(pos, C);
         if (element)
         {
+            if (dynamic_cast<Graphical_Net_Label*>(element)) return true;
             if (dynamic_cast<Graphical_Ground*>(element)) dynamic_cast<Graphical_Ground*>(element)->get_node()->return_to_normal();
             C->delete_element(element);
             is_deleting = false;
