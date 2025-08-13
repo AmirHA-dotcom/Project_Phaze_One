@@ -45,7 +45,7 @@ public:
     void set_net_label_coordinates(int x_, int y_);
     pair<int, int> get_net_label_coordinates() { return {net_label_coordinates.first, net_label_coordinates.second}; }
 
-    vector<pair<int,int>> get_net_label_coordinates_vector() { return net_label_coordinates_vector; }
+    vector<pair<int,int>> get_net_label_coordinates_vector() { return net_label_coordinates_vector; }// delete
 
     string net_name;
 };
