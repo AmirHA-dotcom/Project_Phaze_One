@@ -1068,7 +1068,13 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
 }
 SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
     // Use textToCircuit to create the base Circuit
-    Circuit* baseCircuit = textToCircuit(Name, lines);
+    vector<vector<string>> baseLines = lines;
+
+    baseLines.erase(baseLines.begin() + 3);
+    baseLines.erase(baseLines.begin() + 2);
+    baseLines.erase(baseLines.begin() + 1);
+
+    Circuit* baseCircuit = textToCircuit(Name, baseLines);
 
     // If textToCircuit didn't return a SubCircuit, create one
     SubCircuit* subCircuit = new SubCircuit();
@@ -1079,6 +1085,9 @@ SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
     }
     for (auto* node : baseCircuit->get_Nodes()) {
         subCircuit->addNode(node);
+    }
+    for (auto sub : baseCircuit->getSubs()) {
+        subCircuit->getSubs().push_back(sub);
     }
     delete baseCircuit; // Clean up if baseCircuit is not a SubCircuit
 
@@ -1295,18 +1304,29 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
 
 SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>& lines) {
     // Use textToCircuit to create the base Circuit
-    Circuit* baseCircuit = textToCircuit(Name, lines);
+    vector<vector<string>> baseLines = lines;
 
-        SubCircuit* subCircuit = new SubCircuit();
-        subCircuit->change_name(Name);
-        // Copy elements and nodes from baseCircuit
-        for (auto* element : baseCircuit->get_Elements()) {
-            subCircuit->addElement(element);
-        }
-        for (auto* node : baseCircuit->get_Nodes()) {
-            subCircuit->addNode(node);
-        }
-        delete baseCircuit; // Clean up if baseCircuit is not a SubCircuit
+    baseLines.erase(baseLines.begin() + 3);
+    baseLines.erase(baseLines.begin() + 2);
+    baseLines.erase(baseLines.begin() + 1);
+
+    Circuit* baseCircuit = textToCircuit(Name, baseLines);
+
+    SubCircuit* subCircuit = new SubCircuit();
+
+    subCircuit->change_name(Name);
+    // Copy elements and nodes from baseCircuit
+    for (auto* element : baseCircuit->get_Elements()) {
+        subCircuit->addElement(element);
+    }
+    for (auto* node : baseCircuit->get_Nodes()) {
+        subCircuit->addNode(node);
+    }
+    for (auto sub : baseCircuit->getSubs()) {
+        subCircuit->getSubs().push_back(sub);
+    }
+
+    //delete baseCircuit; // Clean up if baseCircuit is not a SubCircuit
 
     // Map to store nodes by name for reuse
     unordered_map<string, Node*> nodeMap;
@@ -1373,7 +1393,7 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
 }
 /**/
 void Controller::loadSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "/subcircuits/";
+    string path = file_handler.getMainFolderPath() + "/Subcircuits/";
     vector<string> files = file_handler.getFilesInDirectory(path);
     for (const auto& file : files) {
         if (file.substr(file.find_last_of(".") + 1) == "txt") {
@@ -1400,7 +1420,7 @@ void Controller::loadSubCircuits () {
 }
 
 void Controller::loadGraphicalSubCircuits () {
-    string path = file_handler.getMainFolderPath() + "/subcircuits/";
+    string path = file_handler.getMainFolderPath() + "/Subcircuits/";
     vector<string> files = file_handler.getFilesInDirectory(path);
     for (const auto& file : files) {
         if (file.substr(file.find_last_of(".") + 1) == "txt") {
