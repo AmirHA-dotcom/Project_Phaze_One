@@ -41,6 +41,21 @@ inline string format_with_suffix(double value, const string& unit) {
     return ss.str() + unit;
 }
 
+pair<string, string> vectors_to_dashed_strings(vector<pair<double, double>> data_points)
+{
+    if (data_points.empty()) { return {"", ""}; }
+    pair<string, string> strings;
+    for (int i = 0; i < data_points.size() - 1; i++)
+    {
+        strings.first += format_with_suffix(data_points[i].first, "-");
+        strings.second += format_with_suffix(data_points[i].second, "-");
+    }
+    strings.first += format_with_suffix(data_points.back().first, "");
+    strings.second += format_with_suffix(data_points.back().second, "");
+
+    return strings;
+}
+
 inline void draw_circle(SDL_Renderer* renderer, int center_x, int center_y, int radius)
 {
     int x = radius - 1;
@@ -1053,8 +1068,10 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
     }
     else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
     {
-        props.push_back({"Times (s)", ""});
-        props.push_back({"Voltages (V)", ""});
+        pair<string, string> values = vectors_to_dashed_strings(WF->get_data_points());
+
+        props.push_back({"Times (s)", values.second});
+        props.push_back({"Voltages (V)", values.first});
     }
 
     return props;

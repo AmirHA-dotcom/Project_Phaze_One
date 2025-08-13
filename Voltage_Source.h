@@ -56,6 +56,9 @@ public:
         segments = newSegments;
         totalDuration = total;
     }
+
+    vector<pair<double, double>> get_data_points() { return segments; }
+
     // Get the value of the voltage at a given time
     double get_value_at(double time, double /*time_step*/) const override {
         if (time < 0.0 || segments.empty()) {

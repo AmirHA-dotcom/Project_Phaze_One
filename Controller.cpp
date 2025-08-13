@@ -42,7 +42,7 @@ vector<pair<double, double>> create_data_points_from_strings(const string& time_
 
     for (int i = 0; i < num_points; ++i)
     {
-        data_points.push_back({times[i], voltages[i]});
+        data_points.push_back({voltages[i], times[i]});
     }
 
     return data_points;
@@ -1812,7 +1812,7 @@ void Controller::add_Graphical_WF_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_WF_voltage_source = new Waveform_Voltage_Source(VS_name, n1, n2, 1, 1);
+    Voltage_Source* sim_WF_voltage_source = new Waveform_Voltage_Source(VS_name, n1, n2);
 
     circuit->addElement(sim_WF_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -2118,11 +2118,12 @@ void Controller::update_element_properties(int element_index, const vector<strin
             {
                 vector<pair<double, double>> data_points = create_data_points_from_strings(new_values[1], new_values[2]);
 
-                for (const auto& dp: data_points)
-                {
-                    cout << "Time:" << dp.first << "\tVoltage:" << dp.second << endl;
-                }
+//                for (const auto& dp: data_points)
+//                {
+//                    cout << "Time:" << dp.second << "\tVoltage:" << dp.first << endl;
+//                }
 
+                WF->set_segments(data_points);
             }
         }
     }

@@ -386,8 +386,8 @@ bool View::handleCircuitMenu (Controller* C) {
         }
         Node* node1 = C->findNode(node1Name);
         Node* node2 = C->findNode(node2Name);
-        Waveform_Voltage_Source* waveform = new Waveform_Voltage_Source(waveformName, node1, node2, duration, samplingRate);
-        C->add_Waveform_Voltage_Source(waveform);
+        //Waveform_Voltage_Source* waveform = new Waveform_Voltage_Source(waveformName, node1, node2, duration, samplingRate);
+        //C->add_Waveform_Voltage_Source(waveform);
         return true;
     }
     if (addRCheck(i)) {
