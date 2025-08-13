@@ -103,8 +103,13 @@ void Node::reset_voltages()
 
 void Node::set_net_label_coordinates(int x_, int y_)
 {
-    net_label_coordinates.first = x_;
-    net_label_coordinates.second = y_;
+//    net_label_coordinates.first = x_;
+//    net_label_coordinates.second = y_;
+
+    net_label_coordinates_vector.push_back({x_, y_});
+
+//    for (auto co: net_label_coordinates_vector)
+//        cout << "X = " << co.first << "\tY = " << co.second << endl;
 }
 void Node::set_ground_coordinates(int x_, int y_)
 {

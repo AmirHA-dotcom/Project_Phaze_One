@@ -16,7 +16,8 @@ private:
     int elements_connected_count;
     int index;
     pair<int, int> ground_coordinates;
-    pair<int, int> net_label_coordinates;
+    pair<int, int> net_label_coordinates;   // delete this one!!!
+    vector<pair<int,int>> net_label_coordinates_vector;
 
 public:
     Node(string _name);
@@ -40,8 +41,11 @@ public:
 
     void set_ground_coordinates(int x_, int y_);
     pair<int, int> get_ground_coordinates() { return {ground_coordinates.first, ground_coordinates.second}; }
+
     void set_net_label_coordinates(int x_, int y_);
     pair<int, int> get_net_label_coordinates() { return {net_label_coordinates.first, net_label_coordinates.second}; }
+
+    vector<pair<int,int>> get_net_label_coordinates_vector() { return net_label_coordinates_vector; }
 
     string net_name;
 };

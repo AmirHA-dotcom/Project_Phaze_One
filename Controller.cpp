@@ -2166,6 +2166,11 @@ Node* Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     // for label naming
     if (!node_to_merge->net_name.empty())
     {
+        for (const auto& coords : node_to_merge->get_net_label_coordinates_vector())
+        {
+            node_to_keep->set_net_label_coordinates(coords.first, coords.second);
+        }
+
         named_nets[node_to_merge->net_name] = node_to_keep;
         if (node_to_keep->net_name.empty())
         {
