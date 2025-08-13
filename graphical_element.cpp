@@ -1053,7 +1053,8 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
     }
     else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
     {
-
+        props.push_back({"Times (s)", ""});
+        props.push_back({"Voltages (V)", ""});
     }
 
     return props;

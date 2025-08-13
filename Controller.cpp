@@ -5,7 +5,48 @@
 #include "Controller.h"
 #include "Libraries.h"
 
+// helper
+vector<double> separating_values_by_dash(const string& input_string)
+{
+    vector<double> numbers;
+    stringstream ss(input_string);
+    string token;
 
+    while (getline(ss, token, '-'))
+    {
+        try
+        {
+            if (!token.empty())
+            {
+                numbers.push_back(toValue(token));
+            }
+        }
+        catch (const exception& e)
+        {
+            cerr << "Warning: Could not parse token '" << token << "'. Skipping..." << endl;
+        }
+    }
+
+    return numbers;
+}
+
+// helper
+vector<pair<double, double>> create_data_points_from_strings(const string& time_string, const string& voltage_string)
+{
+    vector<double> times = separating_values_by_dash(time_string);
+    vector<double> voltages = separating_values_by_dash(voltage_string);
+
+    vector<pair<double, double>> data_points;
+
+    int num_points = min(times.size(), voltages.size());
+
+    for (int i = 0; i < num_points; ++i)
+    {
+        data_points.push_back({times[i], voltages[i]});
+    }
+
+    return data_points;
+}
 
 
 Controller::Controller() {
@@ -2068,6 +2109,19 @@ void Controller::update_element_properties(int element_index, const vector<strin
                 if (isValidSpiceNumber(new_values[1])) AC->set_amplitude(toValue(new_values[1]));
                 if (isValidSpiceNumber(new_values[2])) AC->set_frequency(toValue(new_values[2]));
                 if (isValidSpiceNumber(new_values[3])) AC->set_phase_degrees(toValue(new_values[3]));
+            }
+        }
+        else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(v_source))
+        {
+            if (new_values.size() >2)
+            {
+                vector<pair<double, double>> data_points = create_data_points_from_strings(new_values[1], new_values[2]);
+
+                for (const auto& dp: data_points)
+                {
+                    cout << "Time:" << dp.first << "\tVoltage:" << dp.second << endl;
+                }
+
             }
         }
     }
