@@ -6,20 +6,41 @@
 
 // helper functions
 
-//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-//const char* PROBE = "D://Images//probe_cursor.png";
-//const char* DELETE = "D://Images//sissors_cursor.png";
-//const char* GROUND = "D://Images//grounding_cursor.png";
-//const char* ICON = "D://Images//SparkSense2.png";
-//const char* TICK = "D://Images//tick_40x40.png";
+const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+const char* PROBE = "D://Images//probe_cursor.png";
+const char* DELETE = "D://Images//sissors_cursor.png";
+const char* GROUND = "D://Images//grounding_cursor.png";
+const char* ICON = "D://Images//SparkSense2.png";
+const char* TICK = "D://Images//tick_40x40.png";
 
-const char* FONT = "/Users/arian/Desktop/OOP/pf/Athelas.ttc";
-const char* PROBE = "/Users/arian/Desktop/OOP/pf/probe_cursor.png";
-const char* DELETE = "/Users/arian/Desktop/OOP/pf/sissors_cursor.png";
-const char* GROUND = "/Users/arian/Desktop/OOP/pf/grounding_cursor.png";
-const char* ICON = "/Users/arian/Desktop/OOP/pf/SparkSense2.png";
-const char* TICK = "/Users/arian/Desktop/OOP/pf/tick_40x40.png";
+//const char* FONT = "/Users/arian/Desktop/OOP/pf/Athelas.ttc";
+//const char* PROBE = "/Users/arian/Desktop/OOP/pf/probe_cursor.png";
+//const char* DELETE = "/Users/arian/Desktop/OOP/pf/sissors_cursor.png";
+//const char* GROUND = "/Users/arian/Desktop/OOP/pf/grounding_cursor.png";
+//const char* ICON = "/Users/arian/Desktop/OOP/pf/SparkSense2.png";
+//const char* TICK = "/Users/arian/Desktop/OOP/pf/tick_40x40.png";
 
+void trim_whitespace(string& s)
+{
+    const char* WHITESPACE = " \t\n\r\f\v";
+
+    size_t end = s.find_last_not_of(WHITESPACE);
+    if (string::npos != end)
+    {
+        s.erase(end + 1);
+    }
+    else
+    {
+        s.clear();
+        return;
+    }
+
+    size_t start = s.find_first_not_of(WHITESPACE);
+    if (string::npos != start)
+    {
+        s.erase(0, start);
+    }
+}
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
 {
@@ -3918,11 +3939,13 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
                 {
                     if (active_edit_box != -1)
                     {
-                        char* clipboard_text = SDL_GetClipboardText();
-                        if (clipboard_text)
+                        char* clipboard_c_str = SDL_GetClipboardText();
+                        if (clipboard_c_str)
                         {
-                            edit_buffers[active_edit_box] += clipboard_text;
-                            SDL_free(clipboard_text);
+                            string pasted_text(clipboard_c_str);
+                            trim_whitespace(pasted_text);
+                            edit_buffers[active_edit_box] += pasted_text;
+                            SDL_free(clipboard_c_str);
                         }
                     }
                 }
