@@ -686,6 +686,7 @@ void Graphical_SubCircuit::draw(SDL_Renderer* renderer, bool show_grid)
 
     vector<Connection_Point> points = get_connection_points();
 
+    int flag = 1;
     for (const auto& point : points)
     {
         SDL_Rect square = {
@@ -695,8 +696,12 @@ void Graphical_SubCircuit::draw(SDL_Renderer* renderer, bool show_grid)
                 10
         };
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+        if (flag == 1)
+            SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
+        else
+            SDL_SetRenderDrawColor(renderer, 200, 0, 0, 255);
         SDL_RenderFillRect(renderer, &square);
+        flag++;
     }
 
     // text
