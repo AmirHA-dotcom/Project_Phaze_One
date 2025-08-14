@@ -3910,6 +3910,24 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
             case SDLK_RETURN:
                 save_and_exit();
                 break;
+
+            case SDLK_v:
+            {
+                SDL_Keymod modState = SDL_GetModState();
+                if (modState & KMOD_CTRL)
+                {
+                    if (active_edit_box != -1)
+                    {
+                        char* clipboard_text = SDL_GetClipboardText();
+                        if (clipboard_text)
+                        {
+                            edit_buffers[active_edit_box] += clipboard_text;
+                            SDL_free(clipboard_text);
+                        }
+                    }
+                }
+                break;
+            }
         }
     }
 
