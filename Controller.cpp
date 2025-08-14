@@ -2723,6 +2723,14 @@ void Controller::get_phase_params(double &start_p, double &stop_p, double &num_o
     type = phase_sweep_type;
 }
 
+void Controller::get_phase_params_without_type(double &start_p, double &stop_p, double &num_of_points_p, double &fixed_p)
+{
+    start_p = start_phase;
+    stop_p = end_phase;
+    num_of_points_p = num_of_points_phase;
+    fixed_p = fixed_frequency;
+}
+
 void Controller::addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val) {
     int n1 = (node1 > 0) ? node1 - 1 : -1;
     int n2 = (node2 > 0) ? node2 - 1 : -1;

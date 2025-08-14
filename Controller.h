@@ -337,7 +337,7 @@ public:
 
     void set_phase_sweep_variables(double start_p, double stop_p, double base_p,double num_of_points_p, Phase_Sweep_Type type);
     void get_phase_params(double& start_p, double& stop_p, double& num_of_points_p, double& fixed_p, Phase_Sweep_Type& type);
-
+    void get_phase_params_without_type(double &start_p, double &stop_p, double &num_of_points_p, double &fixed_p);
 
     void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);
     void performACSweep(Circuit* circuit);

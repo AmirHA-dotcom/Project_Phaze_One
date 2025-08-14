@@ -958,7 +958,7 @@ vector<Editable_Property> Graphical_Resistor::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Resistance (Ohms)", to_string(model_element->get_value())});
+    props.push_back({"Resistance (Ohms)", format_with_suffix(model_element->get_value(), "")});
     return props;
 }
 
@@ -967,7 +967,7 @@ vector<Editable_Property> Graphical_Capacitor::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Capacitance (F)", to_string(model_element->get_value())});
+    props.push_back({"Capacitance (F)", format_with_suffix(model_element->get_value(), "")});
     return props;
 }
 
@@ -976,7 +976,7 @@ vector<Editable_Property> Graphical_Inductor::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Inductance (H)", to_string(model_element->get_value())});
+    props.push_back({"Inductance (H)", format_with_suffix(model_element->get_value(), "")});
     return props;
 }
 
@@ -985,7 +985,7 @@ vector<Editable_Property> Graphical_Current_Source::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Current (A)", to_string(model_element->get_value())});
+    props.push_back({"Current (A)", format_with_suffix(model_element->get_value(), "")});
     return props;
 }
 
@@ -994,7 +994,7 @@ vector<Editable_Property> Graphical_Real_Diode::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    props.push_back({"Voltage (V)", format_with_suffix(model_element->get_value(), "")});
     return props;
 }
 
@@ -1003,7 +1003,7 @@ vector<Editable_Property> Graphical_Zener_Diode::get_editable_properties()
     vector<Editable_Property> props;
 
     props.push_back({"Name", model_element->get_name()});
-    props.push_back({"Voltage (V)", to_string(model_element->get_value())});
+    props.push_back({"Voltage (V)", format_with_suffix(model_element->get_value(), "")});
     return props;
 }
 
@@ -1015,61 +1015,61 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
 
     if (auto* dc = dynamic_cast<DC_Source*>(model_element))
     {
-        props.push_back({"Value (V)", to_string(dc->get_value_at(0, 0))});
+        props.push_back({"Value (V)", format_with_suffix(dc->get_value_at(0, 0), "")});
     }
     else if (auto* sine = dynamic_cast<Sine_Source*>(model_element))
     {
         double off, amp, freq, phase;
         sine->get_parameters(off, amp, freq, phase);
-        props.push_back({"Offset (V)", to_string(off)});
-        props.push_back({"Amplitude (V)", to_string(amp)});
-        props.push_back({"Frequency (Hz)", to_string(freq)});
-        props.push_back({"Phase (deg)", to_string(phase)});
+        props.push_back({"Offset (V)", format_with_suffix(off, "")});
+        props.push_back({"Amplitude (V)", format_with_suffix(amp, "")});
+        props.push_back({"Frequency (Hz)", format_with_suffix(freq, "")});
+        props.push_back({"Phase (deg)", format_with_suffix(phase, "")});
     }
     else if (auto* pulse = dynamic_cast<Pulse_Source*>(model_element))
     {
         double v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period;
         pulse->get_parameters(v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period);
-        props.push_back({"Initial V", to_string(v_initial)});
-        props.push_back({"Pulsed V", to_string(v_pulsed)});
-        props.push_back({"Delay (s)", to_string(time_delay)});
-        props.push_back({"Rise Time (s)", to_string(time_rise)});
-        props.push_back({"Fall Time (s)", to_string(time_fall)});
-        props.push_back({"Pulse Width (s)", to_string(pulse_width)});
-        props.push_back({"Period (s)", to_string(period)});
+        props.push_back({"Initial V", format_with_suffix(v_initial, "")});
+        props.push_back({"Pulsed V", format_with_suffix(v_pulsed, "")});
+        props.push_back({"Delay (s)", format_with_suffix(time_delay, "")});
+        props.push_back({"Rise Time (s)", format_with_suffix(time_rise, "")});
+        props.push_back({"Fall Time (s)", format_with_suffix(time_fall, "")});
+        props.push_back({"Pulse Width (s)", format_with_suffix(pulse_width, "")});
+        props.push_back({"Period (s)", format_with_suffix(period, "")});
     }
     else if (auto* square = dynamic_cast<Square_Source*>(model_element))
     {
         double v_down, v_up, time_delay, square_width, period;
         square->get_parameters(v_down, v_up, time_delay, square_width, period);
-        props.push_back({"Low V", to_string(v_down)});
-        props.push_back({"High V", to_string(v_up)});
-        props.push_back({"Delay (s)", to_string(time_delay)});
-        props.push_back({"Pulse Width (s)", to_string(square_width)});
-        props.push_back({"Period (s)", to_string(period)});
+        props.push_back({"Low V", format_with_suffix(v_down, "")});
+        props.push_back({"High V", format_with_suffix(v_up, "")});
+        props.push_back({"Delay (s)", format_with_suffix(time_delay, "")});
+        props.push_back({"Pulse Width (s)", format_with_suffix(square_width, "")});
+        props.push_back({"Period (s)", format_with_suffix(period, "")});
     }
     else if (auto* tri = dynamic_cast<Triangular_Source*>(model_element))
     {
         double v_initial, v_peak, time_delay, period;
         tri->get_parameters(v_initial, v_peak, time_delay, period);
-        props.push_back({"Initial V", to_string(v_initial)});
-        props.push_back({"Peak V", to_string(v_peak)});
-        props.push_back({"Delay (s)", to_string(time_delay)});
-        props.push_back({"Period (s)", to_string(period)});
+        props.push_back({"Initial V", format_with_suffix(v_initial, "")});
+        props.push_back({"Peak V", format_with_suffix(v_peak, "")});
+        props.push_back({"Delay (s)", format_with_suffix(time_delay, "")});
+        props.push_back({"Period (s)", format_with_suffix(period, "")});
     }
     else if (auto* delta = dynamic_cast<Delta_Dirac*>(model_element))
     {
         double delta_val, not_delta_val, time;
         delta->get_parameters(delta_val, not_delta_val, time);
-        props.push_back({"Time (s)", to_string(time)});
+        props.push_back({"Time (s)", format_with_suffix(time, "")});
     }
     else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model_element))
     {
         double amp, freq, phase;
         AC->get_parameters(amp, freq, phase);
-        props.push_back({"Amplitude (V)", to_string(amp)});
-        props.push_back({"Frequency (Hz)", to_string(freq)});
-        props.push_back({"Phase (deg)", to_string(phase)});
+        props.push_back({"Amplitude (V)", format_with_suffix(amp, "")});
+        props.push_back({"Frequency (Hz)", format_with_suffix(freq, "")});
+        props.push_back({"Phase (deg)", format_with_suffix(phase, "")});
     }
     else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
     {
@@ -1751,6 +1751,18 @@ string Graphical_Voltage_Source::get_info_text()
         delta->get_parameters(delta_value, not_delta_value, time_of_delta);
 
         info_text = "Time=" + format_with_suffix(time_of_delta, "s");
+    }
+    else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model_element))
+    {
+        double out_amplitude, out_frequency, out_phase;
+        AC->get_parameters(out_amplitude, out_frequency, out_phase);
+        info_text = "Amplitude=" + format_with_suffix(out_amplitude, "V") +
+                    "Frequency=" + format_with_suffix(out_frequency, "Hz") +
+                    "Phase=" + format_with_suffix(out_phase, "Deg");
+    }
+    else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
+    {
+        info_text = "Waveform Voltage Source";
     }
 
     return info_text;

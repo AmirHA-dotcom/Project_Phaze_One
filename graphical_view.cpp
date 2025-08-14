@@ -572,9 +572,9 @@ void graphical_view::initialize_configure_analysis_menu(Controller* C)
         {
             double start, stop, step;
             C->get_tran_params(start, stop, step);
-            edit_buffers.push_back(std::to_string(start));
-            edit_buffers.push_back(std::to_string(stop));
-            edit_buffers.push_back(std::to_string(step));
+            edit_buffers.push_back(format_with_suffix(start, ""));
+            edit_buffers.push_back(format_with_suffix(stop, ""));
+            edit_buffers.push_back(format_with_suffix(step, ""));
         }
             break;
         case Analysis_Mode::AC_Sweep:
@@ -582,17 +582,23 @@ void graphical_view::initialize_configure_analysis_menu(Controller* C)
             double start, stop, step;
             AC_Sweep_Type type;
             C->get_ac_params(start, stop, step, type);
-            C->get_ac_params(start, stop, step, type);
             this->AC_sweep_type = type;
-            cout << "INITIALIZING MENU: AC_sweep_type set to " << (int)this->AC_sweep_type << endl;
+            //cout << "INITIALIZING MENU: AC_sweep_type set to " << (int)this->AC_sweep_type << endl;
             this->AC_sweep_type = type;
-            edit_buffers.push_back(std::to_string(start));
-            edit_buffers.push_back(std::to_string(stop));
-            edit_buffers.push_back(std::to_string(step));
+            edit_buffers.push_back(format_with_suffix(start, ""));
+            edit_buffers.push_back(format_with_suffix(stop, ""));
+            edit_buffers.push_back(format_with_suffix(step, ""));
         }
             break;
         case Analysis_Mode::Phase_Sweep:
+            double start, stop, num_of_p, base_p;
+            C->get_phase_params_without_type(start, stop, num_of_p, base_p);
             edit_buffers.resize(4, "");
+            edit_buffers.push_back(format_with_suffix(start, ""));
+            edit_buffers.push_back(format_with_suffix(stop, ""));
+            edit_buffers.push_back(format_with_suffix(num_of_p, ""));
+            edit_buffers.push_back(format_with_suffix(base_p, ""));
+
             break;
     }
 }
