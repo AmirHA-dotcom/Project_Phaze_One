@@ -6,19 +6,19 @@
 
 // helper functions
 
-const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-const char* PROBE = "D://Images//probe_cursor.png";
-const char* DELETE = "D://Images//sissors_cursor.png";
-const char* GROUND = "D://Images//grounding_cursor.png";
-const char* ICON = "D://Images//SparkSense2.png";
-const char* TICK = "D://Images//tick_40x40.png";
+//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+//const char* PROBE = "D://Images//probe_cursor.png";
+//const char* DELETE = "D://Images//sissors_cursor.png";
+//const char* GROUND = "D://Images//grounding_cursor.png";
+//const char* ICON = "D://Images//SparkSense2.png";
+//const char* TICK = "D://Images//tick_40x40.png";
 
-//const char* FONT = "/Users/arian/Desktop/OOP/PNGs & FONTs/Athelas.ttc";
-//const char* PROBE = "/Users/arian/Desktop/OOP/PNGs & FONTs/probe_cursor.png";
-//const char* DELETE = "/Users/arian/Desktop/OOP/PNGs & FONTs/sissors_cursor.png";
-//const char* GROUND = "/Users/arian/Desktop/OOP/PNGs & FONTs/grounding_cursor.png";
-//const char* ICON = "/Users/arian/Desktop/OOP/PNGs & FONTs/SparkSense2.png";
-//const char* TICK = "/Users/arian/Desktop/OOP/PNGs & FONTs/tick_40x40.png";
+const char* FONT = "/Users/arian/Desktop/OOP/pf/Athelas.ttc";
+const char* PROBE = "/Users/arian/Desktop/OOP/pf/probe_cursor.png";
+const char* DELETE = "/Users/arian/Desktop/OOP/pf/sissors_cursor.png";
+const char* GROUND = "/Users/arian/Desktop/OOP/pf/grounding_cursor.png";
+const char* ICON = "/Users/arian/Desktop/OOP/pf/SparkSense2.png";
+const char* TICK = "/Users/arian/Desktop/OOP/pf/tick_40x40.png";
 
 
 inline SDL_Point snap_to_grid(int x, int y, int grid_size)
@@ -1180,7 +1180,7 @@ void graphical_view::draw_save_menu(SDL_Renderer *renderer, TTF_Font *font, Cont
     SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
     SDL_RenderFillRect(renderer, &menu_panel);
 
-    vector<Editable_Property> props = {{"Name", current_file_name}, {"Address", current_file_address}};
+    vector<Editable_Property> props = {{"Name", current_file_name}, {"Address", C->getFile_Handler().getMainFolderPath()}}; //dodo
 
     property_rects.clear();
 
@@ -4159,7 +4159,7 @@ bool graphical_view::handle_SubC_creation_events(SDL_Event &event, Controller *C
         //cout << node1->get_name() << " " << node2->get_name() << " pkfjpigjrpfirejfpijfpe" << endl;
         C->addSubCircuit(new_SubC_name,C->circuit, node1, node2);
         //C->saveGraphicalSubCircuits();
-        C->saveGraphicalSubCircuit(C->subCircuits.back(), "D://Project_Files//subcircuits/");
+        C->saveGraphicalSubCircuit(C->subCircuits.back(), C->getFile_Handler().getMainFolderPath() + "/SubCircuits");
 
         new_SubC_name = "";
         node1 = nullptr;
