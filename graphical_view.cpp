@@ -705,15 +705,15 @@ void graphical_view::draw_configure_analysis(SDL_Renderer *renderer, TTF_Font *f
     render_text(renderer, font, "Cancel", cancel_button_rect.x + 25, cancel_button_rect.y + 5, TEXT_COLOR);
 }
 
-void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C)
-{
+void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *font, Controller *C) {
     const SDL_Color PANEL_BG = {50, 58, 69, 255}, TEXT_COLOR = {211, 211, 211, 255};
     const SDL_Color DISPLAY_BG = {33, 37, 41, 255}, BUTTON_BG = {80, 88, 99, 255};
     const SDL_Color SELECTED_BG = {52, 152, 219, 255}, DISABLED_BG = {60, 68, 80, 255};
 
     int menu_width = 830;
     int menu_height = 700;
-    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width, menu_height};
+    SDL_Rect menu_panel = {(m_window_width - menu_width) / 2, (m_window_height - menu_height) / 2, menu_width,
+                           menu_height};
     SDL_SetRenderDrawColor(renderer, PANEL_BG.r, PANEL_BG.g, PANEL_BG.b, PANEL_BG.a);
     SDL_RenderFillRect(renderer, &menu_panel);
 
@@ -731,13 +731,15 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     constant_textbox_rect = {menu_panel.x + 150, builder_y + 25, 100, 30};
     SDL_SetRenderDrawColor(renderer, DISPLAY_BG.r, DISPLAY_BG.g, DISPLAY_BG.b, DISPLAY_BG.a);
     SDL_RenderFillRect(renderer, &constant_textbox_rect);
-    SDL_SetRenderDrawColor(renderer, is_editing_constant ? SELECTED_BG.r : BUTTON_BG.r, is_editing_constant ? SELECTED_BG.g : BUTTON_BG.g, is_editing_constant ? SELECTED_BG.b : BUTTON_BG.b, 255);
+    SDL_SetRenderDrawColor(renderer, is_editing_constant ? SELECTED_BG.r : BUTTON_BG.r,
+                           is_editing_constant ? SELECTED_BG.g : BUTTON_BG.g,
+                           is_editing_constant ? SELECTED_BG.b : BUTTON_BG.b, 255);
     SDL_RenderDrawRect(renderer, &constant_textbox_rect);
-    render_text(renderer, font, math_constant_buffer, constant_textbox_rect.x + 5, constant_textbox_rect.y + 5, TEXT_COLOR);
+    render_text(renderer, font, math_constant_buffer, constant_textbox_rect.x + 5, constant_textbox_rect.y + 5,
+                TEXT_COLOR);
 
     render_text(renderer, font, "Signal Type:", menu_panel.x + 280, builder_y + 30, TEXT_COLOR);
-    if (current_analysis_mode == Analysis_Mode::Transient)
-    {
+    if (current_analysis_mode == Analysis_Mode::Transient) {
         // type of signal (VIP!)
         v_button_rect = {menu_panel.x + 380, builder_y + 25, 30, 30};
         i_button_rect = {menu_panel.x + 415, builder_y + 25, 30, 30};
@@ -772,9 +774,8 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
         );
         SDL_RenderFillRect(renderer, &p_button_rect);
         render_text(renderer, font, "P", p_button_rect.x + 10, p_button_rect.y + 5);
-    }
-    else if (current_analysis_mode == Analysis_Mode::AC_Sweep || current_analysis_mode == Analysis_Mode::Phase_Sweep)
-    {
+    } else if (current_analysis_mode == Analysis_Mode::AC_Sweep ||
+               current_analysis_mode == Analysis_Mode::Phase_Sweep) {
         // type of signal (MP!)
         mag_button_rect = {menu_panel.x + 380, builder_y + 25, 60, 30};
         phase_button_rect = {menu_panel.x + 445, builder_y + 25, 60, 30};
@@ -804,15 +805,18 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     render_text(renderer, font, "Element:", menu_panel.x + 20, builder_y + 70, TEXT_COLOR);
     math_element_buttons.clear();
     int list_y = builder_y + 95;
-    for (int i = 0; i < C->get_graphical_elements().size(); ++i)
-    {
-        const auto& element = C->get_graphical_elements()[i];
-        if (dynamic_cast<Graphical_Ground*>(element.get()) || dynamic_cast<Graphical_SubCircuit*>(element.get()) || dynamic_cast<Graphical_Net_Label*>(element.get())) continue;
+    for (int i = 0; i < C->get_graphical_elements().size(); ++i) {
+        const auto &element = C->get_graphical_elements()[i];
+        if (dynamic_cast<Graphical_Ground *>(element.get()) || dynamic_cast<Graphical_SubCircuit *>(element.get()) ||
+            dynamic_cast<Graphical_Net_Label *>(element.get()))
+            continue;
 
         SDL_Rect item_rect = {menu_panel.x + 20, list_y + (i * 35), 230, 30};
         math_element_buttons.push_back(item_rect);
 
-        SDL_SetRenderDrawColor(renderer, (i == math_selected_element_index) ? SELECTED_BG.r : BUTTON_BG.r, (i == math_selected_element_index) ? SELECTED_BG.g : BUTTON_BG.g, (i == math_selected_element_index) ? SELECTED_BG.b : BUTTON_BG.b, 255);
+        SDL_SetRenderDrawColor(renderer, (i == math_selected_element_index) ? SELECTED_BG.r : BUTTON_BG.r,
+                               (i == math_selected_element_index) ? SELECTED_BG.g : BUTTON_BG.g,
+                               (i == math_selected_element_index) ? SELECTED_BG.b : BUTTON_BG.b, 255);
         SDL_RenderFillRect(renderer, &item_rect);
         render_text(renderer, font, element->get_model()->get_name(), item_rect.x + 5, item_rect.y + 5, TEXT_COLOR);
     }
@@ -821,9 +825,15 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     int column2_x = menu_panel.x + 270;
     render_text(renderer, font, "Nodes:", column2_x, builder_y + 70, TEXT_COLOR);
     math_node_buttons.clear();
-    const auto& nodes = C->circuit->get_Nodes();
-    for (int i = 0; i < nodes.size(); ++i) {
-        const auto& node = nodes[i];
+    const auto &nodes = C->circuit->get_Nodes();
+    vector<Node*> nodes_a;
+    for (int i = 0; i < nodes.size(); ++i)
+    {
+        if (nodes[i]->is_the_node_ground()) continue;
+        nodes_a.push_back(nodes[i]);
+    }
+    for (int i = 0; i < nodes_a.size(); ++i) {
+        const auto& node = nodes_a[i];
         if (node->is_the_node_ground()) continue;
 
         SDL_Rect item_rect = {column2_x, list_y + (i * 35), 230, 30};
