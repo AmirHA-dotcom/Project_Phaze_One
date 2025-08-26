@@ -61,7 +61,7 @@ float dist_to_segment(SDL_Point p, SDL_Point v, SDL_Point w)
 
 inline string format_with_suffix(double value, const string& unit)
 {
-    if (value == 0.0) return "0.00 " + unit;
+    if (value == 0.0) return "0.00";
 
     static const struct { double threshold; const char* suffix; } suffixes[] = {
             {1e12, "T"}, {1e9, "G"}, {1e6, "M"}, {1e3, "k"},
@@ -3280,19 +3280,19 @@ bool graphical_view::handle_configure_analysis_events(SDL_Event &event, Controll
             if (SDL_PointInRect(&mouse_pos, &octave_button_rect))
             {
                 AC_sweep_type = AC_Sweep_Type::Octave;
-                cout << "CLICKED Octave: AC_sweep_type is now " << (int)AC_sweep_type << endl;
+                //cout << "CLICKED Octave: AC_sweep_type is now " << (int)AC_sweep_type << endl;
                 return true;
             }
             if (SDL_PointInRect(&mouse_pos, &decade_button_rect))
             {
                 AC_sweep_type = AC_Sweep_Type::Decade;
-                cout << "CLICKED Decade: AC_sweep_type is now " << (int)AC_sweep_type << endl;
+                //cout << "CLICKED Decade: AC_sweep_type is now " << (int)AC_sweep_type << endl;
                 return true;
             }
             if (SDL_PointInRect(&mouse_pos, &linear_button_rect))
             {
                 AC_sweep_type = AC_Sweep_Type::Linear;
-                cout << "CLICKED Linear: AC_sweep_type is now " << (int)AC_sweep_type << endl;
+                //cout << "CLICKED Linear: AC_sweep_type is now " << (int)AC_sweep_type << endl;
                 return true;
             }
         }
