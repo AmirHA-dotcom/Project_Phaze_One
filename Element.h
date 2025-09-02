@@ -8,6 +8,10 @@
 #include "Libraries.h"
 #include "Node.h"
 
+#include <cereal/types/string.hpp>
+#include <cereal/types/polymorphic.hpp> // برای پشتیبانی از ارث‌بری
+#include <cereal/types/base_class.hpp>
+
 enum class Rotation{Right, Left, Up, Down};
 
 class Element
@@ -43,6 +47,10 @@ public:
     void set_rotation_by_int (int r);
     void set_rotation(Rotation r) { rotation = r; }
     virtual double getAmplitude() const { return amplitude; }
+    template <class Archive>
+    void serialize(Archive& ar) {
+        ar(name, type, value); // فرض می‌کنیم nodeها جداگانه مدیریت می‌شن
+    }
 };
 
 
