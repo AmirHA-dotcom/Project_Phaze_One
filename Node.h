@@ -49,6 +49,7 @@ public:
 
     vector<pair<int,int>> get_net_label_coordinates_vector() { return net_label_coordinates_vector; }// delete
     string net_name;
+    virtual ~Node() = default;
 
     template <class Archive>
     void serialize(Archive& ar) {

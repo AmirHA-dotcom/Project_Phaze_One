@@ -23,7 +23,7 @@
 class Circuit
 {
 private:
-    vector<Element*> Elements;
+    vector<shared_ptr<Element>> Elements;
     vector<shared_ptr<Node>> Nodes;
     vector<shared_ptr<Node>> Active_Nodes;
     vector<tuple<string,int, Rotation,pair<int,int>>> subs;
@@ -89,13 +89,13 @@ public:
     void create_new_Delta_voltage_source(const string& name, const string& node1_name, const string& node2_name, double time);
     void analyse_data();
 
-    const vector<Element*> get_Elements() const;
+    const vector<shared_ptr<Element>> get_Elements() const;
     vector<shared_ptr<Node>> get_Nodes() const;
 
     void setNodes(const vector<shared_ptr<Node>>& new_nodes) { Nodes = new_nodes; }
-    void setElements(const vector<Element*>& new_elements) { Elements = new_elements; }
+    void setElements(const vector<shared_ptr<Element>>& new_elements) { Elements = new_elements; }
 
-    const vector<Element*> get_Elements_of_type(Element_Type type) const;
+    const vector<shared_ptr<Element>> get_Elements_of_type(Element_Type type) const;
     void transient();
     void transient_linear();
     void transient_NR();
@@ -103,14 +103,19 @@ public:
     void delete_node(shared_ptr<Node> node_to_delete);
     ~Circuit();
 
-    Element* findElement(const string& name) const;
+    shared_ptr<Element> findElement(const string& name) const;
     shared_ptr<Node> findNode(const string& name) const;
     void checkHaveGround();
     void addNode(shared_ptr<Node> node);
     shared_ptr<Node> create_new_node(const string& name);
-    void addElement(Element* new_element);
+    void addElement(shared_ptr<Element> new_element);
     int node_index_finder_by_name(const string& name) const;
     int element_index_finder_by_name(const string& name) const;
+    template <class Archive>
+    void serialize(Archive& ar) {
+        ar(CEREAL_NVP(Nodes), CEREAL_NVP(Elements));
+    }
+
 };
 
 class SubCircuit : public Circuit
@@ -146,6 +151,7 @@ public:
     int get_rotation_as_int();
     void set_rotation_by_int(int r);
     void set_rotation(Rotation r) { rotation = r; }
+
 };
 
 #endif //PROJECT_PHAZE_ONE_CIRCUIT_H

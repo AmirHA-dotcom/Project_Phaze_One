@@ -43,6 +43,7 @@ public:
     void set_rotation_by_int (int r);
     void set_rotation(Rotation r) { rotation = r; }
     virtual double getAmplitude() const { return amplitude; }
+    virtual ~Element() = default;
 
     template <class Archive>
     void serialize(Archive& ar) {

@@ -177,7 +177,7 @@ public:
     Circuit *findCircuit(string name);
     void renameCircuit(Circuit* circuit,string name);
     void deleteCircuit(Circuit* circuit);
-    Element *findElement(string name);
+    shared_ptr<Element>findElement(string name);
 
     shared_ptr<Node> findNode(string name);
     void addCircuit(string name);
@@ -242,7 +242,7 @@ public:
 
     void addFileToCircuits(int fileIndex);
 
-    void delElement(Element *element);
+    void delElement(shared_ptr<Element>element);
 
     void showSchematics();
 
@@ -253,7 +253,7 @@ public:
     void handleNewFile(string path);
 
     bool is_files_empty();
-    void add_Waveform_Voltage_Source(Waveform_Voltage_Source* waveform) const;
+    void add_Waveform_Voltage_Source(shared_ptr<Waveform_Voltage_Source> waveform) const;
 
     // GRAPHICS!!!
 

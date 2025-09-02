@@ -400,7 +400,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delRCheck(i)) {
-        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
+        shared_ptr<Element> r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             cout << "Error: Cannot delete resistor; component not found" << endl;
             return true;
@@ -418,7 +418,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delCCheck(i)) {
-        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
+        shared_ptr<Element> r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             throw elementFind(i[1].substr(1,i[1].size()-1));
         }
@@ -435,7 +435,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delICheck(i)) {
-        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
+        shared_ptr<Element> r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             throw elementFind(i[1].substr(1,i[1].size()-1));
         }
@@ -452,7 +452,7 @@ bool View::handleCircuitMenu (Controller* C) {
         return true;
     }
     if (delDCheck(i)) {
-        auto* r = C->findElement(i[1].substr(1,i[1].size()-1));
+        shared_ptr<Element> r = C->findElement(i[1].substr(1,i[1].size()-1));
         if (!r) {
             throw elementFind(i[1].substr(1,i[1].size()-1));
         }

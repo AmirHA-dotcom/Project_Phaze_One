@@ -56,7 +56,7 @@ struct Connection_Point {
 class Graphical_Element
 {
 protected:
-    Element* model_element;
+    shared_ptr<Element> model_element;
 
     static TTF_Font* font;
 
@@ -66,7 +66,7 @@ protected:
 
     string info_text;
 public:
-    Graphical_Element(Element* element_model) : model_element(element_model) { rotation = Rotation::Right; }
+    Graphical_Element(shared_ptr<Element> element_model) : model_element(element_model) { rotation = Rotation::Right; }
     virtual ~Graphical_Element() = default;
 
     virtual void draw(SDL_Renderer* renderer, bool show_grid) = 0;
@@ -81,7 +81,7 @@ public:
 
     Rotation get_rotation() { return rotation; }
 
-    Element* get_model();
+    shared_ptr<Element> get_model();
 
     virtual vector<Editable_Property> get_editable_properties() = 0;
 
@@ -94,7 +94,7 @@ public:
 
 class Graphical_Resistor : public Graphical_Element {
 public:
-    Graphical_Resistor(Resistor* model) : Graphical_Element(model) {}
+    Graphical_Resistor(shared_ptr<Resistor> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -106,7 +106,8 @@ public:
 
 class Graphical_Capacitor : public Graphical_Element {
 public:
-    Graphical_Capacitor(Capacitor* model) : Graphical_Element(model) {}
+
+    Graphical_Capacitor(shared_ptr<Capacitor> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -118,7 +119,7 @@ public:
 
 class Graphical_Inductor : public Graphical_Element {
 public:
-    Graphical_Inductor(Inductor* model) : Graphical_Element(model) {}
+    Graphical_Inductor(shared_ptr<Inductor> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -130,7 +131,7 @@ public:
 
 class Graphical_Current_Source : public Graphical_Element {
 public:
-    Graphical_Current_Source(Current_Source* model) : Graphical_Element(model) {}
+    Graphical_Current_Source(shared_ptr<Current_Source> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -142,7 +143,8 @@ public:
 
 class Graphical_Real_Diode : public Graphical_Element {
 public:
-    Graphical_Real_Diode(Real_Diode* model) : Graphical_Element(model) {}
+    Graphical_Real_Diode(std::shared_ptr<Real_Diode> model)
+            : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -154,8 +156,8 @@ public:
 
 class Graphical_Zener_Diode : public Graphical_Element {
 public:
-    Graphical_Zener_Diode(Zener_Diode* model) : Graphical_Element(model) {}
-
+    Graphical_Zener_Diode(std::shared_ptr<Zener_Diode> model)
+    : Graphical_Element(model) {}
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
     vector<Editable_Property> get_editable_properties() override;
@@ -168,7 +170,7 @@ class Graphical_Voltage_Source : public Graphical_Element {
 private:
     bool is_AC = false;
 public:
-    Graphical_Voltage_Source(Voltage_Source* model) : Graphical_Element(model) {}
+    Graphical_Voltage_Source(shared_ptr<Voltage_Source> model) : Graphical_Element(model) {}
 
     void make_AC() { is_AC = true; }
     void draw(SDL_Renderer* renderer, bool show_grid) override;
@@ -181,7 +183,7 @@ public:
 
 class Graphical_VCVS : public Graphical_Element {
 public:
-    Graphical_VCVS(VCVS* model) : Graphical_Element(model) {}
+    Graphical_VCVS(shared_ptr<VCVS> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -193,7 +195,7 @@ public:
 
 class Graphical_VCCS : public Graphical_Element {
 public:
-    Graphical_VCCS(VCCS* model) : Graphical_Element(model) {}
+    Graphical_VCCS(shared_ptr<VCCS> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -205,7 +207,7 @@ public:
 
 class Graphical_CCCS : public Graphical_Element {
 public:
-    Graphical_CCCS(CCCS* model) : Graphical_Element(model) {}
+    Graphical_CCCS(shared_ptr<CCCS> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -217,7 +219,7 @@ public:
 
 class Graphical_CCVS : public Graphical_Element {
 public:
-    Graphical_CCVS(CCVS* model) : Graphical_Element(model) {}
+    Graphical_CCVS(shared_ptr<CCVS> model) : Graphical_Element(model) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 

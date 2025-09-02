@@ -168,7 +168,7 @@ void Controller::deleteCircuit(Circuit* circuit){
             circuits.end()
     );
 }
-Element* Controller::findElement (string name){
+shared_ptr<Element> Controller::findElement (string name){
     for (auto& e : circuit->get_Elements())
     {
         if (e->get_name() == name)
@@ -287,7 +287,7 @@ void Controller::delGND(string name){
         circuit->ground(false);
 }
 void Controller::showAllElements(){
-    vector<Element*> elements = circuit->get_Elements();
+    vector<shared_ptr<Element>> elements = circuit->get_Elements();
     if (elements.empty())
     {
         cout << "No elements have been added yet" << endl;
@@ -317,7 +317,7 @@ void Controller::showCircuits(){
         cout << "- " << c->get_name() << endl;
 }
 void Controller::showResistors(){
-    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Resistor);
+    vector<shared_ptr<Element>> elements = circuit->get_Elements_of_type(Element_Type::Resistor);
     if (elements.empty())
     {
         cout << "No elements have been added yet" << endl;
@@ -338,7 +338,7 @@ void Controller::showResistors(){
 }
 
 void Controller::showInductors(){
-    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Inductor);
+    vector<shared_ptr<Element>> elements = circuit->get_Elements_of_type(Element_Type::Inductor);
     if (elements.empty())
     {
         cout << "No elements have been added yet" << endl;
@@ -359,7 +359,7 @@ void Controller::showInductors(){
 }
 
 void Controller::showCapacitors(){
-    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Capacitor);
+    vector<shared_ptr<Element>> elements = circuit->get_Elements_of_type(Element_Type::Capacitor);
     if (elements.empty())
     {
         cout << "No elements have been added yet" << endl;
@@ -379,7 +379,7 @@ void Controller::showCapacitors(){
     }}
 
 void Controller::showDiodes(){
-    vector<Element*> elements = circuit->get_Elements_of_type(Element_Type::Real_Diode);
+    vector<shared_ptr<Element>> elements = circuit->get_Elements_of_type(Element_Type::Real_Diode);
     if (elements.empty())
     {
         cout << "No elements have been added yet" << endl;
@@ -471,7 +471,7 @@ void Controller::tranAnalysisOrders(vector<string> orders){
         }
     }
     for (auto i : elementCurrents) {
-        Element* element = findElement(i);
+        shared_ptr<Element> element = findElement(i);
         if (element == nullptr) {
             cerr << "Element " << i << " not found." << endl;
             return;
@@ -602,7 +602,7 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
         return to_string(value);
     };
 
-    for (auto* component : circuit->get_Elements()) {
+    for (shared_ptr<Element> component : circuit->get_Elements()) {
         string line;
         Element_Type type = component->get_type();
         string element_name = component->get_name();
@@ -778,7 +778,7 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
         return to_string(value);
     };
 
-    for (auto* component : circuit->get_Elements()) {
+    for (shared_ptr<Element> component : circuit->get_Elements()) {
         string line;
         Element_Type type = component->get_type();
         string element_name = component->get_name();
@@ -1080,7 +1080,7 @@ SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
     SubCircuit* subCircuit = new SubCircuit();
     subCircuit->change_name(Name);
     // Copy elements and nodes from baseCircuit if necessary
-    for (auto* element : baseCircuit->get_Elements()) {
+    for (shared_ptr<Element> element : baseCircuit->get_Elements()) {
         subCircuit->addElement(element);
     }
     for (shared_ptr<Node> node : baseCircuit->get_Nodes()) {
@@ -1316,7 +1316,7 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
 
     subCircuit->change_name(Name);
     // Copy elements and nodes from baseCircuit
-    for (auto* element : baseCircuit->get_Elements()) {
+    for (shared_ptr<Element> element : baseCircuit->get_Elements()) {
         subCircuit->addElement(element);
     }
     for (shared_ptr<Node> node : baseCircuit->get_Nodes()) {
@@ -1458,7 +1458,7 @@ void Controller::DcAnalysisOrders(vector<string> orders){
     // Implementation
 }
 
-void Controller::delElement (Element* element){
+void Controller::delElement (shared_ptr<Element> element){
     circuit->delete_element(element->get_name());
 }
 
@@ -1487,9 +1487,10 @@ bool Controller::is_files_empty()
 {
     return file_handler.get_file_names().empty();
 }
-void Controller::add_Waveform_Voltage_Source(Waveform_Voltage_Source* waveform) const{
-    circuit->addElement(waveform);
+void Controller::add_Waveform_Voltage_Source(std::shared_ptr<Waveform_Voltage_Source> waveform) const {
+    circuit->addElement(waveform); // shared_ptr<Waveform_Voltage_Source> implicitly converts to shared_ptr<Element>
 }
+
 
 // GRAPHICS!!!
 
@@ -1507,7 +1508,7 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
     n1->connect_element();
     n2->connect_element();
 
-    Resistor* sim_resistor = new Resistor(r_name, n1, n2, 1000.0);
+    auto sim_resistor = make_shared<Resistor>(r_name, n1, n2, 1000.0);
 
     circuit->addElement(sim_resistor);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1533,7 +1534,7 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
     n1->connect_element();
     n2->connect_element();
 
-    Capacitor* sim_capacitor = new Capacitor(c_name, n1, n2, 1e-6);
+    auto sim_capacitor = make_shared<Capacitor>(c_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_capacitor);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1557,7 +1558,7 @@ void Controller::add_Graphical_Inductor(int screenX, int screenY) {
     n1->connect_element();
     n2->connect_element();
 
-    Inductor* sim_inductor = new Inductor(i_name, n1, n2, 1e-6);
+    auto sim_inductor = make_shared< Inductor>(i_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_inductor);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1582,7 +1583,7 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Current_Source* sim_current_source = new Current_Source(cs_name, n1, n2, 1e-6);
+    auto sim_current_source = make_shared< Current_Source>(cs_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_current_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1607,7 +1608,7 @@ void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Real_Diode* sim_real_diode = new Real_Diode(RD_name, n1, n2, 1e-6);
+    auto sim_real_diode = make_shared< Real_Diode>(RD_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_real_diode);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1632,7 +1633,7 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Zener_Diode* sim_zener_diode = new Zener_Diode(ZD_name, n1, n2, 1e-6);
+    auto sim_zener_diode = make_shared< Zener_Diode>(ZD_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_zener_diode);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1657,7 +1658,7 @@ void Controller::add_Graphical_DC_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_voltage_source = new DC_Source(VS_name, n1, n2, 1e-6);
+    auto sim_voltage_source = make_shared< DC_Source>(VS_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1682,7 +1683,7 @@ void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_voltage_source = new Sine_Source(VS_name, n1, n2, 0, 0, 0, 0);
+    auto sim_voltage_source = make_shared< Sine_Source>(VS_name, n1, n2, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1707,7 +1708,7 @@ void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_voltage_source = new Pulse_Source(VS_name, n1, n2, 0, 0, 0, 0, 0, 0, 0);
+    auto sim_voltage_source = make_shared< Pulse_Source>(VS_name, n1, n2, 0, 0, 0, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1732,7 +1733,7 @@ void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_voltage_source = new Delta_Dirac(VS_name, n1, n2, 1e-6);
+    auto sim_voltage_source = make_shared< Delta_Dirac>(VS_name, n1, n2, 1e-6);
 
     circuit->addElement(sim_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1757,7 +1758,7 @@ void Controller::add_Graphical_Square_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_voltage_source = new Square_Source(VS_name, n1, n2, 0, 0, 0, 0, 0);
+    auto sim_voltage_source = make_shared< Square_Source>(VS_name, n1, n2, 0, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1782,7 +1783,7 @@ void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_voltage_source = new Triangular_Source(VS_name, n1, n2, 0, 0, 0, 0);
+    auto sim_voltage_source = make_shared< Triangular_Source>(VS_name, n1, n2, 0, 0, 0, 0);
 
     circuit->addElement(sim_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1807,7 +1808,7 @@ void Controller::add_Graphical_AC_Phase_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    AC_Voltage_Source* sim_source = new AC_Voltage_Source(VS_name, n1, n2, 1, 1, 0.0);
+    auto sim_source = make_shared<  AC_Voltage_Source>(VS_name, n1, n2, 1, 1, 0.0);
 
     circuit->addElement(sim_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1832,7 +1833,7 @@ void Controller::add_Graphical_WF_Source(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    Voltage_Source* sim_WF_voltage_source = new Waveform_Voltage_Source(VS_name, n1, n2);
+    auto sim_WF_voltage_source = make_shared<  Waveform_Voltage_Source>(VS_name, n1, n2);
 
     circuit->addElement(sim_WF_voltage_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
@@ -1857,7 +1858,7 @@ void Controller::add_Graphical_VCVS(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    VCVS* sim_source = new VCVS(name, n1, n2, 1, nullptr, nullptr);
+    auto sim_source = make_shared< VCVS>(name, n1, n2, 1, nullptr, nullptr);
     circuit->addElement(sim_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
@@ -1881,7 +1882,7 @@ void Controller::add_Graphical_VCCS(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    VCCS* sim_source = new VCCS(name, n1, n2, 1, nullptr, nullptr);
+    auto sim_source = make_shared<VCCS>(name, n1, n2, 1, nullptr, nullptr);
     circuit->addElement(sim_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
@@ -1905,7 +1906,7 @@ void Controller::add_Graphical_CCVS(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    CCVS* sim_source = new CCVS(name, n1, n2, 1, nullptr, nullptr);
+    auto sim_source = make_shared< CCVS>(name, n1, n2, 1, nullptr, nullptr);
     circuit->addElement(sim_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
@@ -1929,7 +1930,7 @@ void Controller::add_Graphical_CCCS(int screenX, int screenY)
     n1->connect_element();
     n2->connect_element();
 
-    CCCS* sim_source = new CCCS(name, n1, n2, 1, nullptr, nullptr);
+    auto sim_source = make_shared<  CCCS>(name, n1, n2, 1, nullptr, nullptr);
     circuit->addElement(sim_source);
     circuit->get_Elements().back()->set_coordinates(screenX, screenY);
 
@@ -2015,67 +2016,53 @@ vector<unique_ptr<Graphical_Element>>& Controller::get_graphical_elements()
     return graphical_elements;
 }
 
-void Controller::update_element_properties(int element_index, const vector<string>& new_values)
+void Controller::update_element_properties(int element_index, const std::vector<std::string>& new_values)
 {
     if (element_index < 0 || element_index >= graphical_elements.size()) return;
 
-    Element* element_model = graphical_elements[element_index]->get_model();
-    if (!element_model) return;
-
-    if (new_values.size() < 2) return;
+    std::shared_ptr<Element> element_model = graphical_elements[element_index]->get_model();
+    if (!element_model || new_values.size() < 2) return;
 
     element_model->change_name(new_values[0]);
 
-    if (auto* element = dynamic_cast<Resistor*>(element_model))
+    if (auto resistor = std::dynamic_pointer_cast<Resistor>(element_model))
     {
         if (isValidSpiceNumber(new_values[1]))
-        {
-            element->change_value(toValue(new_values[1]));
-        }
+            resistor->change_value(toValue(new_values[1]));
     }
-    else if (auto* element = dynamic_cast<Capacitor*>(element_model))
+    else if (auto capacitor = std::dynamic_pointer_cast<Capacitor>(element_model))
     {
         if (isValidSpiceNumber(new_values[1]))
-        {
-            element->change_value(toValue(new_values[1]));
-        }
+            capacitor->change_value(toValue(new_values[1]));
     }
-    else if (auto* element = dynamic_cast<Inductor*>(element_model))
+    else if (auto inductor = std::dynamic_pointer_cast<Inductor>(element_model))
     {
         if (isValidSpiceNumber(new_values[1]))
-        {
-            element->change_value(toValue(new_values[1]));
-        }
+            inductor->change_value(toValue(new_values[1]));
     }
-    else if (auto* element = dynamic_cast<Current_Source*>(element_model))
+    else if (auto current = std::dynamic_pointer_cast<Current_Source>(element_model))
     {
         if (isValidSpiceNumber(new_values[1]))
-        {
-            element->change_value(toValue(new_values[1]));
-        }
+            current->change_value(toValue(new_values[1]));
     }
-    else if (auto* element = dynamic_cast<Real_Diode*>(element_model))
+    else if (auto diode = std::dynamic_pointer_cast<Real_Diode>(element_model))
     {
         if (isValidSpiceNumber(new_values[1]))
-        {
-            element->change_value(toValue(new_values[1]));
-        }
+            diode->change_value(toValue(new_values[1]));
     }
-    else if (auto* element = dynamic_cast<Zener_Diode*>(element_model))
+    else if (auto zener = std::dynamic_pointer_cast<Zener_Diode>(element_model))
     {
         if (isValidSpiceNumber(new_values[1]))
-        {
-            element->change_value(toValue(new_values[1]));
-        }
+            zener->change_value(toValue(new_values[1]));
     }
-    else if (auto* v_source = dynamic_cast<Voltage_Source*>(element_model))
+    else if (auto v_source = std::dynamic_pointer_cast<Voltage_Source>(element_model))
     {
-        if (auto* dc = dynamic_cast<DC_Source*>(v_source))
+        if (auto dc = std::dynamic_pointer_cast<DC_Source>(v_source))
         {
             if (new_values.size() > 1 && isValidSpiceNumber(new_values[1]))
                 dc->set_value(toValue(new_values[1]));
         }
-        else if (auto* sine = dynamic_cast<Sine_Source*>(v_source))
+        else if (auto sine = std::dynamic_pointer_cast<Sine_Source>(v_source))
         {
             if (new_values.size() > 4)
             {
@@ -2085,9 +2072,10 @@ void Controller::update_element_properties(int element_index, const vector<strin
                 if (isValidSpiceNumber(new_values[4])) sine->set_phase_degrees(toValue(new_values[4]));
             }
         }
-        else if (auto* pulse = dynamic_cast<Pulse_Source*>(v_source))
+        else if (auto pulse = std::dynamic_pointer_cast<Pulse_Source>(v_source))
         {
-            if (new_values.size() > 7) {
+            if (new_values.size() > 7)
+            {
                 if (isValidSpiceNumber(new_values[1])) pulse->set_v_initial(toValue(new_values[1]));
                 if (isValidSpiceNumber(new_values[2])) pulse->set_v_pulsed(toValue(new_values[2]));
                 if (isValidSpiceNumber(new_values[3])) pulse->set_time_delay(toValue(new_values[3]));
@@ -2097,7 +2085,7 @@ void Controller::update_element_properties(int element_index, const vector<strin
                 if (isValidSpiceNumber(new_values[7])) pulse->set_period(toValue(new_values[7]));
             }
         }
-        else if (auto* square = dynamic_cast<Square_Source*>(v_source))
+        else if (auto square = std::dynamic_pointer_cast<Square_Source>(v_source))
         {
             if (new_values.size() > 5)
             {
@@ -2108,7 +2096,7 @@ void Controller::update_element_properties(int element_index, const vector<strin
                 if (isValidSpiceNumber(new_values[5])) square->set_period(toValue(new_values[5]));
             }
         }
-        else if (auto* tri = dynamic_cast<Triangular_Source*>(v_source))
+        else if (auto tri = std::dynamic_pointer_cast<Triangular_Source>(v_source))
         {
             if (new_values.size() > 4)
             {
@@ -2118,12 +2106,12 @@ void Controller::update_element_properties(int element_index, const vector<strin
                 if (isValidSpiceNumber(new_values[4])) tri->set_period(toValue(new_values[4]));
             }
         }
-        else if (auto* delta = dynamic_cast<Delta_Dirac*>(v_source))
+        else if (auto delta = std::dynamic_pointer_cast<Delta_Dirac>(v_source))
         {
             if (new_values.size() > 1 && isValidSpiceNumber(new_values[1]))
                 delta->set_time_of_delta(toValue(new_values[1]));
         }
-        else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(v_source))
+        else if (auto AC = std::dynamic_pointer_cast<AC_Voltage_Source>(v_source))
         {
             if (new_values.size() > 3)
             {
@@ -2132,17 +2120,11 @@ void Controller::update_element_properties(int element_index, const vector<strin
                 if (isValidSpiceNumber(new_values[3])) AC->set_phase_degrees(toValue(new_values[3]));
             }
         }
-        else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(v_source))
+        else if (auto WF = std::dynamic_pointer_cast<Waveform_Voltage_Source>(v_source))
         {
-            if (new_values.size() >2)
+            if (new_values.size() > 2)
             {
-                vector<pair<double, double>> data_points = create_data_points_from_strings(new_values[1], new_values[2]);
-
-//                for (const auto& dp: data_points)
-//                {
-//                    cout << "Time:" << dp.second << "\tVoltage:" << dp.first << endl;
-//                }
-
+                std::vector<std::pair<double, double>> data_points = create_data_points_from_strings(new_values[1], new_values[2]);
                 WF->set_segments(data_points);
             }
         }
@@ -2406,60 +2388,62 @@ void Controller::build_graphical_elements_from_circuit()
     // elements
     const auto& logical_elements = circuit->get_Elements();
 
-    for (Element* model : logical_elements)
+    for (std::shared_ptr<Element> model : logical_elements)
     {
-        if (auto* resistor = dynamic_cast<Resistor*>(model))
+        if (auto resistor = std::dynamic_pointer_cast<Resistor>(model))
         {
-            auto gfx = make_unique<Graphical_Resistor>(resistor);
-            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            auto gfx = std::make_unique<Graphical_Resistor>(resistor);
+            gfx->bounding_box = { model->get_x(), model->get_y(), 100, 40 };
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(move(gfx));
+            graphical_elements.push_back(std::move(gfx));
         }
-        else if (auto* capacitor = dynamic_cast<Capacitor*>(model))
+        else if (auto capacitor = std::dynamic_pointer_cast<Capacitor>(model))
         {
-            auto gfx = make_unique<Graphical_Capacitor>(capacitor);
-            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            auto gfx = std::make_unique<Graphical_Capacitor>(capacitor);
+            gfx->bounding_box = { model->get_x(), model->get_y(), 100, 40 };
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(move(gfx));
+            graphical_elements.push_back(std::move(gfx));
         }
-        else if (auto* inductor = dynamic_cast<Inductor*>(model))
+        else if (auto inductor = std::dynamic_pointer_cast<Inductor>(model))
         {
-            auto gfx = make_unique<Graphical_Inductor>(inductor);
-            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            auto gfx = std::make_unique<Graphical_Inductor>(inductor);
+            gfx->bounding_box = { model->get_x(), model->get_y(), 100, 40 };
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(move(gfx));
+            graphical_elements.push_back(std::move(gfx));
         }
-        else if (auto* current_source = dynamic_cast<Current_Source*>(model))
+        else if (auto current_source = std::dynamic_pointer_cast<Current_Source>(model))
         {
-            auto gfx = make_unique<Graphical_Current_Source>(current_source);
-            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            auto gfx = std::make_unique<Graphical_Current_Source>(current_source);
+            gfx->bounding_box = { model->get_x(), model->get_y(), 100, 40 };
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(move(gfx));
+            graphical_elements.push_back(std::move(gfx));
         }
-        else if (auto* real_diode = dynamic_cast<Real_Diode*>(model))
+        else if (auto real_diode = std::dynamic_pointer_cast<Real_Diode>(model))
         {
-            auto gfx = make_unique<Graphical_Real_Diode>(real_diode);
-            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            auto gfx = std::make_unique<Graphical_Real_Diode>(real_diode);
+            gfx->bounding_box = { model->get_x(), model->get_y(), 100, 40 };
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(move(gfx));
+            graphical_elements.push_back(std::move(gfx));
         }
-        else if (auto* zener_diode = dynamic_cast<Zener_Diode*>(model))
+        else if (auto zener_diode = std::dynamic_pointer_cast<Zener_Diode>(model))
         {
-            auto gfx = make_unique<Graphical_Zener_Diode>(zener_diode);
-            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            auto gfx = std::make_unique<Graphical_Zener_Diode>(zener_diode);
+            gfx->bounding_box = { model->get_x(), model->get_y(), 100, 40 };
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            graphical_elements.push_back(move(gfx));
+            graphical_elements.push_back(std::move(gfx));
         }
-        else if (auto* voltage_source = dynamic_cast<Voltage_Source*>(model))
+        else if (auto voltage_source = std::dynamic_pointer_cast<Voltage_Source>(model))
         {
-            auto gfx = make_unique<Graphical_Voltage_Source>(voltage_source);
-            gfx->bounding_box = {model->get_x(), model->get_y(), 100, 40};
+            auto gfx = std::make_unique<Graphical_Voltage_Source>(voltage_source);
+            gfx->bounding_box = { model->get_x(), model->get_y(), 100, 40 };
             gfx->set_rotation_by_int(model->get_rotation_as_int());
-            if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model))
+
+            if (std::dynamic_pointer_cast<AC_Voltage_Source>(model))
             {
                 gfx->make_AC();
             }
-            graphical_elements.push_back(move(gfx));
+
+            graphical_elements.push_back(std::move(gfx));
         }
     }
 
@@ -2480,14 +2464,14 @@ void Controller::build_graphical_elements_from_circuit()
             add_Graphical_Ground(ground_pos, node);
         }
     }
-    
+
     // grouping all connection points by their shared node
     map<shared_ptr<Node>, vector<Connection_Point>> node_to_points_map;
     for (const auto& element : graphical_elements)
     {
         for (const auto& point : element->get_connection_points())
         {
-            if (point.node != nullptr) 
+            if (point.node != nullptr)
             {
                 node_to_points_map[point.node].push_back(point);
             }
@@ -2505,7 +2489,7 @@ void Controller::build_graphical_elements_from_circuit()
             continue;
         }
 
-        if (points.size() < 2) 
+        if (points.size() < 2)
         {
             continue;
         }
@@ -2791,7 +2775,7 @@ void Controller::performACSweep(Circuit* circuit) {
     int N = (int)nodes.size() - 1; // بدون احتساب زمین
     int M = freqs.size(); // تعداد فرکانس‌ها
     int VsrcCount = 0;
-    for (auto* el : circuit->get_Elements())
+    for (shared_ptr<Element> el : circuit->get_Elements())
         if (el->get_type() == Element_Type::Voltage_Source)
             ++VsrcCount;
     int size = N + VsrcCount;
@@ -2817,7 +2801,7 @@ void Controller::performACSweep(Circuit* circuit) {
 
         int voltageIndex = N; // اندیس شروع معادلات اضافی
 
-        for (auto* el : circuit->get_Elements()) {
+        for (shared_ptr<Element> el : circuit->get_Elements()) {
             int n1 = nodeIndex[el->get_nodes().first->get_name()];
             int n2 = nodeIndex[el->get_nodes().second->get_name()];
 
@@ -2913,7 +2897,7 @@ void Controller::performPhaseSweep(Circuit* circuit) {
     int N = (int)nodes.size() - 1; // بدون احتساب زمین
     int M = phases.size(); // تعداد فازها
     int VsrcCount = 0;
-    for (auto* el : circuit->get_Elements())
+    for (shared_ptr<Element> el : circuit->get_Elements())
         if (el->get_type() == Element_Type::AC_Voltage_Source)
             ++VsrcCount;
     int size = N + VsrcCount;
@@ -2930,15 +2914,17 @@ void Controller::performPhaseSweep(Circuit* circuit) {
         phaseResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
     }
 
-    // یافتن منبع ولتاژ AC
-    AC_Voltage_Source* voltageSource = nullptr;
-    for (auto* el : circuit->get_Elements()) {
+    std::shared_ptr<AC_Voltage_Source> voltageSource = nullptr;
+
+    for (const std::shared_ptr<Element>& el : circuit->get_Elements()) {
         if (el->get_type() == Element_Type::AC_Voltage_Source) {
-            voltageSource = dynamic_cast<AC_Voltage_Source*>(el);
+            voltageSource = std::dynamic_pointer_cast<AC_Voltage_Source>(el);
             if (voltageSource) break;
         }
     }
+
     assert(voltageSource != nullptr); // باید حداقل یک منبع ولتاژ AC وجود داشته باشد
+
 
     // فرکانس ثابت
     double omega = 2 * M_PI * fixed_frequency;
@@ -2954,7 +2940,7 @@ void Controller::performPhaseSweep(Circuit* circuit) {
 
         int voltageIndex = N; // اندیس شروع معادلات اضافی
 
-        for (auto* el : circuit->get_Elements()) {
+        for (shared_ptr<Element> el : circuit->get_Elements()) {
             int n1 = nodeIndex[el->get_nodes().first->get_name()];
             int n2 = nodeIndex[el->get_nodes().second->get_name()];
 
@@ -2994,7 +2980,7 @@ void Controller::performPhaseSweep(Circuit* circuit) {
                     if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
                     if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
                     if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
-                    AC_Voltage_Source* src = dynamic_cast<AC_Voltage_Source*>(el);
+                    auto src = dynamic_pointer_cast<AC_Voltage_Source>(el);
                     if (src) {
                         double amplitude = src->getAmplitude();
                         double phase_rad = src->getPhase() * M_PI / 180.0;

@@ -55,7 +55,7 @@ string Circuit::get_name() const
     return name;
 }
 
-const vector<Element *> Circuit::get_Elements() const
+const vector<shared_ptr<Element>> Circuit::get_Elements() const
 {
     return Elements;
 }
@@ -76,20 +76,20 @@ vector<shared_ptr<Node>> Circuit::get_Nodes() const
     return Nodes;
 }
 
-const vector<Element *> Circuit::get_Elements_of_type(Element_Type type) const
+const vector<shared_ptr<Element>> Circuit::get_Elements_of_type(Element_Type type) const
 {
     if (type == Element_Type::Real_Diode)
     {
-        vector<Element*> elements;
-        for (auto* e : Elements)
+        vector<shared_ptr<Element>> elements;
+        for (shared_ptr<Element> e : Elements)
             if (e->get_type() == Element_Type::Real_Diode || e->get_type() == Element_Type::Zener_Diode)
                 elements.push_back(e);
         return elements;
     }
     else
     {
-        vector<Element*> elements;
-        for (auto* e : Elements)
+        vector<shared_ptr<Element>> elements;
+        for (shared_ptr<Element> e : Elements)
             if (e->get_type() == type)
                 elements.push_back(e);
         return elements;
@@ -156,7 +156,7 @@ void Circuit::checkHaveGround() {
     }
 }
 
-Element* Circuit::findElement (const string& name) const {
+shared_ptr<Element> Circuit::findElement (const string& name) const {
     for (auto& e : get_Elements())
     {
         if (e->get_name() == name)
@@ -202,7 +202,7 @@ void Circuit::create_new_resistor(const string& name, const string& node1_name, 
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
     // actual creation
-    Elements.push_back(new Resistor(name, Nodes[node1_index], Nodes[node2_index], resistance));
+    Elements.push_back(make_shared<Resistor>(name, Nodes[node1_index], Nodes[node2_index], resistance));
 }
 
 void Circuit::create_new_capacitor(const string& name, const string& node1_name, const string& node2_name, double capacitance)
@@ -217,7 +217,7 @@ void Circuit::create_new_capacitor(const string& name, const string& node1_name,
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Capacitor(name, Nodes[node1_index], Nodes[node2_index], capacitance));
+    Elements.push_back(make_shared<Capacitor>(name, Nodes[node1_index], Nodes[node2_index], capacitance));
 }
 
 void Circuit::create_new_inductor(const string& name, const string& node1_name, const string& node2_name, double inductance)
@@ -232,7 +232,7 @@ void Circuit::create_new_inductor(const string& name, const string& node1_name, 
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Inductor(name, Nodes[node1_index], Nodes[node2_index], inductance));
+    Elements.push_back(make_shared<Inductor>(name, Nodes[node1_index], Nodes[node2_index], inductance));
 }
 
 void Circuit::create_new_current_source(const string& name, const string& node1_name, const string& node2_name, double current)
@@ -247,7 +247,7 @@ void Circuit::create_new_current_source(const string& name, const string& node1_
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Current_Source(name, Nodes[node1_index], Nodes[node2_index], current));
+    Elements.push_back(make_shared< Current_Source>(name, Nodes[node1_index], Nodes[node2_index], current));
 }
 
 void Circuit::create_new_VCCS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
@@ -262,7 +262,7 @@ void Circuit::create_new_VCCS(const string& name, const string& node1_name, cons
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new VCCS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
+    Elements.push_back(make_shared< VCCS>(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
 void Circuit::create_new_CCCS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
@@ -277,7 +277,7 @@ void Circuit::create_new_CCCS(const string& name, const string& node1_name, cons
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new CCCS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
+    Elements.push_back(make_shared< CCCS>(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
 void Circuit::create_new_VCVS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
@@ -292,7 +292,7 @@ void Circuit::create_new_VCVS(const string& name, const string& node1_name, cons
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new VCVS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
+    Elements.push_back(make_shared< VCVS>(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
 void Circuit::create_new_CCVS(const string& name, const string& node1_name, const string& node2_name, const string& ctrl1, const string& ctrl2, double gain)
@@ -307,7 +307,7 @@ void Circuit::create_new_CCVS(const string& name, const string& node1_name, cons
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new CCVS(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
+    Elements.push_back(make_shared< CCVS>(name, Nodes[node1_index], Nodes[node2_index], gain, Nodes[node_index_finder_by_name(ctrl1)], Nodes[node_index_finder_by_name(ctrl2)]));
 }
 
 void Circuit::create_new_real_diode(const string& name, const string& node1_name, const string& node2_name, double dummy_number)
@@ -322,7 +322,7 @@ void Circuit::create_new_real_diode(const string& name, const string& node1_name
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Real_Diode(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+    Elements.push_back(make_shared< Real_Diode>(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
     is_diode_added = true;
 }
 
@@ -338,7 +338,7 @@ void Circuit::create_new_zener_diode(const string& name, const string& node1_nam
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Zener_Diode(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
+    Elements.push_back(make_shared< Zener_Diode>(name, Nodes[node1_index], Nodes[node2_index], dummy_number));
     is_diode_added = true;
 }
 
@@ -355,7 +355,7 @@ void Circuit::create_new_DC_voltage_source(const string& name, const string& nod
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new DC_Source(name, Nodes[node1_index], Nodes[node2_index],voltage));
+    Elements.push_back(make_shared< DC_Source>(name, Nodes[node1_index], Nodes[node2_index],voltage));
     //cout << "ADDING DC S\n" << "node 1 name " << Nodes[node1_index]->get_name() << " node 2 name " << Nodes[node2_index]->get_name() << endl;
     //cout << Elements[Elements.size() - 1]->get_name() << endl;
 }
@@ -373,7 +373,7 @@ Circuit::create_new_Sin_voltage_source(const string& name, const string& node1_n
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Sine_Source(name, Nodes[node1_index], Nodes[node2_index],offset, amplitude, frequency, 0.0));
+    Elements.push_back(make_shared< Sine_Source>(name, Nodes[node1_index], Nodes[node2_index],offset, amplitude, frequency, 0.0));
 }
 
 void Circuit::create_new_Pulse_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value)
@@ -388,7 +388,7 @@ void Circuit::create_new_Pulse_voltage_source(const string& name, const string& 
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Pulse_Source(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period/100, period/100, 2, period));
+    Elements.push_back(make_shared< Pulse_Source>(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period/100, period/100, 2, period));
 }
 
 void Circuit::create_new_Delta_voltage_source(const string& name, const string& node1_name, const string& node2_name, double time)
@@ -403,7 +403,7 @@ void Circuit::create_new_Delta_voltage_source(const string& name, const string& 
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Delta_Dirac(name, Nodes[node1_index], Nodes[node2_index], time));
+    Elements.push_back(make_shared< Delta_Dirac>(name, Nodes[node1_index], Nodes[node2_index], time));
 }
 
 void Circuit::create_new_Square_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value)
@@ -418,7 +418,7 @@ void Circuit::create_new_Square_voltage_source(const string& name, const string&
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Square_Source(name, Nodes[node1_index], Nodes[node2_index], -1 * value, value, 0.0, 2, period));
+    Elements.push_back(make_shared< Square_Source>(name, Nodes[node1_index], Nodes[node2_index], -1 * value, value, 0.0, 2, period));
 }
 
 void Circuit::create_new_Triangle_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value)
@@ -433,7 +433,7 @@ void Circuit::create_new_Triangle_voltage_source(const string& name, const strin
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
     Nodes[node2_index]->connect_element();
-    Elements.push_back(new Triangular_Source(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period));
+    Elements.push_back(make_shared< Triangular_Source>(name, Nodes[node1_index], Nodes[node2_index], 0.0, value, 0.0, period));
 }
 
 void Circuit::delete_element(const string& name)
@@ -465,7 +465,7 @@ void Circuit::delete_element(const string& name)
         }
     };
 
-    Element* element_to_delete = Elements[element_index];
+    shared_ptr<Element> element_to_delete = Elements[element_index];
 
     pair<std::shared_ptr<Node>, shared_ptr<Node>> nodes_pair = element_to_delete->get_nodes();
     shared_ptr<Node> node1 = nodes_pair.first;
@@ -479,7 +479,6 @@ void Circuit::delete_element(const string& name)
 
     Elements.erase(Elements.begin() + element_index);
 
-    delete element_to_delete;
 
     delete_node_if_unused(node1);
     if (node1 != node2)
@@ -515,17 +514,17 @@ void Circuit::analyse_data()
         Active_Nodes_[i]->set_index(i);
     // indexing aux
     int aux_index = Active_Nodes_.size();
-    for (auto* e : Elements)
+    for (shared_ptr<Element> e : Elements)
     {
-        if (auto* L = dynamic_cast<Inductor*>(e))
+        if (auto L = dynamic_pointer_cast<Inductor>(e))
             L->set_aux_index(aux_index++);
-        else if (auto* V = dynamic_cast<DC_Source*>(e))
+        if (auto V = dynamic_pointer_cast<DC_Source>(e))
             V->set_aux_index(aux_index++);
     }
-    for (auto* e : Elements)
+    for (shared_ptr<Element> e : Elements)
     {
-        if (auto* Dv = dynamic_cast<VCVS*>(e))
-            Dv->set_aux_index(aux_index++);
+    if (auto* Vv = dynamic_cast<VCVS*>(e.get()))
+            Vv->set_aux_index(aux_index++);
     }
     // saving data
     this-> Active_Nodes = Active_Nodes_;
@@ -589,7 +588,7 @@ void Circuit::transient_NR()
             // stamping elements
             vector<Triplet> triplets;
             vector<double>  b_rhs(total_unknowns, 0.0);
-            for (auto* e : Elements) {
+            for (shared_ptr<Element> e : Elements) {
                 e->stamp(t, time_step, triplets, b_rhs, x_k, x_previous);
             }
             //cout << "\n--- Checking Element Types before Stamping (t=" << t << ", k=" << k << ") ---" << endl;
@@ -680,32 +679,32 @@ void Circuit::transient_NR()
         for (shared_ptr<Node> n : Active_Nodes) {
             n->set_voltage(x_previous[n->get_index()], t);
         }
-        for (auto* e : Elements) {
-            if (auto* v_source = dynamic_cast<DC_Source*>(e)) {
-                int current_index = v_source->get_aux_index();
+        for (std::shared_ptr<Element> e : Elements) {
+            if (auto dc = std::dynamic_pointer_cast<DC_Source>(e)) {
+                int current_index = dc->get_aux_index();
                 double current = x_previous[current_index];
-                v_source->set_current(current, t);
+                dc->set_current(current, t);
             }
-            else if (auto* vcvs = dynamic_cast<VCVS*>(e)) {
+            else if (auto vcvs = std::dynamic_pointer_cast<VCVS>(e)) {
                 int current_index = vcvs->get_aux_index();
                 double current = x_previous[current_index];
                 vcvs->set_current(current, t);
             }
-            else if (auto* diode = dynamic_cast<Real_Diode*>(e)) {
+            else if (auto diode = std::dynamic_pointer_cast<Real_Diode>(e)) {
                 double current = diode->calculate_current(x_previous);
                 diode->set_current(current, t);
             }
-            else if (auto* inductor = dynamic_cast<Inductor*>(e)) {
+            else if (auto inductor = std::dynamic_pointer_cast<Inductor>(e)) {
                 int current_index = inductor->get_aux_index();
                 double current = x_previous[current_index];
                 inductor->set_current(current, t);
             }
-            else if (auto* zener = dynamic_cast<Zener_Diode*>(e)) {
+            else if (auto zener = std::dynamic_pointer_cast<Zener_Diode>(e)) {
                 double current = zener->calculate_current(x_previous);
                 zener->set_current(current, t);
             }
-            //cout << "data saved" << endl;
         }
+
     }
     cout << "transient worked!" << endl;
 }
@@ -721,7 +720,7 @@ void Circuit::transient_linear()
         vector<double>  b_rhs(total_unknowns, 0.0);
 
 
-        for (auto* e : Elements) {
+        for (shared_ptr<Element> e : Elements) {
             e->stamp(t, time_step, triplets, b_rhs, x_previous, x_previous);
         }
 
@@ -747,44 +746,42 @@ void Circuit::transient_linear()
         for (shared_ptr<Node> n : Active_Nodes) {
             n->set_voltage(x_previous[n->get_index()], t);
         }
-        for (auto* e : Elements) {
-            if (auto* v_source = dynamic_cast<DC_Source*>(e)) {
+        for (std::shared_ptr<Element> e : Elements) {
+            if (auto v_source = std::dynamic_pointer_cast<DC_Source>(e)) {
                 int current_index = v_source->get_aux_index();
                 double current = x_previous[current_index];
                 v_source->set_current(current, t);
             }
-            else if (auto* vcvs = dynamic_cast<VCVS*>(e)) {
+            else if (auto vcvs = std::dynamic_pointer_cast<VCVS>(e)) {
                 int current_index = vcvs->get_aux_index();
                 double current = x_previous[current_index];
                 vcvs->set_current(current, t);
             }
-            else if (auto* inductor = dynamic_cast<Inductor*>(e)) {
+            else if (auto inductor = std::dynamic_pointer_cast<Inductor>(e)) {
                 int current_index = inductor->get_aux_index();
                 double current = x_previous[current_index];
                 inductor->set_current(current, t);
             }
-            else if (auto* diode = dynamic_cast<Real_Diode*>(e)) {
+            else if (auto diode = std::dynamic_pointer_cast<Real_Diode>(e)) {
                 double current = diode->calculate_current(x_previous);
                 diode->set_current(current, t);
             }
-            else if (auto* zener = dynamic_cast<Zener_Diode*>(e)) {
+            else if (auto zener = std::dynamic_pointer_cast<Zener_Diode>(e)) {
                 double current = zener->calculate_current(x_previous);
                 zener->set_current(current, t);
             }
         }
+
     }
     cout << "transient worked!" << endl;
     // this version is working just fine . if it doesnt work we should see whats added 11.08
 }
 
 Circuit::~Circuit() {
-    for (Element* elem : Elements) {
-        delete elem; // ✅ manual deletion for raw pointers
-    }
-
-    // ❌ no need to manually delete shared_ptrs
-    Nodes.clear(); // ✅ optional: releases shared_ptr references
+    Elements.clear(); // shared_ptr<Element> ها خودشون حافظه رو آزاد می‌کنن
+    Nodes.clear();    // shared_ptr<Node> ها هم همین‌طور
 }
+
 
 
 void Circuit::transient()
@@ -810,7 +807,7 @@ shared_ptr<Node> Circuit::create_new_node(const string& name)
     return new_node;
 }
 
-void Circuit::addElement(Element* new_element)
+void Circuit::addElement(shared_ptr<Element> new_element)
 {
     if (new_element) {
         Elements.push_back(new_element);

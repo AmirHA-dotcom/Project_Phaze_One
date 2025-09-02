@@ -161,7 +161,7 @@ SDL_Point Graphical_Element::transform_point(SDL_Point point_to_rotate)
     }
 }
 
-Element *Graphical_Element::get_model() { return model_element; }
+shared_ptr<Element>Graphical_Element::get_model() { return model_element; }
 
 // draw functions
 
@@ -522,7 +522,7 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
     SDL_RenderDrawLines(renderer, circle_points.data(), circle_points.size());
 
     // AC symbol
-    if ((model_element && dynamic_cast<AC_Voltage_Source*>(model_element)) || this->is_AC)
+    if ((model_element && dynamic_pointer_cast<AC_Voltage_Source>(model_element)) || this->is_AC)
     {
         int wave_radius = 8;
 
@@ -561,12 +561,12 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
 
         string to_be_printed = "";
 
-        if (auto* dc = dynamic_cast<DC_Source*>(model_element))
+        if (auto dc = dynamic_pointer_cast<DC_Source>(model_element))
         {
             double value = dc->get_value_at(0, 0);
             to_be_printed = format_with_suffix(value, "V");
         }
-        else if (auto* sine = dynamic_cast<Sine_Source*>(model_element))
+        else if (auto sine = dynamic_pointer_cast<Sine_Source>(model_element))
         {
             double off, amp, freq, phase;
             sine->get_parameters(off, amp, freq, phase);
@@ -580,7 +580,7 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
             ss << ")";
             to_be_printed = ss.str();
         }
-        else if (auto* pulse = dynamic_cast<Pulse_Source*>(model_element))
+        else if (auto pulse = dynamic_pointer_cast<Pulse_Source>(model_element))
         {
             double v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period;
             pulse->get_parameters(v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period);
@@ -595,7 +595,7 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
             ss << ")";
             to_be_printed = ss.str();
         }
-        else if (auto* square = dynamic_cast<Square_Source*>(model_element))
+        else if (auto square = dynamic_pointer_cast<Square_Source>(model_element))
         {
             double v_down, v_up, time_delay, square_width, period;
             square->get_parameters(v_down, v_up, time_delay, square_width, period);
@@ -608,7 +608,7 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
             ss << ")";
             to_be_printed = ss.str();
         }
-        else if (auto* tri = dynamic_cast<Triangular_Source*>(model_element))
+        else if (auto tri = dynamic_pointer_cast<Triangular_Source>(model_element))
         {
             double v_initial, v_peak, time_delay, period;
             tri->get_parameters(v_initial, v_peak, time_delay, period);
@@ -620,19 +620,19 @@ void Graphical_Voltage_Source::draw(SDL_Renderer* renderer, bool show_grid)
             ss << ")";
             to_be_printed = ss.str();
         }
-        else if (auto* delta = dynamic_cast<Delta_Dirac*>(model_element))
+        else if (auto delta = dynamic_pointer_cast<Delta_Dirac>(model_element))
         {
             double delta_value, not_delta_value, time_of_delta;
             delta->get_parameters(delta_value, not_delta_value, time_of_delta);
             to_be_printed = "DELTA(" + format_with_suffix(time_of_delta, "s)");
         }
-        else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model_element))
+        else if (auto AC = dynamic_pointer_cast<AC_Voltage_Source>(model_element))
         {
             double amp, freq, phase;
             AC->get_parameters(amp, freq, phase);
             to_be_printed = "AC(" + format_with_suffix(amp, " ") + format_with_suffix(freq, " ") + format_with_suffix(phase, ")");
         }
-        else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
+        else if (auto WF = dynamic_pointer_cast<Waveform_Voltage_Source>(model_element))
         {
             to_be_printed = "WaveForm VS";
         }
@@ -1013,11 +1013,11 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
 
     props.push_back({"Name", model_element->get_name()});
 
-    if (auto* dc = dynamic_cast<DC_Source*>(model_element))
+    if (auto dc = dynamic_pointer_cast<DC_Source>(model_element))
     {
         props.push_back({"Value (V)", format_with_suffix(dc->get_value_at(0, 0), "")});
     }
-    else if (auto* sine = dynamic_cast<Sine_Source*>(model_element))
+    else if (auto sine = dynamic_pointer_cast<Sine_Source>(model_element))
     {
         double off, amp, freq, phase;
         sine->get_parameters(off, amp, freq, phase);
@@ -1026,7 +1026,7 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         props.push_back({"Frequency (Hz)", format_with_suffix(freq, "")});
         props.push_back({"Phase (deg)", format_with_suffix(phase, "")});
     }
-    else if (auto* pulse = dynamic_cast<Pulse_Source*>(model_element))
+    else if (auto pulse = dynamic_pointer_cast<Pulse_Source>(model_element))
     {
         double v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period;
         pulse->get_parameters(v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period);
@@ -1038,7 +1038,7 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         props.push_back({"Pulse Width (s)", format_with_suffix(pulse_width, "")});
         props.push_back({"Period (s)", format_with_suffix(period, "")});
     }
-    else if (auto* square = dynamic_cast<Square_Source*>(model_element))
+    else if (auto square = dynamic_pointer_cast<Square_Source>(model_element))
     {
         double v_down, v_up, time_delay, square_width, period;
         square->get_parameters(v_down, v_up, time_delay, square_width, period);
@@ -1048,7 +1048,7 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         props.push_back({"Pulse Width (s)", format_with_suffix(square_width, "")});
         props.push_back({"Period (s)", format_with_suffix(period, "")});
     }
-    else if (auto* tri = dynamic_cast<Triangular_Source*>(model_element))
+    else if (auto tri = dynamic_pointer_cast<Triangular_Source>(model_element))
     {
         double v_initial, v_peak, time_delay, period;
         tri->get_parameters(v_initial, v_peak, time_delay, period);
@@ -1057,13 +1057,13 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         props.push_back({"Delay (s)", format_with_suffix(time_delay, "")});
         props.push_back({"Period (s)", format_with_suffix(period, "")});
     }
-    else if (auto* delta = dynamic_cast<Delta_Dirac*>(model_element))
+    else if (auto delta = dynamic_pointer_cast<Delta_Dirac>(model_element))
     {
         double delta_val, not_delta_val, time;
         delta->get_parameters(delta_val, not_delta_val, time);
         props.push_back({"Time (s)", format_with_suffix(time, "")});
     }
-    else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model_element))
+    else if (auto AC = dynamic_pointer_cast<AC_Voltage_Source>(model_element))
     {
         double amp, freq, phase;
         AC->get_parameters(amp, freq, phase);
@@ -1071,7 +1071,7 @@ vector<Editable_Property> Graphical_Voltage_Source::get_editable_properties()
         props.push_back({"Frequency (Hz)", format_with_suffix(freq, "")});
         props.push_back({"Phase (deg)", format_with_suffix(phase, "")});
     }
-    else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
+    else if (auto WF = dynamic_pointer_cast<Waveform_Voltage_Source>(model_element))
     {
         pair<string, string> values = vectors_to_dashed_strings(WF->get_data_points());
 
@@ -1510,7 +1510,7 @@ vector<Connection_Point> Graphical_VCVS::get_connection_points()
             break;
     }
 
-    auto* vcvs_model = dynamic_cast<VCVS*>(model_element);
+    auto vcvs_model = dynamic_pointer_cast<VCVS>(model_element);
     auto output_nodes = vcvs_model->get_nodes();
     auto control_nodes = vcvs_model->get_dependent_nodes();
 
@@ -1555,7 +1555,7 @@ vector<Connection_Point> Graphical_VCCS::get_connection_points()
             break;
     }
 
-    auto* vccs_model = dynamic_cast<VCCS*>(model_element);
+    auto vccs_model = dynamic_pointer_cast<VCCS>(model_element);
     auto output_nodes = vccs_model->get_nodes();
     auto control_nodes = vccs_model->get_dependent_nodes();
 
@@ -1698,13 +1698,13 @@ string Graphical_Zener_Diode::get_info_text()
     return info_text;
 }
 
-string Graphical_Voltage_Source::get_info_text()
+std::string Graphical_Voltage_Source::get_info_text()
 {
-    if (auto* dc = dynamic_cast<DC_Source*>(model_element))
+    if (auto dc = std::dynamic_pointer_cast<DC_Source>(model_element))
     {
-        info_text = format_with_suffix(model_element->get_value(), " V");
+        info_text = format_with_suffix(dc->get_value(), " V");
     }
-    else if (auto* sine = dynamic_cast<Sine_Source*>(model_element))
+    else if (auto sine = std::dynamic_pointer_cast<Sine_Source>(model_element))
     {
         double off, amp, freq, phase;
         sine->get_parameters(off, amp, freq, phase);
@@ -1713,7 +1713,7 @@ string Graphical_Voltage_Source::get_info_text()
                     ", Ampl=" + format_with_suffix(amp, "V") +
                     ", Freq=" + format_with_suffix(freq, "Hz");
     }
-    else if (auto* pulse = dynamic_cast<Pulse_Source*>(model_element))
+    else if (auto pulse = std::dynamic_pointer_cast<Pulse_Source>(model_element))
     {
         double v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period;
         pulse->get_parameters(v_initial, v_pulsed, time_delay, time_rise, time_fall, pulse_width, period);
@@ -1724,7 +1724,7 @@ string Graphical_Voltage_Source::get_info_text()
                     ", PW=" + format_with_suffix(pulse_width, "s") +
                     ", Per=" + format_with_suffix(period, "s");
     }
-    else if (auto* square = dynamic_cast<Square_Source*>(model_element))
+    else if (auto square = std::dynamic_pointer_cast<Square_Source>(model_element))
     {
         double v_down, v_up, time_delay, square_width, period;
         square->get_parameters(v_down, v_up, time_delay, square_width, period);
@@ -1735,7 +1735,7 @@ string Graphical_Voltage_Source::get_info_text()
                     ", PW=" + format_with_suffix(square_width, "s") +
                     ", Per=" + format_with_suffix(period, "s");
     }
-    else if (auto* tri = dynamic_cast<Triangular_Source*>(model_element))
+    else if (auto tri = std::dynamic_pointer_cast<Triangular_Source>(model_element))
     {
         double v_initial, v_peak, time_delay, period;
         tri->get_parameters(v_initial, v_peak, time_delay, period);
@@ -1745,22 +1745,22 @@ string Graphical_Voltage_Source::get_info_text()
                     ", Td=" + format_with_suffix(time_delay, "s") +
                     ", Per=" + format_with_suffix(period, "s");
     }
-    else if (auto* delta = dynamic_cast<Delta_Dirac*>(model_element))
+    else if (auto delta = std::dynamic_pointer_cast<Delta_Dirac>(model_element))
     {
         double delta_value, not_delta_value, time_of_delta;
         delta->get_parameters(delta_value, not_delta_value, time_of_delta);
 
         info_text = "Time=" + format_with_suffix(time_of_delta, "s");
     }
-    else if (auto* AC = dynamic_cast<AC_Voltage_Source*>(model_element))
+    else if (auto AC = std::dynamic_pointer_cast<AC_Voltage_Source>(model_element))
     {
         double out_amplitude, out_frequency, out_phase;
         AC->get_parameters(out_amplitude, out_frequency, out_phase);
         info_text = "Amplitude=" + format_with_suffix(out_amplitude, "V") +
-                    "Frequency=" + format_with_suffix(out_frequency, "Hz") +
-                    "Phase=" + format_with_suffix(out_phase, "Deg");
+                    ", Frequency=" + format_with_suffix(out_frequency, "Hz") +
+                    ", Phase=" + format_with_suffix(out_phase, "Deg");
     }
-    else if (auto* WF = dynamic_cast<Waveform_Voltage_Source*>(model_element))
+    else if (auto WF = std::dynamic_pointer_cast<Waveform_Voltage_Source>(model_element))
     {
         info_text = "Waveform Voltage Source";
     }
