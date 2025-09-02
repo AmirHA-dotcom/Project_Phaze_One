@@ -24,8 +24,8 @@ class Circuit
 {
 private:
     vector<Element*> Elements;
-    vector<Node*> Nodes;
-    vector<Node*> Active_Nodes;
+    vector<shared_ptr<Node>> Nodes;
+    vector<shared_ptr<Node>> Active_Nodes;
     vector<tuple<string,int, Rotation,pair<int,int>>> subs;
     int total_unknowns;
     double time_step;
@@ -35,18 +35,18 @@ private:
     string name;
     bool haveGround;
     bool is_diode_added = false;
-    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> acVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
-    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> phaseVoltage; // Node and pair of indices for Phase voltage {magnitude, phase}
+    vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> acVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
+    vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> phaseVoltage; // Node and pair of indices for Phase voltage {magnitude, phase}
 public:
-    void setAcVoltage (const vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>>& acVoltageList) {
+    void setAcVoltage (const vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>>& acVoltageList) {
         acVoltage = acVoltageList;
     }
-    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> getAcVoltage() { return acVoltage; }
+    vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> getAcVoltage() { return acVoltage; }
 
-    void setPhaseVoltage (const vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>>& phaseVoltageList) {
+    void setPhaseVoltage (const vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>>& phaseVoltageList) {
             phaseVoltage = phaseVoltageList;
     }
-    vector<pair<Node*, tuple<vector<double>, vector<double>, vector<double>>>> getPhaseVoltage() { return phaseVoltage; }
+    vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> getPhaseVoltage() { return phaseVoltage; }
 
     vector<tuple<string,int, Rotation,pair<int,int>>> getSubs() const { return subs; }
     bool isGround() const;
@@ -90,9 +90,9 @@ public:
     void analyse_data();
 
     const vector<Element*> get_Elements() const;
-    vector<Node*> get_Nodes() const;
+    vector<shared_ptr<Node>> get_Nodes() const;
 
-    void setNodes(const vector<Node*>& new_nodes) { Nodes = new_nodes; }
+    void setNodes(const vector<shared_ptr<Node>>& new_nodes) { Nodes = new_nodes; }
     void setElements(const vector<Element*>& new_elements) { Elements = new_elements; }
 
     const vector<Element*> get_Elements_of_type(Element_Type type) const;
@@ -100,14 +100,14 @@ public:
     void transient_linear();
     void transient_NR();
     void delete_element(const string& name);
-    void delete_node(Node* node_to_delete);
+    void delete_node(shared_ptr<Node> node_to_delete);
     ~Circuit();
 
     Element* findElement(const string& name) const;
-    Node* findNode(const string& name) const;
+    shared_ptr<Node> findNode(const string& name) const;
     void checkHaveGround();
-    void addNode(Node* node);
-    Node* create_new_node(const string& name);
+    void addNode(shared_ptr<Node> node);
+    shared_ptr<Node> create_new_node(const string& name);
     void addElement(Element* new_element);
     int node_index_finder_by_name(const string& name) const;
     int element_index_finder_by_name(const string& name) const;
@@ -116,8 +116,8 @@ public:
 class SubCircuit : public Circuit
 {
 private:
-    Node* input;
-    Node* output;
+    shared_ptr<Node> input;
+    shared_ptr<Node> output;
     int x;
     int y;
     Rotation rotation;
@@ -126,21 +126,21 @@ public:
             : Circuit(), input(nullptr), output(nullptr), x(0), y(0), rotation(Rotation::Right)
     {}
 
-    SubCircuit(const string& _name, Node* _input, Node* _output)
+    SubCircuit(const string& _name,shared_ptr<Node> _input, shared_ptr<Node> _output)
             : Circuit(_name), input(_input), output(_output), x(0), y(0), rotation(Rotation::Right)
     {}
 
-    SubCircuit(string _name, Circuit* circuit, Node* _input, Node* _output)
+    SubCircuit(string _name, Circuit* circuit, shared_ptr<Node> _input, shared_ptr<Node> _output)
             : Circuit(_name), input(_input), output(_output)
     {
         rotation = Rotation::Right;
         this->setNodes(circuit->get_Nodes());
         this->setElements(circuit->get_Elements());
     }
-    Node* getInput();
-    Node* getOutput();
-    void setInput(Node* newInput);
-    void setOutput(Node* newOutput);
+    shared_ptr<Node> getInput();
+    shared_ptr<Node> getOutput();
+    void setInput(shared_ptr<Node> newInput);
+    void setOutput(shared_ptr<Node> newOutput);
 
     void set_coordinates(int x_, int y_) { x = x_; y = y_; }
     int get_rotation_as_int();

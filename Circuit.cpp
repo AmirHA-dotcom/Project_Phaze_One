@@ -19,14 +19,14 @@ void Circuit::ground(bool b){
 bool Circuit::isGround() const {
     return haveGround;
 }
-void Circuit::addNode(Node* node) {
+void Circuit::addNode(shared_ptr<Node> node) {
     if (!node) {
         cerr << "Error: Null node pointer provided" << endl;
         return;
     }
 
     // Check for duplicate node by name
-    for (const auto* existingNode : Nodes) {
+    for (std::shared_ptr<Node> existingNode : Nodes) {
         if (existingNode->get_name() == node->get_name()) {
             cerr << "Warning: Node " << node->get_name() << " already exists, skipping" << endl;
             return;
@@ -71,7 +71,7 @@ void Circuit::change_name_of_node(const string& old_name, const string& new_name
     Nodes[node_index]->change_name(new_name);
 }
 
-vector<Node *> Circuit::get_Nodes() const
+vector<shared_ptr<Node>> Circuit::get_Nodes() const
 {
     return Nodes;
 }
@@ -164,7 +164,7 @@ Element* Circuit::findElement (const string& name) const {
     }
     return nullptr;
 }
-Node* Circuit::findNode (const string& name) const {
+shared_ptr<Node> Circuit::findNode (const string& name) const {
     for (auto& n : get_Nodes())
     {
         if (n->get_name() == name)
@@ -192,9 +192,9 @@ void Circuit::create_new_resistor(const string& name, const string& node1_name, 
     int node2_index = node_index_finder_by_name(node2_name);
     // if we need new nodes
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     // again getting the indexes
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
@@ -210,9 +210,9 @@ void Circuit::create_new_capacitor(const string& name, const string& node1_name,
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -225,9 +225,9 @@ void Circuit::create_new_inductor(const string& name, const string& node1_name, 
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -240,9 +240,9 @@ void Circuit::create_new_current_source(const string& name, const string& node1_
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -255,9 +255,9 @@ void Circuit::create_new_VCCS(const string& name, const string& node1_name, cons
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -270,9 +270,9 @@ void Circuit::create_new_CCCS(const string& name, const string& node1_name, cons
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -285,9 +285,9 @@ void Circuit::create_new_VCVS(const string& name, const string& node1_name, cons
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -300,9 +300,9 @@ void Circuit::create_new_CCVS(const string& name, const string& node1_name, cons
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -315,9 +315,9 @@ void Circuit::create_new_real_diode(const string& name, const string& node1_name
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -331,9 +331,9 @@ void Circuit::create_new_zener_diode(const string& name, const string& node1_nam
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -348,9 +348,9 @@ void Circuit::create_new_DC_voltage_source(const string& name, const string& nod
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -366,9 +366,9 @@ Circuit::create_new_Sin_voltage_source(const string& name, const string& node1_n
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -381,9 +381,9 @@ void Circuit::create_new_Pulse_voltage_source(const string& name, const string& 
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -396,9 +396,9 @@ void Circuit::create_new_Delta_voltage_source(const string& name, const string& 
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -411,9 +411,9 @@ void Circuit::create_new_Square_voltage_source(const string& name, const string&
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -426,9 +426,9 @@ void Circuit::create_new_Triangle_voltage_source(const string& name, const strin
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
     if (node1_index == -1)
-        Nodes.push_back(new Node(node1_name));
+        Nodes.push_back(std::make_shared<Node>(node1_name));
     if (node2_index == -1)
-        Nodes.push_back(new Node(node2_name));
+        Nodes.push_back(std::make_shared<Node>(node2_name));
     node1_index = node_index_finder_by_name(node1_name);
     node2_index = node_index_finder_by_name(node2_name);
     Nodes[node1_index]->connect_element();
@@ -454,23 +454,22 @@ void Circuit::delete_element(const string& name)
         return;
     }
 
-    auto delete_node_if_unused = [this](Node* node) {
+    auto delete_node_if_unused = [this](shared_ptr<Node> node) {
         if (node->connected_elements_count() == 0)
         {
             auto it = std::find(Nodes.begin(), Nodes.end(), node);
             if (it != Nodes.end())
             {
                 Nodes.erase(it);
-                delete node;
             }
         }
     };
 
     Element* element_to_delete = Elements[element_index];
 
-    pair<Node*, Node*> nodes_pair = element_to_delete->get_nodes();
-    Node* node1 = nodes_pair.first;
-    Node* node2 = nodes_pair.second;
+    pair<std::shared_ptr<Node>, shared_ptr<Node>> nodes_pair = element_to_delete->get_nodes();
+    shared_ptr<Node> node1 = nodes_pair.first;
+    shared_ptr<Node> node2 = nodes_pair.second;
 
     node1->disconnect_element();
     if (node1 != node2)
@@ -503,7 +502,7 @@ void Circuit::analyse_data()
         node->reset_voltages();
     }
     // getting non_ground nodes
-    vector<Node*> Active_Nodes_;
+    vector<shared_ptr<Node>> Active_Nodes_;
     for (int i = 0; i < Nodes.size(); i++)
     {
         if (!Nodes[i]->is_the_node_ground())
@@ -678,7 +677,7 @@ void Circuit::transient_NR()
 
         //cout << "saving data" << endl;
         // saving data
-        for (auto* n : Active_Nodes) {
+        for (shared_ptr<Node> n : Active_Nodes) {
             n->set_voltage(x_previous[n->get_index()], t);
         }
         for (auto* e : Elements) {
@@ -745,7 +744,7 @@ void Circuit::transient_linear()
         }
         x_previous = x_current;
 
-        for (auto* n : Active_Nodes) {
+        for (shared_ptr<Node> n : Active_Nodes) {
             n->set_voltage(x_previous[n->get_index()], t);
         }
         for (auto* e : Elements) {
@@ -780,12 +779,13 @@ void Circuit::transient_linear()
 
 Circuit::~Circuit() {
     for (Element* elem : Elements) {
-        delete elem;
+        delete elem; // ✅ manual deletion for raw pointers
     }
-    for (Node* node : Nodes) {
-        delete node;
-    }
+
+    // ❌ no need to manually delete shared_ptrs
+    Nodes.clear(); // ✅ optional: releases shared_ptr references
 }
+
 
 void Circuit::transient()
 {
@@ -795,7 +795,7 @@ void Circuit::transient()
         transient_linear();
 }
 
-Node* Circuit::create_new_node(const string& name)
+shared_ptr<Node> Circuit::create_new_node(const string& name)
 {
     int existing_node_index = node_index_finder_by_name(name);
     if (existing_node_index != -1)
@@ -803,7 +803,7 @@ Node* Circuit::create_new_node(const string& name)
         return Nodes[existing_node_index];
     }
 
-    Node* new_node = new Node(name);
+    shared_ptr<Node> new_node = make_shared<Node>(name);
 
     Nodes.push_back(new_node);
 
@@ -817,7 +817,7 @@ void Circuit::addElement(Element* new_element)
     }
 }
 
-void Circuit::delete_node(Node *node_to_delete) {
+void Circuit::delete_node(shared_ptr<Node>node_to_delete) {
     if (node_to_delete == nullptr) return;
 
     auto it = std::find(Nodes.begin(), Nodes.end(), node_to_delete);
@@ -826,14 +826,13 @@ void Circuit::delete_node(Node *node_to_delete) {
     {
         Nodes.erase(it);
 
-        delete node_to_delete;
     }
 }
 
-Node* SubCircuit::getInput()  { return input; }
-Node* SubCircuit::getOutput()  { return output; }
-void SubCircuit::setInput(Node* newInput) { input = newInput; }
-void SubCircuit::setOutput(Node* newOutput) { output = newOutput; }
+shared_ptr<Node> SubCircuit::getInput()  { return input; }
+shared_ptr<Node> SubCircuit::getOutput()  { return output; }
+void SubCircuit::setInput(shared_ptr<Node> newInput) { input = newInput; }
+void SubCircuit::setOutput(shared_ptr<Node> newOutput) { output = newOutput; }
 int SubCircuit::get_rotation_as_int (){
     switch (rotation) {
         case Rotation::Right:

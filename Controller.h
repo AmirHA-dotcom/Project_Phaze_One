@@ -162,7 +162,7 @@ private:
 
     vector<unique_ptr<Graphical_Element>> graphical_elements;
 
-    map<string, Node*> named_nets;
+    map<string, shared_ptr<Node>> named_nets;
 public:
     int get_voltage_source_count() {return voltage_source_count;}
     Controller();
@@ -179,9 +179,9 @@ public:
     void deleteCircuit(Circuit* circuit);
     Element *findElement(string name);
 
-    Node *findNode(string name);
+    shared_ptr<Node> findNode(string name);
     void addCircuit(string name);
-    void addSubCircuit(string name, Circuit* circuit, Node* inputNode, Node* outputNode);
+    void addSubCircuit(string name, Circuit* circuit, shared_ptr<Node> inputNode, shared_ptr<Node> outputNode);
     void addR(string name, string Node1, string Node2, double value);
 
     void addC(string name, string Node1, string Node2, double value);
@@ -293,11 +293,11 @@ public:
 
     void add_Graphical_CCCS(int screenX, int screenY);
 
-    void add_Graphical_Ground(SDL_Point pos, Node* node);
+    void add_Graphical_Ground(SDL_Point pos, shared_ptr<Node> node);
 
     void add_Graphical_Sub_Circuit(int screenX, int screenY, string name);
 
-    Graphical_Net_Label* add_Graphical_Net_Label(SDL_Point pos, Node* node);
+    Graphical_Net_Label* add_Graphical_Net_Label(SDL_Point pos, shared_ptr<Node> node);
 
     vector<unique_ptr<Graphical_Element>>& get_graphical_elements();
 
@@ -305,13 +305,13 @@ public:
 
     vector<unique_ptr<Graphical_Wire>>& get_graphical_wires();
 
-    void add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end);
+    void add_Graphical_Wire(const vector<Connection_Point>& points, shared_ptr<Node> start, shared_ptr<Node> end);
     static void addSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName);
     static void addGraphicalSubCircuitToCircuit(SubCircuit* subCircuit, Circuit* circuit, const std::string& inputNodeName, const std::string& outputNodeName,int screenX, int screenY);
 
-    Node* connect_nodes(Node* node_to_keep, Node* node_to_merge);
+    shared_ptr<Node> connect_nodes(shared_ptr<Node> node_to_keep, shared_ptr<Node> node_to_merge);
 
-    void assign_net_name(Node* node_to_name, const string& new_name);
+    void assign_net_name(shared_ptr<Node> node_to_name, const string& new_name);
 
     void set_transient_values(double stepTime, double stopTime, double startTime, double maxTimeStep);
 

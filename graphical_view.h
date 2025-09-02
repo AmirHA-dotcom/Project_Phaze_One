@@ -83,8 +83,8 @@ private:
     // sub_circuit creation handling
     bool create_SubC_mode = false;
     SDL_Rect create_new_SubC_button_rect;
-    Node* node1 = nullptr;
-    Node* node2 = nullptr;
+    shared_ptr<Node> node1 = nullptr;
+    shared_ptr<Node> node2 = nullptr;
 
     // getting the name of the sub_circuit
     string new_SubC_name;
@@ -200,7 +200,7 @@ private:
     SDL_Cursor* finished_action_cursor = nullptr;
 
     // helper functions
-    Node* find_node_at(SDL_Point pos, Controller* C);
+    shared_ptr<Node> find_node_at(SDL_Point pos, Controller* C);
     Graphical_Element* find_element_at(SDL_Point pos, Controller* C);
     Graphical_Wire* find_wire_at(SDL_Point pos, Controller* C);
     int find_connection_point_at(Graphical_Element* element, SDL_Point click_pos);

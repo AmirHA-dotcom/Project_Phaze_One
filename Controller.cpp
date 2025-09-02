@@ -60,7 +60,7 @@ void Controller::addCircuit(string name){
     auto* c = new Circuit(name);
     circuits.push_back(c);
 }
-void Controller::addSubCircuit(string name, Circuit* circuit, Node* inputNode, Node* outputNode) {
+void Controller::addSubCircuit(string name, Circuit* circuit, shared_ptr<Node> inputNode, std::shared_ptr<Node> outputNode) {
     auto* sc = new SubCircuit(name,circuit,inputNode,outputNode);
     subCircuits.push_back(sc);
 }
@@ -177,7 +177,7 @@ Element* Controller::findElement (string name){
     return nullptr;
 }
 
-Node* Controller::findNode (string name){
+shared_ptr<Node> Controller::findNode (string name){
     for (auto& n : circuit->get_Nodes())
     {
         if (n->get_name() == name)
@@ -258,7 +258,7 @@ void Controller::addCcCs (string name, string Node1, string Node2,string CtrlNod
 }
 
 void Controller::showNodes(){
-    vector<Node*> nodes = circuit->get_Nodes();
+    vector<shared_ptr<Node>> nodes = circuit->get_Nodes();
     if (nodes.empty())
     {
         cout << "No available nodes" << endl;
@@ -399,7 +399,7 @@ void Controller::showDiodes(){
     }}
 
 void Controller::renameNode(string oldName, string newName){
-    Node* node = findNode(oldName);
+    shared_ptr<Node> node = findNode(oldName);
     if (node == nullptr) {
         cerr << "ERROR: Node " << oldName << " not found." << endl;
         return;
@@ -451,7 +451,7 @@ void Controller::tranAnalysisOrders(vector<string> orders){
         return;
     }
     for (auto i : nodeVoltages) {
-        Node* node = findNode(i);
+        shared_ptr<Node> node = findNode(i);
 
         //cout << node->get_all_voltages().size() << endl;
         //cout << circuit->get_node_voltages(i).size() << endl;
@@ -606,7 +606,7 @@ void Controller::saveCircuit(Circuit* circuit, string path) {
         string line;
         Element_Type type = component->get_type();
         string element_name = component->get_name();
-        const pair<Node*, Node*> nodes = component->get_nodes();
+        const pair<shared_ptr<Node>, shared_ptr<Node>> nodes = component->get_nodes();
         string node1 = nodes.first ? nodes.first->get_name() : "0";
         string node2 = nodes.second ? nodes.second->get_name() : "0";
         double value = component->get_value();
@@ -782,7 +782,7 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
         string line;
         Element_Type type = component->get_type();
         string element_name = component->get_name();
-        const pair<Node*, Node*> nodes = component->get_nodes();
+        const pair<shared_ptr<Node>, shared_ptr<Node>> nodes = component->get_nodes();
         string node1 = nodes.first ? nodes.first->get_name() : "0";
         string node2 = nodes.second ? nodes.second->get_name() : "0";
         double value = component->get_value();
@@ -1083,7 +1083,7 @@ SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
     for (auto* element : baseCircuit->get_Elements()) {
         subCircuit->addElement(element);
     }
-    for (auto* node : baseCircuit->get_Nodes()) {
+    for (shared_ptr<Node> node : baseCircuit->get_Nodes()) {
         subCircuit->addNode(node);
     }
     for (auto sub : baseCircuit->getSubs()) {
@@ -1092,8 +1092,8 @@ SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
     delete baseCircuit; // Clean up if baseCircuit is not a SubCircuit
 
     // Map to store nodes by name for reuse
-    unordered_map<string, Node*> nodeMap;
-    for (auto* node : subCircuit->get_Nodes()) {
+    unordered_map<string, shared_ptr<Node>> nodeMap;
+    for (shared_ptr<Node> node : subCircuit->get_Nodes()) {
         nodeMap[node->get_name()] = node;
     }
 
@@ -1109,7 +1109,7 @@ SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
             }
             string nodeName = line[1];
             if (nodeMap.find(nodeName) == nodeMap.end()) {
-                nodeMap[nodeName] = new Node(nodeName);
+                nodeMap[nodeName] = make_shared<Node>(nodeName);
                 subCircuit->addNode(nodeMap[nodeName]);
             }
             subCircuit->setInput(nodeMap[nodeName]); // Set input node
@@ -1122,7 +1122,7 @@ SubCircuit* textToSubCircuit(string Name, const vector<vector<string>>& lines) {
             }
             string nodeName = line[1];
             if (nodeMap.find(nodeName) == nodeMap.end()) {
-                nodeMap[nodeName] = new Node(nodeName);
+                nodeMap[nodeName] = make_shared<Node>(nodeName);
                 subCircuit->addNode(nodeMap[nodeName]);
             }
             subCircuit->setOutput(nodeMap[nodeName]); // Set output node
@@ -1269,13 +1269,13 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
             }
             else if (prefix == 'G' && tokens.size() >= 4 && tokens[0] == "GND") {
                 // Example .GND a x y
-                Node* node = circuit->findNode(tokens[1]);
+                shared_ptr<Node> node = circuit->findNode(tokens[1]);
                 node->make_ground();    node->set_ground_coordinates(stoi(tokens[2]), stoi(tokens[3]));
                 circuit->ground(true);
             }
             else if (prefix == 'N' && tokens.size() == 5 && tokens[0] == "NL") {
                 // Example .NL a Netname x y
-                Node* node = circuit->findNode(tokens[1]);
+                shared_ptr<Node> node = circuit->findNode(tokens[1]);
                 node->net_name = tokens[2];    node->set_net_label_coordinates(stoi(tokens[3]), stoi(tokens[4]));
             }
             else if (prefix == 'S' && tokens.size() == 6 && tokens[0] == "SUB") {
@@ -1319,7 +1319,7 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
     for (auto* element : baseCircuit->get_Elements()) {
         subCircuit->addElement(element);
     }
-    for (auto* node : baseCircuit->get_Nodes()) {
+    for (shared_ptr<Node> node : baseCircuit->get_Nodes()) {
         subCircuit->addNode(node);
     }
     for (auto sub : baseCircuit->getSubs()) {
@@ -1329,8 +1329,8 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
     //delete baseCircuit; // Clean up if baseCircuit is not a SubCircuit
 
     // Map to store nodes by name for reuse
-    unordered_map<string, Node*> nodeMap;
-    for (auto* node : subCircuit->get_Nodes()) {
+    unordered_map<string, shared_ptr<Node>> nodeMap;
+    for (shared_ptr<Node> node : subCircuit->get_Nodes()) {
         nodeMap[node->get_name()] = node;
     }
 
@@ -1346,7 +1346,7 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
             }
             string nodeName = line[1];
             if (nodeMap.find(nodeName) == nodeMap.end()) {
-                nodeMap[nodeName] = new Node(nodeName);
+                nodeMap[nodeName] = make_shared<Node>(nodeName);
                 subCircuit->addNode(nodeMap[nodeName]);
             }
             subCircuit->setInput(nodeMap[nodeName]); // Set input node
@@ -1359,7 +1359,7 @@ SubCircuit* textToGraphicalSubCircuit(string Name, const vector<vector<string>>&
             }
             string nodeName = line[1];
             if (nodeMap.find(nodeName) == nodeMap.end()) {
-                nodeMap[nodeName] = new Node(nodeName);
+                nodeMap[nodeName] = make_shared<Node>(nodeName);
                 subCircuit->addNode(nodeMap[nodeName]);
             }
             subCircuit->setOutput(nodeMap[nodeName]); // Set output node
@@ -1501,8 +1501,8 @@ void Controller::add_Graphical_Resistor(int screenX, int screenY) {
     resistor_count++;
     string r_name = "R" + to_string(resistor_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1527,8 +1527,8 @@ void Controller::add_Graphical_Capacitor(int screenX, int screenY) {
     capacitor_count++;
     string c_name = "C" + to_string(capacitor_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1551,8 +1551,8 @@ void Controller::add_Graphical_Inductor(int screenX, int screenY) {
     inductor_count++;
     string i_name = "I" + to_string(inductor_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1576,8 +1576,8 @@ void Controller::add_Graphical_Current_Source(int screenX, int screenY)
     current_source_count++;
     string cs_name = "CS" + to_string(current_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1601,8 +1601,8 @@ void Controller::add_Graphical_Real_Diode(int screenX, int screenY)
     real_diode_count++;
     string RD_name = "RD" + to_string(real_diode_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1626,8 +1626,8 @@ void Controller::add_Graphical_Zener_Diode(int screenX, int screenY)
     zener_diode_count++;
     string ZD_name = "ZD" + to_string(zener_diode_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1651,8 +1651,8 @@ void Controller::add_Graphical_DC_Source(int screenX, int screenY)
     voltage_source_count++;
     string VS_name = "VS" + to_string(voltage_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1676,8 +1676,8 @@ void Controller::add_Graphical_Sin_Source(int screenX, int screenY)
     voltage_source_count++;
     string VS_name = "VS" + to_string(voltage_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1701,8 +1701,8 @@ void Controller::add_Graphical_Pulse_Source(int screenX, int screenY)
     voltage_source_count++;
     string VS_name = "VS" + to_string(voltage_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1726,8 +1726,8 @@ void Controller::add_Graphical_Dirac_Source(int screenX, int screenY)
     voltage_source_count++;
     string VS_name = "VS" + to_string(voltage_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1751,8 +1751,8 @@ void Controller::add_Graphical_Square_Source(int screenX, int screenY)
     voltage_source_count++;
     string VS_name = "VS" + to_string(voltage_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1776,8 +1776,8 @@ void Controller::add_Graphical_Triangular_Source(int screenX, int screenY)
     voltage_source_count++;
     string VS_name = "VS" + to_string(voltage_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1801,8 +1801,8 @@ void Controller::add_Graphical_AC_Phase_Source(int screenX, int screenY)
 
     string VS_name = "Source";
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1826,8 +1826,8 @@ void Controller::add_Graphical_WF_Source(int screenX, int screenY)
     voltage_source_count++;
     string VS_name = "VS" + to_string(voltage_source_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1851,8 +1851,8 @@ void Controller::add_Graphical_VCVS(int screenX, int screenY)
     VCVS_count++;
     string name = "VCVS" + to_string(VCVS_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1875,8 +1875,8 @@ void Controller::add_Graphical_VCCS(int screenX, int screenY)
     VCCS_count++;
     string name = "VCCS" + to_string(VCVS_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1899,8 +1899,8 @@ void Controller::add_Graphical_CCVS(int screenX, int screenY)
     CCVS_count++;
     string name = "CCVS" + to_string(VCVS_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1923,8 +1923,8 @@ void Controller::add_Graphical_CCCS(int screenX, int screenY)
     CCCS_count++;
     string name = "CCCS" + to_string(VCVS_count);
 
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1938,7 +1938,7 @@ void Controller::add_Graphical_CCCS(int screenX, int screenY)
     graphical_elements.push_back(move(gfx_sim_source));
 }
 
-void Controller::add_Graphical_Ground(SDL_Point pos, Node* node)
+void Controller::add_Graphical_Ground(SDL_Point pos, shared_ptr<Node> node)
 {
     auto ground_symbol = make_unique<Graphical_Ground>(pos, node);
     ground_symbol->bounding_box = {pos.x - 12, pos.y, 24, 18};
@@ -1954,8 +1954,8 @@ void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name
     string n1_name = "N" + to_string(node_count);
     node_count++;
     string n2_name = "N" + to_string(node_count);
-    Node* n1 = circuit->create_new_node(n1_name);
-    Node* n2 = circuit->create_new_node(n2_name);
+    shared_ptr<Node> n1 = circuit->create_new_node(n1_name);
+    shared_ptr<Node> n2 = circuit->create_new_node(n2_name);
 
     n1->connect_element();
     n2->connect_element();
@@ -1983,7 +1983,7 @@ void Controller::add_Graphical_Sub_Circuit(int screenX, int screenY, string name
     }
 }
 
-Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, Node* node)
+Graphical_Net_Label* Controller::add_Graphical_Net_Label(SDL_Point pos, shared_ptr<Node> node)
 {
     auto new_label = make_unique<Graphical_Net_Label>(pos, node);
 
@@ -2154,7 +2154,7 @@ vector<unique_ptr<Graphical_Wire>> &Controller::get_graphical_wires()
     return graphical_wires;
 }
 
-void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node* start, Node* end) {
+void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, shared_ptr<Node> start, shared_ptr<Node> end) {
     auto new_wire = make_unique<Graphical_Wire>();
     for (const auto& p : points) {
         new_wire->path.push_back(p.pos);
@@ -2165,7 +2165,7 @@ void Controller::add_Graphical_Wire(const vector<Connection_Point>& points, Node
     graphical_wires.push_back(move(new_wire));
 }
 
-Node* Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
+shared_ptr<Node> Controller::connect_nodes(shared_ptr<Node> node_to_keep, shared_ptr<Node> node_to_merge)
 {
     if (!node_to_keep || !node_to_merge || node_to_keep == node_to_merge)
     {
@@ -2218,7 +2218,7 @@ Node* Controller::connect_nodes(Node* node_to_keep, Node* node_to_merge)
     return node_to_keep;
 }
 
-void Controller::assign_net_name(Node* node_to_name, const string& new_name)
+void Controller::assign_net_name(shared_ptr<Node> node_to_name, const string& new_name)
 {
     // if the node already had a name
     if (!node_to_name->net_name.empty())
@@ -2232,7 +2232,7 @@ void Controller::assign_net_name(Node* node_to_name, const string& new_name)
     auto it = named_nets.find(new_name);
     if (it != named_nets.end())
     {
-        Node* existing_node = it->second;
+        shared_ptr<Node> existing_node = it->second;
         if (existing_node != node_to_name)
         {
             connect_nodes(existing_node, node_to_name);
@@ -2322,7 +2322,7 @@ void Controller::delete_element(Graphical_Element* g_element_to_delete)
 
     if (auto* g_label = dynamic_cast<Graphical_Net_Label*>(g_element_to_delete))
     {
-        Node* label_node = g_label->get_node();
+        shared_ptr<Node> label_node = g_label->get_node();
         if (label_node && !label_node->net_name.empty())
         {
             string old_name = label_node->net_name;
@@ -2465,7 +2465,7 @@ void Controller::build_graphical_elements_from_circuit()
 
     // net labels
     const auto& logical_nodes = circuit->get_Nodes();
-    for (Node* node : logical_nodes)
+    for (shared_ptr<Node> node : logical_nodes)
     {
         if (!node->net_name.empty())
         {
@@ -2482,7 +2482,7 @@ void Controller::build_graphical_elements_from_circuit()
     }
     
     // grouping all connection points by their shared node
-    map<Node*, vector<Connection_Point>> node_to_points_map;
+    map<shared_ptr<Node>, vector<Connection_Point>> node_to_points_map;
     for (const auto& element : graphical_elements)
     {
         for (const auto& point : element->get_connection_points())
@@ -2497,7 +2497,7 @@ void Controller::build_graphical_elements_from_circuit()
     // create wire for each group
     for (const auto& pair : node_to_points_map)
     {
-        Node* common_node = pair.first;
+        shared_ptr<Node> common_node = pair.first;
         const vector<Connection_Point>& points = pair.second;
 
         if (!common_node->net_name.empty())
@@ -2787,7 +2787,7 @@ void Controller::performACSweep(Circuit* circuit) {
     }
 
     // دریافت نودها و محاسبه تعداد نودها و منابع ولتاژ
-    vector<Node*> nodes = circuit->get_Nodes();
+    vector<shared_ptr<Node>> nodes = circuit->get_Nodes();
     int N = (int)nodes.size() - 1; // بدون احتساب زمین
     int M = freqs.size(); // تعداد فرکانس‌ها
     int VsrcCount = 0;
@@ -2803,7 +2803,7 @@ void Controller::performACSweep(Circuit* circuit) {
     }
 
     // پیش‌تخصیص بردار برای ذخیره نتایج هر نود
-    std::vector<std::pair<Node*, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> acResults;
+    std::vector<std::pair<shared_ptr<Node>, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> acResults;
     for (int i = 1; i <= N; ++i) {
         acResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
     }
@@ -2909,7 +2909,7 @@ void Controller::performPhaseSweep(Circuit* circuit) {
     }
 
     // دریافت نودها و محاسبه تعداد نودها و منابع ولتاژ
-    vector<Node*> nodes = circuit->get_Nodes();
+    vector<shared_ptr<Node>> nodes = circuit->get_Nodes();
     int N = (int)nodes.size() - 1; // بدون احتساب زمین
     int M = phases.size(); // تعداد فازها
     int VsrcCount = 0;
@@ -2925,7 +2925,7 @@ void Controller::performPhaseSweep(Circuit* circuit) {
     }
 
     // پیش‌تخصیص بردار برای ذخیره نتایج هر نود
-    std::vector<std::pair<Node*, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> phaseResults;
+    std::vector<std::pair<shared_ptr<Node>, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> phaseResults;
     for (int i = 1; i <= N; ++i) {
         phaseResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
     }

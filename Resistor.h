@@ -10,7 +10,7 @@
 class Resistor : public Element
 {
 public:
-    Resistor(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Resistor, _node1, _node2, _value) {}
+    Resistor(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double _value) : Element(_name, Element_Type::Resistor, _node1, _node2, _value) {}
     double get_current(double time, double time_step) override;
     void display_info() override;
     void change_value(double new_value) override;

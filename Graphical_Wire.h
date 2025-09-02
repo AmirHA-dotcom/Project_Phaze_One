@@ -13,8 +13,8 @@ class Graphical_Wire
 public:
     vector<SDL_Point> path;
 
-    Node* start_node;
-    Node* end_node;
+    shared_ptr<Node> start_node;
+    shared_ptr<Node> end_node;
 
     void draw(SDL_Renderer* renderer);
 };

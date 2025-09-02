@@ -4,7 +4,7 @@
 
 #include "Element.h"
 
-Element::Element(string _name, Element_Type _type, Node *n1, Node *n2, double _value)
+Element::Element(string _name, Element_Type _type, shared_ptr<Node> n1, shared_ptr<Node> n2, double _value)
 {
     name = _name;
     type = _type;
@@ -57,7 +57,7 @@ Element_Type Element::get_element_type()
     return type;
 }
 
-pair<Node *, Node *> Element::get_nodes()
+pair<shared_ptr<Node>, shared_ptr<Node>> Element::get_nodes()
 {
     return {node1, node2};
 }
@@ -67,7 +67,7 @@ double Element::get_voltage_at_time(double time)
     return node1->get_voltage_in_time(time) - node2->get_voltage_in_time(time);
 }
 
-void Element::replace_node(Node *node_to_merge, Node *node_to_keep)
+void Element::replace_node(shared_ptr<Node> node_to_merge, shared_ptr<Node> node_to_keep)
 {
     if (node_to_merge == node1)
         node1 = node_to_keep;

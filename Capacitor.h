@@ -11,7 +11,7 @@ class Capacitor : public Element
 {
 public:
     Capacitor() : Element("default", Element_Type::Capacitor, nullptr, nullptr, 0.0) {}
-    Capacitor(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Capacitor, _node1, _node2, _value) {}
+    Capacitor(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double _value) : Element(_name, Element_Type::Capacitor, _node1, _node2, _value) {}
     double get_current(double time1, double time_step) override;
     void display_info() override;
     void change_value(double new_value) override;

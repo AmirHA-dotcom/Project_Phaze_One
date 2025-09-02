@@ -20,6 +20,7 @@ private:
     vector<pair<int,int>> net_label_coordinates_vector;
 
 public:
+    Node() = default;
     Node(string _name);
     Node(const std::string& name_, bool is_ground_, int index_);
     string get_name() const;
@@ -53,6 +54,7 @@ public:
     void serialize(Archive& ar) {
         ar(name, voltage, is_ground, elements_connected_count, index, ground_coordinates, net_label_coordinates_vector);
     }
+
 };
 
 

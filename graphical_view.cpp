@@ -88,7 +88,7 @@ inline string format_with_suffix(double value, const string& unit)
     return ss.str() + unit;
 }
 
-Node* graphical_view::find_node_at(SDL_Point pos, Controller* C)
+shared_ptr<Node> graphical_view::find_node_at(SDL_Point pos, Controller* C)
 {
     const float CLICK_TOLERANCE = 10.0f;
     auto& wires = C->get_graphical_wires();
@@ -826,7 +826,7 @@ void graphical_view::draw_math_operation_menu(SDL_Renderer *renderer, TTF_Font *
     render_text(renderer, font, "Nodes:", column2_x, builder_y + 70, TEXT_COLOR);
     math_node_buttons.clear();
     const auto &nodes = C->circuit->get_Nodes();
-    vector<Node*> nodes_a;
+    vector<shared_ptr<Node>> nodes_a;
     for (int i = 0; i < nodes.size(); ++i)
     {
         if (nodes[i]->is_the_node_ground()) continue;
@@ -915,7 +915,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
                 case Signal_Type::Mag:
                 {
                     prefix = "Mag";
-                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    pair<shared_ptr<Node>, shared_ptr<Node>> nodes = selected_element->get_model()->get_nodes();
                     vector<double> freq1, mag1, freq2, mag2;
                     for (const auto& ac_data : C->circuit->getAcVoltage())
                     {
@@ -940,7 +940,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
                 case Signal_Type::Phase:
                 {
                     prefix = "Phase";
-                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    pair<shared_ptr<Node>, shared_ptr<Node>> nodes = selected_element->get_model()->get_nodes();
                     vector<double> freq1, mag1, freq2, mag2;
                     for (const auto& ac_data : C->circuit->getAcVoltage())
                     {
@@ -972,7 +972,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
                 case Signal_Type::Mag:
                 {
                     prefix = "Mag";
-                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    pair<shared_ptr<Node>, shared_ptr<Node>> nodes = selected_element->get_model()->get_nodes();
                     vector<double> freq1, mag1, freq2, mag2;
                     for (const auto& ac_data : C->circuit->getPhaseVoltage())
                     {
@@ -997,7 +997,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
                 case Signal_Type::Phase:
                 {
                     prefix = "Phase";
-                    pair<Node*, Node*> nodes = selected_element->get_model()->get_nodes();
+                    pair<shared_ptr<Node>, shared_ptr<Node>> nodes = selected_element->get_model()->get_nodes();
                     vector<double> freq1, mag1, freq2, mag2;
                     for (const auto& ac_data : C->circuit->getPhaseVoltage())
                     {
@@ -1027,7 +1027,7 @@ void graphical_view::add_math_term(bool is_subtraction, Controller* C)
         k *= -1;
         const auto& nodes = C->circuit->get_Nodes();
         if (math_selected_node_index >= nodes.size()) return;
-        Node* selected_node = nodes[math_selected_node_index];
+        shared_ptr<Node> selected_node = nodes[math_selected_node_index];
 
         name = selected_node->get_name();
         if (current_analysis_mode == Analysis_Mode::Transient)
@@ -2340,7 +2340,7 @@ bool graphical_view::handle_edit_properties_menu(SDL_Event &event, Controller *C
 
         if (auto net_label = dynamic_cast<Graphical_Net_Label*>(element.get()))
         {
-            Node* node_to_name = net_label->get_node();
+            shared_ptr<Node> node_to_name = net_label->get_node();
             string new_name = edit_buffers[0];
             C->assign_net_name(node_to_name, new_name);
             net_label->set_label(new_name);
@@ -2529,7 +2529,7 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 
             if (index_to_delete != -1)
             {
-                Node* existing_node = wires[index_to_delete]->start_node;
+                shared_ptr<Node> existing_node = wires[index_to_delete]->start_node;
                 vector<SDL_Point> original_path = wires[index_to_delete]->path;
 
                 // wire from start to junction
@@ -2587,17 +2587,17 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
             if (target_element) {
                 Connection_Point target_point = target_element->get_connection_points()[target_point_index];
 
-                Node* start_node = new_wire_points.front().node;
-                Node* end_node = target_point.node;
+                shared_ptr<Node> start_node = new_wire_points.front().node;
+                shared_ptr<Node> end_node = target_point.node;
 
-                Node* node_to_keep = start_node;
-                Node* node_to_merge = end_node;
+                shared_ptr<Node> node_to_keep = start_node;
+                shared_ptr<Node> node_to_merge = end_node;
                 if (end_node->is_the_node_ground() || !end_node->net_name.empty()) {
                     node_to_keep = end_node;
                     node_to_merge = start_node;
                 }
 
-                Node* final_node = C->connect_nodes(node_to_keep, node_to_merge);
+                shared_ptr<Node> final_node = C->connect_nodes(node_to_keep, node_to_merge);
 
                 SDL_Point start_pos = new_wire_points.front().pos;
                 SDL_Point end_pos = target_point.pos;
@@ -2730,8 +2730,8 @@ bool graphical_view::handle_wiring_events(SDL_Event& event, Controller* C)
 
                 if (index_to_delete != -1)
                 {
-                    Node* source_node = new_wire_points.front().node;
-                    Node* target_wire_node = wires[index_to_delete]->start_node;
+                    shared_ptr<Node> source_node = new_wire_points.front().node;
+                    shared_ptr<Node> target_wire_node = wires[index_to_delete]->start_node;
                     vector<SDL_Point> original_path = wires[index_to_delete]->path;
 
                     // splitting the wire at the junction
@@ -2849,7 +2849,7 @@ bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
 
         if (index_to_ground != -1)
         {
-            Node* node = wires[index_to_ground]->start_node;
+            shared_ptr<Node> node = wires[index_to_ground]->start_node;
 
             node->make_ground();
 
@@ -2870,7 +2870,7 @@ bool graphical_view::handle_grounding_events(SDL_Event &event, Controller *C)
                 {
                     clicked_on_component = true;
 
-                    Node* node = point.node;
+                    shared_ptr<Node> node = point.node;
 
                     node->make_ground();
 
@@ -2942,7 +2942,7 @@ bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
 
         if (index_of_clicked_wire != -1)
         {
-            Node* target_node = wires[index_of_clicked_wire]->start_node;
+            shared_ptr<Node> target_node = wires[index_of_clicked_wire]->start_node;
 
             C->add_Graphical_Net_Label(label_pos, target_node);
 
@@ -2968,7 +2968,7 @@ bool graphical_view::handle_net_labeling_events(SDL_Event &event, Controller *C)
                 {
                     clicked_on_component = true;
 
-                    Node* target_node = point.node;
+                    shared_ptr<Node> target_node = point.node;
 
                     label_pos = point.pos;
 
@@ -3384,7 +3384,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
     {
         if (current_analysis_mode == Analysis_Mode::Transient)
         {
-            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            shared_ptr<Node> target_node = find_node_at({event.button.x, event.button.y}, C);
             if (target_node)
             {
                 if (!plot_view)
@@ -3452,7 +3452,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         }
         else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
         {
-            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            shared_ptr<Node> target_node = find_node_at({event.button.x, event.button.y}, C);
             if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)
@@ -3497,7 +3497,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         }
         else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
         {
-            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            shared_ptr<Node> target_node = find_node_at({event.button.x, event.button.y}, C);
             if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)
@@ -3586,7 +3586,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         }
         else if (current_analysis_mode == Analysis_Mode::AC_Sweep)
         {
-            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            shared_ptr<Node> target_node = find_node_at({event.button.x, event.button.y}, C);
             if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)
@@ -3634,7 +3634,7 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
         }
         else if (current_analysis_mode == Analysis_Mode::Phase_Sweep)
         {
-            Node* target_node = find_node_at({event.button.x, event.button.y}, C);
+            shared_ptr<Node> target_node = find_node_at({event.button.x, event.button.y}, C);
             if (target_node && !target_node->is_the_node_ground())
             {
                 if (!plot_view)

@@ -47,7 +47,7 @@ struct Editable_Property {
 
 struct Connection_Point {
     SDL_Point pos;
-    Node* node;
+    shared_ptr<Node> node;
     Rotation rotation;
 };
 
@@ -231,10 +231,10 @@ class Graphical_Ground : public Graphical_Element
 {
 private:
     SDL_Point m_position;
-    Node* m_node;
+    shared_ptr<Node> m_node;
 
 public:
-    Graphical_Ground(SDL_Point pos, Node* node) : Graphical_Element(nullptr), m_position(pos), m_node(node) {}
+    Graphical_Ground(SDL_Point pos, shared_ptr<Node> node) : Graphical_Element(nullptr), m_position(pos), m_node(node) {}
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 
@@ -242,7 +242,7 @@ public:
 
     vector<Editable_Property> get_editable_properties() override { return {}; }
 
-    Node* get_node() { return m_node; }
+    shared_ptr<Node> get_node() { return m_node; }
     string get_info_text()  override;
 };
 
@@ -251,13 +251,13 @@ class Graphical_Net_Label : public Graphical_Element
 private:
     SDL_Point m_position;
     string m_label_text;
-    Node* m_node;
+    shared_ptr<Node> m_node;
 
 public:
-    Graphical_Net_Label(SDL_Point pos, Node* node) : Graphical_Element(nullptr), m_position(pos), m_node(node) {}
+    Graphical_Net_Label(SDL_Point pos, shared_ptr<Node> node) : Graphical_Element(nullptr), m_position(pos), m_node(node) {}
 
     void set_label(const std::string& text) { m_label_text = text; }
-    Node* get_node() { return m_node; }
+    shared_ptr<Node> get_node() { return m_node; }
 
     void draw(SDL_Renderer* renderer, bool show_grid) override;
 

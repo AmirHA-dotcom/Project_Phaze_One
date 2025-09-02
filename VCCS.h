@@ -11,10 +11,10 @@
 class VCCS : public Element
 {
 private:
-    Node* ctrl_node1;
-    Node* ctrl_node2;
+    std::shared_ptr<Node> ctrl_node1;
+    std::shared_ptr<Node> ctrl_node2;
 public:
-    VCCS(string _name, Node* _node1, Node* _node2, double _value, Node* ctrl1, Node* ctrl2) :
+    VCCS(string _name,shared_ptr<Node> _node1, shared_ptr<Node> _node2, double _value, std::shared_ptr<Node> ctrl1, std::shared_ptr<Node> ctrl2) :
     Element(_name, Element_Type::VC_Current_Source, _node1, _node2, _value) {ctrl_node1 = ctrl1; ctrl_node2 = ctrl2;}
     void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
     void display_info() override;
@@ -22,7 +22,7 @@ public:
     void change_name(string new_name) override;
     double get_current(double time, double time_step) override;
 
-    pair<Node*, Node*> get_dependent_nodes() { return {ctrl_node1, ctrl_node2}; }
+    pair<std::shared_ptr<Node>, std::shared_ptr<Node>> get_dependent_nodes() { return {ctrl_node1, ctrl_node2}; }
 };
 
 

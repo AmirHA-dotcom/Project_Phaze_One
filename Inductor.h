@@ -12,7 +12,7 @@ class Inductor : public Element
     vector<pair<double, double>> currents;   // current, time
     int aux_index; // this is added so it can be used in the solving matrix
 public:
-    Inductor(string _name, Node* _node1, Node* _node2, double _value) : Element(_name, Element_Type::Inductor, _node1, _node2, _value) {}
+    Inductor(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double _value) : Element(_name, Element_Type::Inductor, _node1, _node2, _value) {}
     void set_current (double current, double time);
     double get_current(double time1, double time_step);
     void display_info() override;

@@ -30,7 +30,7 @@ add_executable(Project_Phaze_One
         View.cpp
         Errors.cpp
         Controller.cpp
-        main.cpp
+        #main.cpp
         Real_Diode.cpp
         Zener_Diode.cpp
         File_Handler.cpp
@@ -40,6 +40,7 @@ add_executable(Project_Phaze_One
         Graphical_Wire.cpp
         Serializer.cpp
         test_serialization.cpp
+        elements_graphics.cpp
 )
 
 target_link_libraries(Project_Phaze_One SDL2 SDL2_ttf SDL2_image)
