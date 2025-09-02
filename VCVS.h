@@ -15,6 +15,7 @@ private:
     int aux_index;
     vector<pair<double, double>> currents;  // current time
 public:
+    VCVS() : Element("default", Element_Type::VC_Voltage_Source, nullptr, nullptr, 0.0) {}
     VCVS(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double _value, shared_ptr<Node> ctrl1, shared_ptr<Node> ctrl2) :
     Element(_name, Element_Type::VC_Voltage_Source, _node1, _node2, _value) {ctrl_node1 = ctrl1; ctrl_node2 = ctrl2;}
     void set_aux_index(int i);
@@ -27,8 +28,13 @@ public:
     int get_aux_index() const;
 
     pair<shared_ptr<Node>, shared_ptr<Node>> get_dependent_nodes() { return {ctrl_node1, ctrl_node2}; }
+    template <class Archive>
+    void serialize(Archive& ar) {
+        ar(cereal::base_class<Element>(this));
+    }
 
 };
-
+CEREAL_REGISTER_TYPE(VCVS);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Element, VCVS);
 
 #endif //PROJECT_PHAZE_ONE_VCVS_H

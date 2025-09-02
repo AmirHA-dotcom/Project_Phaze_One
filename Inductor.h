@@ -12,6 +12,7 @@ class Inductor : public Element
     vector<pair<double, double>> currents;   // current, time
     int aux_index; // this is added so it can be used in the solving matrix
 public:
+    Inductor() : Element("default", Element_Type::Inductor, nullptr, nullptr, 0.0) {}
     Inductor(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double _value) : Element(_name, Element_Type::Inductor, _node1, _node2, _value) {}
     void set_current (double current, double time);
     double get_current(double time1, double time_step);
@@ -21,7 +22,12 @@ public:
     void set_aux_index(int i);
     int get_aux_index();
     void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
+    template <class Archive>
+    void serialize(Archive& ar) {
+        ar(cereal::base_class<Element>(this));
+    }
 };
 
-
+CEREAL_REGISTER_TYPE(Inductor);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Element, Inductor);
 #endif //PROJECT_PHAZE_ONE_INDUCTOR_H

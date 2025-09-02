@@ -8,10 +8,6 @@
 #include "Libraries.h"
 #include "Node.h"
 
-#include <cereal/types/string.hpp>
-#include <cereal/types/polymorphic.hpp> // برای پشتیبانی از ارث‌بری
-#include <cereal/types/base_class.hpp>
-
 enum class Rotation{Right, Left, Up, Down};
 
 class Element

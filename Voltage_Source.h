@@ -14,6 +14,7 @@ protected:
     vector<pair<double, double>> currents;  // current time
     double amplitude = 0;
 public:
+    Voltage_Source() : Element("default", Element_Type::Voltage_Source, nullptr, nullptr, 0.0) {}
     Voltage_Source(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double _value) : Element(_name, Element_Type::Voltage_Source, _node1, _node2, 0.0) {}
     void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) override;
     void set_aux_index(int i);
@@ -25,7 +26,14 @@ public:
     void set_current(double current, double time);
     int get_aux_index() const;
     double getAmplitude() { return amplitude; }
+    template <class Archive>
+    void serialize(Archive& ar) {
+        ar(cereal::base_class<Element>(this));
+    }
 };
+CEREAL_REGISTER_TYPE(Voltage_Source);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Element, Voltage_Source);
+
 
 class Waveform_Voltage_Source : public Voltage_Source {
 private:

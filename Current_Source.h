@@ -16,6 +16,10 @@ public:
     void change_value(double new_value) override;
     void change_name(string new_name) override;
     double get_current(double time, double time_step) override;
+    template <class Archive>
+    void serialize(Archive& ar) {
+        ar(cereal::base_class<Element>(this));
+    }
 };
 
 
