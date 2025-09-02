@@ -11,6 +11,15 @@ Node::Node(std::string _name)
     elements_connected_count = 0;
 }
 
+
+Node::Node(const std::string& name_, bool is_ground_, int index_)
+        : name(name_), is_ground(is_ground_), index(index_),
+          elements_connected_count(0),
+          ground_coordinates({0, 0}),
+          net_label_coordinates_vector(),
+          voltage() {}
+
+
 string Node::get_name() const
 {
     return name;

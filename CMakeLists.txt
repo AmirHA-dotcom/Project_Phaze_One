@@ -39,6 +39,7 @@ add_executable(Project_Phaze_One
         Graphical_view.cpp
         Graphical_Wire.cpp
         Serializer.cpp
+        test_serialization.cpp
 )
 
 target_link_libraries(Project_Phaze_One SDL2 SDL2_ttf SDL2_image)

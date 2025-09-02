@@ -21,6 +21,7 @@ private:
 
 public:
     Node(string _name);
+    Node(const std::string& name_, bool is_ground_, int index_);
     string get_name() const;
     void change_name(string new_name);
     void set_voltage(double volt, double time);
@@ -46,8 +47,12 @@ public:
     pair<int, int> get_net_label_coordinates() { return {net_label_coordinates.first, net_label_coordinates.second}; }
 
     vector<pair<int,int>> get_net_label_coordinates_vector() { return net_label_coordinates_vector; }// delete
-
     string net_name;
+
+    template <class Archive>
+    void serialize(Archive& ar) {
+        ar(name, voltage, is_ground, elements_connected_count, index, ground_coordinates, net_label_coordinates_vector);
+    }
 };
 
 

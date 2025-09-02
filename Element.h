@@ -47,9 +47,12 @@ public:
     void set_rotation_by_int (int r);
     void set_rotation(Rotation r) { rotation = r; }
     virtual double getAmplitude() const { return amplitude; }
+
     template <class Archive>
     void serialize(Archive& ar) {
-        ar(name, type, value); // فرض می‌کنیم nodeها جداگانه مدیریت می‌شن
+        ar(name, type, value, x, y, rotation, amplitude);
+        // برای nodeها فقط شناسه‌شون یا index ذخیره بشه، نه خود pointer
+        ar(node1->get_index(), node2->get_index()); // فرض بر اینه که get_index وجود داره
     }
 };
 

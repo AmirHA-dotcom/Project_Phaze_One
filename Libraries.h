@@ -5,15 +5,30 @@
 #ifndef PROJECT_PHAZE_ONE_LIBRARIES_H
 #define PROJECT_PHAZE_ONE_LIBRARIES_H
 
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
+
+#include <cereal/types/string.hpp>       // برای std::string
+#include <cereal/types/vector.hpp>       // برای std::vector
+#include <cereal/types/map.hpp>          // برای std::map
+#include <cereal/types/unordered_map.hpp>// برای std::unordered_map
+#include <cereal/types/unordered_set.hpp>// برای std::unordered_set
+#include <cereal/types/utility.hpp>      // برای std::pair
+#include <cereal/types/tuple.hpp>        // برای std::tuple
+#include <cereal/types/optional.hpp>     // برای std::optional (C++17)
+#include <cereal/types/memory.hpp>       // برای std::shared_ptr و std::unique_ptr
+#include <cereal/types/base_class.hpp>       // برای serialize کردن کلاس پایه
+#include <cereal/types/polymorphic.hpp>      // برای ثبت کلاس‌های مشتق
+#include <cereal/archives/binary.hpp>        // برای ذخیره‌سازی باینری
+#include <cereal/archives/json.hpp>          // برای ذخیره‌سازی JSON (مناسب برای دیباگ)
+#include <cereal/archives/xml.hpp>           // اگر خواستی از XML استفاده کنی
+#include <cereal/cereal.hpp>                // هدر اصلی cereal
 
 // Fix any previous macros from other libs
 #ifdef Success
 #undef Success
 #endif
-
+#include <iostream>
+#include <iomanip>
+#include <algorithm>
 #include <Eigen/Dense>
 #include <vector>
 #include <sstream>
