@@ -35,7 +35,7 @@ public:
     virtual void stamp(double current_time, double time_step, vector<Triplet> &G_triplets, vector<double> &b, const vector<double>& x_k, const vector<double>& x_previous) = 0;
     virtual double get_current(double time, double time_step) = 0;
     void replace_node(shared_ptr<Node> node_to_merge, shared_ptr<Node> node_to_keep);
-
+    void set_nodes (shared_ptr<Node> n1, shared_ptr<Node> n2) { node1 = n1; node2 = n2; }
     void set_coordinates(int x, int y) { this->x = x; this->y = y; }
     int get_x() const { return x; }
     int get_y() const { return y; }

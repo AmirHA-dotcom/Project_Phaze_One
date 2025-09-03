@@ -43,6 +43,16 @@ private:
 public:
     Waveform_Voltage_Source() : Voltage_Source("default_waveform", nullptr, nullptr, 0.0) {}
     // Constructor
+    Waveform_Voltage_Source(std::string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, const std::vector<std::pair<double, double>>& _segments)
+            : Voltage_Source(_name, _node1, _node2, 0.0), segments(_segments) {
+        totalDuration = 0.0;
+        for (const auto& seg : segments) {
+            if (seg.second <= 0) {
+                throw std::invalid_argument("Duration must be positive.");
+            }
+            totalDuration += seg.second;
+        }
+    }
     Waveform_Voltage_Source(std::string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2)
             : Voltage_Source(_name, _node1, _node2, 0.0) {}
 
@@ -148,6 +158,8 @@ private:
 
 public:
     AC_Voltage_Source() : Voltage_Source("default_ac", nullptr, nullptr, 0.0), amplitude(0.0), frequency(0.0), phase_degrees(0.0) {}
+    AC_Voltage_Source(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double amp)
+            : Voltage_Source(_name, _node1, _node2, 0.0), amplitude(amp), frequency(0.0), phase_degrees(0.0) {}
     AC_Voltage_Source(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double amp, double freq, double phase = 0.0)
             : Voltage_Source(_name, _node1, _node2, 0.0), amplitude(amp), frequency(freq), phase_degrees(phase) {}
 
@@ -247,12 +259,18 @@ private:
     double not_delta_value;
     double time_of_delta;
 public:
+    Delta_Dirac(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double time, double delta_val, double not_delta_val)
+    : Voltage_Source(_name, _node1, _node2, 0.0), delta_value(delta_val), not_delta_value(not_delta_val), time_of_delta(time) {}
+    Delta_Dirac() : Voltage_Source("default_delta", nullptr, nullptr, 0.0), delta_value(10000000000), not_delta_value(0.0), time_of_delta(0.0) {}
     Delta_Dirac(string _name, shared_ptr<Node> _node1, shared_ptr<Node> _node2, double time)
             : Voltage_Source(_name, _node1, _node2, 0.0), delta_value(10000000000), not_delta_value(0.0), time_of_delta(time) {}
     double get_value_at(double time, double time_step) const override;
     void get_parameters(double& delta_value, double& not_delta_value, double& time_of_delta) const;
     void set_time_of_delta(double val) { time_of_delta = val; }
 };
+CEREAL_REGISTER_TYPE(Delta_Dirac);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Element, Delta_Dirac);
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Voltage_Source, Delta_Dirac);
 
 class Square_Source : public Voltage_Source
 {

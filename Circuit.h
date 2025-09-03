@@ -38,6 +38,9 @@ private:
     vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> acVoltage; // Node and pair of indices for AC voltage {magnitude, phase}
     vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> phaseVoltage; // Node and pair of indices for Phase voltage {magnitude, phase}
 public:
+    void save_to_file(const std::string& filename) const;
+    void load_from_file(const std::string& filename);
+
     void setAcVoltage (const vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>>& acVoltageList) {
         acVoltage = acVoltageList;
     }
@@ -82,6 +85,7 @@ public:
     void create_new_real_diode(const string& name, const string& node1_name, const string& node2_name, double dummy_number);
     void create_new_zener_diode(const string& name, const string& node1_name, const string& node2_name, double dummy_number);
     void create_new_DC_voltage_source(const string& name, const string& node1_name, const string& node2_name, double voltage);
+    void create_new_AC_voltage_source(const string& name, const string& node1_name, const string& node2_name, double magnitude);
     void create_new_Sin_voltage_source(const string& name, const string& node1_name, const string& node2_name, double offset, double amplitude, double frequency);
     void create_new_Pulse_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value);
     void create_new_Square_voltage_source(const string& name, const string& node1_name, const string& node2_name, double period, double value);
@@ -102,7 +106,7 @@ public:
     void delete_element(const string& name);
     void delete_node(shared_ptr<Node> node_to_delete);
     ~Circuit();
-
+    void link_elements() const;
     shared_ptr<Element> findElement(const string& name) const;
     shared_ptr<Node> findNode(const string& name) const;
     void checkHaveGround();
@@ -113,7 +117,8 @@ public:
     int element_index_finder_by_name(const string& name) const;
     template <class Archive>
     void serialize(Archive& ar) {
-        ar(CEREAL_NVP(Nodes), CEREAL_NVP(Elements));
+        ar(cereal::make_nvp("nodes", get_Nodes()),
+           cereal::make_nvp("elements", get_Elements()));
     }
 
 };

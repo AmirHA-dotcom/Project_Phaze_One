@@ -359,9 +359,21 @@ void Circuit::create_new_DC_voltage_source(const string& name, const string& nod
     //cout << "ADDING DC S\n" << "node 1 name " << Nodes[node1_index]->get_name() << " node 2 name " << Nodes[node2_index]->get_name() << endl;
     //cout << Elements[Elements.size() - 1]->get_name() << endl;
 }
-
-void
-Circuit::create_new_Sin_voltage_source(const string& name, const string& node1_name, const string& node2_name, double offset, double amplitude, double frequency)
+void Circuit::create_new_AC_voltage_source( const string& name, const string& node1_name, const string& node2_name, double magnitude)
+{
+    int node1_index = node_index_finder_by_name(node1_name);
+    int node2_index = node_index_finder_by_name(node2_name);
+    if (node1_index == -1)
+        Nodes.push_back(std::make_shared<Node>(node1_name));
+    if (node2_index == -1)
+        Nodes.push_back(std::make_shared<Node>(node2_name));
+    node1_index = node_index_finder_by_name(node1_name);
+    node2_index = node_index_finder_by_name(node2_name);
+    Nodes[node1_index]->connect_element();
+    Nodes[node2_index]->connect_element();
+    Elements.push_back(make_shared< AC_Voltage_Source>(name, Nodes[node1_index], Nodes[node2_index], magnitude, 0.0));
+}
+void Circuit::create_new_Sin_voltage_source(const string& name, const string& node1_name, const string& node2_name, double offset, double amplitude, double frequency)
 {
     int node1_index = node_index_finder_by_name(node1_name);
     int node2_index = node_index_finder_by_name(node2_name);
@@ -805,6 +817,17 @@ shared_ptr<Node> Circuit::create_new_node(const string& name)
     Nodes.push_back(new_node);
 
     return new_node;
+}
+void Circuit::save_to_file(const std::string& filename) const {
+    std::ofstream os(filename);
+    cereal::JSONOutputArchive archive(os);
+    archive(cereal::make_nvp("circuit", *this));
+}
+
+void Circuit::load_from_file(const std::string& filename) {
+    std::ifstream is(filename);
+    cereal::JSONInputArchive archive(is);
+    archive(*this);
 }
 
 void Circuit::addElement(shared_ptr<Element> new_element)

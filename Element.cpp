@@ -69,8 +69,8 @@ double Element::get_voltage_at_time(double time)
 
 void Element::replace_node(shared_ptr<Node> node_to_merge, shared_ptr<Node> node_to_keep)
 {
-    if (node_to_merge == node1)
+    if (node1 == node_to_merge)
         node1 = node_to_keep;
-    if (node_to_merge == node2)
+    if (node2 == node_to_merge)
         node2 = node_to_keep;
 }

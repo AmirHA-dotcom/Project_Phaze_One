@@ -434,7 +434,6 @@ void Controller::DcAnalysis(double sourceName, double startValue, double endValu
 }
 
 void Controller::tranAnalysisOrders(vector<string> orders){
-    //cout << "dodo  " <<orders[0].substr(2, orders[0].size() - 3) << endl;
     vector<string> nodeVoltages;
     vector<string> elementCurrents;
     for (const auto& order : orders) {
@@ -817,6 +816,9 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
             case Element_Type::CC_Voltage_Source:
                 line = "H" + element_name + " " + node1 + " " + node2 + " 0 0 " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
+            case Element_Type::AC_Voltage_Source: //dodo
+                line = "V" + element_name + " " + node1 + " " + node2 + " AC " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
+                break;
             case Element_Type::Real_Diode:
                 line = "D" + element_name + " " + node1 + " " + node2 + " " + formatValue(value) + " " + to_string(component->get_x()) + " " + to_string(component->get_y()) + " " + to_string(component->get_rotation_as_int());
                 break;
@@ -1002,6 +1004,10 @@ Circuit* textToCircuit(string Name, const vector<vector<string>>& lines) {
                 else if (tokens[3] == "DELTA" && tokens.size() >= 5) {
                     double time = Value(tokens[4]);
                     circuit->create_new_Delta_voltage_source(element_name, n1, n2, time);
+                }
+                else if (tokens[3] == "AC" && tokens.size() >= 5) { //dodo
+                    double val = Value(tokens[4]);
+                    circuit->create_new_AC_voltage_source(element_name, n1, n2, val);
                 }
                 else {
                     double val = stod(tokens[3]);
@@ -1216,6 +1222,12 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
                     circuit->create_new_Delta_voltage_source(element_name, n1, n2, time);
                     circuit->findElement(element_name)->set_coordinates(stoi(tokens[6]),stoi(tokens[7]));
                     circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[8]));
+                }
+                else if (tokens[3] == "AC" && tokens.size() >= 8) { //dodo
+                    double val = Value(tokens[4]);
+                    circuit->create_new_AC_voltage_source(element_name, n1, n2, val);
+                    circuit->findElement(element_name)->set_coordinates(stoi(tokens[5]),stoi(tokens[6]));
+                    circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[7]));
                 }
                 else {
                     double val = stod(tokens[3]);
@@ -3006,5 +3018,5 @@ void Controller::performPhaseSweep(Circuit* circuit) {
     }
 
     // ذخیره نتایج در مدار
-    circuit->setPhaseVoltage( std::move(phaseResults) );
+    circuit->setPhaseVoltage( std::move(phaseResults));
 }
