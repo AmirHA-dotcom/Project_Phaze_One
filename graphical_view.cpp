@@ -6,19 +6,19 @@
 
 // helper functions
 
-const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
-const char* PROBE = "D://Images//probe_cursor.png";
-const char* DELETE = "D://Images//sissors_cursor.png";
-const char* GROUND = "D://Images//grounding_cursor.png";
-const char* ICON = "D://Images//SparkSense2.png";
-const char* TICK = "D://Images//tick_40x40.png";
+//const char* FONT = "D:/Fonts/Roboto/static/Roboto-Regular.ttf";
+//const char* PROBE = "D://Images//probe_cursor.png";
+//const char* DELETE = "D://Images//sissors_cursor.png";
+//const char* GROUND = "D://Images//grounding_cursor.png";
+//const char* ICON = "D://Images//SparkSense2.png";
+//const char* TICK = "D://Images//tick_40x40.png";
 
-//const char* FONT = "/Users/arian/Desktop/OOP/pf/Athelas.ttc";
-//const char* PROBE = "/Users/arian/Desktop/OOP/pf/probe_cursor.png";
-//const char* DELETE = "/Users/arian/Desktop/OOP/pf/sissors_cursor.png";
-//const char* GROUND = "/Users/arian/Desktop/OOP/pf/grounding_cursor.png";
-//const char* ICON = "/Users/arian/Desktop/OOP/pf/SparkSense2.png";
-//const char* TICK = "/Users/arian/Desktop/OOP/pf/tick_40x40.png";
+const char* FONT = "/Users/arian/Desktop/OOP/pf/Athelas.ttc";
+const char* PROBE = "/Users/arian/Desktop/OOP/pf/probe_cursor.png";
+const char* DELETE = "/Users/arian/Desktop/OOP/pf/sissors_cursor.png";
+const char* GROUND = "/Users/arian/Desktop/OOP/pf/grounding_cursor.png";
+const char* ICON = "/Users/arian/Desktop/OOP/pf/SparkSense2.png";
+const char* TICK = "/Users/arian/Desktop/OOP/pf/tick_40x40.png";
 
 void trim_whitespace(string& s)
 {

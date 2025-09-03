@@ -2878,15 +2878,14 @@ void Controller::performACSweep(Circuit* circuit) {
 }
 
 void Controller::performPhaseSweep(Circuit* circuit) {
+    // تغییر نام نودها
     int i = 0;
-    for (auto& node : circuit->get_Nodes())
-    {
-        if (!node->net_name.empty())
-        {
+    for (auto& node : circuit->get_Nodes()) {
+        if (!node->net_name.empty()) {
             node->change_name(node->net_name);
             continue;
         }
-        node->change_name("N" + to_string(++i));
+        node->change_name("N" + std::to_string(++i));
     }
 
     // تولید فازها
@@ -2904,39 +2903,56 @@ void Controller::performPhaseSweep(Circuit* circuit) {
         }
     }
 
-    // دریافت نودها و محاسبه تعداد نودها و منابع ولتاژ
-    vector<shared_ptr<Node>> nodes = circuit->get_Nodes();
-    int N = (int)nodes.size() - 1; // بدون احتساب زمین
-    int M = phases.size(); // تعداد فازها
+    // دریافت نودها و پیدا کردن زمین
+    std::vector<std::shared_ptr<Node>> nodes = circuit->get_Nodes();
+    auto ground_it = std::find_if(nodes.begin(), nodes.end(),
+                                  [](const std::shared_ptr<Node>& n) {
+                                      return n && n->is_the_node_ground();
+                                  });
+    if (ground_it == nodes.end()) {
+        throw std::runtime_error("No ground node found!");
+    }
+    if (ground_it != nodes.begin()) {
+        std::iter_swap(nodes.begin(), ground_it); // زمین به nodes[0]
+    }
+
+    // محاسبه تعداد نودها و منابع ولتاژ
+    int N = nodes.size() - 1; // بدون زمین
+    int M = phases.size();    // تعداد فازها
     int VsrcCount = 0;
-    for (shared_ptr<Element> el : circuit->get_Elements())
-        if (el->get_type() == Element_Type::AC_Voltage_Source)
+    for (const auto& el : circuit->get_Elements()) {
+        if (el->get_type() == Element_Type::AC_Voltage_Source) {
             ++VsrcCount;
-    int size = N + VsrcCount;
+        }
+    }
+    if (VsrcCount == 0) {
+        throw std::runtime_error("No AC voltage source found!");
+    }
+    int size = N + VsrcCount; // اندازه ماتریس/بردار
 
     // ساخت نقشه نام به اندیس
-    unordered_map<string, int> nodeIndex;
-    for (int i = 0; i < (int)nodes.size(); ++i) {
+    std::unordered_map<std::string, int> nodeIndex;
+    for (int i = 0; i < nodes.size(); ++i) {
         nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
     }
 
     // پیش‌تخصیص بردار برای ذخیره نتایج هر نود
-    std::vector<std::pair<shared_ptr<Node>, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> phaseResults;
+    std::vector<std::pair<std::shared_ptr<Node>, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> phaseResults;
     for (int i = 1; i <= N; ++i) {
         phaseResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
     }
 
+    // پیدا کردن منبع ولتاژ AC
     std::shared_ptr<AC_Voltage_Source> voltageSource = nullptr;
-
     for (const std::shared_ptr<Element>& el : circuit->get_Elements()) {
         if (el->get_type() == Element_Type::AC_Voltage_Source) {
             voltageSource = std::dynamic_pointer_cast<AC_Voltage_Source>(el);
             if (voltageSource) break;
         }
     }
-
-    assert(voltageSource != nullptr); // باید حداقل یک منبع ولتاژ AC وجود داشته باشد
-
+    if (!voltageSource) {
+        throw std::runtime_error("No AC voltage source found!");
+    }
 
     // فرکانس ثابت
     double omega = 2 * M_PI * fixed_frequency;
@@ -2947,12 +2963,13 @@ void Controller::performPhaseSweep(Circuit* circuit) {
         double phase_rad = phase_deg * M_PI / 180.0;
         voltageSource->setPhase(phase_deg);
 
+        // تعریف ماتریس و بردار با اندازه درست
         MatrixXc Y = MatrixXc::Zero(size, size);
         VectorXc I = VectorXc::Zero(size);
 
         int voltageIndex = N; // اندیس شروع معادلات اضافی
 
-        for (shared_ptr<Element> el : circuit->get_Elements()) {
+        for (const std::shared_ptr<Element>& el : circuit->get_Elements()) {
             int n1 = nodeIndex[el->get_nodes().first->get_name()];
             int n2 = nodeIndex[el->get_nodes().second->get_name()];
 
@@ -2992,20 +3009,25 @@ void Controller::performPhaseSweep(Circuit* circuit) {
                     if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
                     if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
                     if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
-                    auto src = dynamic_pointer_cast<AC_Voltage_Source>(el);
+                    auto src = std::dynamic_pointer_cast<AC_Voltage_Source>(el);
                     if (src) {
                         double amplitude = src->getAmplitude();
                         double phase_rad = src->getPhase() * M_PI / 180.0;
                         ComplexNum Vsrc = amplitude * ComplexNum(cos(phase_rad), sin(phase_rad));
-                        I(voltageIndex) = Vsrc;
+                        if (voltageIndex < size) {
+                            I(voltageIndex) = Vsrc;
+                        }
+                        voltageIndex++;
                     }
-                    voltageIndex++;
                     break;
                 }
             }
         }
 
-        assert(voltageIndex == size);
+        if (voltageIndex != size) {
+            throw std::runtime_error("Mismatch in voltage source count!");
+        }
+
         VectorXc V = Y.fullPivLu().solve(I);
 
         // ذخیره نتایج
@@ -3018,5 +3040,5 @@ void Controller::performPhaseSweep(Circuit* circuit) {
     }
 
     // ذخیره نتایج در مدار
-    circuit->setPhaseVoltage( std::move(phaseResults));
+    circuit->setPhaseVoltage(std::move(phaseResults));
 }
