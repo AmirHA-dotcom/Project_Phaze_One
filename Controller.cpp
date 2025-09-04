@@ -836,10 +836,11 @@ void Controller::saveGraphicalCircuit(Circuit* circuit, string path) {
             file << ".GND " << node->get_name() << " " << node->get_ground_coordinates().first
                  << " " << node->get_ground_coordinates().second << "\n";            }
     }
-    for (auto node : circuit->get_Nodes()) {
+    for (auto node : circuit->get_Nodes()) { // jojo
         if (node->haveNetLabel()) {
-            file << ".NL " << node->get_name() << " " << node->net_name << " " <<
-            node->get_net_label_coordinates().first << " " << node->get_net_label_coordinates().second << "\n";
+            file << ".NET " << node->get_name() << " " << node->net_name << "\n";
+            for (auto & c : node->get_net_label_coordinates_vector())
+                file << ".NL " << node->get_name() << " " << c.first << " " << c.second << "\n";
         }
     }
     for (auto & sub : circuit->getSubs()) {
@@ -1279,16 +1280,22 @@ Circuit* textToGraphicalCircuit(string Name, const vector<vector<string>>& lines
                 circuit->findElement(element_name)->set_coordinates(stoi(tokens[4]),stoi(tokens[5]));
                 circuit->findElement(element_name)->set_rotation_by_int(stoi(tokens[6]));
             }
-            else if (prefix == 'G' && tokens.size() >= 4 && tokens[0] == "GND") {
+            else if (tokens.size() >= 4 && tokens[0] == "GND") {
                 // Example .GND a x y
                 shared_ptr<Node> node = circuit->findNode(tokens[1]);
                 node->make_ground();    node->set_ground_coordinates(stoi(tokens[2]), stoi(tokens[3]));
                 circuit->ground(true);
             }
-            else if (prefix == 'N' && tokens.size() == 5 && tokens[0] == "NL") {
-                // Example .NL a Netname x y
+            else if (tokens.size() == 3 && tokens[0] == "NET") { //jojo
+                // Example .NET Netname nodeName
                 shared_ptr<Node> node = circuit->findNode(tokens[1]);
-                node->net_name = tokens[2];    node->set_net_label_coordinates(stoi(tokens[3]), stoi(tokens[4]));
+                node->net_name = tokens[2];
+                // Example .NL nodeName x y
+            }
+            else if (tokens.size() == 4 && tokens[0] == "NL") { //jojo
+                // Example .NL nodeName x y
+                shared_ptr<Node> node = circuit->findNode(tokens[1]);
+                node->get_net_label_coordinates_vector().push_back(make_pair(stoi(tokens[2]), stoi(tokens[3])));
             }
             else if (prefix == 'S' && tokens.size() == 6 && tokens[0] == "SUB") {
                 // Example .SUB subName index Rotation(int) x y
@@ -2465,9 +2472,12 @@ void Controller::build_graphical_elements_from_circuit()
     {
         if (!node->net_name.empty())
         {
-            SDL_Point label_pos = {node->get_net_label_coordinates().first, node->get_net_label_coordinates().second };
-
-            add_Graphical_Net_Label(label_pos, node);
+            //SDL_Point label_pos = {node->get_net_label_coordinates().first, node->get_net_label_coordinates().second };
+            for (const auto& co : node->get_net_label_coordinates_vector())
+            {
+                    add_Graphical_Net_Label({co.first, co.second}, node);
+            }
+            //add_Graphical_Net_Label(label_pos, node);
         }
         if (node->is_the_node_ground())
         {
@@ -2743,17 +2753,6 @@ inline void safeAdd(MatrixXc& Y, int r, int c, ComplexNum v) {
     Y(r, c) += v;
 }
 
-#include <vector>
-#include <utility>
-#include <cmath>
-#include <cassert>
-
-#include <vector>
-#include <utility>
-#include <cmath>
-#include <cassert>
-#include <tuple>
-
 void Controller::performACSweep(Circuit* circuit) {
     int i = 0;
     for (auto& node : circuit->get_Nodes())
@@ -2781,27 +2780,44 @@ void Controller::performACSweep(Circuit* circuit) {
             freqs.push_back(start_freq * pow(base, factor * log(ratio) / log(base)));
         }
     }
-
-    // دریافت نودها و محاسبه تعداد نودها و منابع ولتاژ
+// دریافت نودها و محاسبه تعداد نودها و منابع ولتاژ
     vector<shared_ptr<Node>> nodes = circuit->get_Nodes();
-    int N = (int)nodes.size() - 1; // بدون احتساب زمین
-    int M = freqs.size(); // تعداد فرکانس‌ها
+    auto ground_it = find_if(nodes.begin(), nodes.end(),
+                             [](const shared_ptr<Node>& n) {
+                                 return n && n->is_the_node_ground();
+                             });
+    if (ground_it == nodes.end()) {
+        throw runtime_error("No ground node found!");
+    }
+    if (ground_it != nodes.begin()) {
+        iter_swap(nodes.begin(), ground_it);
+    }
+
+    // محاسبه تعداد نودها و منابع ولتاژ
+    int N = nodes.size() - 1; // بدون زمین
+    int M = freqs.size();     // تعداد فرکانس‌ها
     int VsrcCount = 0;
-    for (shared_ptr<Element> el : circuit->get_Elements())
-        if (el->get_type() == Element_Type::Voltage_Source)
+    for (const auto& el : circuit->get_Elements()) {
+        if (el->get_type() == Element_Type::Voltage_Source ||
+            el->get_type() == Element_Type::AC_Voltage_Source) {
             ++VsrcCount;
+        }
+    }
+    if (VsrcCount == 0) {
+        throw runtime_error("No voltage source found!");
+    }
     int size = N + VsrcCount;
 
     // ساخت نقشه نام به اندیس
     unordered_map<string, int> nodeIndex;
-    for (int i = 0; i < (int)nodes.size(); ++i) {
+    for (int i = 0; i < nodes.size(); ++i) {
         nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
     }
 
-    // پیش‌تخصیص بردار برای ذخیره نتایج هر نود
-    std::vector<std::pair<shared_ptr<Node>, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> acResults;
+    // پیش‌تخصیص بردار برای ذخیره نتایج
+    vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> acResults;
     for (int i = 1; i <= N; ++i) {
-        acResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
+        acResults.push_back({nodes[i], {vector<double>(M), vector<double>(M), vector<double>(M)}});
     }
 
     // حل سیستم برای هر فرکانس
@@ -2811,165 +2827,9 @@ void Controller::performACSweep(Circuit* circuit) {
         MatrixXc Y = MatrixXc::Zero(size, size);
         VectorXc I = VectorXc::Zero(size);
 
-        int voltageIndex = N; // اندیس شروع معادلات اضافی
+        int voltageIndex = N;
 
-        for (shared_ptr<Element> el : circuit->get_Elements()) {
-            int n1 = nodeIndex[el->get_nodes().first->get_name()];
-            int n2 = nodeIndex[el->get_nodes().second->get_name()];
-
-            switch (el->get_type()) {
-                case Element_Type::Resistor: {
-                    ComplexNum G = 1.0 / el->get_value();
-                    if (n1 >= 0) safeAdd(Y, n1, n1, G);
-                    if (n2 >= 0) safeAdd(Y, n2, n2, G);
-                    if (n1 >= 0 && n2 >= 0) {
-                        safeAdd(Y, n1, n2, -G);
-                        safeAdd(Y, n2, n1, -G);
-                    }
-                    break;
-                }
-                case Element_Type::Capacitor: {
-                    ComplexNum Yc(0, omega * el->get_value()); // jωC
-                    if (n1 >= 0) safeAdd(Y, n1, n1, Yc);
-                    if (n2 >= 0) safeAdd(Y, n2, n2, Yc);
-                    if (n1 >= 0 && n2 >= 0) {
-                        safeAdd(Y, n1, n2, -Yc);
-                        safeAdd(Y, n2, n1, -Yc);
-                    }
-                    break;
-                }
-                case Element_Type::Inductor: {
-                    ComplexNum Yl(0, -1.0 / (omega * el->get_value())); // 1/(jωL)
-                    if (n1 >= 0) safeAdd(Y, n1, n1, Yl);
-                    if (n2 >= 0) safeAdd(Y, n2, n2, Yl);
-                    if (n1 >= 0 && n2 >= 0) {
-                        safeAdd(Y, n1, n2, -Yl);
-                        safeAdd(Y, n2, n1, -Yl);
-                    }
-                    break;
-                }
-                case Element_Type::Voltage_Source: {
-                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
-                    if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
-                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
-                    if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
-                    assert(voltageIndex < I.size());
-                    I(voltageIndex) = el->getAmplitude();
-                    voltageIndex++;
-                    break;
-                }
-            }
-        }
-
-        assert(voltageIndex == size);
-        VectorXc V = Y.fullPivLu().solve(I);
-
-        // ذخیره بزرگی و فاز برای همه نودها
-        for (int j = 0; j < N; ++j) {
-            auto& [freq_vec, mag_vec, phase_vec] = acResults[j].second;
-            freq_vec[k] = f;
-            mag_vec[k] = 20 * log10(std::abs(V(j)));
-            phase_vec[k] = std::arg(V(j)) * 180.0 / M_PI;
-        }
-    }
-
-    // تنظیم نتایج در مدار
-    circuit->setAcVoltage( std::move(acResults) );
-}
-
-void Controller::performPhaseSweep(Circuit* circuit) {
-    // تغییر نام نودها
-    int i = 0;
-    for (auto& node : circuit->get_Nodes()) {
-        if (!node->net_name.empty()) {
-            node->change_name(node->net_name);
-            continue;
-        }
-        node->change_name("N" + std::to_string(++i));
-    }
-
-    // تولید فازها
-    std::vector<double> phases;
-    if (phase_sweep_type == Phase_Sweep_Type::Linear) {
-        double step = (end_phase - start_phase) / (num_of_points - 1);
-        for (int i = 0; i < num_of_points; i++)
-            phases.push_back(start_phase + i * step);
-    } else { // لگاریتمی (Decade یا Octave)
-        double base = (phase_sweep_type == Phase_Sweep_Type::Decade) ? 10.0 : 2.0;
-        double ratio = end_phase / start_phase;
-        for (int i = 0; i < num_of_points; i++) {
-            double factor = (double)i / (num_of_points - 1);
-            phases.push_back(start_phase * pow(base, factor * log(ratio) / log(base)));
-        }
-    }
-
-    // دریافت نودها و پیدا کردن زمین
-    std::vector<std::shared_ptr<Node>> nodes = circuit->get_Nodes();
-    auto ground_it = std::find_if(nodes.begin(), nodes.end(),
-                                  [](const std::shared_ptr<Node>& n) {
-                                      return n && n->is_the_node_ground();
-                                  });
-    if (ground_it == nodes.end()) {
-        throw std::runtime_error("No ground node found!");
-    }
-    if (ground_it != nodes.begin()) {
-        std::iter_swap(nodes.begin(), ground_it); // زمین به nodes[0]
-    }
-
-    // محاسبه تعداد نودها و منابع ولتاژ
-    int N = nodes.size() - 1; // بدون زمین
-    int M = phases.size();    // تعداد فازها
-    int VsrcCount = 0;
-    for (const auto& el : circuit->get_Elements()) {
-        if (el->get_type() == Element_Type::AC_Voltage_Source) {
-            ++VsrcCount;
-        }
-    }
-    if (VsrcCount == 0) {
-        throw std::runtime_error("No AC voltage source found!");
-    }
-    int size = N + VsrcCount; // اندازه ماتریس/بردار
-
-    // ساخت نقشه نام به اندیس
-    std::unordered_map<std::string, int> nodeIndex;
-    for (int i = 0; i < nodes.size(); ++i) {
-        nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
-    }
-
-    // پیش‌تخصیص بردار برای ذخیره نتایج هر نود
-    std::vector<std::pair<std::shared_ptr<Node>, std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>>> phaseResults;
-    for (int i = 1; i <= N; ++i) {
-        phaseResults.push_back({nodes[i], {std::vector<double>(M), std::vector<double>(M), std::vector<double>(M)}});
-    }
-
-    // پیدا کردن منبع ولتاژ AC
-    std::shared_ptr<AC_Voltage_Source> voltageSource = nullptr;
-    for (const std::shared_ptr<Element>& el : circuit->get_Elements()) {
-        if (el->get_type() == Element_Type::AC_Voltage_Source) {
-            voltageSource = std::dynamic_pointer_cast<AC_Voltage_Source>(el);
-            if (voltageSource) break;
-        }
-    }
-    if (!voltageSource) {
-        throw std::runtime_error("No AC voltage source found!");
-    }
-
-    // فرکانس ثابت
-    double omega = 2 * M_PI * fixed_frequency;
-
-    // حل سیستم برای هر فاز
-    for (int k = 0; k < M; ++k) {
-        double phase_deg = phases[k];
-        double phase_rad = phase_deg * M_PI / 180.0;
-        voltageSource->setPhase(phase_deg);
-
-        // تعریف ماتریس و بردار با اندازه درست
-        MatrixXc Y = MatrixXc::Zero(size, size);
-        VectorXc I = VectorXc::Zero(size);
-
-        int voltageIndex = N; // اندیس شروع معادلات اضافی
-
-        for (const std::shared_ptr<Element>& el : circuit->get_Elements()) {
+        for (const auto& el : circuit->get_Elements()) {
             int n1 = nodeIndex[el->get_nodes().first->get_name()];
             int n2 = nodeIndex[el->get_nodes().second->get_name()];
 
@@ -3004,19 +2864,28 @@ void Controller::performPhaseSweep(Circuit* circuit) {
                     }
                     break;
                 }
+                case Element_Type::Voltage_Source: {
+                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
+                    if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
+                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
+                    if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
+                    auto dc_src = dynamic_pointer_cast<DC_Source>(el);
+                    if (dc_src && voltageIndex < size) {
+                        I(voltageIndex) = dc_src->get_value();
+                        voltageIndex++;
+                    }
+                    break;
+                }
                 case Element_Type::AC_Voltage_Source: {
                     if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
                     if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
                     if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
                     if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
-                    auto src = std::dynamic_pointer_cast<AC_Voltage_Source>(el);
-                    if (src) {
-                        double amplitude = src->getAmplitude();
-                        double phase_rad = src->getPhase() * M_PI / 180.0;
-                        ComplexNum Vsrc = amplitude * ComplexNum(cos(phase_rad), sin(phase_rad));
-                        if (voltageIndex < size) {
-                            I(voltageIndex) = Vsrc;
-                        }
+                    auto ac_src = dynamic_pointer_cast<AC_Voltage_Source>(el);
+                    if (ac_src && voltageIndex < size) {
+                        double amplitude = ac_src->getAmplitude();
+                        double phase_rad = ac_src->getPhase() * M_PI / 180.0;
+                        I(voltageIndex) = ComplexNum(amplitude * cos(phase_rad), amplitude * sin(phase_rad));
                         voltageIndex++;
                     }
                     break;
@@ -3025,7 +2894,186 @@ void Controller::performPhaseSweep(Circuit* circuit) {
         }
 
         if (voltageIndex != size) {
-            throw std::runtime_error("Mismatch in voltage source count!");
+            throw runtime_error("Voltage source count mismatch: expected " + to_string(size) +
+                                ", got " + to_string(voltageIndex));
+        }
+
+        VectorXc V = Y.fullPivLu().solve(I);
+
+        // ذخیره بزرگی و فاز
+        for (int j = 0; j < N; ++j) {
+            auto& [freq_vec, mag_vec, phase_vec] = acResults[j].second;
+            freq_vec[k] = f;
+            mag_vec[k] = 20 * log10(abs(V(j)));
+            phase_vec[k] = arg(V(j)) * 180.0 / M_PI;
+        }
+    }
+    circuit->setAcVoltage(move(acResults));
+}
+
+void Controller::performPhaseSweep(Circuit* circuit) {
+    // تغییر نام نودها
+    int i = 0;
+    for (auto &node: circuit->get_Nodes()) {
+        if (!node->net_name.empty()) {
+            node->change_name(node->net_name);
+            continue;
+        }
+        node->change_name("N" + std::to_string(++i));
+    }
+
+    // تولید فازها
+    std::vector<double> phases;
+    if (phase_sweep_type == Phase_Sweep_Type::Linear) {
+        double step = (end_phase - start_phase) / (num_of_points - 1);
+        for (int i = 0; i < num_of_points; i++)
+            phases.push_back(start_phase + i * step);
+    } else { // لگاریتمی (Decade یا Octave)
+        double base = (phase_sweep_type == Phase_Sweep_Type::Decade) ? 10.0 : 2.0;
+        double ratio = end_phase / start_phase;
+        for (int i = 0; i < num_of_points; i++) {
+            double factor = (double) i / (num_of_points - 1);
+            phases.push_back(start_phase * pow(base, factor * log(ratio) / log(base)));
+        }
+    }
+
+    vector<shared_ptr<Node>> nodes = circuit->get_Nodes();
+    auto ground_it = find_if(nodes.begin(), nodes.end(),
+                             [](const shared_ptr<Node>& n) {
+                                 return n && n->is_the_node_ground();
+                             });
+    if (ground_it == nodes.end()) {
+        throw runtime_error("No ground node found!");
+    }
+    if (ground_it != nodes.begin()) {
+        iter_swap(nodes.begin(), ground_it);
+    }
+
+    // محاسبه تعداد نودها و منابع ولتاژ
+    int N = nodes.size() - 1; // بدون زمین
+    int M = phases.size();    // تعداد فازها
+    int VsrcCount = 0;
+    for (const auto& el : circuit->get_Elements()) {
+        if (el->get_type() == Element_Type::Voltage_Source ||
+            el->get_type() == Element_Type::AC_Voltage_Source) {
+            ++VsrcCount;
+        }
+    }
+    if (VsrcCount == 0) {
+        throw runtime_error("No voltage source (DC or AC) found!");
+    }
+    int size = N + VsrcCount;
+
+    // ساخت نقشه نام به اندیس
+    unordered_map<string, int> nodeIndex;
+    for (int i = 0; i < nodes.size(); ++i) {
+        nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
+    }
+
+    // پیش‌تخصیص بردار برای ذخیره نتایج
+    vector<pair<shared_ptr<Node>, tuple<vector<double>, vector<double>, vector<double>>>> phaseResults;
+    for (int i = 1; i <= N; ++i) {
+        phaseResults.push_back({nodes[i], {vector<double>(M), vector<double>(M), vector<double>(M)}});
+    }
+
+    // پیدا کردن منبع ولتاژ AC
+    shared_ptr<AC_Voltage_Source> voltageSource = nullptr;
+    for (const auto& el : circuit->get_Elements()) {
+        if (el->get_type() == Element_Type::AC_Voltage_Source) {
+            voltageSource = dynamic_pointer_cast<AC_Voltage_Source>(el);
+            if (voltageSource) break;
+        }
+    }
+    if (!voltageSource) {
+        throw runtime_error("No AC voltage source found!");
+    }
+
+    // فرکانس ثابت
+    double omega = 2 * M_PI * fixed_frequency;
+    if (fixed_frequency <= 0) {
+        throw runtime_error("Invalid fixed frequency!");
+    }
+
+    // حل سیستم برای هر فاز
+    for (int k = 0; k < M; ++k) {
+        double phase_deg = phases[k];
+        double phase_rad = phase_deg * M_PI / 180.0;
+        voltageSource->setPhase(phase_deg);
+
+        // تعریف ماتریس و بردار
+        MatrixXc Y = MatrixXc::Zero(size, size);
+        VectorXc I = VectorXc::Zero(size);
+
+        int voltageIndex = N;
+
+        for (const auto& el : circuit->get_Elements()) {
+            int n1 = nodeIndex[el->get_nodes().first->get_name()];
+            int n2 = nodeIndex[el->get_nodes().second->get_name()];
+
+            switch (el->get_type()) {
+                case Element_Type::Resistor: {
+                    ComplexNum G = 1.0 / el->get_value();
+                    if (n1 >= 0) safeAdd(Y, n1, n1, G);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, G);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -G);
+                        safeAdd(Y, n2, n1, -G);
+                    }
+                    break;
+                }
+                case Element_Type::Capacitor: {
+                    ComplexNum Yc(0, omega * el->get_value());
+                    if (n1 >= 0) safeAdd(Y, n1, n1, Yc);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, Yc);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -Yc);
+                        safeAdd(Y, n2, n1, -Yc);
+                    }
+                    break;
+                }
+                case Element_Type::Inductor: {
+                    ComplexNum Yl(0, -1.0 / (omega * el->get_value()));
+                    if (n1 >= 0) safeAdd(Y, n1, n1, Yl);
+                    if (n2 >= 0) safeAdd(Y, n2, n2, Yl);
+                    if (n1 >= 0 && n2 >= 0) {
+                        safeAdd(Y, n1, n2, -Yl);
+                        safeAdd(Y, n2, n1, -Yl);
+                    }
+                    break;
+                }
+                case Element_Type::Voltage_Source: {
+                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
+                    if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
+                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
+                    if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
+                    auto dc_src = dynamic_pointer_cast<DC_Source>(el);
+                    if (dc_src && voltageIndex < size) {
+                        I(voltageIndex) = dc_src->get_value();
+                        voltageIndex++;
+                    }
+                    break;
+                }
+                case Element_Type::AC_Voltage_Source: {
+                    if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
+                    if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
+                    if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
+                    if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
+                    auto src = dynamic_pointer_cast<AC_Voltage_Source>(el);
+                    if (src && voltageIndex < size) {
+                        double amplitude = src->getAmplitude();
+                        double phase_rad = src->getPhase() * M_PI / 180.0;
+                        ComplexNum Vsrc = amplitude * ComplexNum(cos(phase_rad), sin(phase_rad));
+                        I(voltageIndex) = Vsrc;
+                        voltageIndex++;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (voltageIndex != size) {
+            throw runtime_error("Voltage source count mismatch: expected " + to_string(size) +
+                                ", got " + to_string(voltageIndex));
         }
 
         VectorXc V = Y.fullPivLu().solve(I);
@@ -3034,11 +3082,189 @@ void Controller::performPhaseSweep(Circuit* circuit) {
         for (int j = 0; j < N; ++j) {
             auto& [phase_vec, mag_vec, phase_vec_out] = phaseResults[j].second;
             phase_vec[k] = phase_deg;
-            mag_vec[k] = 20 * log10(std::abs(V(j)));
-            phase_vec_out[k] = std::arg(V(j)) * 180.0 / M_PI;
+            mag_vec[k] = 20 * log10(abs(V(j)));
+            phase_vec_out[k] = arg(V(j)) * 180.0 / M_PI;
         }
     }
 
     // ذخیره نتایج در مدار
-    circuit->setPhaseVoltage(std::move(phaseResults));
+    circuit->setPhaseVoltage(move(phaseResults));
+}
+
+shared_ptr<Circuit> Controller::getTheveninEquivalent( SubCircuit& subCircuit) {
+    // دریافت نودها و المان‌ها
+    auto nodes = subCircuit.get_Nodes();
+    auto elements = subCircuit.get_Elements();
+    auto inputNode = subCircuit.getInput();
+    auto outputNode = subCircuit.getOutput();
+
+    // چک کردن نودهای ورودی و خروجی
+    if (!inputNode || !outputNode) {
+        throw runtime_error("Input or output node is null!");
+    }
+    if (inputNode == outputNode) {
+        throw runtime_error("Input and output nodes cannot be the same!");
+    }
+
+    // پیدا کردن نود زمین
+    auto ground_it = find_if(nodes.begin(), nodes.end(),
+                             [](const shared_ptr<Node>& n) {
+                                 return n && n->is_the_node_ground();
+                             });
+    if (ground_it == nodes.end()) {
+        throw runtime_error("No ground node found in subcircuit!");
+    }
+    if (ground_it != nodes.begin()) {
+        iter_swap(nodes.begin(), ground_it); // زمین به nodes[0]
+    }
+
+    // محاسبه تعداد نودها و منابع ولتاژ
+    int N = nodes.size() - 1; // بدون زمین
+    int VsrcCount = 0;
+    for (const auto& el : elements) {
+        if (el->get_type() == Element_Type::Voltage_Source ||
+            el->get_type() == Element_Type::AC_Voltage_Source) {
+            ++VsrcCount;
+        }
+    }
+    if (VsrcCount == 0) {
+        throw runtime_error("No voltage source found!");
+    }
+    int size = N + VsrcCount;
+
+    // ساخت نقشه نام به اندیس
+    unordered_map<string, int> nodeIndex;
+    for (int i = 0; i < nodes.size(); ++i) {
+        nodeIndex[nodes[i]->get_name()] = (i == 0 ? -1 : i - 1);
+    }
+
+    // -----------------------------------
+    // 1. محاسبه ولتاژ تونن (Vth)
+    // -----------------------------------
+    MatrixXcd Y = MatrixXcd::Zero(size, size);
+    VectorXcd I = VectorXcd::Zero(size);
+    int voltageIndex = N;
+
+    for (const auto& el : elements) {
+        int n1 = nodeIndex[el->get_nodes().first->get_name()];
+        int n2 = nodeIndex[el->get_nodes().second->get_name()];
+
+        switch (el->get_type()) {
+            case Element_Type::Resistor: {
+                double G = 1.0 / el->get_value();
+                if (n1 >= 0) safeAdd(Y, n1, n1, G);
+                if (n2 >= 0) safeAdd(Y, n2, n2, G);
+                if (n1 >= 0 && n2 >= 0) {
+                    safeAdd(Y, n1, n2, -G);
+                    safeAdd(Y, n2, n1, -G);
+                }
+                break;
+            }
+            case Element_Type::Voltage_Source: {
+                if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
+                if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
+                if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
+                if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
+                auto dc_src = dynamic_pointer_cast<DC_Source>(el);
+                if (dc_src) {
+                    I(voltageIndex) = dc_src->get_value();
+                }
+                voltageIndex++;
+                break;
+            }
+            case Element_Type::AC_Voltage_Source: {
+                if (n1 >= 0) safeAdd(Y, n1, voltageIndex, 1);
+                if (n2 >= 0) safeAdd(Y, n2, voltageIndex, -1);
+                if (n1 >= 0) safeAdd(Y, voltageIndex, n1, 1);
+                if (n2 >= 0) safeAdd(Y, voltageIndex, n2, -1);
+                auto ac_src = dynamic_pointer_cast<AC_Voltage_Source>(el);
+                if (ac_src) {
+                    // برای مدار مقاومتی، فقط amplitude استفاده می‌شه (DC equivalent)
+                    double amplitude = ac_src->getAmplitude();
+                    I(voltageIndex) = amplitude; // فرض RMS یا مقدار لحظه‌ای
+                }
+                voltageIndex++;
+                break;
+            }
+            default:
+                throw runtime_error("Unsupported element type for Thevenin!");
+        }
+    }
+
+    if (voltageIndex != size) {
+        throw runtime_error("Mismatch in voltage source count!");
+    }
+
+    // حل سیستم برای ولتاژها
+    VectorXcd V = Y.fullPivLu().solve(I);
+
+    // محاسبه Vth = V_input - V_output
+    int inputIdx = nodeIndex[inputNode->get_name()];
+    int outputIdx = nodeIndex[outputNode->get_name()];
+    if (inputIdx < 0 || outputIdx < 0) {
+        throw runtime_error("Input or output node is ground!");
+    }
+    double Vth = real(V(inputIdx) - V(outputIdx)); // فقط قسمت حقیقی (DC یا RMS)
+
+    // -----------------------------------
+    // 2. محاسبه مقاومت تونن (Rth)
+    // -----------------------------------
+    Y.setZero();
+    I.setZero();
+    voltageIndex = N;
+
+    // اعمال منبع جریان تست (1 آمپر) بین input و output
+    I(inputIdx) += 1.0;
+    I(outputIdx) -= 1.0;
+
+    // ساخت ماتریس Y با خاموش کردن منابع
+    for (const auto& el : elements) {
+        int n1 = nodeIndex[el->get_nodes().first->get_name()];
+        int n2 = nodeIndex[el->get_nodes().second->get_name()];
+
+        switch (el->get_type()) {
+            case Element_Type::Resistor: {
+                double G = 1.0 / el->get_value();
+                if (n1 >= 0) safeAdd(Y, n1, n1, G);
+                if (n2 >= 0) safeAdd(Y, n2, n2, G);
+                if (n1 >= 0 && n2 >= 0) {
+                    safeAdd(Y, n1, n2, -G);
+                    safeAdd(Y, n2, n1, -G);
+                }
+                break;
+            }
+            case Element_Type::Voltage_Source:
+            case Element_Type::AC_Voltage_Source:
+                // اتصال کوتاه: نادیده گرفته می‌شه
+                break;
+            default:
+                throw runtime_error("Unsupported element type for Thevenin!");
+        }
+    }
+
+    // حل سیستم برای ولتاژهای تست
+    V = Y.fullPivLu().solve(I);
+    double V_test = real(V(inputIdx) - V(outputIdx));
+    double Rth = V_test / 1.0; // I_test = 1
+
+    // -----------------------------------
+    // 3. ساخت مدار معادل تونن
+    // -----------------------------------
+    auto theveninCircuit = make_shared<Circuit>("Thevenin_" + subCircuit.get_name());
+
+    // ایجاد نودها
+    auto thInput = make_shared<Node>("TH_IN", false, 0);
+    auto thOutput = make_shared<Node>("TH_OUT", true, -1); // خروجی زمین
+    theveninCircuit->addNode(thInput);
+    theveninCircuit->addNode(thOutput);
+
+    // اضافه کردن منبع ولتاژ تونن (DC)
+    theveninCircuit->addElement(make_shared<DC_Source>("V_TH", thInput, thOutput, Vth));
+
+    // اضافه کردن مقاومت تونن (اگر غیرصفر)
+    if (abs(Rth) > 1e-6) {
+        theveninCircuit->addElement(make_shared<Resistor>("R_TH", thInput, thOutput, Rth));
+    }
+
+    return theveninCircuit;
 }

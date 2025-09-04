@@ -16,10 +16,11 @@ private:
     int elements_connected_count;
     int index;
     pair<int, int> ground_coordinates;
-    pair<int, int> net_label_coordinates;   // delete this one!!!
     vector<pair<int,int>> net_label_coordinates_vector;
 
 public:
+    string net_name;
+    vector<pair<int,int>> get_net_label_coordinates_vector() { return net_label_coordinates_vector; }
     Node() = default;
     Node(string _name);
     Node(const std::string& name_, bool is_ground_, int index_);
@@ -45,10 +46,8 @@ public:
     pair<int, int> get_ground_coordinates() { return {ground_coordinates.first, ground_coordinates.second}; }
 
     void set_net_label_coordinates(int x_, int y_);
-    pair<int, int> get_net_label_coordinates() { return {net_label_coordinates.first, net_label_coordinates.second}; }
 
-    vector<pair<int,int>> get_net_label_coordinates_vector() { return net_label_coordinates_vector; }// delete
-    string net_name;
+
     virtual ~Node() = default;
 
     template <class Archive>

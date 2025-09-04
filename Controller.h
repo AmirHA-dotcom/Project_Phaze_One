@@ -342,6 +342,6 @@ public:
     void addAdmittance(MatrixXc& Y, int node1, int node2, ComplexNum val);
     void performACSweep(Circuit* circuit);
     void performPhaseSweep(Circuit* circuit);
-
+    shared_ptr<Circuit> getTheveninEquivalent(SubCircuit& subCircuit);
 };
 #endif //PROJECT_PHAZE_ONE_CONTROLLER_H

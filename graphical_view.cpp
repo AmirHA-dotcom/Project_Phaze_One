@@ -3466,10 +3466,15 @@ bool graphical_view::handle_probing_events(SDL_Event& event, Controller* C)
 
                 vector<double> freq, mag;
 
+                cout << "start" << endl;
+                cout << target_node->get_name() << endl;
+
                 for (const auto& data : C->circuit->getAcVoltage())
                 {
+                    cout << "Data node: " << data.first->get_name() << endl;
                     if (target_node == data.first)
                     {
+                        cout << "DONE!" << endl;
                         freq = get<0>(data.second);
                         mag = get<1>(data.second);
                         break;
@@ -3874,6 +3879,7 @@ bool graphical_view::handle_saving_events(SDL_Event &event, Controller *C)
         current_file_address = edit_buffers[1];
 
         C->circuit->change_name(current_file_name);
+        cout << "Saving to " << current_file_address << " with name " << current_file_name << endl;
         C->saveGraphicalCircuit(C->circuit, current_file_address);
 
 
