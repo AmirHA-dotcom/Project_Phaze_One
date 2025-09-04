@@ -2979,7 +2979,7 @@ void Controller::performPhaseSweep(Circuit* circuit) {
     // پیدا کردن منبع ولتاژ AC
     shared_ptr<AC_Voltage_Source> voltageSource = nullptr;
     for (const auto& el : circuit->get_Elements()) {
-        if (el->get_type() == Element_Type::AC_Voltage_Source) {
+        if (el->get_type() == Element_Type::AC_Voltage_Source || el->get_type() == Element_Type::Voltage_Source) {
             voltageSource = dynamic_pointer_cast<AC_Voltage_Source>(el);
             if (voltageSource) break;
         }
